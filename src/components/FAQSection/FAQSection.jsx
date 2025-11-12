@@ -187,7 +187,7 @@ const SuperTitle = styled.p`
   line-height: 1.2;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: #374151;
+  color: #36454F;
   margin: 0;
   
   @media (max-width: 768px) {
@@ -201,7 +201,7 @@ const HeaderTitle = styled.h2`
   font-weight: 600;
   font-size: 48px;
   line-height: 56px;
-  color: #374151;
+  color: #36454F;
   margin: 0;
   
   @media (max-width: 1024px) {
@@ -260,7 +260,7 @@ const CategoryButton = styled.button`
   font-weight: 400;
   font-size: 18px;
   line-height: 28px;
-  color: ${props => props.isActive ? '#FFFFFF' : '#374151'};
+  color: ${props => props.isActive ? '#FFFFFF' : '#36454F'};
   
   &:hover {
     background: ${props => props.isActive ? '#FF1493' : 'rgba(55, 65, 81, 0.15)'};
@@ -314,7 +314,7 @@ const QuestionText = styled.h3`
   font-weight: 500;
   font-size: 20px;
   line-height: 32px;
-  color: #374151;
+  color: #36454F;
   margin: 0;
   
   @media (max-width: 768px) {
@@ -336,7 +336,7 @@ const DropdownIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #374151;
+  color: #36454F;
   transition: transform 0.3s ease;
   transform: ${props => props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
   
@@ -367,7 +367,7 @@ const AnswerText = styled.p`
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
-  color: #374151;
+  color: #36454F;
   margin: 0;
   padding-top: 16px;
   

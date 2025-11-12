@@ -10,26 +10,39 @@ import store from '../store';
 
 // Lazy load components for code splitting and better performance
 const Hero = lazy(() => import('../components/Hero/Hero'));
-const ClinicalTrialsShowcase = lazy(() => import('../components/ClinicalTrialsShowcase/ClinicalTrialsShowcase'));
-const InnovativeCare = lazy(() => import('../components/InnovativeCare/InnovativeCare'));
-const Testimonials = lazy(() => import('../components/Testimonials/Testimonials'));
-const ClinicalTrialsAbout = lazy(() => import('../components/ClinicalTrialsAbout/ClinicalTrialsAbout'));
-const AboutSection = lazy(() => import('../components/AboutSection/AboutSection'));
-const ClinicalTrials = lazy(() => import('../components/ClinicalTrials/ClinicalTrials'));
+const ClinicalTrialsShowcase = lazy(() =>
+  import('../components/ClinicalTrialsShowcase/ClinicalTrialsShowcase')
+);
+const InnovativeCare = lazy(() =>
+  import('../components/InnovativeCare/InnovativeCare')
+);
+const Testimonials = lazy(() =>
+  import('../components/Testimonials/Testimonials')
+);
+const ClinicalTrialsAbout = lazy(() =>
+  import('../components/ClinicalTrialsAbout/ClinicalTrialsAbout')
+);
+const AboutSection = lazy(() =>
+  import('../components/AboutSection/AboutSection')
+);
+const ClinicalTrials = lazy(() =>
+  import('../components/ClinicalTrials/ClinicalTrials')
+);
 const HowItWorks = lazy(() => import('../components/HowItWorks/HowItWorks'));
-const VideoTestimonials = lazy(() => import('../components/VideoTestimonials/VideoTestimonials'));
+const VideoTestimonials = lazy(() =>
+  import('../components/VideoTestimonials/VideoTestimonials')
+);
 const Resources = lazy(() => import('../components/Resources/Resources'));
 const GetInTouch = lazy(() => import('../components/GetInTouch/GetInTouch'));
-const LocationNetwork = lazy(() => import('../components/LocationNetwork/LocationNetwork'));
+const LocationNetwork = lazy(() =>
+  import('../components/LocationNetwork/LocationNetwork')
+);
 
 const PageWrapper = styled.div`
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
   position: relative;
-  overflow-x: hidden;
-  min-height: 100vh;
-
   @media (max-width: 1440px) {
     max-width: 100%;
   }
@@ -130,7 +143,6 @@ const COMPONENT_METADATA = {
   },
 };
 
-
 // Memoized sanitize function
 const sanitizeSectionId = (value) => {
   if (!value || typeof value !== 'string') {
@@ -145,14 +157,14 @@ const sanitizeSectionId = (value) => {
 
 const LandingPage = () => {
   const dispatch = useDispatch();
-  const globalData = useSelector(state => state.global?.data);
-  const globalLoading = useSelector(state => state.global?.loading);
+  const globalData = useSelector((state) => state.global?.data);
+  const globalLoading = useSelector((state) => state.global?.loading);
 
   // Fetch global Strapi data on mount - only if not already loaded
   useEffect(() => {
     const currentState = store.getState();
     const existingData = currentState?.global?.data;
-    
+
     if (!existingData) {
       dispatch(fetchGlobalData());
     }
@@ -181,53 +193,60 @@ const LandingPage = () => {
   }, [dispatch]);
 
   // Memoize fallback components to prevent re-creation
-  const fallbackComponents = useMemo(() => (
-    <>
-      <Suspense fallback={<ComponentLoader />}>
-        <Hero componentData={null} pageData={globalData} />
-      </Suspense>
-      <Suspense fallback={<ComponentLoader />}>
-        <ClinicalTrialsShowcase componentData={null} pageData={globalData} />
-      </Suspense>
-      <Suspense fallback={<ComponentLoader />}>
-        <AboutSection componentData={null} pageData={globalData} />
-      </Suspense>
-      <Suspense fallback={<ComponentLoader />}>
-        <InnovativeCare componentData={null} pageData={globalData} />
-      </Suspense>
-      <Suspense fallback={<ComponentLoader />}>
-        <Testimonials componentData={null} pageData={globalData} />
-      </Suspense>
-      <Suspense fallback={<ComponentLoader />}>
-        <ClinicalTrialsAbout componentData={null} pageData={globalData} />
-      </Suspense>
-      <Suspense fallback={<ComponentLoader />}>
-        <ClinicalTrials componentData={null} pageData={globalData} />
-      </Suspense>
-      <Suspense fallback={<ComponentLoader />}>
-        <GetInTouch componentData={null} pageData={globalData} />
-      </Suspense>
-      <Suspense fallback={<ComponentLoader />}>
-        <LocationNetwork showButtons={true} componentData={null} pageData={globalData} />
-      </Suspense>
-      <Suspense fallback={<ComponentLoader />}>
-        <HowItWorks componentData={null} pageData={globalData} />
-      </Suspense>
-      <Suspense fallback={<ComponentLoader />}>
-        <VideoTestimonials componentData={null} pageData={globalData} />
-      </Suspense>
-      <Suspense fallback={<ComponentLoader />}>
-        <Resources componentData={null} pageData={globalData} />
-      </Suspense>
-    </>
-  ), [globalData]);
+  const fallbackComponents = useMemo(
+    () => (
+      <>
+        <Suspense fallback={<ComponentLoader />}>
+          <Hero componentData={null} pageData={globalData} />
+        </Suspense>
+        <Suspense fallback={<ComponentLoader />}>
+          <ClinicalTrialsShowcase componentData={null} pageData={globalData} />
+        </Suspense>
+        <Suspense fallback={<ComponentLoader />}>
+          <AboutSection componentData={null} pageData={globalData} />
+        </Suspense>
+        <Suspense fallback={<ComponentLoader />}>
+          <InnovativeCare componentData={null} pageData={globalData} />
+        </Suspense>
+        <Suspense fallback={<ComponentLoader />}>
+          <Testimonials componentData={null} pageData={globalData} />
+        </Suspense>
+        <Suspense fallback={<ComponentLoader />}>
+          <ClinicalTrialsAbout componentData={null} pageData={globalData} />
+        </Suspense>
+        <Suspense fallback={<ComponentLoader />}>
+          <ClinicalTrials componentData={null} pageData={globalData} />
+        </Suspense>
+        <Suspense fallback={<ComponentLoader />}>
+          <GetInTouch componentData={null} pageData={globalData} />
+        </Suspense>
+        <Suspense fallback={<ComponentLoader />}>
+          <LocationNetwork
+            showButtons={true}
+            componentData={null}
+            pageData={globalData}
+          />
+        </Suspense>
+        <Suspense fallback={<ComponentLoader />}>
+          <HowItWorks componentData={null} pageData={globalData} />
+        </Suspense>
+        <Suspense fallback={<ComponentLoader />}>
+          <VideoTestimonials componentData={null} pageData={globalData} />
+        </Suspense>
+        <Suspense fallback={<ComponentLoader />}>
+          <Resources componentData={null} pageData={globalData} />
+        </Suspense>
+      </>
+    ),
+    [globalData]
+  );
 
   // Memoize dynamic components rendering
   const renderDynamicComponents = useCallback(() => {
     if (globalLoading) {
       return null;
     }
-    
+
     if (!globalData) {
       return fallbackComponents;
     }
@@ -240,7 +259,7 @@ const LandingPage = () => {
 
     // Filter and map components in one pass for better performance
     const dynamicComponents = dynamicZone
-      .filter(item => item?.__component && item?.isActive !== false)
+      .filter((item) => item?.__component && item?.isActive !== false)
       .map((item, index) => {
         const metadata = COMPONENT_METADATA[item.__component];
 
@@ -280,11 +299,16 @@ const LandingPage = () => {
       })
       .filter(Boolean);
 
-    return dynamicComponents.length > 0 ? dynamicComponents : fallbackComponents;
+    return dynamicComponents.length > 0
+      ? dynamicComponents
+      : fallbackComponents;
   }, [globalData, globalLoading, fallbackComponents]);
 
   // Memoize the rendered components
-  const renderedComponents = useMemo(() => renderDynamicComponents(), [renderDynamicComponents]);
+  const renderedComponents = useMemo(
+    () => renderDynamicComponents(),
+    [renderDynamicComponents]
+  );
 
   return (
     <PageWrapper>

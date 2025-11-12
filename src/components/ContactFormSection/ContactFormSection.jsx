@@ -369,7 +369,7 @@ const Description = styled.div`
   font-size: 20px;
   font-weight: 500;
   line-height: 32px;
-  color: #374151;
+  color: #36454F;
   margin: 0;
   
   @media (max-width: 768px) {
@@ -417,7 +417,7 @@ const TestimonialText = styled.p`
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
-  color: #374151;
+  color: #36454F;
   margin: 0;
   text-align: center;
   
@@ -452,7 +452,7 @@ const ProfileName = styled.p`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 16px;
   font-weight: 400;
-  color: #374151;
+  color: #36454F;
   margin: 0;
   line-height: 24px;
 `;
@@ -558,7 +558,7 @@ const Label = styled.label`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 400;
-  color: #374151;
+  color: #36454F;
   line-height: 20px;
 `;
 
@@ -569,7 +569,7 @@ const Input = styled.input`
   border: 1px solid #E5E7EB;
   border-radius: 16px;
   font-size: 12px;
-  color: #374151;
+  color: #36454F;
   transition: all 0.3s ease;
   
   &::placeholder {
@@ -595,11 +595,11 @@ const Select = styled.select`
   border: 1px solid #E5E7EB;
   border-radius: 16px;
   font-size: 12px;
-  color: #374151;
+  color: #36454F;
   cursor: pointer;
   transition: all 0.3s ease;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23374151' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2336454F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 16px center;
   background-size: 14px;
@@ -612,7 +612,7 @@ const Select = styled.select`
   }
   
   option {
-    color: #374151;
+    color: #36454F;
   }
   
   &:disabled {
@@ -628,7 +628,7 @@ const TextArea = styled.textarea`
   border: 1px solid #E5E7EB;
   border-radius: 16px;
   font-size: 12px;
-  color: #374151;
+  color: #36454F;
   resize: none;
   height: 112px;
   transition: all 0.3s ease;
@@ -659,7 +659,7 @@ const CheckboxWrapper = styled.div`
 const Checkbox = styled.input`
   width: 16px;
   height: 16px;
-  border: 1px solid #374151;
+  border: 1px solid #36454F;
   border-radius: 4px;
   cursor: pointer;
   margin-top: 2px;
@@ -680,7 +680,7 @@ const CheckboxLabel = styled.label`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 400;
-  color: #374151;
+  color: #36454F;
   line-height: 20px;
   cursor: pointer;
 `;

@@ -22,8 +22,6 @@ import { fetchGlobalData } from '../store/slices/globalSlice';
 
 const PageWrapper = styled.div`
   width: 100%;
-  overflow-x: hidden;
-  min-height: 100vh;
 `;
 
 const LoadingContainer = styled.div`

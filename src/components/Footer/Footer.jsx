@@ -391,6 +391,7 @@ const LinksSection = styled.div`
   
   @media (max-width: 768px) {
     gap: 24px;
+    margin-bottom: 30px;
   }
 `;
 
@@ -408,7 +409,7 @@ const LinksRow = styled.div`
   
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: 40px;
+    gap: 30px !important;
     flex-wrap: wrap;
   }
 `;
@@ -533,6 +534,9 @@ const LinkList = styled.div`
   flex-direction: column;
   gap: 0;
   margin-top: 32px;
+  @media (max-width: 768px) {
+  margin-top: 0;
+  }
 `;
 
 const FooterLink = styled.a`
@@ -575,6 +579,7 @@ const LocationsWrapper = styled.div`
   @media (max-width: 768px) {
     height: auto;
     min-height: 200px;
+    margin-bottom: 30px;
   }
 `;
 
@@ -741,7 +746,7 @@ const BottomSection = styled.div`
     flex-direction: column;
     gap: 24px;
     align-items: flex-start;
-    padding-bottom: 30px;
+    padding-bottom: 0;
   }
 `;
 
