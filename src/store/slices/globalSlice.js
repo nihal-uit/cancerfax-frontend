@@ -19,7 +19,8 @@ const resolveLogoUrl = (logo) => {
 
   // Handle nested data.attributes.url structure
   if (logo.data?.attributes?.url) {
-    const trimmed = logo.data.attributes.url?.trim?.() ?? logo.data.attributes.url;
+    const trimmed =
+      logo.data.attributes.url?.trim?.() ?? logo.data.attributes.url;
     return trimmed ? getMediaUrl(trimmed) : null;
   }
 
@@ -54,20 +55,34 @@ const resolveLogoUrl = (logo) => {
 };
 
 // Use environment variable for API URL, with fallback to production URL
-const API_URL = process.env.REACT_APP_STRAPI_URL || 'https://cancerfax.unifiedinfotechonline.com';
+// API Base URL: https://cancerfax.unifiedinfotechonline.com
+// Global API Endpoint: /api/global
+const API_URL =
+  process.env.REACT_APP_STRAPI_URL ||
+  'https://cancerfax.unifiedinfotechonline.com';
 
 const fetchSliderComponentsWithMedia = async (slug, timestamp) => {
   try {
     const sliderParams = new URLSearchParams();
     sliderParams.append('filters[slug][$eq]', slug);
-    sliderParams.append('populate[dynamic_zone][on][dynamic-zone.slider-section][populate][Slide][populate]', '*');
+    sliderParams.append(
+      'populate[dynamic_zone][on][dynamic-zone.slider-section][populate][Slide][populate]',
+      '*'
+    );
     sliderParams.append('_t', timestamp.toString());
-    const response = await axios.get(`${API_URL}/api/pages?${sliderParams.toString()}`);
+    const response = await axios.get(
+      `${API_URL}/api/pages?${sliderParams.toString()}`
+    );
     const sliderDynamicZone = response.data?.data?.[0]?.dynamic_zone || [];
-    return sliderDynamicZone.filter(component => component?.__component === 'dynamic-zone.slider-section');
+    return sliderDynamicZone.filter(
+      (component) => component?.__component === 'dynamic-zone.slider-section'
+    );
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
-      console.warn('⚠️ Unable to deeply populate slider section:', error?.message || error);
+      console.warn(
+        '⚠️ Unable to deeply populate slider section:',
+        error?.message || error
+      );
     }
     return [];
   }
@@ -77,14 +92,25 @@ const fetchTestimonialComponentsWithMedia = async (slug, timestamp) => {
   try {
     const testimonialParams = new URLSearchParams();
     testimonialParams.append('filters[slug][$eq]', slug);
-    testimonialParams.append('populate[dynamic_zone][on][dynamic-zone.testimonial-slider][populate][survivor_story][populate]', '*');
+    testimonialParams.append(
+      'populate[dynamic_zone][on][dynamic-zone.testimonial-slider][populate][survivor_story][populate]',
+      '*'
+    );
     testimonialParams.append('_t', timestamp.toString());
-    const response = await axios.get(`${API_URL}/api/pages?${testimonialParams.toString()}`);
+    const response = await axios.get(
+      `${API_URL}/api/pages?${testimonialParams.toString()}`
+    );
     const dynamicZone = response.data?.data?.[0]?.dynamic_zone || [];
-    return dynamicZone.filter(component => component?.__component === 'dynamic-zone.testimonial-slider');
+    return dynamicZone.filter(
+      (component) =>
+        component?.__component === 'dynamic-zone.testimonial-slider'
+    );
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
-      console.warn('⚠️ Unable to deeply populate testimonial slider:', error?.message || error);
+      console.warn(
+        '⚠️ Unable to deeply populate testimonial slider:',
+        error?.message || error
+      );
     }
     return [];
   }
@@ -105,7 +131,9 @@ const fetchTherapiesWithMedia = async (therapyIds, timestamp) => {
     therapyParams.append('populate', '*');
     therapyParams.append('_t', timestamp.toString());
 
-    const response = await axios.get(`${API_URL}/api/therapies?${therapyParams.toString()}`);
+    const response = await axios.get(
+      `${API_URL}/api/therapies?${therapyParams.toString()}`
+    );
     const therapiesData = response.data?.data || [];
 
     return therapiesData.reduce((acc, item) => {
@@ -119,7 +147,10 @@ const fetchTherapiesWithMedia = async (therapyIds, timestamp) => {
     }, {});
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
-      console.warn('⚠️ Unable to populate therapy images:', error?.message || error);
+      console.warn(
+        '⚠️ Unable to populate therapy images:',
+        error?.message || error
+      );
     }
     return {};
   }
@@ -137,92 +168,127 @@ export const fetchGlobalData = createAsyncThunk(
       pageParams.append('filters[slug][$eq]', 'home');
       pageParams.append('populate[dynamic_zone][populate]', '*');
       pageParams.append('_t', timestamp.toString());
-      
+
       // Prepare global API call in parallel
-      const globalPopulateQuery = qs.stringify({
-        populate: {
-          navbar: { populate: true },
-          footer: {
-            populate: {
-              logo: { fields: ['id', 'url', 'hash', 'ext', 'mime', 'name'] },
-              policy_links: true,
-              footer_columns: { populate: { links: true } },
-              locations: {
-                fields: ['id', 'country', 'country_code', 'address', 'full_address', 'phone', 'phone_country_code', 'phone_number', 'whatsapp_number', 'flag'],
-                populate: { flag: { fields: ['url', 'name', 'hash', 'ext', 'mime'] } },
-              },
-              social_media_links: {
-                populate: {
-                  image: { fields: ['url', 'name', 'hash', 'ext', 'mime'] },
-                  link: true,
+      const globalPopulateQuery = qs.stringify(
+        {
+          populate: {
+            navbar: { populate: true },
+            footer: {
+              populate: {
+                logo: { fields: ['id', 'url', 'hash', 'ext', 'mime', 'name'] },
+                policy_links: true,
+                footer_columns: { populate: { links: true } },
+                locations: true,
+                social_media_links: {
+                  populate: {
+                    image: { fields: ['url', 'name', 'hash', 'ext', 'mime'] },
+                    link: true,
+                  },
                 },
+                cta: true,
               },
-              cta: true,
             },
           },
+          _t: timestamp,
         },
-        _t: timestamp,
-      }, { encodeValuesOnly: true });
-      
+        { encodeValuesOnly: true }
+      );
+
       // Fetch pages and global data in parallel for faster loading
       // Use allSettled to handle partial failures gracefully
+      const globalApiUrl = `${API_URL}/api/global?${globalPopulateQuery}`;
       const [pagesResult, globalResult] = await Promise.allSettled([
         axios.get(`${API_URL}/api/pages?${pageParams.toString()}`),
-        axios.get(`${API_URL}/api/global?${globalPopulateQuery}`)
+        axios.get(globalApiUrl),
       ]);
-      
+
       // Handle pages response
       if (pagesResult.status === 'rejected') {
-        console.warn('⚠️ Failed to fetch pages data:', pagesResult.reason?.message);
+        console.warn(
+          '⚠️ Failed to fetch pages data:',
+          pagesResult.reason?.message
+        );
       }
-      const pagesResponse = pagesResult.status === 'fulfilled' ? pagesResult.value : null;
-      
+      const pagesResponse =
+        pagesResult.status === 'fulfilled' ? pagesResult.value : null;
+
       // Handle global response
       if (globalResult.status === 'rejected') {
-        console.warn('⚠️ Failed to fetch global data:', globalResult.reason?.message);
+        const errorMessage = globalResult.reason?.message || 'Unknown error';
+        const errorResponse = globalResult.reason?.response;
+        console.error('⚠️ Failed to fetch global data from:', globalApiUrl);
+        console.error('⚠️ Error details:', {
+          message: errorMessage,
+          status: errorResponse?.status,
+          statusText: errorResponse?.statusText,
+          data: errorResponse?.data,
+        });
       }
-      const globalResponse = globalResult.status === 'fulfilled' ? globalResult.value : null;
-      
+      const globalResponse =
+        globalResult.status === 'fulfilled' ? globalResult.value : null;
+
       let homePage = pagesResponse?.data?.data?.[0] || null;
-      let pageDynamicZone = Array.isArray(homePage?.dynamic_zone) ? [...homePage.dynamic_zone] : [];
+      let pageDynamicZone = Array.isArray(homePage?.dynamic_zone)
+        ? [...homePage.dynamic_zone]
+        : [];
       if (pageDynamicZone.length > 0) {
         // Extract therapy IDs first (synchronous operation)
         const therapyIds = pageDynamicZone
-          .filter(component => component?.__component === 'dynamic-zone.therapy-section')
-          .flatMap(component => {
-            const list = Array.isArray(component?.Therapy) ? component.Therapy : component?.therapies;
+          .filter(
+            (component) =>
+              component?.__component === 'dynamic-zone.therapy-section'
+          )
+          .flatMap((component) => {
+            const list = Array.isArray(component?.Therapy)
+              ? component.Therapy
+              : component?.therapies;
             return Array.isArray(list) ? list : [];
           })
-          .map(item => item?.id)
+          .map((item) => item?.id)
           .filter((id, index, arr) => id && arr.indexOf(id) === index);
-        
+
         // Make all API calls in parallel for faster loading
-        const [sliderComponentsWithMedia, testimonialComponentsWithMedia, therapiesMap] = await Promise.all([
+        const [
+          sliderComponentsWithMedia,
+          testimonialComponentsWithMedia,
+          therapiesMap,
+        ] = await Promise.all([
           fetchSliderComponentsWithMedia('home', timestamp),
           fetchTestimonialComponentsWithMedia('home', timestamp),
-          fetchTherapiesWithMedia(therapyIds, timestamp)
+          fetchTherapiesWithMedia(therapyIds, timestamp),
         ]);
 
         if (sliderComponentsWithMedia.length > 0) {
           pageDynamicZone = pageDynamicZone.map((component) => {
             if (component?.__component === 'dynamic-zone.slider-section') {
-              const replacement = sliderComponentsWithMedia.find(populated => populated?.id === component?.id)
-                || sliderComponentsWithMedia[0];
+              const replacement =
+                sliderComponentsWithMedia.find(
+                  (populated) => populated?.id === component?.id
+                ) || sliderComponentsWithMedia[0];
               return replacement || component;
             }
 
-            if (component?.__component === 'dynamic-zone.testimonial-slider' && testimonialComponentsWithMedia.length > 0) {
-              const replacement = testimonialComponentsWithMedia.find(populated => populated?.id === component?.id)
-                || testimonialComponentsWithMedia[0];
+            if (
+              component?.__component === 'dynamic-zone.testimonial-slider' &&
+              testimonialComponentsWithMedia.length > 0
+            ) {
+              const replacement =
+                testimonialComponentsWithMedia.find(
+                  (populated) => populated?.id === component?.id
+                ) || testimonialComponentsWithMedia[0];
               return replacement || component;
             }
 
-            if (component?.__component === 'dynamic-zone.therapy-section' && Object.keys(therapiesMap).length > 0) {
+            if (
+              component?.__component === 'dynamic-zone.therapy-section' &&
+              Object.keys(therapiesMap).length > 0
+            ) {
               const therapyArray = Array.isArray(component?.Therapy)
                 ? component.Therapy
                 : Array.isArray(component?.therapies)
-                  ? component.therapies
-                  : [];
+                ? component.therapies
+                : [];
 
               const enrichedTherapies = therapyArray.map((therapy) => {
                 const therapyId = therapy?.id;
@@ -252,13 +318,13 @@ export const fetchGlobalData = createAsyncThunk(
           }
         }
       }
-      
+
       // Process global data (already fetched in parallel above)
       const rawGlobalData = globalResponse?.data?.data || {};
       let globalData = rawGlobalData?.attributes
         ? { id: rawGlobalData.id, ...rawGlobalData.attributes }
         : rawGlobalData;
-      
+
       // Remove excessive logging for better performance - only log errors
       // Uncomment below for debugging if needed:
       /*
@@ -274,7 +340,7 @@ export const fetchGlobalData = createAsyncThunk(
             : null
         });
         */
-      
+
       /*
       console.log('📦 Processed Global Data:', {
           hasNavbar: !!globalData?.navbar,
@@ -297,7 +363,7 @@ export const fetchGlobalData = createAsyncThunk(
           footerLocationsLength: globalData?.footer?.locations?.length || 0,
         });
         */
-      
+
       /*
       // Detailed logging for footer nested relations
       if (globalData?.footer) {
@@ -348,7 +414,7 @@ export const fetchGlobalData = createAsyncThunk(
           });
         }
         */
-      
+
       /*
       // Log dynamic zone data
       if (homePage?.dynamic_zone) {
@@ -370,7 +436,7 @@ export const fetchGlobalData = createAsyncThunk(
           });
         }
         */
-      
+
       /*
       // Debug: Log logo data structure
       console.log('🔍 Global API Response - Logo Data:', {
@@ -384,52 +450,64 @@ export const fetchGlobalData = createAsyncThunk(
           fullFooter: globalData?.footer,
         });
         */
-      
+
       // If navbar/footer only have IDs (not populated), try to fetch logo from media library
       // Check if navbar/footer have logo IDs that we can use to fetch the media
       let navbarLogoData = globalData?.navbar?.logo;
       let footerLogoData = globalData?.footer?.logo;
-      
+
       // If logo is just an ID (number), try to fetch the media object
       if (navbarLogoData && typeof navbarLogoData === 'number') {
         try {
-          const mediaResponse = await axios.get(`${API_URL}/api/upload/files/${navbarLogoData}?_t=${timestamp}`);
+          const mediaResponse = await axios.get(
+            `${API_URL}/api/upload/files/${navbarLogoData}?_t=${timestamp}`
+          );
           if (mediaResponse?.data) {
             navbarLogoData = mediaResponse.data;
             globalData.navbar = { ...globalData.navbar, logo: navbarLogoData };
           }
         } catch (mediaError) {
           if (process.env.NODE_ENV === 'development') {
-            console.warn('⚠️ Failed to fetch navbar logo from media library:', mediaError.message);
+            console.warn(
+              '⚠️ Failed to fetch navbar logo from media library:',
+              mediaError.message
+            );
           }
         }
       }
-      
+
       if (footerLogoData && typeof footerLogoData === 'number') {
         try {
-          const mediaResponse = await axios.get(`${API_URL}/api/upload/files/${footerLogoData}?_t=${timestamp}`);
+          const mediaResponse = await axios.get(
+            `${API_URL}/api/upload/files/${footerLogoData}?_t=${timestamp}`
+          );
           if (mediaResponse?.data) {
             footerLogoData = mediaResponse.data;
             globalData.footer = { ...globalData.footer, logo: footerLogoData };
           }
         } catch (mediaError) {
           if (process.env.NODE_ENV === 'development') {
-            console.warn('⚠️ Failed to fetch footer logo from media library:', mediaError.message);
+            console.warn(
+              '⚠️ Failed to fetch footer logo from media library:',
+              mediaError.message
+            );
           }
         }
       }
-      
+
       // Return populated global data
       // Structure matches /api/global response: navbar, footer, contact, etc.
       let navbarLogoUrl = resolveLogoUrl(navbarLogoData || null);
       let footerLogoUrl = resolveLogoUrl(footerLogoData || null);
       let globalLogoUrl = resolveLogoUrl(globalData?.logo || null);
-      
+
       // Fallback: If logo URLs are still null, use the known logo URL from Strapi
       const knownLogoUrl = `${API_URL}/uploads/logo_851ef64fcb.png`;
       if (!navbarLogoUrl && !footerLogoUrl && !globalLogoUrl) {
         if (process.env.NODE_ENV === 'development') {
-          console.warn('⚠️ No logo URLs resolved, using known logo URL as fallback');
+          console.warn(
+            '⚠️ No logo URLs resolved, using known logo URL as fallback'
+          );
         }
         navbarLogoUrl = knownLogoUrl;
         footerLogoUrl = knownLogoUrl;
@@ -438,7 +516,7 @@ export const fetchGlobalData = createAsyncThunk(
       } else if (!footerLogoUrl) {
         footerLogoUrl = navbarLogoUrl || globalLogoUrl || knownLogoUrl;
       }
-      
+
       // Removed console.log for better performance
       /*
       console.log('✅ Resolved Logo URLs:', {
@@ -447,7 +525,7 @@ export const fetchGlobalData = createAsyncThunk(
           globalLogoUrl,
         });
       */
-      
+
       return {
         ...globalData,
         dynamicZone: homePage?.dynamic_zone || [],
@@ -462,7 +540,9 @@ export const fetchGlobalData = createAsyncThunk(
         globalLogoUrl,
       };
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Failed to fetch global data');
+      return rejectWithValue(
+        error.response?.data || 'Failed to fetch global data'
+      );
     }
   }
 );
@@ -475,7 +555,7 @@ export const fetchPageBySlug = createAsyncThunk(
     try {
       // Normalize slug: trim and encode for URL
       const normalizedSlug = slug ? slug.trim() : '';
-      
+
       const timestamp = Date.now();
       const pageParams = new URLSearchParams();
       pageParams.append('filters[slug][$eq]', normalizedSlug);
@@ -483,47 +563,72 @@ export const fetchPageBySlug = createAsyncThunk(
       pageParams.append('populate[seo][populate]', '*');
       pageParams.append('_t', timestamp.toString());
       const apiUrl = `${API_URL}/api/pages?${pageParams.toString()}`;
-      
+
       const pagesResponse = await axios.get(apiUrl);
-      
+
       let page = pagesResponse.data.data?.[0];
       const baseAttributes = page?.attributes || page;
       let pageDynamicZone = Array.isArray(baseAttributes?.dynamic_zone)
         ? [...baseAttributes.dynamic_zone]
         : [];
       if (pageDynamicZone.length > 0) {
-        const sliderComponentsWithMedia = await fetchSliderComponentsWithMedia(normalizedSlug || 'home', timestamp);
-        const testimonialComponentsWithMedia = await fetchTestimonialComponentsWithMedia(normalizedSlug || 'home', timestamp);
+        const sliderComponentsWithMedia = await fetchSliderComponentsWithMedia(
+          normalizedSlug || 'home',
+          timestamp
+        );
+        const testimonialComponentsWithMedia =
+          await fetchTestimonialComponentsWithMedia(
+            normalizedSlug || 'home',
+            timestamp
+          );
         const therapyIds = pageDynamicZone
-          .filter(component => component?.__component === 'dynamic-zone.therapy-section')
-          .flatMap(component => {
-            const list = Array.isArray(component?.Therapy) ? component.Therapy : component?.therapies;
+          .filter(
+            (component) =>
+              component?.__component === 'dynamic-zone.therapy-section'
+          )
+          .flatMap((component) => {
+            const list = Array.isArray(component?.Therapy)
+              ? component.Therapy
+              : component?.therapies;
             return Array.isArray(list) ? list : [];
           })
-          .map(item => item?.id)
+          .map((item) => item?.id)
           .filter((id, index, arr) => id && arr.indexOf(id) === index);
-        const therapiesMap = await fetchTherapiesWithMedia(therapyIds, timestamp);
+        const therapiesMap = await fetchTherapiesWithMedia(
+          therapyIds,
+          timestamp
+        );
 
         if (sliderComponentsWithMedia.length > 0) {
           pageDynamicZone = pageDynamicZone.map((component) => {
             if (component?.__component === 'dynamic-zone.slider-section') {
-              const replacement = sliderComponentsWithMedia.find(populated => populated?.id === component?.id)
-                || sliderComponentsWithMedia[0];
+              const replacement =
+                sliderComponentsWithMedia.find(
+                  (populated) => populated?.id === component?.id
+                ) || sliderComponentsWithMedia[0];
               return replacement || component;
             }
 
-            if (component?.__component === 'dynamic-zone.testimonial-slider' && testimonialComponentsWithMedia.length > 0) {
-              const replacement = testimonialComponentsWithMedia.find(populated => populated?.id === component?.id)
-                || testimonialComponentsWithMedia[0];
+            if (
+              component?.__component === 'dynamic-zone.testimonial-slider' &&
+              testimonialComponentsWithMedia.length > 0
+            ) {
+              const replacement =
+                testimonialComponentsWithMedia.find(
+                  (populated) => populated?.id === component?.id
+                ) || testimonialComponentsWithMedia[0];
               return replacement || component;
             }
 
-            if (component?.__component === 'dynamic-zone.therapy-section' && Object.keys(therapiesMap).length > 0) {
+            if (
+              component?.__component === 'dynamic-zone.therapy-section' &&
+              Object.keys(therapiesMap).length > 0
+            ) {
               const therapyArray = Array.isArray(component?.Therapy)
                 ? component.Therapy
                 : Array.isArray(component?.therapies)
-                  ? component.therapies
-                  : [];
+                ? component.therapies
+                : [];
 
               const enrichedTherapies = therapyArray.map((therapy) => {
                 const therapyId = therapy?.id;
@@ -560,31 +665,38 @@ export const fetchPageBySlug = createAsyncThunk(
           }
         }
       }
-      
+
       if (!page) {
         if (process.env.NODE_ENV === 'development') {
-          console.warn('fetchPageBySlug: No page found for slug:', normalizedSlug);
+          console.warn(
+            'fetchPageBySlug: No page found for slug:',
+            normalizedSlug
+          );
         }
-        return rejectWithValue({ status: 404, message: `Page with slug "${normalizedSlug}" not found` });
+        return rejectWithValue({
+          status: 404,
+          message: `Page with slug "${normalizedSlug}" not found`,
+        });
       }
-      
+
       if (process.env.NODE_ENV === 'development') {
         console.log('fetchPageBySlug: Page found!', {
           slug: normalizedSlug,
           pageId: page?.id,
           hasDynamicZone: !!page?.dynamic_zone,
-          componentCount: page?.dynamic_zone?.length || 0
+          componentCount: page?.dynamic_zone?.length || 0,
         });
       }
-      
+
       // Handle both Strapi v4 structure (attributes) and direct structure
       // API returns: { id, slug, dynamic_zone, seo, ... } directly
       const pageAttributes = page?.attributes || page;
-      
+
       // Return page data similar to fetchGlobalData structure
       // This structure works for ANY page created in Strapi
       return {
-        dynamicZone: pageAttributes?.dynamic_zone || pageAttributes?.dynamicZone || [],
+        dynamicZone:
+          pageAttributes?.dynamic_zone || pageAttributes?.dynamicZone || [],
         seo: pageAttributes?.seo || null,
         slug: pageAttributes?.slug || page?.slug || normalizedSlug,
         pageId: page?.id || null,
@@ -650,4 +762,3 @@ const globalSlice = createSlice({
 export const { clearPageData } = globalSlice.actions;
 
 export default globalSlice.reducer;
-
