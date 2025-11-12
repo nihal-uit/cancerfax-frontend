@@ -46,7 +46,7 @@ const SuperTitle = styled.p`
   line-height: 1.2em;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: #374151;
+  color: #36454F;
   margin: 0;
 `;
 
@@ -56,7 +56,7 @@ const MainTitle = styled.h1`
   font-size: 48px;
   line-height: 60px;
   letter-spacing: -0.02em;
-  color: #374151;
+  color: #36454F;
   margin: 0;
 
   @media (max-width: 1024px) {

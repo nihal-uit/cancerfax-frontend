@@ -55,7 +55,7 @@ const Header = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 40px;
-  margin-bottom: 40px;
+  margin-bottom: 70px;
   text-align: center;
   width: 100%;
   max-width: 889px;
@@ -64,109 +64,52 @@ const Header = styled.div`
   box-sizing: border-box;
   
   @media (max-width: 768px) {
-    margin-bottom: 32px;
+    margin-bottom: 40px;
     gap: 24px;
     max-width: 100%;
   }
 `;
 
 const Label = styled.p`
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  color: #374151;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  margin: 0;
-  
-  @media (max-width: 768px) {
-    font-size: 11px;
-    letter-spacing: 2px;
-  }
+  color: #36454F;
 `;
 
-const Title = styled.h2`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 48px;
-  font-weight: 600;
-  color: #374151;
-  line-height: 56px;
-  letter-spacing: -0.02em;
-  margin: 0;
-  max-width: 100%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  
-  @media (max-width: 1024px) {
-    font-size: 42px;
-    line-height: 50px;
-  }
-  
-  @media (max-width: 768px) {
-    font-size: 36px;
-    line-height: 44px;
-  }
-  
-  @media (max-width: 480px) {
-    font-size: 32px;
-    line-height: 40px;
-  }
+const Title = styled.h3`
+  color: #36454F;
 `;
 
 const Description = styled.p`
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  color: #374151;
-  line-height: 24px;
-  margin: 0;
-  max-width: 100%;
-  width: 100%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  
-  @media (max-width: 768px) {
-    font-size: 15px;
-    line-height: 22px;
-  }
-  
-  @media (max-width: 480px) {
-    font-size: 14px;
-    line-height: 20px;
-  }
+  color: #36454F;
 `;
 
 const ContentWrapper = styled.div`
   display: flex;
-  gap: 40px;
+  gap: 28px;
   align-items: flex-start;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
   box-sizing: border-box;
-  
-  @media (max-width: 1200px) {
-    gap: 32px;
-  }
-  
-  @media (max-width: 968px) {
+  @media (max-width: 991px) {
     flex-direction: column;
-    gap: 32px;
+    gap: 30px;
   }
 `;
 
 const MapWrapper = styled.div`
-  position: relative;
-  width: 713px;
+  position: sticky;
+  top: 150px;
+  flex: 0 0 713px;
   height: 511px;
-  border-radius: 24px;
+  border-radius: 28px;
   overflow: hidden;
   box-sizing: border-box;
   background: #FFFFFF;
-  border: 5px solid #FFFFFF;
+  border: 4px solid #FFFFFF;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  flex-shrink: 0;
-  
+  @media (max-width: 991px) {
+    position: relative;
+    top: 0;
+    flex: 0 0 auto;
+  }
   .leaflet-container {
     width: 100%;
     height: 100%;
@@ -191,32 +134,12 @@ const MapWrapper = styled.div`
   @media (max-width: 1200px) {
     width: 100%;
     max-width: 600px;
-    height: 450px;
   }
   
-  @media (max-width: 968px) {
+  @media (max-width: 9991px) {
     width: 100%;
-    height: 400px;
-  }
-  
-  @media (max-width: 768px) {
-    height: 350px;
-    border-radius: 20px;
-    border-width: 3px;
-    
-    .leaflet-container {
-      border-radius: 17px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    height: 300px;
-    border-radius: 16px;
-    border-width: 2px;
-    
-    .leaflet-container {
-      border-radius: 14px;
-    }
+    height: 480px;
+    max-width: 100%;
   }
 `;
 
@@ -224,16 +147,11 @@ const HospitalsList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0;
-  width: 460px;
-  flex-shrink: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
   box-sizing: border-box;
   
-  @media (max-width: 1200px) {
-    width: 100%;
-    max-width: 400px;
-  }
-  
-  @media (max-width: 968px) {
+  @media (max-width: 991px) {
     width: 100%;
     max-width: 100%;
   }
@@ -243,17 +161,16 @@ const HospitalCard = styled.button`
   font-family: 'Montserrat', sans-serif;
   padding: 40px;
   height: 128px;
-  background: ${props => props.$index === 0 ? '#FFFFFF' : '#FFFFFF'};
-  border: ${props => props.$index === 0 ? '2px solid #FF69B4' : 'none'};
-  border-bottom: ${props => props.$index === 0 ? 'none' : '1px solid #D4D4D4'};
-  border-radius: ${props => props.$index === 0 ? '24px' : '0'};
+  border-radius: 24px 24px 0 0;
   text-align: left;
   font-size: 20px;
-  font-weight: ${props => props.$index === 0 ? '600' : '500'};
-  color: #374151;
+  font-weight: 500;
+  color: #36454F;
   cursor: pointer;
   transition: all 0.3s ease;
   width: 100%;
+  border: 2px solid transparent;
+  border-bottom: 1px solid #C2CBD1;
   box-sizing: border-box;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -261,35 +178,18 @@ const HospitalCard = styled.button`
   position: relative;
   display: flex;
   align-items: center;
+  background: transparent;
   
-  &:hover {
-    background: ${props => props.$index === 0 ? '#FFFFFF' : '#FAFAFA'};
-  }
-  
-  &:first-child {
+  &.active {
     border-radius: 24px;
     border: 2px solid #FF69B4;
+    background: #FFFFFF;
+    font-weight: 600;
+    margin-top: -1px;
   }
   
   @media (max-width: 768px) {
     padding: 24px 20px;
-    height: auto;
-    min-height: 100px;
-    font-size: 18px;
-    
-    &:first-child {
-      border-radius: 20px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    padding: 20px 16px;
-    font-size: 16px;
-    min-height: 90px;
-    
-    &:first-child {
-      border-radius: 16px;
-    }
   }
 `;
 
@@ -309,77 +209,9 @@ const ButtonsWrapper = styled.div`
 `;
 
 const PrimaryButton = styled.button`
-  font-family: 'Montserrat', sans-serif;
-  padding: 16px 40px;
-  background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
-  color: #FFFFFF;
-  border: none;
-  border-radius: 50px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
-  white-space: nowrap;
-  
-  &:hover {
-    background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
-    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
-    transform: translateY(-2px);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-  
-  @media (max-width: 768px) {
-    width: 100%;
-    max-width: 350px;
-    padding: 14px 32px;
-    font-size: 15px;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 12px 28px;
-    font-size: 14px;
-  }
 `;
 
 const SecondaryButton = styled.button`
-  font-family: 'Montserrat', sans-serif;
-  padding: 16px 40px;
-  background: #36454F;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 50px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(54, 69, 79, 0.3);
-  white-space: nowrap;
-  
-  &:hover {
-    background: #2a363f;
-    box-shadow: 0 6px 20px rgba(54, 69, 79, 0.4);
-    transform: translateY(-2px);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-  
-  @media (max-width: 768px) {
-    width: 100%;
-    max-width: 350px;
-    padding: 14px 32px;
-    font-size: 15px;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 12px 28px;
-    font-size: 14px;
-  }
 `;
 
 // Component to handle map animations with smooth transitions
@@ -401,6 +233,7 @@ function MapController({ center, zoom }) {
 }
 
 const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
+
   const dispatch = useDispatch();
   // Get data from global Strapi API (no need for separate fetches)
   const globalData = useSelector(state => state.global?.data);
@@ -515,12 +348,12 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
   };
 
   return (
-    <section className='location_sec' id="location-network">
+    <section className='location_sec py-120' id="location-network">
       <Container className='containerWrapper'>
-        <Header>
-          <Label>{content.label || 'LOCATION'}</Label>
-          <Title>{content.title || 'Global Network of Leading Doctors & Partner Hospitals'}</Title>
-          <Description>
+        <Header className='commContent_wrap'>
+          <Label className='contentLabel'>{content.label || 'LOCATION'}</Label>
+          <Title className='title-3'>{content.title || 'Global Network of Leading Doctors & Partner Hospitals'}</Title>
+          <Description className='text-16'>
             {content.description || 'CancerFax collaborates with globally acclaimed oncologists and accredited medical institutions to ensure every patient receives scientifically guided, world-class treatment. From consultation to recovery, you\'re supported by the best minds in modern cancer care.'}
           </Description>
         </Header>
@@ -633,6 +466,7 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
           <HospitalsList>
             {hospitalsList.map((hospital, index) => (
               <HospitalCard
+                className={hospital.id === selectedHospitalId ? 'active' : ''}
                 key={hospital.id}
                 $index={index}
                 onClick={() => handleHospitalClick(hospital.id)}
@@ -645,10 +479,10 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
 
         {showButtons && (
           <ButtonsWrapper>
-            <PrimaryButton onClick={() => window.location.href = '/hospitals'}>
+            <PrimaryButton className='btn btn-pink-solid' onClick={() => window.location.href = '/hospitals'}>
               Explore Our Partner Hospitals
           </PrimaryButton>
-            <SecondaryButton onClick={() => window.location.href = '/hospitals'}>
+            <SecondaryButton className='btn btn-dark-solid' onClick={() => window.location.href = '/hospitals'}>
               Find the Right Doctors
           </SecondaryButton>
           </ButtonsWrapper>

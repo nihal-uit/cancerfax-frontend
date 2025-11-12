@@ -64,6 +64,7 @@ const Content = styled.div`
     padding: 60px 60px;
     align-items: center;
     text-align: center;
+    justify-content: flex-start;
   }
   
   @media (max-width: 480px) {
@@ -82,7 +83,15 @@ const Title = styled.h4`
   line-height: 48px !important;
   letter-spacing: -0.5px;
   margin: 0;
-`;
+  @media (max-width: 1200px) {
+  font-size: 32px !important;
+  line-height: 44px !important;
+  }
+  @media (max-width: 767px) {
+  font-size: 28px !important;
+  line-height: 38px !important;
+  }
+  `;
 
 const ExploreButton = styled.a`
     max-width: 178px;

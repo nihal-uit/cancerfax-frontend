@@ -46,7 +46,7 @@ const GradientLayer2 = styled.div`
   top: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom right, #0e7490 0%, #374151 100%);
+  background: linear-gradient(to bottom right, #0e7490 0%, #36454F 100%);
   z-index: 2;
 `;
 

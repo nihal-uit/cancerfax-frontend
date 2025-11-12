@@ -368,11 +368,13 @@ const AboutSection = ({ componentData, pageData }) => {
   return (
     <section id="about" className='about_sec py-120'>
       <div className='containerWrapper'>
+        <div className='commContent_wrap'>
+            <Label className='contentLabel'>{sectionLabel}</Label>
+        </div>
         <div className='about_row'>
           <LeftSection>
           <ScrollAnimationComponent animationVariants={slideLeft}>
             <div className='commContent_wrap about_left_content'>
-              <Label className='contentLabel'>{sectionLabel}</Label>
               <Title className='title-3'>{sectionTitle}</Title>
               <Description className='text-16'>
                 {sectionDescription}

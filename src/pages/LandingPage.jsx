@@ -22,10 +22,7 @@ const PageWrapper = styled.div`
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  position: relative;
-  overflow-x: hidden;
-  min-height: 100vh;
-  
+  position: relative;  
   @media (max-width: 1440px) {
     max-width: 100%;
   }

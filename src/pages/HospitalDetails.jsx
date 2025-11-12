@@ -237,7 +237,7 @@ const SidebarTitleWrapper = styled.div`
 const SidebarTitle = styled.h2`
   width: 100%;
   height: 16px;
-  color: #374151;
+  color: #36454F;
   font-size: 24px;
   font-weight: 600;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -285,7 +285,7 @@ const LocationIcon = styled.div`
   position: absolute;
   left: 1.75px;
   top: 1.75px;
-  background: #374151;
+  background: #36454F;
 `;
 
 const DirectionIcon = styled.div`
@@ -294,7 +294,7 @@ const DirectionIcon = styled.div`
   position: absolute;
   left: 5.24px;
   top: 1.53px;
-  background: #374151;
+  background: #36454F;
 `;
 
 const InfrastructureIcon = styled.div`
@@ -303,7 +303,7 @@ const InfrastructureIcon = styled.div`
   position: absolute;
   left: 1.12px;
   top: 1.13px;
-  background: #374151;
+  background: #36454F;
 `;
 
 const TeamIcon = styled.div`
@@ -312,7 +312,7 @@ const TeamIcon = styled.div`
   position: absolute;
   left: 1px;
   top: 4px;
-  background: #374151;
+  background: #36454F;
 `;
 
 const FacilitiesIcon = styled.div`
@@ -321,7 +321,7 @@ const FacilitiesIcon = styled.div`
   position: absolute;
   left: 1.31px;
   top: 3.05px;
-  background: #374151;
+  background: #36454F;
 `;
 
 const MediaIcon = styled.div`
@@ -330,12 +330,12 @@ const MediaIcon = styled.div`
   position: absolute;
   left: 1.31px;
   top: 3.05px;
-  background: #374151;
+  background: #36454F;
 `;
 
 const MenuItemText = styled.span`
   flex: 1;
-  color: #374151;
+  color: #36454F;
   font-size: 16px;
   font-weight: 400;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -357,7 +357,7 @@ const AboutContent = styled.div`
 
 const AboutTitle = styled.h1`
   width: 100%;
-  color: #374151;
+  color: #36454F;
   font-size: 48px;
   font-weight: 600;
   font-family: 'Montserrat', sans-serif;
@@ -381,7 +381,7 @@ const AboutTextSection = styled.div`
 
 const AboutText = styled.p`
   width: 100%;
-  color: #374151;
+  color: #36454F;
   font-size: 14px;
   font-weight: 400;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -389,7 +389,7 @@ const AboutText = styled.p`
 `;
 
 const AboutLink = styled.a`
-  color: #374151;
+  color: #36454F;
   text-decoration: underline;
   
   &:hover {
@@ -407,7 +407,7 @@ const AboutList = styled.div`
 
 const AboutListItem = styled.div`
   width: 100%;
-  color: #374151;
+  color: #36454F;
   font-size: 14px;
   font-weight: 400;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -424,7 +424,7 @@ const OverviewSection = styled.div`
 
 const OverviewTitle = styled.h3`
   width: 100%;
-  color: #374151;
+  color: #36454F;
   font-size: 20px;
   font-weight: 500;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -441,7 +441,7 @@ const OverviewContent = styled.div`
 
 const OverviewLabel = styled.div`
   width: 100%;
-  color: #374151;
+  color: #36454F;
   font-size: 14px;
   font-weight: 600;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -449,7 +449,7 @@ const OverviewLabel = styled.div`
 `;
 
 const OverviewText = styled.div`
-  color: #374151;
+  color: #36454F;
   font-size: 14px;
   font-weight: 400;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -466,7 +466,7 @@ const OverviewList = styled.div`
 
 const OverviewListItem = styled.div`
   width: 100%;
-  color: #374151;
+  color: #36454F;
   font-size: 14px;
   font-weight: 400;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -494,7 +494,7 @@ const StoriesHeader = styled.div`
 const StoriesLabel = styled.div`
   width: 1172px;
   height: 8px;
-  color: #374151;
+  color: #36454F;
   font-size: 12px;
   font-weight: 500;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -511,7 +511,7 @@ const StoriesTitleRow = styled.div`
 
 const StoriesTitle = styled.h2`
   flex: 1;
-  color: #374151;
+  color: #36454F;
   font-size: 48px;
   font-weight: 600;
   font-family: 'Montserrat', sans-serif;
@@ -520,7 +520,7 @@ const StoriesTitle = styled.h2`
 
 const StoriesDescription = styled.p`
   width: 524px;
-  color: #374151;
+  color: #36454F;
   font-size: 16px;
   font-weight: 400;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -680,7 +680,7 @@ const FlagshipLabel = styled.div`
   position: absolute;
   left: 618px;
   top: 120px;
-  color: #374151;
+  color: #36454F;
   font-size: 12px;
   font-weight: 500;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -693,7 +693,7 @@ const FlagshipTitle = styled.h2`
   left: 389px;
   top: 177px;
   text-align: center;
-  color: #374151;
+  color: #36454F;
   font-size: 48px;
   font-weight: 600;
   font-family: 'Montserrat', sans-serif;
@@ -706,7 +706,7 @@ const FlagshipDescription = styled.p`
   left: 302px;
   top: 255px;
   text-align: center;
-  color: #374151;
+  color: #36454F;
   font-size: 16px;
   font-weight: 400;
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -773,7 +773,7 @@ const CarouselArrowLeft = styled.div`
     justify-content: center;
     width: 100%;
     height: 100%;
-    color: #374151;
+    color: #36454F;
     font-size: 24px;
   }
 `;
@@ -802,7 +802,7 @@ const CarouselArrowRight = styled.div`
     justify-content: center;
     width: 100%;
     height: 100%;
-    color: #374151;
+    color: #36454F;
     font-size: 24px;
   }
 `;

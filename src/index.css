@@ -8,7 +8,6 @@
 
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
   max-width: 100vw;
 }
 
@@ -18,7 +17,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #F8F8F8;
-  overflow-x: hidden;
   max-width: 100vw;
   font-family: "Be Vietnam Pro", sans-serif;
 }
@@ -27,7 +25,6 @@ body {
   width: 100%;
   max-width: 100vw;
   min-height: 100vh;
-  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -548,12 +545,46 @@ a:focus-visible {
 .videoTestimonials_sec .videoTestimonials_wrap {
   position: relative;
   height: 527px;
+  z-index: 2;
+}
+
+.howItWork_sec,
+.videoTestimonials_sec {
+  background-color: #FFFFFF;
+  position: relative;
+}
+
+.videoTestimonials_sec::after {
+  content: '';
+  position: absolute;
+  background-color: #F8F8F8;
+  width: 100%;
+  height: 50%;
+  bottom: 0;
 }
 
 .resources_sec {
   position: relative;
+  overflow: hidden;
 }
 
 .location_sec {
   position: relative;
+  background-color: #F8F8F8;
+  overflow: visible;
+}
+
+/* .sticky-left {
+  position: fixed;
+  top: 0;
+  height: 100vh;
+  z-index: 10;
+} */
+
+/* Add class to the right side when scrolling */
+.sticky-right-end {
+  background-color: #f0f0f0; /* Change as needed */
+}
+section {
+  overflow-x: hidden;
 }
