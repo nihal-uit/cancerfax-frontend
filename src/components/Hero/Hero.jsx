@@ -37,30 +37,30 @@ const Hero = ({ componentData, pageData }) => {
   // Get hero data from global Strapi API (no need for separate fetches)
   const globalData = useSelector(state => state.global?.data);
   const globalLoading = useSelector(state => state.global?.loading);
-  
+
   // Legacy Redux state (kept for fallback, but not actively used)
   const { heroContent, survivorStory } = useSelector((state) => state.hero);
-  
+
   // Build background style with dynamic image - hooks must be called before early returns
   const [isMobile, setIsMobile] = useState(false);
-  
+
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
+
   // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
   // This check must come before computing any fallback data
   if (globalLoading) {
     return null;
   }
-  
+
   // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
   // If componentData is provided, use it directly; otherwise get from globalData
   const heroSection = componentData || getSectionData(globalData, 'hero');
-  
+
   // Debug: Log to check if global data exists
   if (globalData && !globalLoading) {
     console.log('Hero: globalData loaded', {
@@ -97,7 +97,7 @@ const Hero = ({ componentData, pageData }) => {
 
   // Get background image from global data or fallback
   // Don't use fallback image while loading
-  const backgroundImage = formatMedia(heroSection?.image) 
+  const backgroundImage = formatMedia(heroSection?.image)
     || formatMedia(heroContent?.backgroundImage)
     || (hideFallbacks ? null : 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920');
 
@@ -125,40 +125,45 @@ const Hero = ({ componentData, pageData }) => {
     <section className='homeHero_sec' style={backgroundStyle}>
       <div className='home-hero-banner'>
         <div className='ratio'>
-            <img src={backgroundImage} alt="" />
+          <img src={backgroundImage} alt="" />
         </div>
       </div>
       <div className='heroContent_wrap'>
         <ScrollAnimationComponent animationVariants={fadeIn}>
           <div className='containerWrapper'>
             <div className='commContent_wrap'>
-            <SurvivorLabel className='contentLabel'>
-              {storyData.label || 'SURVIVOR STORIES'}
-            </SurvivorLabel>
-            
-            <StoryTitle className='title-1'>
-              {storyData.title?.split('\n').map((line, i) => (
-                <React.Fragment key={i}>
-                  {i === 0 ? (
-                    <StoryTitleBold>{line}</StoryTitleBold>
-                  ) : (
-                    <StoryTitleRegular>{line}</StoryTitleRegular>
-                  )}
-                </React.Fragment>
-              )) || (
-                <>
-                  <StoryTitleBold>Andrea... A hero, a fighter..</StoryTitleBold>
-                  <StoryTitleRegular>Know her journey..</StoryTitleRegular>
-                </>
-              )}
-            </StoryTitle>
+              <SurvivorLabel className='contentLabel'>
+                {storyData.label || 'SURVIVOR STORIES'}
+              </SurvivorLabel>
 
-            <div className='storyCard_wrap'>
-              <StoryButton className='btn btn-pink-solid' as="a" href={storyData.buttonUrl || '#'}>{storyData.buttonText || "Read Andrea's Story"}</StoryButton>
-              <StoryDescription className='text-16'>
-                {storyData.description || 'CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, we guide you every step of the way.'}
-              </StoryDescription>
-            </div>
+              <StoryTitle className="title-1">
+                {(() => {
+                  if (!storyData.title) {
+                    return (
+                      <>
+                        <StoryTitleBold>Andrea... A hero, a fighter..</StoryTitleBold>
+                        <StoryTitleRegular>Know her journey..</StoryTitleRegular>
+                      </>
+                    );
+                  }
+
+                  const parts = storyData.title.split(/(?<=[.!?]+)\s(?!.*[.!?]+\s)/);
+
+                  return (
+                    <>
+                      <StoryTitleBold>{parts[0]}</StoryTitleBold>
+                      {parts[1] && <StoryTitleRegular>{parts[1]}</StoryTitleRegular>}
+                    </>
+                  );
+                })()}
+              </StoryTitle>
+
+              <div className='storyCard_wrap'>
+                <StoryButton className='btn btn-pink-solid' as="a" href={storyData.buttonUrl || '#'}>{storyData.buttonText || "Read Andrea's Story"}</StoryButton>
+                <StoryDescription className='text-16'>
+                  {storyData.description || 'CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, we guide you every step of the way.'}
+                </StoryDescription>
+              </div>
             </div>
           </div>
         </ScrollAnimationComponent>
