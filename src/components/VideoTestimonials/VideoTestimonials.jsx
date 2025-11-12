@@ -247,8 +247,14 @@ const PlayIcon = styled.svg`
 const VideoTestimonials = ({ componentData, pageData }) => {
   // Get data from global Strapi API (no need for separate fetches)
   const globalData = useSelector(state => state.global?.data);
+  const globalLoading = useSelector(state => state.global?.loading);
   // Legacy Redux state (kept for fallback, but not actively used)
   const { sectionContent } = useSelector((state) => state.videoTestimonials || {});
+
+  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
+  if (globalLoading) {
+    return null;
+  }
 
   // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
   // Note: VideoTestimonials uses 'dynamic-zone.testimonials' (different from regular Testimonials)
@@ -300,8 +306,7 @@ const VideoTestimonials = ({ componentData, pageData }) => {
     videoUrl: videoTestimonialsSection.videoUrl || videoTestimonialsSection.cta?.URL || fallbackSection.videoUrl,
   } : (sectionContent || fallbackSection);
 
-  // Debug: Log to check if global data exists (moved after section is defined)
-  const globalLoading = useSelector(state => state.global?.loading);
+  // Debug: Log to check if global data exists
   if (globalData && !globalLoading) {
     console.log('VideoTestimonials: globalData loaded', {
       hasDynamicZone: !!globalData.dynamicZone,

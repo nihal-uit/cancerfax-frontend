@@ -30,9 +30,6 @@ const HeaderWrapper = styled.div`
   }
 `;
 
-const CommContent = styled.div`
-`;
-
 const Header = styled.div`
   display: flex;
   flex-direction: column;
@@ -154,23 +151,28 @@ const ExploreButton = styled.button`
 const ClinicalTrials = ({ componentData, pageData }) => {
   // Get data from global Strapi API (no need for separate fetches)
   const globalData = useSelector(state => state.global?.data);
+  const globalLoading = useSelector(state => state.global?.loading);
   // Legacy Redux state (kept for fallback, but not actively used)
   const { sectionContent, trialTypes } = useSelector((state) => state.clinicalTrials);
   const carouselRef = useRef(null);
 
+  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
+  if (globalLoading) {
+    return null;
+  }
+
   // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
   const trialsSection = componentData || getSectionData(globalData, 'clinicalTrials');
   
-  // Extract trial types from Strapi (trialTypes array in trials-section component)
-  const strapiTrialTypes = trialsSection?.trialTypes || [];
+  // Extract clinical trials from Strapi (clinical_trials array in trials-section component)
+  const strapiClinicalTrials = trialsSection?.clinical_trials || trialsSection?.clinicalTrials || [];
   
   // Debug: Log to check if global data exists
-  const globalLoading = useSelector(state => state.global?.loading);
   if (globalData && !globalLoading) {
     console.log('ClinicalTrials: globalData loaded', {
       hasDynamicZone: !!globalData.dynamicZone,
       trialsSection: !!trialsSection,
-      strapiTrialTypesCount: strapiTrialTypes.length
+      strapiClinicalTrialsCount: strapiClinicalTrials.length
     });
   }
   
@@ -195,14 +197,14 @@ const ClinicalTrials = ({ componentData, pageData }) => {
     description: formatRichText(trialsSection.description) || trialsSection.description || defaultSectionContent.description,
   } : (sectionContent || defaultSectionContent);
   
-  // Extract and format trial types from Strapi - render ALL items dynamically
-  const formattedStrapiTrials = strapiTrialTypes.length > 0
-    ? strapiTrialTypes.map((trialType, index) => {
-        const trialData = trialType?.attributes || trialType;
+  // Extract and format clinical trials from Strapi - render ALL items dynamically
+  const formattedStrapiTrials = strapiClinicalTrials.length > 0
+    ? strapiClinicalTrials.map((trial, index) => {
+        const trialData = trial?.attributes || trial;
         return {
-          id: trialType?.id || index + 1,
-          title: trialData?.title || trialData?.name || '',
-          link: trialData?.link || trialData?.url || '#',
+          id: trial?.id || trial?.documentId || index + 1,
+          title: trialData?.name || trialData?.title || '',
+          link: trialData?.slug ? `/clinical-trials/${trialData.slug}` : '#',
           order: trialData?.order || index + 1,
         };
       }).filter(trial => trial.title) // Filter out empty items
@@ -225,12 +227,12 @@ const ClinicalTrials = ({ componentData, pageData }) => {
       <Container className='containerWrapper'>
         <ScrollAnimationComponent animationVariants={fadeIn}>
         <HeaderWrapper>
-        <CommContent className='commContent_wrap'>
+        <div className='commContent_wrap'>
           <Header>
             <Label className='contentLabel'>{content.label || 'GLOBAL BREAKTHROUGHS'}</Label>
             <Title className='title-3'>{content.title || 'Join advanced clinical trials from leading research centers'}</Title>
           </Header>
-        </CommContent>  
+        </div>  
           
         <NavigationContainer className='customNavigation'>
           <NavButton className='customPrev'>

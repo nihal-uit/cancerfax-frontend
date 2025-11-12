@@ -56,18 +56,12 @@ const resolveSlideBackgroundImage = (slide, section, defaultSlides, index) => {
   return fallbackImage;
 };
 
-const ShowcaseSection = styled.section`
-`;
-
 const SlideContainer = styled.div`
   transform: translateX(${props => -props.activeIndex * 100}%);
 `;
 
 const Slide = styled.div`
   background-image: ${props => props.backgroundImage ? `url('${props.backgroundImage}')` : 'none'}; 
-`;
-
-const ContentWrapper = styled.div`
 `;
 
 const Content = styled.div`
@@ -195,7 +189,7 @@ const ClinicalTrialsShowcase = ({ componentData, pageData }) => {
   // Legacy Redux state (kept for fallback, but not actively used)
   const { slides } = useSelector((state) => state.clinicalTrialsShowcase || { slides: [], loading: false });
 
-  // Default slides if no data from Strapi
+  // Default slides if no data from Strapi - only use if Strapi data doesn't exist
   const defaultSlides = hideFallbacks ? [] : [
     {
       label: 'TREATMENTS',
@@ -274,11 +268,6 @@ const ClinicalTrialsShowcase = ({ componentData, pageData }) => {
     setActiveIndex(index);
   };
 
-  const fadeIn = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0 },
-  };
-
   // IMPORTANT: All hooks must be called before any early returns
   // Auto-play slider
   useEffect(() => {
@@ -293,6 +282,11 @@ const ClinicalTrialsShowcase = ({ componentData, pageData }) => {
       return () => clearInterval(interval);
     }
   }, [slidesData.length, shouldHideShowcase]);
+
+  const fadeIn = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+  };
   
   // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
   // This check must come after all hooks
@@ -305,7 +299,7 @@ const ClinicalTrialsShowcase = ({ componentData, pageData }) => {
   }
 
   return (
-    <ShowcaseSection className='clinicalTrials_sec'>
+    <section className='clinicalTrials_sec'>
       <SlideContainer className='clinicalTrials_sliderWrap' activeIndex={activeIndex}>
         {slidesData.map((slide, index) => {
           const backgroundImage = slide.backgroundImage || resolveSlideBackgroundImage(slide, sliderSection, defaultSlides, index);
@@ -320,7 +314,7 @@ const ClinicalTrialsShowcase = ({ componentData, pageData }) => {
                 className='clinicalTrials_slide'
               >
               <div className='containerWrapper'>
-                <ContentWrapper className='clinicalTrials_slide_content'>
+                <div className='clinicalTrials_slide_content'>
                   <ScrollAnimationComponent animationVariants={fadeIn}>
                   <Content className='commContent_wrap content-gap-32'>
                     <Label className='contentLabel'>{slide.label || 'TREATMENTS'}</Label>
@@ -331,7 +325,7 @@ const ClinicalTrialsShowcase = ({ componentData, pageData }) => {
                     </Button>
                   </Content>
                   </ScrollAnimationComponent>
-                </ContentWrapper>
+                </div>
                   <NavigationContainer className='slider-nav-wrap'>
                     <NavButton
                       className='slider-nav-button'
@@ -374,7 +368,7 @@ const ClinicalTrialsShowcase = ({ componentData, pageData }) => {
             ))}
           </DotsContainer>
       )}
-    </ShowcaseSection>
+    </section>
   );
 };
 

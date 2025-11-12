@@ -15,6 +15,7 @@ export const fetchAboutContent = createAsyncThunk(
 
 const aboutSlice = createSlice({
   name: 'about',
+  
   initialState: {
     content: null,
     loading: false,

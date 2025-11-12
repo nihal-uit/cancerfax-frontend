@@ -49,8 +49,6 @@ const pinkIcon = new L.Icon({
   popupAnchor: [0, -25],
 });
 
-const Container = styled.div``;
-
 const Header = styled.div`
   display: flex;
   flex-direction: column;
@@ -241,12 +239,6 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
     (state) => state.locationNetwork
   );
 
-  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
-  // This check must come before computing any fallback data
-  if (globalLoading) {
-    return null;
-  }
-
   // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
   const locationSection =
     componentData || getSectionData(globalData, 'location');
@@ -260,27 +252,8 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
     ? locationSection.hospitals
     : [];
 
-  // Debug: Log to check if global data exists
-  if (globalData && !globalLoading) {
-    console.log('LocationNetwork: globalData loaded', {
-      hasDynamicZone: !!globalData.dynamicZone,
-      locationSection: !!locationSection,
-      strapiHospitalsCount: strapiHospitals.length,
-    });
-  }
-
-  // Fallback data for when Strapi data is not yet available
-  const defaultSectionContent = hideFallbacks
-    ? null
-    : {
-        label: 'LOCATION',
-        title: 'Global Network of Leading Doctors & Partner Hospitals',
-        description:
-          "CancerFax collaborates with globally acclaimed oncologists and accredited medical institutions to ensure every patient receives scientifically guided, world-class treatment. From consultation to recovery, you're supported by the best minds in modern cancer care.",
-        mapBackground: null,
-      };
-
-  // Default hospitals with real coordinates (approximate locations in China)
+  // IMPORTANT: All hooks must be called before any early returns
+  // Compute hospitalsList early so we can use it in useEffect
   const defaultHospitals = hideFallbacks
     ? []
     : [
@@ -328,25 +301,6 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
         },
       ];
 
-  // Map Strapi data: heading -> label, subheading -> title
-  const content = locationSection
-    ? {
-        label: locationSection.heading || defaultSectionContent?.label,
-        title: locationSection.subheading || defaultSectionContent?.title,
-        description:
-          formatRichText(locationSection.description) ||
-          locationSection.description ||
-          defaultSectionContent?.description,
-      }
-    : sectionContent || defaultSectionContent;
-  const shouldHideSection =
-    hideFallbacks && (!content?.label || !content?.title);
-
-  if (hideFallbacks && (!content?.label || !content?.title)) {
-    return null;
-  }
-
-  // Extract and format hospitals from Strapi - render ALL items dynamically
   const parseCoordinate = (value) => {
     if (value === null || value === undefined || value === '') return null;
     const numeric = typeof value === 'string' ? parseFloat(value) : value;
@@ -383,27 +337,94 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
               phone: hospitalData?.phone || fallbackHospital.phone || '',
             };
           })
-          .filter((hospital) => hospital.name) // Keep entries with at least a name
+          .filter((hospital) => hospital.name)
       : [];
 
-  // Use Strapi data or fallback - render ALL items from Strapi
   const hospitalsList =
     formattedStrapiHospitals.length > 0
       ? formattedStrapiHospitals
       : hospitals && hospitals.length > 0
       ? hospitals
       : defaultHospitals;
+
+  // Set first hospital as selected by default if no hospital is selected or selected hospital doesn't exist in list
+  // This hook MUST be called before any early returns
+  useEffect(() => {
+    if (hospitalsList.length > 0) {
+      const firstHospital = hospitalsList[0];
+      // Check if selectedHospitalId is invalid (null, undefined, 0) or if the selected hospital doesn't exist in the list
+      const selectedHospitalExists =
+        selectedHospitalId &&
+        hospitalsList.some((h) => h.id === selectedHospitalId);
+
+      if (firstHospital && firstHospital.id && !selectedHospitalExists) {
+        // Only dispatch if the current selectedHospitalId is different from the first hospital's ID
+        if (selectedHospitalId !== firstHospital.id) {
+          dispatch(setSelectedHospital(firstHospital.id));
+        }
+      }
+    }
+  }, [hospitalsList, selectedHospitalId, dispatch]);
+
+  // Debug: Log to check if global data exists
+  if (globalData && !globalLoading) {
+    console.log('LocationNetwork: globalData loaded', {
+      hasDynamicZone: !!globalData.dynamicZone,
+      locationSection: !!locationSection,
+      strapiHospitalsCount: strapiHospitals.length,
+    });
+  }
+
+  // Fallback data for when Strapi data is not yet available
+  const defaultSectionContent = hideFallbacks
+    ? null
+    : {
+        label: 'LOCATION',
+        title: 'Global Network of Leading Doctors & Partner Hospitals',
+        description:
+          "CancerFax collaborates with globally acclaimed oncologists and accredited medical institutions to ensure every patient receives scientifically guided, world-class treatment. From consultation to recovery, you're supported by the best minds in modern cancer care.",
+        mapBackground: null,
+      };
+
+  // Map Strapi data: heading -> label, subheading -> title
+  const content = locationSection
+    ? {
+        label: locationSection.heading || defaultSectionContent?.label,
+        title: locationSection.subheading || defaultSectionContent?.title,
+        description:
+          formatRichText(locationSection.description) ||
+          locationSection.description ||
+          defaultSectionContent?.description,
+      }
+    : sectionContent || defaultSectionContent;
+  const shouldHideSection =
+    hideFallbacks && (!content?.label || !content?.title);
+
+  if (hideFallbacks && (!content?.label || !content?.title)) {
+    return null;
+  }
+
   const shouldHideHospitals =
     hideFallbacks && (!hospitalsList || hospitalsList.length === 0);
 
-  // Find selected hospital
+  // Find selected hospital - default to first hospital if none selected or selected doesn't exist in list
+  const currentSelectedId =
+    selectedHospitalId && hospitalsList.some((h) => h.id === selectedHospitalId)
+      ? selectedHospitalId
+      : hospitalsList[0]?.id || null;
   const selectedHospital =
-    hospitalsList.find((h) => h.id === selectedHospitalId) || hospitalsList[0];
+    hospitalsList.find((h) => h.id === currentSelectedId) || hospitalsList[0];
+
+  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
+  // This check must come after all hooks
+  if (globalLoading) {
+    return null;
+  }
 
   // Get map center and zoom
   const mapCenter = [
-    selectedHospital.latitude || 35.0,
-    selectedHospital.longitude || 115.0,
+    selectedHospital?.latitude || 35.0,
+    selectedHospital?.longitude || 115.0,
   ];
   const mapZoom = 10;
 
@@ -417,7 +438,7 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
 
   return (
     <section className='location_sec py-120' id='location-network'>
-      <Container className='containerWrapper'>
+      <div className='containerWrapper'>
         <Header className='commContent_wrap'>
           <Label className='contentLabel'>{content.label || 'LOCATION'}</Label>
           <Title className='title-3'>
@@ -549,9 +570,9 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
           <HospitalsList>
             {hospitalsList.map((hospital, index) => (
               <HospitalCard
-                className={hospital.id === selectedHospitalId ? 'active' : ''}
+                className={hospital.id === currentSelectedId ? 'active' : ''}
                 key={hospital.id}
-                $isSelected={hospital.id === selectedHospital.id}
+                $isSelected={hospital.id === currentSelectedId}
                 onClick={() => handleHospitalClick(hospital.id)}
               >
                 {hospital.name}
@@ -576,7 +597,7 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
             </SecondaryButton>
           </ButtonsWrapper>
         )}
-      </Container>
+      </div>
     </section>
   );
 };

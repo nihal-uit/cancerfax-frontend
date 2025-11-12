@@ -346,15 +346,16 @@ const Resources = ({ componentData, pageData }) => {
 
   // Get data from global Strapi API (no need for separate fetches)
   const globalData = useSelector(state => state.global?.data);
+  const globalLoading = useSelector(state => state.global?.loading);
   // Legacy Redux state (kept for fallback, but not actively used)
   const { sectionContent, blogs: strapiBlogs } = useSelector((state) => state.resources);
   
+  // IMPORTANT: All hooks must be called before any early returns
   // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
   const resourcesSection = componentData || getSectionData(globalData, 'resources');
   const strapiResources = useMemo(() => resourcesSection?.resources || [], [resourcesSection]);
-  const globalLoading = useSelector(state => state.global?.loading);
 
-  // Fallback data
+  // Fallback data - must be defined before early return
   const fallbackBlogs = useMemo(() => [
     {
       id: 1,
@@ -552,6 +553,12 @@ const Resources = ({ componentData, pageData }) => {
       });
     }
   }, [globalData, globalLoading, resourcesSection, strapiResources, formattedStrapiResources, blogs, featuredBlog, smallBlogs, finalSmallBlogs, strapiBlogs]);
+
+  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
+  // This check must come after all hooks
+  if (globalLoading) {
+    return null;
+  }
 
   return (
     <section className='resources_sec py-120' id="resources">

@@ -5,16 +5,6 @@ import { getSectionData, formatMedia } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { hideFallbacks } from '../../utils/config';
 
-const HeroSection = styled.section`
-`;
-
-const HeroContent = styled.div`
-`;
-
-const StoryContainer = styled.div`
-`;
-const CommContent = styled.div`
-`;
 const SurvivorLabel = styled.div`
   color: ${props => props.theme.colors.white};
 `;
@@ -32,9 +22,6 @@ const StoryTitleBold = styled.span`
 const StoryTitleRegular = styled.span`
   font-weight: 400;
   display: block;
-`;
-
-const StoryCard = styled.div`
 `;
 
 const StoryButton = styled.button`
@@ -135,11 +122,16 @@ const Hero = ({ componentData, pageData }) => {
   };
 
   return (
-    <HeroSection className='homeHero_sec' style={backgroundStyle}>
-      <HeroContent className='heroContent_wrap'>
+    <section className='homeHero_sec' style={backgroundStyle}>
+      <div className='home-hero-banner'>
+        <div className='ratio'>
+            <img src={backgroundImage} alt="" />
+        </div>
+      </div>
+      <div className='heroContent_wrap'>
         <ScrollAnimationComponent animationVariants={fadeIn}>
-          <StoryContainer className='containerWrapper'>
-            <CommContent className='commContent_wrap'>
+          <div className='containerWrapper'>
+            <div className='commContent_wrap'>
             <SurvivorLabel className='contentLabel'>
               {storyData.label || 'SURVIVOR STORIES'}
             </SurvivorLabel>
@@ -161,17 +153,17 @@ const Hero = ({ componentData, pageData }) => {
               )}
             </StoryTitle>
 
-            <StoryCard className='storyCard_wrap'>
+            <div className='storyCard_wrap'>
               <StoryButton className='btn btn-pink-solid' as="a" href={storyData.buttonUrl || '#'}>{storyData.buttonText || "Read Andrea's Story"}</StoryButton>
               <StoryDescription className='text-16'>
                 {storyData.description || 'CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, we guide you every step of the way.'}
               </StoryDescription>
-            </StoryCard>
-            </CommContent>
-          </StoryContainer>
+            </div>
+            </div>
+          </div>
         </ScrollAnimationComponent>
-      </HeroContent>
-    </HeroSection>
+      </div>
+    </section>
   );
 };
 

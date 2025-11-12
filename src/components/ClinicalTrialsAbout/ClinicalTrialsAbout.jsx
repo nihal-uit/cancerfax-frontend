@@ -74,18 +74,24 @@ const ExploreButton = styled.a`
     }
 `;
 
-const ClinicalTrialsAbout = () => {
+const ClinicalTrialsAbout = ({ componentData, pageData }) => {
   // Get data from global Strapi API (no need for separate fetches)
   const globalData = useSelector(state => state.global?.data);
+  const globalLoading = useSelector(state => state.global?.loading);
   // Legacy Redux state (kept for fallback, but not actively used)
   const { sectionContent } = useSelector((state) => state.clinicalTrialsAbout);
 
+  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
+  if (globalLoading) {
+    return null;
+  }
+
+  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
   // Extract data from global Strapi response
   // ClinicalTrialsAbout might use statistics section or separate data
-  const statisticsSection = getSectionData(globalData, 'statistics');
+  const statisticsSection = componentData || getSectionData(globalData, 'statistics');
   
   // Debug: Log to check if global data exists
-  const globalLoading = useSelector(state => state.global?.loading);
   if (globalData && !globalLoading) {
     console.log('ClinicalTrialsAbout: globalData loaded', {
       hasDynamicZone: !!globalData.dynamicZone,

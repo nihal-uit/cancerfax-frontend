@@ -1,4 +1,8 @@
+import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { getSectionData, formatRichText } from '../../utils/strapiHelpers';
+import { hideFallbacks } from '../../utils/config';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 
 const Content = styled.div`
@@ -78,19 +82,61 @@ const slideLeft = {
   visible: { x: 0, opacity: 1 },
 };
 
-const Testimonials = () => {
+const Testimonials = ({ componentData, pageData }) => {
+  // Get data from global Strapi API
+  const globalData = useSelector((state) => state.global?.data);
+  const globalLoading = useSelector((state) => state.global?.loading);
+
+  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
+  if (globalLoading) {
+    return null;
+  }
+
+  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
+  const testimonialsSection = componentData || getSectionData(globalData, 'testimonial-slider');
+  const shouldHideMissingSection = hideFallbacks && !testimonialsSection;
+
+  // Extract survivor story from Strapi
+  const survivorStory = testimonialsSection?.survivor_story;
+  const storyText = survivorStory?.story 
+    ? formatRichText(survivorStory.story) || survivorStory.story
+    : null;
+  const authorName = survivorStory?.name || null;
+  const authorLocation = survivorStory?.location || null;
+  const authorText = authorName && authorLocation 
+    ? `- ${authorName}, ${authorLocation}`
+    : authorName 
+    ? `- ${authorName}`
+    : null;
+
+  // Fallback data - only use if Strapi data doesn't exist
+  const fallbackStory = hideFallbacks ? null : {
+    story: "After exhausting options at home, CancerFax connected me to a CAR-T trial in the US. Today, I'm in complete remission. Their team guided my entire journey, from medical coordination to travel logistics.",
+    author: "- Elena, Spain"
+  };
+
+  // Use Strapi data if available, otherwise fallback
+  const displayStory = storyText || fallbackStory?.story || '';
+  const displayAuthor = authorText || fallbackStory?.author || '';
+
+  const shouldHideContent = hideFallbacks && (!displayStory || !displayAuthor);
+
+  if (shouldHideMissingSection || shouldHideContent) {
+    return null;
+  }
+
   return (
     <section className='testimonials_single_sec py-120' id='testimonials' style={{backgroundImage: `url(${'../images/testimonial-img.jpg'})`}}>
       <div className='containerWrapper'>
         <div className='commContent_wrap z-2 position-relative'>
           <ScrollAnimationComponent animationVariants={slideLeft}>
             <Content>
-              <Label className='contentLabel'>Testimonials</Label>
+              <Label className='contentLabel'>{testimonialsSection?.heading || 'Testimonials'}</Label>
               <TestimonialsBox className='pb-4'>
                 <Quote className='title-4'>
-                  After exhausting options at home, CancerFax connected me to a CAR-T trial in the US. Today, I'm in complete remission. Their team guided my entire journey, from medical coordination to travel logistics.            
+                  {displayStory}
                 </Quote>
-                <Author>- Elena, Spain</Author>
+                <Author>{displayAuthor}</Author>
               </TestimonialsBox>
               
               <ReadButton className='btn btn-pink-solid mt-4' href={'#'}>

@@ -1,0 +1,832 @@
+{
+  "data": [
+    {
+      "id": 78,
+      "documentId": "uc9afxy2nhxtnk65aziod7g2",
+      "slug": "home",
+      "createdAt": "2025-11-01T06:46:32.313Z",
+      "updatedAt": "2025-11-11T14:04:32.531Z",
+      "publishedAt": "2025-11-11T14:04:32.702Z",
+      "locale": "en",
+      "dynamic_zone": [
+        {
+          "__component": "dynamic-zone.hero",
+          "id": 78,
+          "heading": "Survivor Stories",
+          "sub_heading": "Andrea... A hero, a fighter.. Know her journey..",
+          "description": "CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, we guide you every step of the way.",
+          "isActive": true,
+          "image": {
+            "id": 1,
+            "documentId": "zmsa53foow6z4qwmwn37n4s0",
+            "name": "55d54b50759b7d164802c39e0f48f35e0ba074bb.jpg",
+            "alternativeText": null,
+            "caption": null,
+            "width": 4096,
+            "height": 2424,
+            "formats": {
+              "large": {
+                "ext": ".jpg",
+                "url": "/uploads/large_55d54b50759b7d164802c39e0f48f35e0ba074bb_fff7ba1a53.jpg",
+                "hash": "large_55d54b50759b7d164802c39e0f48f35e0ba074bb_fff7ba1a53",
+                "mime": "image/jpeg",
+                "name": "large_55d54b50759b7d164802c39e0f48f35e0ba074bb.jpg",
+                "path": null,
+                "size": 40.08,
+                "width": 1000,
+                "height": 592,
+                "sizeInBytes": 40077
+              },
+              "small": {
+                "ext": ".jpg",
+                "url": "/uploads/small_55d54b50759b7d164802c39e0f48f35e0ba074bb_fff7ba1a53.jpg",
+                "hash": "small_55d54b50759b7d164802c39e0f48f35e0ba074bb_fff7ba1a53",
+                "mime": "image/jpeg",
+                "name": "small_55d54b50759b7d164802c39e0f48f35e0ba074bb.jpg",
+                "path": null,
+                "size": 14.42,
+                "width": 500,
+                "height": 296,
+                "sizeInBytes": 14424
+              },
+              "medium": {
+                "ext": ".jpg",
+                "url": "/uploads/medium_55d54b50759b7d164802c39e0f48f35e0ba074bb_fff7ba1a53.jpg",
+                "hash": "medium_55d54b50759b7d164802c39e0f48f35e0ba074bb_fff7ba1a53",
+                "mime": "image/jpeg",
+                "name": "medium_55d54b50759b7d164802c39e0f48f35e0ba074bb.jpg",
+                "path": null,
+                "size": 25.84,
+                "width": 750,
+                "height": 444,
+                "sizeInBytes": 25843
+              },
+              "thumbnail": {
+                "ext": ".jpg",
+                "url": "/uploads/thumbnail_55d54b50759b7d164802c39e0f48f35e0ba074bb_fff7ba1a53.jpg",
+                "hash": "thumbnail_55d54b50759b7d164802c39e0f48f35e0ba074bb_fff7ba1a53",
+                "mime": "image/jpeg",
+                "name": "thumbnail_55d54b50759b7d164802c39e0f48f35e0ba074bb.jpg",
+                "path": null,
+                "size": 5.46,
+                "width": 245,
+                "height": 145,
+                "sizeInBytes": 5459
+              }
+            },
+            "hash": "55d54b50759b7d164802c39e0f48f35e0ba074bb_fff7ba1a53",
+            "ext": ".jpg",
+            "mime": "image/jpeg",
+            "size": 689.36,
+            "url": "/uploads/55d54b50759b7d164802c39e0f48f35e0ba074bb_fff7ba1a53.jpg",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-11-01T06:51:01.624Z",
+            "updatedAt": "2025-11-01T06:51:01.624Z",
+            "publishedAt": "2025-11-01T06:51:01.625Z"
+          },
+          "CTAs": [
+            {
+              "id": 709,
+              "text": "Read Andrea's Story",
+              "URL": "/",
+              "target": "_blank",
+              "variant": "primary"
+            }
+          ]
+        },
+        {
+          "__component": "dynamic-zone.slider-section",
+          "id": 67,
+          "isActive": true,
+          "Slide": [
+            {
+              "id": 67,
+              "heading": "Treatments",
+              "subheading": "CancerFax's Role In Clinical Trial Advancements",
+              "description": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": "CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel",
+                      "type": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "__component": "dynamic-zone.about",
+          "id": 69,
+          "heading": "About CancerFax",
+          "sub_heading": "Global Reach. Personal Care. Proven Results.",
+          "content": "At CancerFax, we’re transforming the way patients discover and receive life-saving therapies, simplifying global care with science, technology, and trust. \nKnow more about Cancerfax",
+          "image_position": "right",
+          "isActive": true,
+          "CTAs": [
+            {
+              "id": 711,
+              "text": "Know more about Cancerfax",
+              "URL": "/",
+              "target": "_self",
+              "variant": "primary"
+            }
+          ],
+          "image": null,
+          "video": {
+            "id": 9,
+            "documentId": "dqhkps3baecvkftl6hoqki10",
+            "name": "7188419_Woman_Women_1920x1080.mp4",
+            "alternativeText": null,
+            "caption": null,
+            "width": null,
+            "height": null,
+            "formats": null,
+            "hash": "7188419_Woman_Women_1920x1080_ac445a2db1",
+            "ext": ".mp4",
+            "mime": "video/mp4",
+            "size": 21389.23,
+            "url": "/uploads/7188419_Woman_Women_1920x1080_ac445a2db1.mp4",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-11-01T17:55:46.799Z",
+            "updatedAt": "2025-11-03T08:30:25.205Z",
+            "publishedAt": "2025-11-01T17:55:46.800Z"
+          },
+          "statistic": [
+            {
+              "id": 265,
+              "label": "Patients guided globally",
+              "description": null,
+              "value": "10,000k+"
+            },
+            {
+              "id": 266,
+              "label": "Patient Satisfaction Rate",
+              "description": null,
+              "value": "98%"
+            },
+            {
+              "id": 267,
+              "label": "Clinical Trials Accessed",
+              "description": null,
+              "value": "250+ "
+            },
+            {
+              "id": 268,
+              "label": "Partner Hospitals Globally",
+              "description": null,
+              "value": "100+"
+            }
+          ]
+        },
+        {
+          "__component": "dynamic-zone.therapy-section",
+          "id": 67,
+          "heading": "Innovative Care",
+          "subheading": "Explore Breakthrough Therapies",
+          "description": "From revolutionary cell therapies to targeted immunotherapies, CancerFax helps you explore innovative options personalized to your diagnosis.",
+          "isActive": true,
+          "cta": null,
+          "therapies": [
+            {
+              "id": 2,
+              "documentId": "ubknhowoxipu8e82edm3pth2",
+              "name": "TIL Therapy",
+              "createdAt": "2025-11-01T17:56:28.974Z",
+              "updatedAt": "2025-11-01T17:56:28.974Z",
+              "publishedAt": "2025-11-01T17:56:28.989Z",
+              "slug": "therapy"
+            },
+            {
+              "id": 16,
+              "documentId": "rd2cwb8h26t72fn7jiqsaiy0",
+              "name": "Gene Therapy",
+              "createdAt": "2025-11-01T17:56:59.591Z",
+              "updatedAt": "2025-11-11T12:12:37.974Z",
+              "publishedAt": "2025-11-11T12:12:37.992Z",
+              "slug": "gene-therapy"
+            },
+            {
+              "id": 17,
+              "documentId": "jwmd83fwbxamumn2u267299f",
+              "name": "CAR T-Cell therapy clinical trials for Immune thrombocytopenia",
+              "createdAt": "2025-11-03T07:53:32.215Z",
+              "updatedAt": "2025-11-11T12:12:44.300Z",
+              "publishedAt": "2025-11-11T12:12:44.319Z",
+              "slug": "car-t-cell-therapy-clinical-trials-for-immune-thrombocytopenia"
+            }
+          ]
+        },
+        {
+          "__component": "dynamic-zone.testimonial-slider",
+          "id": 69,
+          "heading": "Testimonials",
+          "survivor_story": {
+            "id": 4,
+            "documentId": "nboj5wd0jiypg0dl1ecitmti",
+            "name": "Elena",
+            "createdAt": "2025-11-01T17:59:00.522Z",
+            "updatedAt": "2025-11-11T12:45:42.767Z",
+            "publishedAt": "2025-11-11T12:45:42.788Z",
+            "slug": "elena",
+            "story": [
+              {
+                "type": "paragraph",
+                "children": [
+                  {
+                    "text": "After exhausting options at home, CancerFax connected me to a CAR-T trial in the US. Today, I’m in complete remission. Their team guided my entire journey, from medical coordination to travel logistics.",
+                    "type": "text"
+                  }
+                ]
+              }
+            ],
+            "location": "Spain"
+          }
+        },
+        {
+          "__component": "dynamic-zone.statistics",
+          "id": 67,
+          "heading": "About CancerFax",
+          "sub_heading": "Connecting You to Global Trials",
+          "description": [
+            {
+              "type": "paragraph",
+              "children": [
+                {
+                  "text": "Discover and join advanced clinical trials from leading research centers worldwide. We connect patients with breakthrough treatments and innovative therapies beyond borders. Wherever you are, hope is within reach.",
+                  "type": "text"
+                }
+              ]
+            }
+          ],
+          "isActive": true,
+          "backgroundImage": {
+            "id": 8,
+            "documentId": "t9p8srgh8a41glnlhy98j3lk",
+            "name": "background.png",
+            "alternativeText": null,
+            "caption": null,
+            "width": 850,
+            "height": 836,
+            "formats": {
+              "small": {
+                "ext": ".png",
+                "url": "/uploads/small_background_54aa1fa10a.png",
+                "hash": "small_background_54aa1fa10a",
+                "mime": "image/png",
+                "name": "small_background.png",
+                "path": null,
+                "size": 15.51,
+                "width": 500,
+                "height": 492,
+                "sizeInBytes": 15511
+              },
+              "medium": {
+                "ext": ".png",
+                "url": "/uploads/medium_background_54aa1fa10a.png",
+                "hash": "medium_background_54aa1fa10a",
+                "mime": "image/png",
+                "name": "medium_background.png",
+                "path": null,
+                "size": 26.29,
+                "width": 750,
+                "height": 738,
+                "sizeInBytes": 26291
+              },
+              "thumbnail": {
+                "ext": ".png",
+                "url": "/uploads/thumbnail_background_54aa1fa10a.png",
+                "hash": "thumbnail_background_54aa1fa10a",
+                "mime": "image/png",
+                "name": "thumbnail_background.png",
+                "path": null,
+                "size": 4.34,
+                "width": 159,
+                "height": 156,
+                "sizeInBytes": 4343
+              }
+            },
+            "hash": "background_54aa1fa10a",
+            "ext": ".png",
+            "mime": "image/png",
+            "size": 4.83,
+            "url": "/uploads/background_54aa1fa10a.png",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-11-01T09:45:50.723Z",
+            "updatedAt": "2025-11-01T09:45:50.723Z",
+            "publishedAt": "2025-11-01T09:45:50.723Z"
+          },
+          "foregroundImage": {
+            "id": 3,
+            "documentId": "mia89yhkwtctsl5ijg6udig9",
+            "name": "33d7482b175ff7e7e490560135b0ac0cab7fe28d.png",
+            "alternativeText": null,
+            "caption": null,
+            "width": 2000,
+            "height": 2000,
+            "formats": {
+              "large": {
+                "ext": ".png",
+                "url": "/uploads/large_33d7482b175ff7e7e490560135b0ac0cab7fe28d_ca78373509.png",
+                "hash": "large_33d7482b175ff7e7e490560135b0ac0cab7fe28d_ca78373509",
+                "mime": "image/png",
+                "name": "large_33d7482b175ff7e7e490560135b0ac0cab7fe28d.png",
+                "path": null,
+                "size": 686.39,
+                "width": 1000,
+                "height": 1000,
+                "sizeInBytes": 686394
+              },
+              "small": {
+                "ext": ".png",
+                "url": "/uploads/small_33d7482b175ff7e7e490560135b0ac0cab7fe28d_ca78373509.png",
+                "hash": "small_33d7482b175ff7e7e490560135b0ac0cab7fe28d_ca78373509",
+                "mime": "image/png",
+                "name": "small_33d7482b175ff7e7e490560135b0ac0cab7fe28d.png",
+                "path": null,
+                "size": 193.86,
+                "width": 500,
+                "height": 500,
+                "sizeInBytes": 193855
+              },
+              "medium": {
+                "ext": ".png",
+                "url": "/uploads/medium_33d7482b175ff7e7e490560135b0ac0cab7fe28d_ca78373509.png",
+                "hash": "medium_33d7482b175ff7e7e490560135b0ac0cab7fe28d_ca78373509",
+                "mime": "image/png",
+                "name": "medium_33d7482b175ff7e7e490560135b0ac0cab7fe28d.png",
+                "path": null,
+                "size": 407.65,
+                "width": 750,
+                "height": 750,
+                "sizeInBytes": 407651
+              },
+              "thumbnail": {
+                "ext": ".png",
+                "url": "/uploads/thumbnail_33d7482b175ff7e7e490560135b0ac0cab7fe28d_ca78373509.png",
+                "hash": "thumbnail_33d7482b175ff7e7e490560135b0ac0cab7fe28d_ca78373509",
+                "mime": "image/png",
+                "name": "thumbnail_33d7482b175ff7e7e490560135b0ac0cab7fe28d.png",
+                "path": null,
+                "size": 24.9,
+                "width": 156,
+                "height": 156,
+                "sizeInBytes": 24900
+              }
+            },
+            "hash": "33d7482b175ff7e7e490560135b0ac0cab7fe28d_ca78373509",
+            "ext": ".png",
+            "mime": "image/png",
+            "size": 590.86,
+            "url": "/uploads/33d7482b175ff7e7e490560135b0ac0cab7fe28d_ca78373509.png",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-11-01T06:59:16.073Z",
+            "updatedAt": "2025-11-01T06:59:16.073Z",
+            "publishedAt": "2025-11-01T06:59:16.085Z"
+          },
+          "cta": {
+            "id": 703,
+            "text": "Explore All Ongoing Trials",
+            "URL": "/",
+            "target": "_self",
+            "variant": "primary"
+          }
+        },
+        {
+          "__component": "dynamic-zone.trials-section",
+          "id": 66,
+          "heading": "Global Breakthroughs",
+          "subheading": "Global Breakthroughs Join advanced clinical trials from leading research centers",
+          "isActive": true,
+          "clinical_trials": [
+            {
+              "id": 4,
+              "documentId": "hula4xefsa34jcalihsqbgb9",
+              "name": "Clinical trial for BALL CAR T-Cell therapy",
+              "slug": "clinical-trial-for-ball-car-t-cell-therapy",
+              "start_date": null,
+              "end_date": null,
+              "description": null,
+              "createdAt": "2025-11-01T17:59:45.287Z",
+              "updatedAt": "2025-11-01T17:59:45.287Z",
+              "publishedAt": "2025-11-01T17:59:45.298Z"
+            },
+            {
+              "id": 6,
+              "documentId": "kj5jm59ix32y7mhpqalyj1py",
+              "name": "test",
+              "slug": "clinical-trial",
+              "start_date": null,
+              "end_date": null,
+              "description": null,
+              "createdAt": "2025-11-11T12:40:29.002Z",
+              "updatedAt": "2025-11-11T12:40:29.002Z",
+              "publishedAt": "2025-11-11T12:40:29.014Z"
+            }
+          ]
+        },
+        {
+          "__component": "dynamic-zone.get-in-touch",
+          "id": 81,
+          "heading": "Get in Touch",
+          "subheading": "When Every Decision Matters, Start with the Right Guidance",
+          "description": "Our experts review your case, connect you to breakthrough therapies, and support you at every stage of your treatment journey.",
+          "backgroundColor": "#36454F",
+          "isActive": true,
+          "backgroundImage": {
+            "id": 4,
+            "documentId": "qq8eb7u3t0bgr1cdetbwtr2h",
+            "name": "7fcdf55bbe276c36202826624b3e713ce48780a0.png",
+            "alternativeText": null,
+            "caption": null,
+            "width": 4096,
+            "height": 3369,
+            "formats": {
+              "large": {
+                "ext": ".png",
+                "url": "/uploads/large_7fcdf55bbe276c36202826624b3e713ce48780a0_05ea698a8a.png",
+                "hash": "large_7fcdf55bbe276c36202826624b3e713ce48780a0_05ea698a8a",
+                "mime": "image/png",
+                "name": "large_7fcdf55bbe276c36202826624b3e713ce48780a0.png",
+                "path": null,
+                "size": 210.28,
+                "width": 1000,
+                "height": 823,
+                "sizeInBytes": 210282
+              },
+              "small": {
+                "ext": ".png",
+                "url": "/uploads/small_7fcdf55bbe276c36202826624b3e713ce48780a0_05ea698a8a.png",
+                "hash": "small_7fcdf55bbe276c36202826624b3e713ce48780a0_05ea698a8a",
+                "mime": "image/png",
+                "name": "small_7fcdf55bbe276c36202826624b3e713ce48780a0.png",
+                "path": null,
+                "size": 67.65,
+                "width": 500,
+                "height": 411,
+                "sizeInBytes": 67647
+              },
+              "medium": {
+                "ext": ".png",
+                "url": "/uploads/medium_7fcdf55bbe276c36202826624b3e713ce48780a0_05ea698a8a.png",
+                "hash": "medium_7fcdf55bbe276c36202826624b3e713ce48780a0_05ea698a8a",
+                "mime": "image/png",
+                "name": "medium_7fcdf55bbe276c36202826624b3e713ce48780a0.png",
+                "path": null,
+                "size": 130.71,
+                "width": 750,
+                "height": 617,
+                "sizeInBytes": 130713
+              },
+              "thumbnail": {
+                "ext": ".png",
+                "url": "/uploads/thumbnail_7fcdf55bbe276c36202826624b3e713ce48780a0_05ea698a8a.png",
+                "hash": "thumbnail_7fcdf55bbe276c36202826624b3e713ce48780a0_05ea698a8a",
+                "mime": "image/png",
+                "name": "thumbnail_7fcdf55bbe276c36202826624b3e713ce48780a0.png",
+                "path": null,
+                "size": 14.34,
+                "width": 190,
+                "height": 156,
+                "sizeInBytes": 14338
+              }
+            },
+            "hash": "7fcdf55bbe276c36202826624b3e713ce48780a0_05ea698a8a",
+            "ext": ".png",
+            "mime": "image/png",
+            "size": 517.83,
+            "url": "/uploads/7fcdf55bbe276c36202826624b3e713ce48780a0_05ea698a8a.png",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-11-01T07:00:53.262Z",
+            "updatedAt": "2025-11-01T07:00:53.262Z",
+            "publishedAt": "2025-11-01T07:00:53.262Z"
+          },
+          "cta": {
+            "id": 704,
+            "text": "Submit Reports For Expert Review",
+            "URL": "/",
+            "target": "_self",
+            "variant": "primary"
+          }
+        },
+        {
+          "__component": "dynamic-zone.location",
+          "id": 69,
+          "heading": "Location",
+          "subheading": "Global Network of Leading Doctors & Partner Hospitals",
+          "description": "CancerFax collaborates with globally acclaimed oncologists and accredited medical institutions to ensure every patient receives scientifically guided, world-class treatment. From consultation to recovery, you’re supported by the best minds in modern cancer care.",
+          "isActive": true,
+          "hospitals": [
+            {
+              "id": 12,
+              "documentId": "fv25967hl36fl0wv4of878du",
+              "createdAt": "2025-11-01T18:01:29.514Z",
+              "updatedAt": "2025-11-11T12:50:19.966Z",
+              "publishedAt": "2025-11-11T12:50:20.033Z",
+              "slug": "hospital",
+              "name": "Cancer Hospital, Chinese Academy of Medical Sciences, Beijing",
+              "isActive": true,
+              "description": null,
+              "email": null
+            },
+            {
+              "id": 4,
+              "documentId": "zkcogbg7xptxsot5fw9myvf1",
+              "createdAt": "2025-11-01T18:02:28.546Z",
+              "updatedAt": "2025-11-01T18:02:28.546Z",
+              "publishedAt": "2025-11-01T18:02:28.560Z",
+              "slug": "children-s-hospital-of-nanjing-medical-university-dpnjmu",
+              "name": "Children's Hospital of Nanjing Medical University (DPNJMU)",
+              "isActive": true,
+              "description": null,
+              "email": null
+            },
+            {
+              "id": 8,
+              "documentId": "s2u0hc63kbqaeu9dvzyrdmc4",
+              "createdAt": "2025-11-01T18:03:17.431Z",
+              "updatedAt": "2025-11-01T18:03:28.029Z",
+              "publishedAt": "2025-11-01T18:03:28.051Z",
+              "slug": "hong-kong-university-shenzhen-hospital",
+              "name": "Hong Kong University Shenzhen Hospital",
+              "isActive": true,
+              "description": null,
+              "email": null
+            },
+            {
+              "id": 10,
+              "documentId": "nvy4xfi5ey9bdv6uyxjj6zmc",
+              "createdAt": "2025-11-01T18:04:21.674Z",
+              "updatedAt": "2025-11-01T18:04:21.674Z",
+              "publishedAt": "2025-11-01T18:04:21.706Z",
+              "slug": "beijing-tiantan-hospital",
+              "name": "Beijing Tiantan Hospital",
+              "isActive": true,
+              "description": null,
+              "email": null
+            }
+          ],
+          "first": {
+            "id": 705,
+            "text": "Explore Our Partner Hospitals",
+            "URL": "/",
+            "target": "_self",
+            "variant": "primary"
+          },
+          "second": {
+            "id": 712,
+            "text": "Find the Right Doctors",
+            "URL": null,
+            "target": "_self",
+            "variant": "simple"
+          }
+        },
+        {
+          "__component": "dynamic-zone.testimonials",
+          "id": 69,
+          "heading": "Testimonials",
+          "sub_heading": "Watch Real Patient Stories in Our Video Testimonials",
+          "isActive": true,
+          "featuredVideo": {
+            "id": 6,
+            "documentId": "kpnts4ieum1jod4ajhrsfmfv",
+            "name": "a3a52a261b6aa061aba28eafe2878755820159a0.jpg",
+            "alternativeText": null,
+            "caption": null,
+            "width": 4096,
+            "height": 2731,
+            "formats": {
+              "large": {
+                "ext": ".jpg",
+                "url": "/uploads/large_a3a52a261b6aa061aba28eafe2878755820159a0_cb3c080739.jpg",
+                "hash": "large_a3a52a261b6aa061aba28eafe2878755820159a0_cb3c080739",
+                "mime": "image/jpeg",
+                "name": "large_a3a52a261b6aa061aba28eafe2878755820159a0.jpg",
+                "path": null,
+                "size": 71.16,
+                "width": 1000,
+                "height": 667,
+                "sizeInBytes": 71161
+              },
+              "small": {
+                "ext": ".jpg",
+                "url": "/uploads/small_a3a52a261b6aa061aba28eafe2878755820159a0_cb3c080739.jpg",
+                "hash": "small_a3a52a261b6aa061aba28eafe2878755820159a0_cb3c080739",
+                "mime": "image/jpeg",
+                "name": "small_a3a52a261b6aa061aba28eafe2878755820159a0.jpg",
+                "path": null,
+                "size": 25,
+                "width": 500,
+                "height": 333,
+                "sizeInBytes": 24998
+              },
+              "medium": {
+                "ext": ".jpg",
+                "url": "/uploads/medium_a3a52a261b6aa061aba28eafe2878755820159a0_cb3c080739.jpg",
+                "hash": "medium_a3a52a261b6aa061aba28eafe2878755820159a0_cb3c080739",
+                "mime": "image/jpeg",
+                "name": "medium_a3a52a261b6aa061aba28eafe2878755820159a0.jpg",
+                "path": null,
+                "size": 45.65,
+                "width": 750,
+                "height": 500,
+                "sizeInBytes": 45650
+              },
+              "thumbnail": {
+                "ext": ".jpg",
+                "url": "/uploads/thumbnail_a3a52a261b6aa061aba28eafe2878755820159a0_cb3c080739.jpg",
+                "hash": "thumbnail_a3a52a261b6aa061aba28eafe2878755820159a0_cb3c080739",
+                "mime": "image/jpeg",
+                "name": "thumbnail_a3a52a261b6aa061aba28eafe2878755820159a0.jpg",
+                "path": null,
+                "size": 8.1,
+                "width": 234,
+                "height": 156,
+                "sizeInBytes": 8095
+              }
+            },
+            "hash": "a3a52a261b6aa061aba28eafe2878755820159a0_cb3c080739",
+            "ext": ".jpg",
+            "mime": "image/jpeg",
+            "size": 593.24,
+            "url": "/uploads/a3a52a261b6aa061aba28eafe2878755820159a0_cb3c080739.jpg",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-11-01T07:08:28.330Z",
+            "updatedAt": "2025-11-11T12:12:17.164Z",
+            "publishedAt": "2025-11-01T07:08:28.330Z"
+          },
+          "cta": {
+            "id": 706,
+            "text": "View all Stories",
+            "URL": "/",
+            "target": "_self",
+            "variant": "primary"
+          }
+        },
+        {
+          "__component": "dynamic-zone.how-it-works",
+          "id": 71,
+          "heading": "How it works",
+          "sub_heading": "Your Journey to Better Cancer Care, Simplified",
+          "isActive": true,
+          "featuredImage": {
+            "id": 5,
+            "documentId": "fnnodaqq4bugs1wpc5qalbb1",
+            "name": "4a881bf335fddb578e10eadd818aefce3e531872.png",
+            "alternativeText": null,
+            "caption": null,
+            "width": 3338,
+            "height": 2224,
+            "formats": {
+              "large": {
+                "ext": ".png",
+                "url": "/uploads/large_4a881bf335fddb578e10eadd818aefce3e531872_9bd776bdac.png",
+                "hash": "large_4a881bf335fddb578e10eadd818aefce3e531872_9bd776bdac",
+                "mime": "image/png",
+                "name": "large_4a881bf335fddb578e10eadd818aefce3e531872.png",
+                "path": null,
+                "size": 1007.87,
+                "width": 1000,
+                "height": 666,
+                "sizeInBytes": 1007867
+              },
+              "small": {
+                "ext": ".png",
+                "url": "/uploads/small_4a881bf335fddb578e10eadd818aefce3e531872_9bd776bdac.png",
+                "hash": "small_4a881bf335fddb578e10eadd818aefce3e531872_9bd776bdac",
+                "mime": "image/png",
+                "name": "small_4a881bf335fddb578e10eadd818aefce3e531872.png",
+                "path": null,
+                "size": 275.91,
+                "width": 500,
+                "height": 333,
+                "sizeInBytes": 275911
+              },
+              "medium": {
+                "ext": ".png",
+                "url": "/uploads/medium_4a881bf335fddb578e10eadd818aefce3e531872_9bd776bdac.png",
+                "hash": "medium_4a881bf335fddb578e10eadd818aefce3e531872_9bd776bdac",
+                "mime": "image/png",
+                "name": "medium_4a881bf335fddb578e10eadd818aefce3e531872.png",
+                "path": null,
+                "size": 589.6,
+                "width": 750,
+                "height": 500,
+                "sizeInBytes": 589601
+              },
+              "thumbnail": {
+                "ext": ".png",
+                "url": "/uploads/thumbnail_4a881bf335fddb578e10eadd818aefce3e531872_9bd776bdac.png",
+                "hash": "thumbnail_4a881bf335fddb578e10eadd818aefce3e531872_9bd776bdac",
+                "mime": "image/png",
+                "name": "thumbnail_4a881bf335fddb578e10eadd818aefce3e531872.png",
+                "path": null,
+                "size": 70.54,
+                "width": 234,
+                "height": 156,
+                "sizeInBytes": 70541
+              }
+            },
+            "hash": "4a881bf335fddb578e10eadd818aefce3e531872_9bd776bdac",
+            "ext": ".png",
+            "mime": "image/png",
+            "size": 2234.33,
+            "url": "/uploads/4a881bf335fddb578e10eadd818aefce3e531872_9bd776bdac.png",
+            "previewUrl": null,
+            "provider": "local",
+            "provider_metadata": null,
+            "createdAt": "2025-11-01T07:04:18.304Z",
+            "updatedAt": "2025-11-01T07:04:18.304Z",
+            "publishedAt": "2025-11-01T07:04:18.305Z"
+          },
+          "cta": {
+            "id": 707,
+            "text": "Connect with our Experts",
+            "URL": "/",
+            "target": "_self",
+            "variant": "primary"
+          },
+          "steps": [
+            {
+              "order": 1,
+              "id": 343,
+              "title": "Share Your Medical Reports",
+              "description": " Upload your medical reports for quick evaluation."
+            },
+            {
+              "order": 2,
+              "id": 344,
+              "title": "Receive Expert Evaluation",
+              "description": " Get expert analysis to guide your treatment decisions."
+            },
+            {
+              "order": 3,
+              "id": 345,
+              "title": "Choose the Right Hospital or Trial ",
+              "description": "Select the best hospitals or trials that suit your needs."
+            },
+            {
+              "order": 4,
+              "id": 346,
+              "title": "Seamless Coordination ",
+              "description": "Enjoy smooth coordination with the healthcare providers globally."
+            },
+            {
+              "order": 5,
+              "id": 347,
+              "title": "Continuous Support",
+              "description": " Receive continuous support throughout your treatment journey. now"
+            }
+          ]
+        },
+        {
+          "__component": "dynamic-zone.resources",
+          "id": 73,
+          "heading": "Resources",
+          "subheading": "Explore the Latest Insights in Cancer Research",
+          "isActive": true,
+          "cta": {
+            "id": 708,
+            "text": "View all Insights",
+            "URL": "/",
+            "target": "_self",
+            "variant": "primary"
+          },
+          "resources": [
+            {
+              "id": 5,
+              "documentId": "oesdpibv7o3qjopapq9ux6dx",
+              "title": "Author name goes here Atezolizumab Plus Chemotherapy Improves Survival in Advanced-Stage Small-Cell Lung Cancer: Insights from the IMpower133 Study",
+              "createdAt": "2025-11-01T18:07:32.212Z",
+              "updatedAt": "2025-11-11T14:07:55.071Z",
+              "publishedAt": "2025-11-11T14:07:55.091Z",
+              "readTime": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "pageSize": 25,
+      "pageCount": 1,
+      "total": 1
+    }
+  }
+}
