@@ -6,7 +6,7 @@ export const navigationAPI = {
     const response = await api.get('/navigation?populate=*');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getLogo: async () => {
     const response = await api.get('/logo?populate=deep');
     return formatStrapiResponse(response.data.data);
@@ -29,7 +29,7 @@ export const heroAPI = {
     const response = await api.get('/hero-section?populate=*');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getSurvivorStory: async () => {
     const response = await api.get('/survivor-story?populate=*');
     return formatStrapiResponse(response.data.data);
@@ -50,7 +50,7 @@ export const innovativeCareAPI = {
     const response = await api.get('/innovative-care?populate=*');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getTherapies: async () => {
     const response = await api.get('/therapies?populate=*');
     return formatStrapiResponse(response.data.data);
@@ -63,9 +63,11 @@ export const testimonialsAPI = {
     const response = await api.get('/testimonials?populate=*');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getFeaturedTestimonial: async () => {
-    const response = await api.get('/testimonials?filters[featured][$eq]=true&populate=*');
+    const response = await api.get(
+      '/testimonials?filters[featured][$eq]=true&populate=*'
+    );
     const data = formatStrapiResponse(response.data.data);
     return Array.isArray(data) ? data[0] : data;
   },
@@ -77,7 +79,7 @@ export const clinicalTrialsAPI = {
     const response = await api.get('/clinical-trials-section?populate=*');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getTrialTypes: async () => {
     const response = await api.get('/trial-types?populate=*');
     return formatStrapiResponse(response.data.data);
@@ -90,7 +92,7 @@ export const howItWorksAPI = {
     const response = await api.get('/how-it-works?populate=*');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getSteps: async () => {
     const response = await api.get('/steps?populate=*&sort=order:asc');
     return formatStrapiResponse(response.data.data);
@@ -103,10 +105,12 @@ export const resourcesAPI = {
     const response = await api.get('/resources-section?populate=*');
     return formatStrapiResponse(response.data.data);
   },
-  
-  getBlogs: async (limit = 3) => {
-    const response = await api.get(`/resources?populate=*&pagination[limit]=${limit}&sort=publishedAt:desc`);
-    return response.data.data;
+
+  getBlogs: async ({ limit = 3, start = 0 } = {}) => {
+    const response = await api.get(
+      `/resources?filters[isActive][$eq]=true&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=publishedAt:desc`
+    );
+    return response.data;
   },
 
   getBlogById: async (id) => {
@@ -129,24 +133,28 @@ export const footerAPI = {
     const response = await api.get('/footer?populate=deep');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getContactInfo: async () => {
     const response = await api.get('/contact-infos?populate=*&sort=order:asc');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getSocialLinks: async () => {
     const response = await api.get('/social-links?populate=*&sort=order:asc');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getLocations: async () => {
-    const response = await api.get('/footer-locations?populate=*&sort=order:asc');
+    const response = await api.get(
+      '/footer-locations?populate=*&sort=order:asc'
+    );
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getLinkColumns: async () => {
-    const response = await api.get('/footer-link-columns?populate=deep&sort=order:asc');
+    const response = await api.get(
+      '/footer-link-columns?populate=deep&sort=order:asc'
+    );
     return formatStrapiResponse(response.data.data);
   },
 };
@@ -165,7 +173,7 @@ export const locationNetworkAPI = {
     const response = await api.get('/location-network-section?populate=deep');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getHospitals: async () => {
     const response = await api.get('/hospitals?populate=*&sort=order:asc');
     return formatStrapiResponse(response.data.data);
@@ -194,7 +202,7 @@ export const settingsAPI = {
     const response = await api.get('/general-setting?populate=*');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getSEOSettings: async () => {
     const response = await api.get('/seo-setting?populate=*');
     return formatStrapiResponse(response.data.data);
@@ -207,7 +215,7 @@ export const hospitalNetworkAPI = {
     const response = await api.get('/hospital-network-hero?populate=deep');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getHospitals: async () => {
     const response = await api.get('/hospitals?populate=deep&sort=order:asc');
     return formatStrapiResponse(response.data.data);
@@ -220,17 +228,17 @@ export const quickFindsAPI = {
     const response = await api.get('/quick-finds-section?populate=*');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getCountries: async () => {
     const response = await api.get('/countries?populate=*&sort=order:asc');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getSpecialties: async () => {
     const response = await api.get('/specialties?populate=*&sort=order:asc');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getTreatments: async () => {
     const response = await api.get('/treatments?populate=*&sort=order:asc');
     return formatStrapiResponse(response.data.data);
@@ -240,15 +248,19 @@ export const quickFindsAPI = {
 // Innovation & Insights API
 export const innovationInsightsAPI = {
   getSection: async () => {
-    const response = await api.get('/innovation-insights-section?populate=deep');
+    const response = await api.get(
+      '/innovation-insights-section?populate=deep'
+    );
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getImages: async () => {
-    const response = await api.get('/innovation-images?populate=*&sort=order:asc');
+    const response = await api.get(
+      '/innovation-images?populate=*&sort=order:asc'
+    );
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getStaticImages: async () => {
     const response = await api.get('/static-images?populate=*&sort=order:asc');
     return formatStrapiResponse(response.data.data);
@@ -261,10 +273,9 @@ export const keyFactorsAPI = {
     const response = await api.get('/key-factors-section?populate=deep');
     return formatStrapiResponse(response.data.data);
   },
-  
+
   getFactors: async () => {
     const response = await api.get('/key-factors?populate=*&sort=order:asc');
     return formatStrapiResponse(response.data.data);
   },
 };
-

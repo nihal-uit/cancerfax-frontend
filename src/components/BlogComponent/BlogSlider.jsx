@@ -5,6 +5,8 @@ import { Navigation, EffectFade } from "swiper/modules";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
 import "swiper/css";
 import "swiper/css/effect-fade";
+import { getMediaUrl } from "../../services/api";
+import NameAvatar from "../reusable/NameAvatar";
 
 const BlogSlider = ({ data, loading }) => {
   const fadeIn = {
@@ -55,12 +57,13 @@ const BlogSlider = ({ data, loading }) => {
     readTime: resource?.readTime || defaultBlogSliderContent[index % 2]?.readTime,
     author: {
       name: `${resource?.author?.firstName} ${resource?.author?.lastName ? resource?.author?.lastName : ''}` || defaultBlogSliderContent.author,
-      avatar: defaultBlogSliderContent[index % 2]?.author?.avatar,
+      avatar: getMediaUrl(resource?.author?.avatar) ?? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100',
     },
-    image: resource?.slug || defaultBlogSliderContent[index % 2]?.image,
-    tag: defaultBlogSliderContent[index % 2]?.tag,
-    buttonText: defaultBlogSliderContent[index % 2]?.buttonText,
-    buttonLink: defaultBlogSliderContent[index % 2]?.buttonLink,
+    image: getMediaUrl(resource?.featuredImage) ?? defaultBlogSliderContent[index % 2]?.image,
+    tags:  resource?.tags || defaultBlogSliderContent[index % 2]?.tag,
+    buttonText: "Know more",
+    buttonLink: `/resources/${resource?.documentId}`,
+    buttonTarget: '_self',
   })) : defaultBlogSliderContent;
 
   return (
@@ -87,7 +90,9 @@ const BlogSlider = ({ data, loading }) => {
                     <ScrollAnimationComponent animationVariants={fadeIn}>
                       <div className="commContent_wrap">
                         <SmallCardContent>
-                          <Tag>{slide.tag}</Tag>
+                          {slide.tags.map((tag, index) => (
+                            <Tag key={index}>{tag.name}</Tag>
+                          ))}
                           <AuthorInfo>
                             <AuthorAvatar>
                               <img src={slide.author.avatar} alt={slide.author.name}/>
@@ -99,7 +104,7 @@ const BlogSlider = ({ data, loading }) => {
                           {slide.title}
                         </h3>
                         <BlogMeta>{slide.publishedAt} | {slide.readTime} min read</BlogMeta>
-                        <a href={slide.buttonLink} className="btn btn-pink-solid">
+                        <a href={slide.buttonLink} className="btn btn-pink-solid" target={slide.buttonTarget}>
                           {slide.buttonText}
                         </a>
                       </div>

@@ -1,69 +1,66 @@
-import React, { useMemo } from "react";
-import styled from "styled-components";
-import { getMediaUrl } from "../../services/api";
-import { formatDate } from "../../utils/strapiHelpers";
-import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAnimationComponent";
+import React, { useMemo } from 'react';
+import styled from 'styled-components';
+import { getMediaUrl } from '../../services/api';
+import { formatDate } from '../../utils/strapiHelpers';
+import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 
-const DEFAULT_AVATAR = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100";
+const DEFAULT_AVATAR =
+  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100';
 
 const fallbackBlogs = [
   {
     id: 1,
     title:
-      "Atezolizumab Plus Chemotherapy Improves Survival in Advanced-Stage Small-Cell Lung Cancer: Insights from the IMpower133 Study",
-    author: { name: "Author name goes here", avatar: null },
-    publishedAt: "May 27, 2024",
-    readTime: "7",
-    category: "Research",
-    image:
-      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800",
+      'Atezolizumab Plus Chemotherapy Improves Survival in Advanced-Stage Small-Cell Lung Cancer: Insights from the IMpower133 Study',
+    author: { name: 'Author name goes here', avatar: null },
+    publishedAt: 'May 27, 2024',
+    readTime: '7',
+    category: 'Research',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800',
     featured: true,
   },
   {
     id: 2,
     title:
-      "Darolutamide is approved by the USFDA for metastatic castration-sensitive prostate cancer",
-    author: { name: "Author name goes here", avatar: null },
-    publishedAt: "May 27, 2024",
-    readTime: "7",
-    category: "Research",
-    image:
-      "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400",
+      'Darolutamide is approved by the USFDA for metastatic castration-sensitive prostate cancer',
+    author: { name: 'Author name goes here', avatar: null },
+    publishedAt: 'May 27, 2024',
+    readTime: '7',
+    category: 'Research',
+    image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400',
   },
   {
     id: 3,
     title:
-      "Taletrectinib is approved by the USFDA for ROS1-positive non-small cell lung cancer",
-    author: { name: "Author name goes here", avatar: null },
-    publishedAt: "May 27, 2024",
-    readTime: "7",
-    category: "Research",
-    image:
-      "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400",
+      'Taletrectinib is approved by the USFDA for ROS1-positive non-small cell lung cancer',
+    author: { name: 'Author name goes here', avatar: null },
+    publishedAt: 'May 27, 2024',
+    readTime: '7',
+    category: 'Research',
+    image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400',
   },
   {
     id: 4,
     title:
-      "Neoadjuvant and adjuvant pembrolizumab is approved by the USFDA for resectable locally adv...",
-    author: { name: "Author name goes here", avatar: null },
-    publishedAt: "May 27, 2024",
-    readTime: "7",
-    category: "Research",
-    image:
-      "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=400",
+      'Neoadjuvant and adjuvant pembrolizumab is approved by the USFDA for resectable locally adv...',
+    author: { name: 'Author name goes here', avatar: null },
+    publishedAt: 'May 27, 2024',
+    readTime: '7',
+    category: 'Research',
+    image: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=400',
   },
 ];
 
 const fallbackSection = {
-  label: "RESOURCES",
-  title: "Explore the Latest Insights in Cancer Research",
-  viewAllButtonText: "View all Insights",
-  viewAllButtonUrl: "/blog",
+  label: 'RESOURCES',
+  title: 'Explore the Latest Insights in Cancer Research',
+  viewAllButtonText: 'View all Insights',
+  viewAllButtonUrl: '/blog',
 };
 
 const buildAuthorName = (author) => {
-  if (!author) return "Author";
-  return [author.firstName, author.lastName].filter(Boolean).join(" ");
+  if (!author) return 'Author';
+  return [author.firstName, author.lastName].filter(Boolean).join(' ');
 };
 
 const buildImageUrl = (img, getMediaUrl) => {
@@ -82,7 +79,9 @@ const BlogSmallCard = ({ blog, getMediaUrl }) => {
       <SmallCard key={blog.id}>
         <SmallImage>
           <img src={img} alt={blog.title} />
-          <CategoryBadge>{blog.category ? blog.category : 'Research'}</CategoryBadge>
+          <CategoryBadge>
+            {blog.category ? blog.category : 'Research'}
+          </CategoryBadge>
         </SmallImage>
 
         <SmallCardContent>
@@ -115,7 +114,9 @@ const FeaturedBlogCard = ({ blog, getMediaUrl }) => {
     <FeaturedCard>
       <FeaturedImage>
         <img src={img ? img : fallbackBlogs[0].image} alt='blog image' />
-          <CategoryBadge className="lg-badge">{blog.category ? blog.category : 'Research'}</CategoryBadge>
+        <CategoryBadge className='lg-badge'>
+          {blog.category ? blog.category : 'Research'}
+        </CategoryBadge>
       </FeaturedImage>
 
       <FeaturedContentCard>
@@ -144,49 +145,43 @@ const ResourcesComponent = ({ componentData, loading }) => {
       label: data.heading || fallbackSection.label,
       title: data.subHeading || fallbackSection.title,
 
-      viewAllButtonText:
-        data.cta?.text || fallbackSection.viewAllButtonText,
-      viewAllButtonUrl:
-        data.cta?.URL || fallbackSection.viewAllButtonUrl,
-      viewAllButtonTarget:
-        data.cta?.target || "_self",
+      viewAllButtonText: data.cta?.text || fallbackSection.viewAllButtonText,
+      viewAllButtonUrl: data.cta?.URL || fallbackSection.viewAllButtonUrl,
+      viewAllButtonTarget: data.cta?.target || '_self',
 
       resources:
-        (Array.isArray(data.resources) && data.resources.length > 0)
+        Array.isArray(data.resources) && data.resources.length > 0
           ? data.resources
           : fallbackBlogs,
     };
   }, [componentData]);
-
 
   // Always guaranteed to have at least fallback data
   const resources = section.resources;
   const featuredBlog = resources[0] || fallbackBlogs[0];
   const smallBlogs = resources.slice(1);
 
-
   return (
     <ScrollAnimationComponent animationVariants={fadeIn}>
-      <HeaderSection className="commContent_wrap">
+      <HeaderSection className='commContent_wrap'>
         <HeaderContent>
-          <Label className="contentLabel">
+          <Label className='contentLabel'>
             {section.label || fallbackSection.label}
           </Label>
 
-          <Title className="title-3">
+          <Title className='title-3'>
             {section.title || fallbackSection.title}
           </Title>
         </HeaderContent>
 
         <ViewAllButton
-          className="btn btn-pink-solid"
+          className='btn btn-pink-solid'
           href={section.viewAllButtonUrl || fallbackSection.viewAllButtonUrl}
-          target={section.viewAllButtonTarget || "_self"}
+          target={section.viewAllButtonTarget || '_self'}
         >
           {section.viewAllButtonText || fallbackSection.viewAllButtonText}
         </ViewAllButton>
       </HeaderSection>
-
 
       <BlogsGrid>
         {/* Featured Large Card */}
@@ -199,24 +194,25 @@ const ResourcesComponent = ({ componentData, loading }) => {
           {smallBlogs.length > 0
             ? smallBlogs.map((blog) => (
                 <BlogSmallCard
-                  key={blog?.id || blog.title}  
+                  key={blog?.id || blog.title}
                   blog={blog}
                   getMediaUrl={getMediaUrl}
                 />
               ))
-            : fallbackBlogs.slice(1).map((blog) => (
-                <BlogSmallCard
-                  key={blog.id}
-                  blog={blog}
-                  getMediaUrl={getMediaUrl}
-                />
-              ))}
+            : fallbackBlogs
+                .slice(1)
+                .map((blog) => (
+                  <BlogSmallCard
+                    key={blog.id}
+                    blog={blog}
+                    getMediaUrl={getMediaUrl}
+                  />
+                ))}
         </SmallCardsColumn>
       </BlogsGrid>
     </ScrollAnimationComponent>
   );
 };
-
 
 const fadeIn = {
   hidden: { opacity: 0, y: 50 },
@@ -229,7 +225,7 @@ const HeaderSection = styled.div`
   align-items: flex-end;
   margin-bottom: 60px;
   gap: 40px;
-  
+
   @media (max-width: 1024px) {
     flex-direction: column;
     align-items: flex-start;
@@ -277,7 +273,7 @@ const BlogsGrid = styled.div`
     grid-template-columns: 420px 1fr;
     gap: 24px;
   }
-  
+
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -327,8 +323,8 @@ const SmallCardsColumn = styled.div`
   width: 100%;
 
   /* Dynamic: Scrollable if many items, preserves all styles */
-  max-height: ${(props) => (props.$hasManyItems ? "800px" : "auto")};
-  overflow-y: ${(props) => (props.$hasManyItems ? "auto" : "visible")};
+  max-height: ${(props) => (props.$hasManyItems ? '800px' : 'auto')};
+  overflow-y: ${(props) => (props.$hasManyItems ? 'auto' : 'visible')};
 
   /* Preserve scrollbar styling */
   &::-webkit-scrollbar {
@@ -348,7 +344,7 @@ const SmallCardsColumn = styled.div`
       background: #555;
     }
   }
-  
+
   @media (max-width: 1024px) {
     gap: 24px;
   }
@@ -490,7 +486,7 @@ const AuthorAvatar = styled.div`
 `;
 
 const AuthorName = styled.p`
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
   color: #36454f;
@@ -498,7 +494,7 @@ const AuthorName = styled.p`
 `;
 
 const BlogTitle = styled.h5`
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 24px;
   font-weight: 400;
   color: #36454f;
@@ -518,7 +514,7 @@ const BlogTitle = styled.h5`
 `;
 
 const SmallCardTitle = styled.h3`
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 20px;
   font-weight: 400;
   color: #36454f;
@@ -539,7 +535,7 @@ const SmallCardTitle = styled.h3`
 `;
 
 const BlogMeta = styled.p`
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
   color: #8c8282;

@@ -87,7 +87,7 @@ const BlogGrid = ({ data, loading }) => {
     description: defaultBlog[index % 3].description,
     author: { 
       name: `${blog?.author?.firstName} ${blog?.author?.lastName ? blog?.author?.lastName : ''}` || defaultBlog[index % 3].author.name, 
-      avatar: defaultBlog[index % 3].author.avatar,
+      avatar: blog?.author?.avatar || null,
     },
     publishedAt: formatDate(blog?.publishedAt),
     readTime: blog?.readTime,
@@ -124,10 +124,18 @@ const BlogGrid = ({ data, loading }) => {
                 </div>            
                 <AuthorInfo>
                   <AuthorAvatar>
-                    <img 
-                      src={blog.author.avatar} 
-                      alt={blog.author.name || 'Author'} 
-                    />
+                    {blog.author.avatar ? (
+                      <img 
+                        src={blog.author.avatar} 
+                        alt={blog.author.name || 'Author'} 
+                      />
+                    ) : (
+                      <InitialDisplay>
+                        {blog.author.name && blog.author.name.trim().length > 0
+                          ? blog.author.name.trim().charAt(0).toUpperCase()
+                          : '?'}
+                      </InitialDisplay>
+                    )}
                   </AuthorAvatar>
                   <div>
                     <AuthorName>{blog.author.name}</AuthorName>
@@ -236,12 +244,22 @@ const AuthorAvatar = styled.div`
   background: #E5E7EB;
   overflow: hidden;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
+`;
+
+const InitialDisplay = styled.span`
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #36454F;
 `;
 
 const AuthorName = styled.p`

@@ -8,17 +8,23 @@ export const fetchResourcesSection = createAsyncThunk(
       const data = await resourcesAPI.getResourcesSection();
       return data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Failed to fetch resources section');
+      return rejectWithValue(
+        error.response?.data || 'Failed to fetch resources section'
+      );
     }
   }
 );
 
 export const fetchBlogs = createAsyncThunk(
   'resources/fetchBlogs',
-  async (limit = 3, { rejectWithValue }) => {
+  async ({ limit = 3, start = 0 } = {}, { rejectWithValue }) => {
     try {
-      const data = await resourcesAPI.getBlogs(limit);
-      return data;
+      const response = await resourcesAPI.getBlogs({ limit, start });
+      return {
+        data: response.data,
+        meta: response.meta,
+        start,
+      };
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch blogs');
     }
@@ -44,6 +50,9 @@ const resourcesSlice = createSlice({
   initialState: {
     sectionContent: null,
     blogs: [],
+    blogsMeta: null,
+    blogsHasMore: true,
+    blogsLoading: false,
     singleBlog: null,
     loading: false,
     error: null,
@@ -63,8 +72,35 @@ const resourcesSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(fetchBlogs.pending, (state) => {
+        state.blogsLoading = true;
+        state.error = null;
+      })
       .addCase(fetchBlogs.fulfilled, (state, action) => {
-        state.blogs = action.payload;
+        const { data, meta, start } = action.payload;
+        if (start === 0) {
+          state.blogs = data;
+        } else {
+          const existingIds = new Set(
+            state.blogs.map((blog) => blog?.documentId || blog?.id)
+          );
+          const newItems = data.filter((blog) => {
+            const identifier = blog?.documentId || blog?.id;
+            return identifier ? !existingIds.has(identifier) : true;
+          });
+          state.blogs = [...state.blogs, ...newItems];
+        }
+        state.blogsMeta = meta;
+        const total = meta?.pagination?.total;
+        state.blogsHasMore =
+          typeof total === 'number'
+            ? state.blogs.length < total
+            : data.length > 0;
+        state.blogsLoading = false;
+      })
+      .addCase(fetchBlogs.rejected, (state, action) => {
+        state.blogsLoading = false;
+        state.error = action.payload;
       })
       .addCase(fetchBlogById.pending, (state) => {
         state.loading = true;
@@ -83,31 +119,3 @@ const resourcesSlice = createSlice({
 });
 
 export default resourcesSlice.reducer;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
