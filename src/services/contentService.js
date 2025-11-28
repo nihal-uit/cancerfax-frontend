@@ -105,8 +105,13 @@ export const resourcesAPI = {
   },
   
   getBlogs: async (limit = 3) => {
-    const response = await api.get(`/blogs?populate=*&pagination[limit]=${limit}&sort=publishedAt:desc`);
-    return formatStrapiResponse(response.data.data);
+    const response = await api.get(`/resources?populate=*&pagination[limit]=${limit}&sort=publishedAt:desc`);
+    return response.data.data;
+  },
+
+  getBlogById: async (id) => {
+    const response = await api.get(`/resources/${id}?populate=all`);
+    return response.data.data;
   },
 };
 

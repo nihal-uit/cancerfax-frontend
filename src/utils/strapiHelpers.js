@@ -40,6 +40,39 @@ export const getSectionData = (globalData, sectionKey) => {
     'resources': 'dynamic-zone.resources',
     'clinicalTrials': 'dynamic-zone.trials-section',
     'statistics': 'dynamic-zone.statistics',
+    'doctorsHero': 'doctor-listing.hero-section',
+    'doctorsSlider': 'doctor-listing.slider-section',
+    'doctorsQuickFinds': 'doctor-listing.quick-links-section',
+    'doctorsInnovationInsights': 'doctor-listing.innovation-insights-section',
+    'hospitalHero': 'hospital-listing.hero-section',
+    'hospitalTestimonials':'hospital-listing.testimonial-section',
+    'hospitalSlider': 'hospital-listing.slider-section',
+    'hospitalQuickFinds': 'hospital-listing.quick-links-section',
+    'hospitalKeyFactors': 'hospital-listing.key-factors-section',
+    'hospitalInnovationInsights': 'hospital-listing.innovation-insights-section',
+    'blogHero': 'resource-listing.hero-section',
+    'blogSlider': 'resource-listing.slider-section',
+    'blogKnowledgeChest': 'resource-listing.knowledge-chest-section',
+    'blogSubscribe': 'resource-listing.subscribe-section',
+    'drugHero': 'drug-listing.hero-section',
+    'drugSlider': 'drug-listing.slider-section',
+    'drugKnowledgeChest': 'drug-listing.knowledge-chest-section',
+    'drugSupport': 'drug-listing.supporting-section',
+    'treatmentHero': 'treatment.hero-section',
+    'treatmentSlider': 'treatment.slider-section',
+    'treatmentHowItWorks': 'treatment.how-it-works-section',
+    'treatmentWhyOpt': 'treatment.why-section',
+    'treatmentEvidance': 'treatment.evidance-section',
+    'treatmentJourney': 'treatment.journey-section',
+    'treatmentIsForYou': 'treatment.is-for-you-section',
+    'treatmentTestimonials': 'treatment.testimonial-section',
+    'treatmentInnovativeCare': 'treatment.treatment-different-section',
+    'treatmentGetInTouch': 'treatment.get-in-touch',
+    'treatmentRisk': 'treatment.treatment-risk-section',
+    'treatmentCost': 'treatment.treatment-cost-section',
+    'treatmentWhatWeDo': 'treatment.treatment-we-do-therapy',
+    'treatmentFAQ': 'treatment.faq-section',
+    'treatmentResources': 'treatment.resources-section',
   };
   
   const componentType = componentTypeMap[sectionKey];
@@ -72,6 +105,8 @@ export const getCollectionData = (globalData, collectionKey) => {
     'clinicalTrialsShowcase': { component: 'dynamic-zone.slider-section', prop: 'Slide' },
     'testimonials': { component: 'dynamic-zone.testimonials', prop: 'Testimonials' },
     'testimonialSlider': { component: 'dynamic-zone.testimonial-slider', prop: 'Testimonials' },
+    'hospitalImage': { component: 'hospital-listing.slider-section', prop: 'hospitalImage' },
+    'doctors': { component: 'doctor-listing.slider-section', prop: 'doctors' },
   };
   
   // Try dynamic zone structure first
@@ -176,4 +211,77 @@ export const getRelatedData = (section, relationKey) => {
   
   return null;
 };
+
+export const formatDate = (value) => {
+  if (!value) return "";
+  return new Date(value).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+
+export const renderRichTextWithImages = (description = []) => {
+  if (!Array.isArray(description)) return null;
+
+  const extractText = (children) => {
+    if (!Array.isArray(children)) return "";
+    return children
+      .map((child) => {
+        if (typeof child?.text === "string") return child.text;
+        if (Array.isArray(child?.children)) return extractText(child.children);
+        return "";
+      })
+      .join("");
+  };
+
+  return description.map((block, index) => {
+    if (!block || typeof block !== "object") return null;
+
+    const { type } = block;
+
+    switch (type) {
+      case "paragraph": {
+        const text = extractText(block.children);
+        if (!text.trim()) return null;
+        return <p key={index} className="text-16">{text}</p>;
+      }
+
+      case "heading": {
+        const text = extractText(block.children);
+        return <h4 key={index} className="f-w-600">{text}</h4>;
+      }
+
+      case "image": {
+        const img = block.image;
+        if (!img?.url) return null;
+        return (
+          <div key={index} className="blog-details-img">
+            <img src={img.url} alt={img.alternativeText || "blog image"} />
+          </div>
+        );
+      }
+
+      case "list": {
+        const isOrdered = block.format === "ordered";
+        const Wrapper = isOrdered ? "ol" : "ul";
+
+        return (
+          <Wrapper key={index} className="content-gap-20">
+            {(block.children || []).map((li, i) => {
+              const text = extractText(li?.children);
+              return <li key={i}>{text}</li>;
+            })}
+          </Wrapper>
+        );
+      }
+
+      default:
+        return null;
+    }
+  });
+};
+
+
 

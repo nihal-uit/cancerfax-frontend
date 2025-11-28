@@ -168,8 +168,8 @@ const ImageContainer = styled.div`
   video {
     display: block;
   }
-
-  @media (max-width: 991px) {
+  
+  @media (max-width: 1024px) {
     max-width: 100%;
     height: 320px;
     border-radius: 20px;
@@ -181,8 +181,8 @@ const RightSection = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 0;
-
-  @media (max-width: 991px) {
+  
+  @media (max-width: 1024px) {
     width: 100%;
     margin-top: 0;
   }
@@ -336,7 +336,7 @@ const AboutSection = ({ componentData, pageData }) => {
       aboutSectionData: aboutSection
         ? {
             heading: aboutSection.heading,
-            sub_heading: aboutSection.sub_heading,
+            subHeading: aboutSection.subHeading,
             hasImage: !!aboutSection.image,
             hasVideo: !!aboutSection.video || !!aboutSection.video_url,
             hasContent: !!aboutSection.content,
@@ -466,7 +466,7 @@ const AboutSection = ({ componentData, pageData }) => {
       : 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800');
   const shouldHideMedia = hideFallbacks && !imageUrl && !videoUrl;
 
-  // Map API fields: heading -> label, sub_heading -> title, content -> description
+  // Map API fields: heading -> label, subHeading -> title, content -> description
   // Extract button text from content (might be in content string or separate field)
   const contentText =
     formatRichText(aboutSection?.content) || aboutSection?.content || '';
@@ -476,13 +476,13 @@ const AboutSection = ({ componentData, pageData }) => {
     .trim();
 
   // Use Strapi data if section exists, only use fallback if section doesn't exist at all
-  // Strapi provides: heading, sub_heading, content, image, image_position, cta
+  // Strapi provides: heading, subHeading, content, image, image_position, cta
   const sectionLabel = hideFallbacks
     ? aboutSection?.heading
     : aboutSection?.heading || 'ABOUT CANCERFAX';
   const sectionTitle = hideFallbacks
-    ? aboutSection?.sub_heading
-    : aboutSection?.sub_heading ||
+    ? aboutSection?.subHeading
+    : aboutSection?.subHeading ||
       'Global Reach. Personal Care. Proven Results.';
   const sectionDescription = hideFallbacks
     ? descriptionText || aboutSection?.description
@@ -514,13 +514,11 @@ const AboutSection = ({ componentData, pageData }) => {
   return (
     <section id='about' className='about_sec py-120'>
       <div className='containerWrapper'>
-        <div className='commContent_wrap'>
-          <Label className='contentLabel'>{sectionLabel}</Label>
-        </div>
         <div className='about_row'>
           <LeftSection>
             <ScrollAnimationComponent animationVariants={slideLeft}>
               <div className='commContent_wrap about_left_content'>
+                <Label className='contentLabel'>{sectionLabel}</Label>
                 <Title className='title-3'>{sectionTitle}</Title>
                 <Description className='text-16'>
                   {sectionDescription}
@@ -535,10 +533,10 @@ const AboutSection = ({ componentData, pageData }) => {
                   <video
                     src={videoUrl}
                     preload='none'
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
+                    autoplay=''
+                    loop=''
+                    muted=''
+                    playsinline=''
                     poster={imageUrl}
                     style={{
                       width: '100%',

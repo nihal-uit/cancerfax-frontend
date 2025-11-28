@@ -1,0 +1,115 @@
+.journey_sec {
+    background-color: #F8F8F8;
+    position: relative;
+    background-image: url('../../../../public/images/journey-bg.svg');
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    .card {
+        --card-top: 100px;
+        border: 2px solid #F8F8F8;
+        border-radius: 40px;
+        padding: 28px 38px 34px;
+        text-align: center;
+        position: sticky;
+        top: var(--card-top);
+        margin-bottom: 180px;
+
+        @media screen and (max-width: 1023.98px) {
+            padding: 14px 18px 16px;
+            margin-bottom: 56px;
+        }
+
+        &:last-child {
+            margin-bottom: 20px;
+        }
+
+        @media screen and (max-height: 700px) {
+            position: static;
+        }
+
+        @for $i from 2 through 10 {
+            &:nth-child(#{$i}) {
+                --card-top: #{100px + (($i - 1) * 80px)};
+
+                @media screen and (max-width: 1023.98px) {
+                    --card-top: #{100px + (($i - 1) * 50px)};
+                }
+            }
+        }
+
+        &__list {
+            &__holder {
+                width: min(890px, 100%);
+            }
+        }
+
+        &__title {
+            font-size: 24px;
+            line-height: calc(36/24);
+            font-weight: 600;
+            color: #36454F;
+            margin-bottom: 22px;
+
+            @media screen and (max-width: 1023.98px) {
+                font-size: 22px;
+                margin-bottom: 18px;
+            }
+
+            @media screen and (max-width: 767.98px) {
+                font-size: 20px;
+                margin-bottom: 12px;
+            }
+        }
+
+        .ratio {
+            --bs-aspect-ratio: #{238/810*100%};
+
+            @media screen and (max-width: 767.98px) {
+                --bs-aspect-ratio: 60%;
+            }
+
+            @media screen and (max-width: 479.98px) {
+                --bs-aspect-ratio: 80%;
+            }
+
+            &>* {
+                object-fit: cover;
+                object-position: top;
+
+            }
+
+            &__holder {
+                border-radius: 24px;
+                overflow: hidden;
+
+            }
+        }
+
+        &__overlay {
+            position: absolute;
+            width: 100%;
+            height: auto;
+            left: 0;
+            bottom: 0;
+            border-radius: 0 0 24px 24px;
+
+            &__content {
+                background: #36454F7A;
+                backdrop-filter: blur(37px);
+                padding: 16.5px 24px;
+
+                p {
+                    font-size: 18px;
+                    line-height: calc(27/18);
+                    font-weight: 400;
+                    color: #FFFFFF;
+                }
+            }
+        }
+
+
+    }
+}

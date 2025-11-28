@@ -1,0 +1,120 @@
+/* ---------- MAIN CONTAINER ---------- */
+
+.main-container {
+    padding: 120px;
+    background: #0080800D;
+    display: flex;
+    gap: 90px;
+    opacity: 1;
+    transform: rotate(0deg);
+    position: relative;
+  }
+  
+  
+  /* ---------- LEFT SUB CONTAINER ---------- */
+  
+  .sub-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  
+  /* ---------- TITLE TAG ---------- */
+  
+  .title-tag {
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #36454F;
+    margin: 0;
+  }
+  
+  
+  /* ---------- TEXT SECTION ---------- */
+  
+  .text-section {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  /* SUBTITLE */
+  .subtitle {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 56px;
+    letter-spacing: -1px;
+    margin: 0;
+    color: #36454F;
+  }
+  
+  /* DESCRIPTION */
+  .description {
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    margin: 0;
+    color: #36454F;
+  }
+  
+  
+  /* ---------- SUBSCRIBE BOX ---------- */
+  
+  .subscribe-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px 10px 16px;
+    background: #FFFFFF;
+    border-radius: 18px;
+  }
+  
+  /* Left text inside subscribe box */
+  .subscribe-text {
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 100%;
+    color: #36454F;
+    margin: 0;
+  }
+  
+  /* BUTTON CONTAINER */
+  .subscribe-button {
+    padding: 10px 20px;
+    background: #FF69B4;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Button text */
+  .subscribe-btn-text {
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    color: #FFFFFF;
+  }
+  
+  
+  /* ---------- IMAGE SECTION ---------- */
+  
+  .image-container {
+    border-radius: 30px;
+    overflow: hidden;
+  }
+  
+  .main-image {
+    border-radius: 30px;
+    object-fit: cover;
+    opacity: 1;
+  }
+  

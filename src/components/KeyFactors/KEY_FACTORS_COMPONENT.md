@@ -39,7 +39,7 @@ src/components/KeyFactors/KeyFactors.jsx
 
 #### Label
 - **Font**: `Montserrat`, `11px`, `600`
-- **Color**: `#6B7280` (Gray)
+- **Color**: `#36454F` (Gray)
 - **Text Transform**: `uppercase`
 - **Letter Spacing**: `2.5px`
 
@@ -101,7 +101,7 @@ src/components/KeyFactors/KeyFactors.jsx
   - Line Height: `1.4`
 - **Factor Description**: 
   - Font: `Montserrat`, `15px`, `400`
-  - Color: `#6B7280`
+  - Color: `#36454F`
   - Line Height: `1.6`
   - Note: Optional field (not shown if empty)
 

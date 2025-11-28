@@ -87,7 +87,7 @@ const ContentWrapper = styled.div`
   align-items: flex-start;
   width: 100%;
   box-sizing: border-box;
-  @media (max-width: 991px) {
+  @media (max-width: 1024px) {
     flex-direction: column;
     gap: 30px;
   }
@@ -95,6 +95,7 @@ const ContentWrapper = styled.div`
 
 const MapWrapper = styled.div`
   position: sticky;
+  position: -webkit-sticky;
   top: 150px;
   flex: 0 0 713px;
   height: 511px;
@@ -104,7 +105,7 @@ const MapWrapper = styled.div`
   background: #ffffff;
   border: 4px solid #ffffff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  @media (max-width: 991px) {
+  @media (max-width: 1024px) {
     position: relative;
     top: 0;
     flex: 0 0 auto;
@@ -132,13 +133,14 @@ const MapWrapper = styled.div`
 
   @media (max-width: 1200px) {
     width: 100%;
-    max-width: 600px;
+    flex: 0 0 600px;
   }
-
-  @media (max-width: 9991px) {
+  
+  @media (max-width: 1024px) {
     width: 100%;
     height: 480px;
-    max-width: 100%;
+    flex: 1 1 auto;
+    pointer-events: none;
   }
 `;
 
@@ -149,8 +151,8 @@ const HospitalsList = styled.div`
   max-width: 100%;
   flex: 1 1 auto;
   box-sizing: border-box;
-
-  @media (max-width: 991px) {
+  
+  @media (max-width: 1024px) {
     width: 100%;
     max-width: 100%;
   }
@@ -158,7 +160,7 @@ const HospitalsList = styled.div`
 
 const HospitalCard = styled.button`
   font-family: 'Montserrat', sans-serif;
-  padding: 40px;
+  padding: 38px;
   height: 128px;
   border-radius: 24px 24px 0 0;
   text-align: left;
@@ -185,6 +187,10 @@ const HospitalCard = styled.button`
     background: #ffffff;
     font-weight: 600;
     margin-top: -1px;
+  }
+  @media (max-width: 1200px) {
+    height: 116px;
+    padding: 20px;
   }
 
   @media (max-width: 768px) {
@@ -386,11 +392,11 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
         mapBackground: null,
       };
 
-  // Map Strapi data: heading -> label, subheading -> title
+  // Map Strapi data: heading -> label, subHeading -> title
   const content = locationSection
     ? {
         label: locationSection.heading || defaultSectionContent?.label,
-        title: locationSection.subheading || defaultSectionContent?.title,
+        title: locationSection.subHeading || defaultSectionContent?.title,
         description:
           formatRichText(locationSection.description) ||
           locationSection.description ||

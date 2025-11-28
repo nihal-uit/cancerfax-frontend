@@ -1,0 +1,98 @@
+/* --- MAIN LAYOUT --- */
+.section {
+    padding: 60px 40px;
+    font-family: "Inter", sans-serif;
+    color: #2b3a42;
+  }
+  
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    color: #7d8a92;
+  }
+  
+  .title {
+    font-size: 34px;
+    margin: 8px 0 12px 0;
+    font-weight: 700;
+  }
+  
+  .intro {
+    max-width: 560px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #5e6a70;
+  }
+  
+  .cta {
+    background: #ff70a6;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 32px;
+    color: white;
+    margin-top: 24px;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  
+  /* --- GRID --- */
+  .grid {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    margin-top: 48px;
+  }
+  
+  /* --- MAIN CARD (Fix to match screenshot) --- */
+  .mainCard {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+  }
+  
+  .mainImage {
+    width: 100%;
+    display: block;
+  }
+  
+  /* Space inside the card */
+  .mainTitle {
+    margin: 20px 24px 6px 24px;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  
+  .mainText {
+    margin: 0 24px 24px 24px;
+    font-size: 15px;
+    line-height: 1.45;
+    color: #5e6a70;
+  }
+  
+  /* --- SMALL FEATURE CARDS --- */
+  .featureCard {
+    border: 1px solid #c9e1e4;
+    border-radius: 24px;
+    padding: 28px;
+    background: white;
+    min-height: 160px; /* helps match proportional shape */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  
+  .icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #c9e1e4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  

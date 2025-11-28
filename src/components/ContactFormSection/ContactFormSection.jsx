@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { 
@@ -6,18 +6,59 @@ import {
   fetchTestimonials, 
   fetchInquiryTypes, 
   submitContactForm,
-  setCurrentTestimonial,
   resetSubmissionStatus
 } from '../../store/slices/contactFormSlice';
-import { getMediaUrl } from '../../services/api';
+import { Swiper, SwiperSlide } from 'swiper/react';
+// import required modules
+import { Pagination, Autoplay } from 'swiper/modules';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+import ReactStars from "react-rating-stars-component";
 
+  
 const ContactFormSection = () => {
+  const carouselRef = useRef(null);
+
+  const testimonialData = [ 
+  {
+    id: 1,
+    rating: 5,
+    text: "Quicklnk helps me to manage & grow  my Instagram account from 467 followers to 748K followers with-in a year.",
+    name: "Vishal Pragya",
+    role: "Cancer Patient",
+    avatar: "https://placehold.co/40x41"
+  },
+  {
+    id: 2,
+    rating: 4,
+    text: "Quicklnk helps me to manage & grow  my Instagram account from 467 followers to 748K followers with-in a year.",
+    name: "Vishal Pragya",
+    role: "Cancer Patient",
+    avatar: "https://placehold.co/40x41"
+  },
+  {
+    id: 3,
+    rating: 3.5,
+    text: "Quicklnk helps me to manage & grow  my Instagram account from 467 followers to 748K followers with-in a year.",
+    name: "Vishal Pragya",
+    role: "Cancer Patient",
+    avatar: "https://placehold.co/40x41"
+  },
+  {
+    id: 4,
+    rating: 4.5,
+    text: "Quicklnk helps me to manage & grow  my Instagram account from 467 followers to 748K followers with-in a year.",
+    name: "Vishal Pragya",
+    role: "Cancer Patient",
+    avatar: "https://placehold.co/40x41"
+  },
+];
+  
   const dispatch = useDispatch();
   const { 
     sectionData, 
-    testimonials, 
     inquiryTypes, 
-    currentTestimonialIndex,
     submissionStatus 
   } = useSelector((state) => state.contactForm);
 
@@ -72,21 +113,6 @@ const ContactFormSection = () => {
     dispatch(submitContactForm(formData));
   };
 
-  const handleTestimonialChange = (index) => {
-    dispatch(setCurrentTestimonial(index));
-  };
-
-  // Default/Fallback data
-  // const defaultDescription = "Our team is highly dedicated to help you with your queries.\nJust drop an 'hi' through the form & our team will be in touch with you with-in same day."; // Unused variable
-  
-  const defaultTestimonial = {
-    rating: 5,
-    text: "Quicklnk helps me to manage & grow  my Instagram account from 467 followers to 748K followers with-in a year.",
-    name: "Vishal Pragya",
-    role: "Cancer Patient",
-    avatar: "https://placehold.co/40x41"
-  };
-
   const defaultInquiryTypes = [
     { id: 1, attributes: { name: 'General Inquiry', value: 'general' } },
     { id: 2, attributes: { name: 'Treatment Information', value: 'treatment' } },
@@ -116,252 +142,275 @@ const ContactFormSection = () => {
   };
 
   // Get data from Strapi or use defaults
-  // const description = sectionData?.attributes?.description || defaultDescription; // Unused variables
-  const currentTestimonial = testimonials[currentTestimonialIndex] || defaultTestimonial;
   const availableInquiryTypes = inquiryTypes.length > 0 ? inquiryTypes : defaultInquiryTypes;
   const formFields = sectionData?.attributes || defaultFormFields;
-  
-  // Get testimonial data with proper fallback
-  const testimonialData = currentTestimonial.attributes || currentTestimonial;
-  const testimonialRating = testimonialData.rating || 5;
-  const testimonialText = testimonialData.text || testimonialData.testimonial || defaultTestimonial.text;
-  const testimonialName = testimonialData.name || defaultTestimonial.name;
-  const testimonialRole = testimonialData.role || testimonialData.designation || defaultTestimonial.role;
-  const testimonialAvatar = testimonialData.avatar?.data?.attributes?.url 
-    ? getMediaUrl(testimonialData.avatar.data.attributes.url) 
-    : testimonialData.avatar || defaultTestimonial.avatar;
 
   return (
-    <SectionContainer>
-      <ContentWrapper>
+    <ContactCard>
+      <ContactRow>
         <LeftContent>
-          <TextContent>
-            <Description>
-              Our team is highly dedicated to help you with your queries. Just drop an 'hi' through the form & our team will be in touch with you with-in same day.
-            </Description>
-          </TextContent>
+          <LeftBox>
+            <TextContent>
+              <Description>
+                Our team is highly dedicated to help you with your queries.
+              </Description>
+              <Description>
+                Just drop an 'hi' through the form & our team will be in touch with you with-in same day.
+              </Description>
+            </TextContent>
 
-          <TestimonialCard>
-            <Stars>
-              {[...Array(testimonialRating)].map((_, index) => (
-                <Star key={index}>⭐</Star>
-              ))}
-            </Stars>
-            <TestimonialText>
-              {testimonialText}
-            </TestimonialText>
-            <ProfileSection>
-              <Avatar src={testimonialAvatar} alt={testimonialName} />
-              <ProfileInfo>
-                <ProfileName>{testimonialName}</ProfileName>
-                <ProfileRole>{testimonialRole}</ProfileRole>
-              </ProfileInfo>
-            </ProfileSection>
-            <CarouselDots>
-              {testimonials.length > 0 ? 
-                testimonials.map((_, index) => (
-                  <Dot 
-                    key={index} 
-                    active={index === currentTestimonialIndex}
-                    onClick={() => handleTestimonialChange(index)}
-                  />
-                ))
-                :
-                <>
-                  <Dot />
-                  <Dot />
-                  <Dot active />
-                  <Dot />
-                </>
-              }
-            </CarouselDots>
-          </TestimonialCard>
+            <Swiper
+              ref={carouselRef}
+              modules={[Pagination, Autoplay]}
+              pagination={{
+                clickable: true,
+              }}
+              autoplay={{
+                delay: 2000,
+                disableOnInteraction: false,
+              }}
+              className="pagination_slider"
+            >
+              {testimonialData.map((testimonials, index) => {
+                return (
+                  <SwiperSlide key={testimonials.id}>
+                    <TestimonialCard>
+                      <Stars>
+                          <ReactStars
+                            count={5}
+                            value={testimonials.rating}
+                            size={40}
+                            isHalf={true}
+                            color= "#e1e1e1"
+                            activeColor="#F89939"
+                            edit={false}
+                          />
+                      </Stars>
+                      <TestimonialText>
+                        {testimonials.text}
+                      </TestimonialText>
+                      <ProfileSection>
+                        <Avatar src={testimonials.avatar} alt={testimonials.text} />
+                        <ProfileInfo>
+                          <ProfileName>{testimonials.name}</ProfileName>
+                          <ProfileRole>{testimonials.role}</ProfileRole>
+                        </ProfileInfo>
+                      </ProfileSection>
+                    </TestimonialCard>
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+          </LeftBox>
         </LeftContent>
 
         <RightContent>
-          <FormContainer onSubmit={handleSubmit}>
-            {submissionStatus === 'succeeded' && (
-              <SuccessMessage>Thank you! Your message has been sent successfully.</SuccessMessage>
-            )}
-            {submissionStatus === 'failed' && (
-              <ErrorMessage>Sorry, there was an error sending your message. Please try again.</ErrorMessage>
-            )}
-            
-            <FormRow>
+          <RightBox>
+            <FormContainer onSubmit={handleSubmit}>
+              {submissionStatus === 'succeeded' && (
+                <SuccessMessage>Thank you! Your message has been sent successfully.</SuccessMessage>
+              )}
+              {submissionStatus === 'failed' && (
+                <ErrorMessage>Sorry, there was an error sending your message. Please try again.</ErrorMessage>
+              )}
+              
+              <FormRow>
+                <FormGroup>
+                  <Label>{formFields.firstNameLabel || 'First Name*'}</Label>
+                  <Input
+                    type="text"
+                    name="firstName"
+                    placeholder={formFields.firstNamePlaceholder || 'Enter first name'}
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                    disabled={submissionStatus === 'loading'}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>{formFields.lastNameLabel || 'Last Name*'}</Label>
+                  <Input
+                    type="text"
+                    name="lastName"
+                    placeholder={formFields.lastNamePlaceholder || 'Enter last name'}
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    disabled={submissionStatus === 'loading'}
+                  />
+                </FormGroup>
+              </FormRow>
+
+              <FormRow>
+                <FormGroup>
+                  <Label>{formFields.emailLabel || 'Email Address*'}</Label>
+                  <Input
+                    type="email"
+                    name="email"
+                    placeholder={formFields.emailPlaceholder || 'Enter email address'}
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    disabled={submissionStatus === 'loading'}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>{formFields.phoneLabel || 'Phone Number*'}</Label>
+                  <Input
+                    type="tel"
+                    name="phone"
+                    placeholder={formFields.phonePlaceholder || 'Enter phone number'}
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    disabled={submissionStatus === 'loading'}
+                  />
+                </FormGroup>
+              </FormRow>
+
+              <FormRow>
+                <FormGroup>
+                  <Label>{formFields.zipCodeLabel || 'Zip code*'}</Label>
+                  <Input
+                    type="text"
+                    name="zipCode"
+                    placeholder={formFields.zipCodePlaceholder || 'Enter zip code'}
+                    value={formData.zipCode}
+                    onChange={handleChange}
+                    required
+                    disabled={submissionStatus === 'loading'}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>{formFields.inquiryTypeLabel || 'Inquiry type*'}</Label>
+                  <Select
+                    name="inquiryType"
+                    value={formData.inquiryType}
+                    onChange={handleChange}
+                    required
+                    disabled={submissionStatus === 'loading'}
+                  >
+                    <option value="" disabled>{formFields.inquiryTypePlaceholder || 'Select Inquiry type'}</option>
+                    {availableInquiryTypes.map((type) => (
+                      <option key={type.id} value={type.attributes?.value || type.value}>
+                        {type.attributes?.name || type.name}
+                      </option>
+                    ))}
+                  </Select>
+                </FormGroup>
+              </FormRow>
+
               <FormGroup>
-                <Label>{formFields.firstNameLabel || 'First Name*'}</Label>
-                <Input
-                  type="text"
-                  name="firstName"
-                  placeholder={formFields.firstNamePlaceholder || 'Enter first name'}
-                  value={formData.firstName}
+                <Label>{formFields.messageLabel || 'Message*'}</Label>
+                <TextArea
+                  name="message"
+                  placeholder={formFields.messagePlaceholder || 'Write your message'}
+                  value={formData.message}
                   onChange={handleChange}
+                  rows="5"
                   required
                   disabled={submissionStatus === 'loading'}
                 />
               </FormGroup>
-              <FormGroup>
-                <Label>{formFields.lastNameLabel || 'Last Name*'}</Label>
-                <Input
-                  type="text"
-                  name="lastName"
-                  placeholder={formFields.lastNamePlaceholder || 'Enter last name'}
-                  value={formData.lastName}
+
+              <CheckboxWrapper>
+                <Checkbox
+                  type="checkbox"
+                  name="agreeToTerms"
+                  id="agreeToTerms"
+                  checked={formData.agreeToTerms}
                   onChange={handleChange}
                   required
                   disabled={submissionStatus === 'loading'}
                 />
-              </FormGroup>
-            </FormRow>
+                <CheckboxLabel htmlFor="agreeToTerms">
+                  {formFields.termsText || 'By reaching out to us, you agree to our'}{' '}
+                  <TermsLink href={formFields.termsLink || '#'}>
+                    {formFields.termsLinkText || 'Terms & Condition'}
+                  </TermsLink>
+                </CheckboxLabel>
+              </CheckboxWrapper>
 
-            <FormRow>
-              <FormGroup>
-                <Label>{formFields.emailLabel || 'Email Address*'}</Label>
-                <Input
-                  type="email"
-                  name="email"
-                  placeholder={formFields.emailPlaceholder || 'Enter email address'}
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  disabled={submissionStatus === 'loading'}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label>{formFields.phoneLabel || 'Phone Number*'}</Label>
-                <Input
-                  type="tel"
-                  name="phone"
-                  placeholder={formFields.phonePlaceholder || 'Enter phone number'}
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                  disabled={submissionStatus === 'loading'}
-                />
-              </FormGroup>
-            </FormRow>
-
-            <FormRow>
-              <FormGroup>
-                <Label>{formFields.zipCodeLabel || 'Zip code*'}</Label>
-                <Input
-                  type="text"
-                  name="zipCode"
-                  placeholder={formFields.zipCodePlaceholder || 'Enter zip code'}
-                  value={formData.zipCode}
-                  onChange={handleChange}
-                  required
-                  disabled={submissionStatus === 'loading'}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label>{formFields.inquiryTypeLabel || 'Inquiry type*'}</Label>
-                <Select
-                  name="inquiryType"
-                  value={formData.inquiryType}
-                  onChange={handleChange}
-                  required
-                  disabled={submissionStatus === 'loading'}
-                >
-                  <option value="">{formFields.inquiryTypePlaceholder || 'Select Inquiry type'}</option>
-                  {availableInquiryTypes.map((type) => (
-                    <option key={type.id} value={type.attributes?.value || type.value}>
-                      {type.attributes?.name || type.name}
-                    </option>
-                  ))}
-                </Select>
-              </FormGroup>
-            </FormRow>
-
-            <FormGroup>
-              <Label>{formFields.messageLabel || 'Message*'}</Label>
-              <TextArea
-                name="message"
-                placeholder={formFields.messagePlaceholder || 'Write your message'}
-                value={formData.message}
-                onChange={handleChange}
-                rows="5"
-                required
-                disabled={submissionStatus === 'loading'}
-              />
-            </FormGroup>
-
-            <CheckboxWrapper>
-              <Checkbox
-                type="checkbox"
-                name="agreeToTerms"
-                id="agreeToTerms"
-                checked={formData.agreeToTerms}
-                onChange={handleChange}
-                required
-                disabled={submissionStatus === 'loading'}
-              />
-              <CheckboxLabel htmlFor="agreeToTerms">
-                {formFields.termsText || 'By reaching out to us, you agree to our'}{' '}
-                <TermsLink href={formFields.termsLink || '#'}>
-                  {formFields.termsLinkText || 'Terms & Condition'}
-                </TermsLink>
-              </CheckboxLabel>
-            </CheckboxWrapper>
-
-            <SubmitButton type="submit" disabled={submissionStatus === 'loading'}>
-              {submissionStatus === 'loading' ? 'Sending...' : (formFields.buttonText || 'Send Message')}
-            </SubmitButton>
-          </FormContainer>
+              <SubmitButton className='btn btn-pink-solid' type="submit" disabled={submissionStatus === 'loading'}>
+                {submissionStatus === 'loading' ? 'Sending...' : (formFields.buttonText || 'Send Message')}
+              </SubmitButton>
+            </FormContainer>
+          </RightBox>
         </RightContent>
-      </ContentWrapper>
-    </SectionContainer>
+      </ContactRow>
+    </ContactCard>
   );
 };
 
-const SectionContainer = styled.section`
+const ContactCard = styled.div`
   width: 100%;
-  background: #FAF5F0;
-  padding: 40px 112px;
-  
-  @media (max-width: 1200px) {
-    padding: 40px 60px;
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 30px;
+ 
+  @media (max-width: 1024px) {
+    padding: 30px;
   }
-  
-  @media (max-width: 968px) {
-    padding: 40px 40px;
-  }
-  
-  @media (max-width: 768px) {
-    padding: 40px 20px;
+
+  @media (max-width: 575px) {
+    padding: 24px;
   }
 `;
 
-const ContentWrapper = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
+const ContactRow = styled.div`
   display: flex;
-  gap: 40px;
+  gap: 90px;
   align-items: flex-start;
-  
-  @media (max-width: 968px) {
+
+  @media (max-width: 1200px) {
+    gap: 60px;
+  }
+
+  @media (max-width: 1024px) {
     flex-direction: column;
     gap: 32px;
   }
 `;
 
 const LeftContent = styled.div`
-  width: 384px;
+  width: 380px;
+  
+  @media (max-width: 1024px) {
+    width: 100%;
+  }
+`;
+
+const LeftBox = styled.div`
+`;
+
+const RightContent = styled.div`
+  flex: 1;
+  box-sizing: border-box;
+  min-width: 0;
+  
+  @media (max-width: 1024px) {
+    width: 100%;
+  }
+`;
+
+const RightBox = styled.div`
+  background: rgba(54, 69, 79, 0.05);
+  border-radius: 30px;
+  padding: 30px;
   display: flex;
   flex-direction: column;
-  gap: 112px;
-  flex-shrink: 0;
-  
-  @media (max-width: 968px) {
-    width: 100%;
-    gap: 40px;
-  }
 `;
 
 const TextContent = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 0;
+  margin-bottom: 110px;
+  
+  @media (max-width: 1024px) {
+    width: 100%;
+    margin-bottom: 60px;
+  }
 `;
 
 const Description = styled.div`
@@ -381,21 +430,13 @@ const Description = styled.div`
 const TestimonialCard = styled.div`
   background: #FFFFFF;
   border-radius: 20px;
-  padding: 40px;
-  border: 2px solid #FF69B4;
-  border-width: 2px;
-  border-style: solid;
-  border-color: #FF69B4;
+  padding: 20px;
+  border: 1px solid #E9E9E9;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 20px;
   width: 100%;
-  box-sizing: border-box;
-  
-  @media (max-width: 768px) {
-    padding: 32px 24px;
-    gap: 24px;
-  }
+  box-sizing: border-box;  
 `;
 
 const Stars = styled.div`
@@ -419,12 +460,7 @@ const TestimonialText = styled.p`
   line-height: 24px;
   color: #36454F;
   margin: 0;
-  text-align: center;
-  
-  @media (max-width: 768px) {
-    font-size: 15px;
-    line-height: 22px;
-  }
+  text-align: left;
 `;
 
 const ProfileSection = styled.div`
@@ -444,7 +480,7 @@ const Avatar = styled.img`
 const ProfileInfo = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0;
   flex: 1;
 `;
 
@@ -464,26 +500,6 @@ const ProfileRole = styled.p`
   color: rgba(55, 65, 81, 0.6);
   margin: 0;
   line-height: 20px;
-`;
-
-const CarouselDots = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 0;
-`;
-
-const Dot = styled.div`
-  width: ${props => props.active ? '28px' : '10px'};
-  height: 6px;
-  border-radius: 24px;
-  background: ${props => props.active ? 'rgba(55, 65, 81, 0.7)' : 'rgba(55, 65, 81, 0.2)'};
-  transition: all 0.3s ease;
-  cursor: pointer;
-  
-  &:hover {
-    background: ${props => props.active ? 'rgba(55, 65, 81, 0.7)' : 'rgba(55, 65, 81, 0.4)'};
-  }
 `;
 
 const SuccessMessage = styled.div`
@@ -510,26 +526,6 @@ const ErrorMessage = styled.div`
   margin-bottom: 4px;
 `;
 
-const RightContent = styled.div`
-  flex: 1;
-  background: rgba(55, 65, 81, 0.05);
-  border-radius: 30.97px;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  min-width: 0;
-  
-  @media (max-width: 968px) {
-    width: 100%;
-  }
-  
-  @media (max-width: 768px) {
-    padding: 32px 24px;
-    border-radius: 24px;
-  }
-`;
-
 const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
@@ -550,7 +546,7 @@ const FormRow = styled.div`
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   flex: 1;
 `;
 
@@ -563,23 +559,23 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
-  font-family: 'Inter', sans-serif;
-  padding: 16px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  padding: 14px 16px;
   background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #E9E9E9;
   border-radius: 16px;
   font-size: 12px;
   color: #36454F;
   transition: all 0.3s ease;
-  
+  font-weight: 400;
+
   &::placeholder {
     color: rgba(55, 65, 81, 0.5);
   }
   
   &:focus {
     outline: none;
-    border-color: #FF69B4;
-    box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.1);
+    border-color: #36454F;
   }
   
   &:disabled {
@@ -589,10 +585,10 @@ const Input = styled.input`
 `;
 
 const Select = styled.select`
-  font-family: 'Inter', sans-serif;
-  padding: 16px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  padding: 14px 16px;
   background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #E9E9E9;
   border-radius: 16px;
   font-size: 12px;
   color: #36454F;
@@ -604,14 +600,20 @@ const Select = styled.select`
   background-position: right 16px center;
   background-size: 14px;
   padding-right: 48px;
-  
+  font-weight: 400;
+
+  &:invalid {
+    color: rgba(55, 65, 81, 0.5);
+  }
   &:focus {
     outline: none;
-    border-color: #FF69B4;
-    box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.1);
+    border-color: #36454F;
   }
-  
+
   option {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    padding: 12px;
+    background: white;
     color: #36454F;
   }
   
@@ -622,25 +624,25 @@ const Select = styled.select`
 `;
 
 const TextArea = styled.textarea`
-  font-family: 'Inter', sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   padding: 16px;
   background: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #E9E9E9;
   border-radius: 16px;
   font-size: 12px;
   color: #36454F;
   resize: none;
-  height: 112px;
+  height: 120px;
   transition: all 0.3s ease;
-  
+  font-weight: 400;
+
   &::placeholder {
     color: rgba(55, 65, 81, 0.5);
   }
   
   &:focus {
     outline: none;
-    border-color: #FF69B4;
-    box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.1);
+    border-color: #36454F;
   }
   
   &:disabled {
@@ -653,7 +655,7 @@ const CheckboxWrapper = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 2px 0;
+  padding: 6px 0;
 `;
 
 const Checkbox = styled.input`
@@ -695,32 +697,7 @@ const TermsLink = styled.a`
   }
 `;
 
-const SubmitButton = styled.button`
-  font-family: 'Be Vietnam Pro', sans-serif;
-  width: 100%;
-  padding: 16px 28px;
-  background: #FF69B4;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 20px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  &:hover {
-    background: #FF1493;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-  
+const SubmitButton = styled.button`  
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -729,4 +706,3 @@ const SubmitButton = styled.button`
 `;
 
 export default memo(ContactFormSection);
-

@@ -22,7 +22,7 @@ const Header = styled.div`
 const TopHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   gap: 40px;
   
   @media (max-width: 768px) {
@@ -33,7 +33,7 @@ const TopHeader = styled.div`
 `;
 
 const Label = styled.p`
-  color: #6B7280;
+  color: #36454F;
 `;
 
 const Title = styled.h3`
@@ -56,7 +56,7 @@ const ContentWrapper = styled.div`
     grid-template-rows: auto;
   }
   
-  @media (max-width: 991px) {
+  @media (max-width: 1024px) {
     grid-template-columns: repeat(1, 1fr);
     grid-template-rows: auto;
   }
@@ -85,8 +85,6 @@ const ImageSection = styled.div`
     min-height: 250px;
   }
 `;
-
-// Steps are placed directly in ContentWrapper grid, no wrapper needed
 
 const StepCard = styled.div`
   padding: 32px 32px;
@@ -126,7 +124,7 @@ const StepCard = styled.div`
     padding: 24px 24px;
   }
    
-  @media (max-width: 991px) {
+  @media (max-width: 1024px) {
     border-left: none;
     border-right: none;
     border-bottom: 1px solid #E5E7EB;
@@ -269,7 +267,7 @@ const HowItWorks = ({ componentData, pageData }) => {
       howItWorksSection: !!howItWorksSection,
       sectionData: howItWorksSection ? {
         heading: howItWorksSection.heading,
-        sub_heading: howItWorksSection.sub_heading
+        subHeading: howItWorksSection.subHeading
       } : null
     });
   }
@@ -330,10 +328,10 @@ const HowItWorks = ({ componentData, pageData }) => {
     }
   ];
 
-  // Map Strapi data: heading -> label, sub_heading -> title
+  // Map Strapi data: heading -> label, subHeading -> title
   const section = howItWorksSection ? {
     label: howItWorksSection.heading || fallbackSection.label,
-    title: howItWorksSection.sub_heading || fallbackSection.title,
+    title: howItWorksSection.subHeading || fallbackSection.title,
     buttonText: howItWorksSection.cta?.text || fallbackSection.buttonText,
     image: formatMedia(howItWorksSection.featuredImage) || formatMedia(howItWorksSection.image) || fallbackSection.image,
     imageAlt: fallbackSection.imageAlt,

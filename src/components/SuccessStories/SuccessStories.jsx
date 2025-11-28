@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { fetchSuccessStories } from '../../store/slices/successStoriesSlice';
 import { getMediaUrl } from '../../services/api';
-
 // Default fallback data
 const defaultData = {
   subtitle: 'JOY OF SUCCESS',
@@ -27,15 +26,15 @@ const SuccessStories = () => {
   const displayStories = stories.length > 0 ? stories : defaultData.stories;
 
   return (
-    <SectionContainer>
-      <ContentWrapper>
-        <HeaderSection>
+    <SectionContainer className='p-0'>
+      <div className='containerWrapper'>
+        <HeaderSection className='commContent_wrap'>
           <LeftColumn>
-            <Subtitle>{subtitle}</Subtitle>
-            <Title>{title}</Title>
+            <span className='contentLabel'>{subtitle}</span>
+            <h3 className='title-3'>{title}</h3>
           </LeftColumn>
           <RightColumn>
-            <Description>{description}</Description>
+            <p className='text-16'>{description}</p>
           </RightColumn>
         </HeaderSection>
 
@@ -74,48 +73,20 @@ const SuccessStories = () => {
             })}
           </StoriesGrid>
         )}
-      </ContentWrapper>
+      </div>
     </SectionContainer>
   );
 };
 
 const SectionContainer = styled.section`
-  width: 100%;
-  background: #FFFFFF;
-  padding: 100px 20px;
-  
-  @media (max-width: 968px) {
-    padding: 80px 20px;
-  }
-  
-  @media (max-width: 768px) {
-    padding: 60px 20px;
-  }
-`;
-
-const ContentWrapper = styled.div`
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 120px;
-  
-  @media (max-width: 1200px) {
-    padding: 0 60px;
-  }
-  
-  @media (max-width: 968px) {
-    padding: 0 40px;
-  }
-  
-  @media (max-width: 768px) {
-    padding: 0 20px;
-  }
+  background: #F8F8F8;
 `;
 
 const HeaderSection = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 460px 1fr;
   gap: 100px;
-  align-items: start;
+  align-items: center;
   margin-bottom: 60px;
   
   @media (max-width: 1024px) {

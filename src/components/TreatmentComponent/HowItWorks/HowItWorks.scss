@@ -1,0 +1,50 @@
+.treatment__howwork_sec {
+    background-color: var(--dark-gray);
+    position: relative;
+    min-height: 880px;
+
+    @media screen and (max-width: 1023.98px) {
+        min-height: 600px;
+    }
+
+    .howItWork_bg {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: auto;
+        pointer-events: none;
+
+        img {
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    .commContent_wrap {
+        // gap: 48px;
+    }
+
+    .ratio {
+        --bs-aspect-ratio: #{9/21*100%};
+        border-radius: 40px;
+        overflow: hidden;
+
+        * {
+            object-fit: cover;
+            object-position: top;
+        }
+
+        &__holder {
+            margin-top: 48px;
+
+            @media screen and (max-width: 1023.98px) {
+                margin-top: 36px;
+            }
+
+            @media screen and (max-width: 767.98px) {
+                margin-top: 24px;
+            }
+        }
+    }
+}

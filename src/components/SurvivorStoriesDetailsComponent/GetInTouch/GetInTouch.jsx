@@ -1,0 +1,194 @@
+import React from "react";
+import { useSelector } from "react-redux";
+import styled from "styled-components";
+import { getSectionData, formatRichText } from "../../../utils/strapiHelpers";
+import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
+
+const ContentWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 52% 1fr;
+  gap: 120px;
+  align-items: center;
+
+  @media (max-width: 1199.98px) {
+    gap: 60px;
+  }
+
+  @media (max-width: 991.98px) {
+    gap: 30px;
+    grid-template-columns: auto;
+  }
+
+  @media (max-width: 767.98px) {
+    gap: 24px;
+  }
+`;
+
+const LeftContent = styled.div``;
+
+const CommContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @media (max-width: 1024px) {
+    gap: 20px;
+  }
+
+  @media (max-width: 768px) {
+    gap: 18px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 16px;
+  }
+`;
+
+const Label = styled.p`
+  color: ${(props) => props.theme.colors.white};
+`;
+
+const Title = styled.h3`
+  color: ${(props) => props.theme.colors.white};
+`;
+
+const RightContent = styled.div``;
+
+const CommContentRight = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  @media (max-width: 1024px) {
+    gap: 28px;
+  }
+
+  @media (max-width: 768px) {
+    gap: 24px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 20px;
+  }
+`;
+
+const Description = styled.p`
+  color: ${(props) => props.theme.colors.white};
+`;
+
+const CTAButton = styled.button`
+  max-width: 324px;
+  @media (max-width: 575px) {
+    max-width: 100%;
+  }
+`;
+
+const GetInTouch = ({ componentData }) => {
+  // Get data from global Strapi API (no need for separate fetches)
+  const globalData = useSelector((state) => state.global?.data);
+  const globalLoading = useSelector((state) => state.global?.loading);
+  // Legacy Redux state (kept for fallback, but not actively used)
+  const { sectionContent } = useSelector((state) => state.getInTouch);
+
+  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
+  if (globalLoading) {
+    return null;
+  }
+
+  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
+  const getInTouchSection =
+    componentData || getSectionData(globalData, "getInTouch");
+
+  // Debug: Log to check if global data exists
+  if (globalData && !globalLoading) {
+    console.log("GetInTouch: globalData loaded", {
+      hasDynamicZone: !!globalData.dynamicZone,
+      getInTouchSection: !!getInTouchSection,
+      sectionData: getInTouchSection
+        ? {
+            heading: getInTouchSection.heading,
+            subHeading: getInTouchSection.subHeading,
+          }
+        : null,
+    });
+  }
+
+  // Fallback content for when Strapi data is not yet available
+  const defaultContent = {
+    label: "GET IN TOUCH",
+    title: "Your Best Treatment Options Start Here",
+    description:
+      "Submit your reports to get a personalized assessment from our medical experts and discover the most advanced therapies available globally.",
+    buttonText: "Submit Reports For Expert Review",
+    buttonLink: "#submit-reports",
+  };
+
+  // Map Strapi data: heading -> label, subHeading -> title
+  const content = getInTouchSection
+    ? {
+        label: getInTouchSection.heading || defaultContent.label,
+        title: getInTouchSection.subHeading || defaultContent.title,
+        description:
+          formatRichText(getInTouchSection.description) ||
+          getInTouchSection.description ||
+          defaultContent.description,
+        buttonText: getInTouchSection.cta?.text || defaultContent.buttonText,
+        buttonLink: getInTouchSection.cta?.URL || defaultContent.buttonLink,
+        backgroundColor: getInTouchSection.backgroundColor,
+      }
+    : sectionContent || defaultContent;
+
+  const slideLeft = {
+    hidden: { x: -100, opacity: 0 },
+    visible: { x: 0, opacity: 1 },
+  };
+
+  const slideRight = {
+    hidden: { x: 100, opacity: 0 },
+    visible: { x: 0, opacity: 1 },
+  };
+
+  return (
+    <section className="getInTouch_sec py-120" id="get-in-touch">
+      <div className="containerWrapper z-2 position-relative">
+        <ContentWrapper>
+          <LeftContent>
+            <ScrollAnimationComponent animationVariants={slideLeft}>
+              <CommContent className="commContent_wrap">
+                <Label className="contentLabel">
+                  {defaultContent.label || content.label || "GET IN TOUCH"}
+                </Label>
+                <Title className="title-3">
+                  {defaultContent.title ||
+                    content.title ||
+                    "Your Best Treatment Options Start Here"}
+                </Title>
+              </CommContent>
+            </ScrollAnimationComponent>
+          </LeftContent>
+
+          <RightContent>
+            <ScrollAnimationComponent animationVariants={slideRight}>
+              <CommContentRight className="commContent_wrap">
+                <Description className="text-16">
+                  {defaultContent.description ||
+                    content.description ||
+                    "Submit your reports to get a personalized assessment from our medical experts and discover the most advanced therapies available globally."}
+                </Description>
+                <CTAButton
+                  className="btn btn-pink-solid"
+                  as={content.buttonLink ? "a" : "button"}
+                  href={content.buttonLink || undefined}
+                >
+                  {content.buttonText || "Submit Reports For Expert Review"}
+                </CTAButton>
+              </CommContentRight>
+            </ScrollAnimationComponent>
+          </RightContent>
+        </ContentWrapper>
+      </div>
+    </section>
+  );
+};
+
+export default GetInTouch;

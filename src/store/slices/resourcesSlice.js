@@ -25,11 +25,26 @@ export const fetchBlogs = createAsyncThunk(
   }
 );
 
+export const fetchBlogById = createAsyncThunk(
+  'resources/fetchBlogById',
+  async (id, { rejectWithValue }) => {
+    try {
+      const data = await resourcesAPI.getBlogById(id);
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || 'Failed to fetch blog by ID'
+      );
+    }
+  }
+);
+
 const resourcesSlice = createSlice({
   name: 'resources',
   initialState: {
     sectionContent: null,
     blogs: [],
+    singleBlog: null,
     loading: false,
     error: null,
   },
@@ -50,6 +65,19 @@ const resourcesSlice = createSlice({
       })
       .addCase(fetchBlogs.fulfilled, (state, action) => {
         state.blogs = action.payload;
+      })
+      .addCase(fetchBlogById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.singleBlog = null;
+      })
+      .addCase(fetchBlogById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.singleBlog = action.payload;
+      })
+      .addCase(fetchBlogById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

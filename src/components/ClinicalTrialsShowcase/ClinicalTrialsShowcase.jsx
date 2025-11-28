@@ -234,7 +234,7 @@ const ClinicalTrialsShowcase = ({ componentData, pageData }) => {
         const slideData = slide?.attributes || slide;
         return {
           label: slideData?.heading ?? slideData?.label ?? '',
-          title: slideData?.subheading ?? slideData?.title ?? '',
+          title: slideData?.subHeading ?? slideData?.title ?? '',
           description: formatRichText(slideData?.description) ?? slideData?.description ?? '',
           buttonText: slideData?.cta?.text ?? slideData?.buttonText ?? '',
           buttonLink: slideData?.cta?.URL ?? slideData?.buttonLink ?? slideData?.cta?.link ?? '#',

@@ -1,0 +1,46 @@
+.author-row {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* or whatever spacing your design needs */
+    height: 28px; /* from your Figma specs */
+  }
+  
+  /* flow tag from earlier */
+  .flow-tag {
+    background: #36454F;
+    padding: 6px 14px;
+    border-radius: 12px;
+    display: inline-flex;
+    font-size: 14px;
+    gap: 8px;
+  }
+  
+  /* 24x24 author thumbnail */
+  .author-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #D9D9D9;
+    flex-shrink: 0;
+  }
+  
+  .author-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .author-name {
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-weight: 500;            /* Medium weight */
+    font-size: 12px;
+    line-height: 100%;           /* 1 = 100% */
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 0;                   /* keep aligned */
+    display: flex;
+    align-items: center;         /* keeps it vertically aligned with the avatar */
+  }
+  
+  

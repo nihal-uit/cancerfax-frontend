@@ -109,10 +109,10 @@ const ClinicalTrialsAbout = ({ componentData, pageData }) => {
     image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800'
   };
 
-  // Map Strapi data: heading -> label, sub_heading -> title
+  // Map Strapi data: heading -> label, subHeading -> title
   const content = statisticsSection ? {
     label: statisticsSection.heading || fallbackContent.label,
-    title: statisticsSection.sub_heading || fallbackContent.title,
+    title: statisticsSection.subHeading || fallbackContent.title,
     description: formatRichText(statisticsSection.description) || statisticsSection.description || fallbackContent.description,
     buttonText: statisticsSection.cta?.text || fallbackContent.buttonText,
     buttonUrl: statisticsSection.cta?.URL || fallbackContent.buttonUrl,

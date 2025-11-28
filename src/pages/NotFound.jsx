@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import Navigation from '../components/Navigation/Navigation';
+import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import store from '../store';
@@ -155,7 +155,7 @@ const NotFound = ({ message = "The page you're looking for isn't available right
 
   return (
     <PageWrapper>
-      <Navigation darkText={true} />
+      <Header darkText={true} />
       <Content>
         <ErrorImage 
           src="/images/Frame 1618873775.png" 

@@ -3,580 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { fetchHospitals } from '../../store/slices/hospitalNetworkSlice';
 import { getMediaUrl } from '../../services/api';
-
-const Section = styled.section`
-  width: 100%;
-  background: white;
-  padding: 50px 105px;
-  
-  @media (max-width: 1400px) {
-    padding: 50px 80px;
-  }
-  
-  @media (max-width: 1200px) {
-    padding: 45px 60px;
-  }
-  
-  @media (max-width: 1024px) {
-    padding: 40px 40px;
-  }
-  
-  @media (max-width: 768px) {
-    padding: 35px 24px;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 30px 16px;
-  }
-`;
-
-const Container = styled.div`
-  max-width: 1440px;
-  margin: 0 auto;
-  width: 100%;
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-  
-  @media (max-width: 1400px) {
-    gap: 22px;
-  }
-  
-  @media (max-width: 1200px) {
-    gap: 22px;
-  }
-  
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-  
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-`;
-
-const Card = styled.div`
-  position: relative;
-  width: 340px;
-  height: 230px;
-  border-radius: 20px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-  }
-  
-  @media (max-width: 1200px) {
-    width: 320px;
-    height: 220px;
-    border-radius: 18px;
-  }
-  
-  @media (max-width: 1024px) {
-    width: 100%;
-    max-width: 300px;
-    height: 210px;
-    border-radius: 16px;
-    margin: 0 auto;
-  }
-  
-  @media (max-width: 768px) {
-    width: 100%;
-    max-width: 100%;
-    height: 220px;
-    border-radius: 14px;
-    margin: 0;
-  }
-  
-  @media (max-width: 480px) {
-    width: 100%;
-    max-width: 100%;
-    height: 200px;
-    border-radius: 12px;
-  }
-  
-  @media (max-width: 360px) {
-    height: 180px;
-  }
-`;
-
-const CardImage = styled.div`
-  width: 100%;
-  height: 100%;
-  background-image: url(${props => props.bgImage});
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.1) 40%,
-      rgba(0, 0, 0, 0.6) 100%
-    );
-    z-index: 1;
-  }
-`;
-
-const CardContent = styled.div`
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 315px;
-  height: 56px;
-  padding: 0 24px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  background: white;
-  border-radius: 12px;
-  transition: all 0.4s ease;
-  
-  ${Card}:hover & {
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 460px;
-    height: 115px;
-    padding: 14px 18px;
-    background: rgba(71, 91, 107, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 6px;
-    overflow: hidden;
-  }
-  
-  @media (max-width: 1200px) {
-    width: 300px;
-    height: 54px;
-    padding: 0 22px;
-    bottom: 18px;
-    border-radius: 11px;
-    
-    ${Card}:hover & {
-      bottom: 18px;
-      max-width: 440px;
-      height: 110px;
-      padding: 13px 16px;
-      border-radius: 14px;
-      overflow: hidden;
-      justify-content: space-between;
-      gap: 5px;
-    }
-  }
-  
-  @media (max-width: 1024px) {
-    width: 280px;
-    height: 52px;
-    padding: 0 20px;
-    bottom: 16px;
-    border-radius: 10px;
-    
-    ${Card}:hover & {
-      bottom: 16px;
-      max-width: 420px;
-      height: 105px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      overflow: hidden;
-      justify-content: space-between;
-      gap: 5px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    width: calc(100% - 32px);
-    max-width: 100%;
-    height: 56px;
-    padding: 0 20px;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 10px;
-    box-sizing: border-box;
-    
-    ${Card}:hover & {
-      bottom: 16px;
-      width: calc(100% - 24px);
-      max-width: 100%;
-      height: auto;
-      min-height: 110px;
-      padding: 14px 16px;
-      border-radius: 12px;
-      overflow: hidden;
-      justify-content: space-between;
-      gap: 8px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    width: calc(100% - 24px);
-    max-width: 100%;
-    height: 54px;
-    padding: 0 18px;
-    bottom: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 10px;
-    
-    ${Card}:hover & {
-      bottom: 14px;
-      width: calc(100% - 20px);
-      max-width: 100%;
-      height: auto;
-      min-height: 105px;
-      padding: 12px 14px;
-      border-radius: 10px;
-      overflow: hidden;
-      justify-content: space-between;
-      gap: 6px;
-    }
-  }
-  
-  @media (max-width: 360px) {
-    width: calc(100% - 20px);
-    height: 52px;
-    padding: 0 16px;
-    bottom: 12px;
-    border-radius: 9px;
-    
-    ${Card}:hover & {
-      bottom: 12px;
-      width: calc(100% - 16px);
-      min-height: 100px;
-      padding: 10px 12px;
-      gap: 5px;
-    }
-  }
-`;
-
-const HoverContent = styled.div`
-  display: none;
-  width: 100%;
-  
-  ${Card}:hover & {
-    display: block;
-  }
-`;
-
-const HospitalName = styled.h3`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 18px;
-  font-weight: 600;
-  color: #36454F;
-  margin: 0;
-  line-height: 1.4;
-  flex: 1;
-  transition: all 0.3s ease;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  
-  ${Card}:hover & {
-    color: white;
-    font-size: 15px;
-    font-weight: 700;
-    flex: none;
-    width: 100%;
-    line-height: 1.25;
-  }
-  
-  @media (max-width: 1024px) {
-    font-size: 17px;
-    
-    ${Card}:hover & {
-      font-size: 14px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    font-size: 17px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    
-    ${Card}:hover & {
-      font-size: 14px;
-      white-space: normal;
-      overflow: visible;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    font-size: 16px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    
-    ${Card}:hover & {
-      font-size: 13px;
-      white-space: normal;
-      overflow: visible;
-    }
-  }
-  
-  @media (max-width: 360px) {
-    font-size: 15px;
-    
-    ${Card}:hover & {
-      font-size: 12px;
-    }
-  }
-`;
-
-const HospitalAddress = styled.p`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 11px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0 0 8px 0;
-  line-height: 1.35;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  flex-shrink: 0;
-  
-  @media (max-width: 1024px) {
-    font-size: 10px;
-    line-height: 1.3;
-    margin: 0 0 7px 0;
-  }
-  
-  @media (max-width: 768px) {
-    font-size: 11px;
-    line-height: 1.4;
-    margin: 0 0 8px 0;
-    -webkit-line-clamp: 2;
-  }
-  
-  @media (max-width: 480px) {
-    font-size: 10px;
-    line-height: 1.35;
-    margin: 0 0 7px 0;
-    -webkit-line-clamp: 2;
-  }
-  
-  @media (max-width: 360px) {
-    font-size: 9px;
-    line-height: 1.3;
-    margin: 0 0 6px 0;
-  }
-`;
-
-const ActionsRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  width: 100%;
-  flex-shrink: 0;
-  margin-top: auto;
-  
-  @media (max-width: 768px) {
-    gap: 5px;
-  }
-`;
-
-const CallButton = styled.button`
-  flex: 1;
-  padding: 6px 12px;
-  background: #E91E63;
-  border: none;
-  border-radius: 50px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  white-space: nowrap;
-  min-height: 28px;
-  
-  &:hover {
-    background: #C2185B;
-    transform: scale(1.02);
-  }
-  
-  svg {
-    width: 12px;
-    height: 12px;
-    flex-shrink: 0;
-  }
-  
-  @media (max-width: 1024px) {
-    padding: 5px 10px;
-    font-size: 10px;
-    min-height: 26px;
-  }
-  
-  @media (max-width: 768px) {
-    padding: 6px 10px;
-    font-size: 10px;
-    min-height: 28px;
-    
-    svg {
-      width: 11px;
-      height: 11px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    padding: 5px 8px;
-    font-size: 9px;
-    min-height: 26px;
-    gap: 3px;
-    
-    svg {
-      width: 10px;
-      height: 10px;
-    }
-  }
-  
-  @media (max-width: 360px) {
-    padding: 4px 6px;
-    font-size: 8px;
-    min-height: 24px;
-    
-    svg {
-      width: 9px;
-      height: 9px;
-    }
-  }
-`;
-
-const IconButton = styled.button`
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1.5px solid rgba(255, 255, 255, 0.6);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-  
-  svg {
-    width: 14px;
-    height: 14px;
-    stroke: white;
-    fill: none;
-  }
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: white;
-    transform: scale(1.05);
-  }
-  
-  @media (max-width: 1024px) {
-    width: 26px;
-    height: 26px;
-    
-    svg {
-      width: 13px;
-      height: 13px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    width: 24px;
-    height: 24px;
-    
-    svg {
-      width: 12px;
-      height: 12px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    width: 22px;
-    height: 22px;
-    
-    svg {
-      width: 11px;
-      height: 11px;
-    }
-  }
-`;
-
-const IconButtonsGroup = styled.div`
-  display: flex;
-  gap: 5px;
-  flex-shrink: 0;
-  
-  @media (max-width: 768px) {
-    gap: 4px;
-  }
-  
-  @media (max-width: 480px) {
-    gap: 3px;
-  }
-`;
-
-const ArrowIcon = styled.div`
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-  cursor: pointer;
-  
-  svg {
-    width: 20px;
-    height: 20px;
-    stroke: #36454F;
-    transition: all 0.3s ease;
-  }
-  
-  ${Card}:hover & {
-    display: none;
-  }
-  
-  @media (max-width: 768px) {
-    width: 28px;
-    height: 28px;
-    
-    svg {
-      width: 18px;
-      height: 18px;
-    }
-  }
-`;
+import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 
 const HospitalGrid = () => {
+
+  const fadeIn = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   const dispatch = useDispatch();
   const { hospitals: strapiHospitals } = useSelector((state) => state.hospitalNetwork);
 
@@ -686,8 +121,7 @@ const HospitalGrid = () => {
   };
 
   return (
-    <Section>
-      <Container>
+    <>
         <Grid>
           {hospitals.map((hospital) => {
             const hospitalImage = hospital?.image?.data?.attributes?.url 
@@ -699,6 +133,7 @@ const HospitalGrid = () => {
             const phone = hospital?.phone || '(+91) 83741 90429';
 
             return (
+              <ScrollAnimationComponent animationVariants={fadeIn}>
               <Card key={hospital.id}>
                 <CardImage bgImage={hospitalImage} />
                 <CardContent>
@@ -721,15 +156,13 @@ const HospitalGrid = () => {
                       </CallButton>
                       <IconButtonsGroup>
                         <IconButton onClick={(e) => handleShareClick(e, hospital)}>
-                          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                            <polyline points="16 6 12 2 8 6"/>
-                            <line x1="12" y1="2" x2="12" y2="15"/>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 8 8" fill="none">
+                          <path d="M3.69965 6.9308C3.73648 7.32405 4.08511 7.61299 4.47836 7.57616C4.74569 7.55113 4.97647 7.37847 5.07594 7.12908L7.52858 0.980098C7.6749 0.613239 7.49613 0.197219 7.12927 0.0508907C6.95915 -0.0169636 6.76949 -0.0169636 6.59937 0.0508907L0.450387 2.50352C0.0835284 2.64985 -0.0952471 3.06587 0.0510812 3.43273C0.150555 3.68212 0.381339 3.85478 0.648668 3.87981L3.43844 4.14103L3.69965 6.9308ZM6.78898 0.790489L4.4373 6.68638L4.13385 3.44561L0.893088 3.14217L6.78898 0.790489Z" fill="white"/>
                           </svg>
                         </IconButton>
                         <IconButton onClick={() => handleCardClick(hospital)}>
-                          <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 8 7" fill="none">
+                          <path d="M3.98451 0.109041C3.84796 0.243661 3.83516 0.456382 3.94709 0.605635L3.98071 0.644661L6.29146 2.98792L0.37875 2.98792C0.169572 2.98792 0 3.15749 0 3.36667C0 3.55975 0.144487 3.71909 0.33124 3.74247L0.37875 3.74542H6.29146L3.98071 6.08867C3.84609 6.22522 3.8363 6.4381 3.95034 6.58575L3.98451 6.62429C4.12105 6.75891 4.33393 6.7687 4.48158 6.65466L4.52013 6.62049L7.46596 3.63258C7.59923 3.4974 7.61034 3.28708 7.49928 3.13938L7.46596 3.10076L4.52013 0.112839C4.37327 -0.0361169 4.13346 -0.0378176 3.98451 0.109041Z" fill="white"/>
                           </svg>
                         </IconButton>
                       </IconButtonsGroup>
@@ -737,13 +170,239 @@ const HospitalGrid = () => {
                   </HoverContent>
                 </CardContent>
               </Card>
+              </ScrollAnimationComponent>
             );
           })}
         </Grid>
-      </Container>
-    </Section>
+    </>
   );
 };
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  
+  @media (max-width: 1200px) {
+    gap: 20px;
+  }
+  
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const Card = styled.div`
+  position: relative;
+  width: 100%;
+  height: 260px;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+`;
+
+const CardImage = styled.div`
+  width: 100%;
+  height: 100%;
+  background-image: url(${props => props.bgImage});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.1) 40%,
+      rgba(0, 0, 0, 0.6) 100%
+    );
+    z-index: 1;
+  }
+`;
+
+const CardContent = styled.div`
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 28px);
+  height: 64px;
+  padding: 0 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: white;
+  border-radius: 12px;
+  transition: all 0.4s ease;
+  overflow: hidden;
+
+  ${Card}:hover & {
+    height: 140px;
+    padding: 12px;
+    background: #36454F;
+    backdrop-filter: blur(10px);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    overflow: hidden;
+  }
+`;
+
+const HoverContent = styled.div`
+  display: none;
+  width: 100%;
+  
+  ${Card}:hover & {
+    display: block;
+  }
+`;
+
+const HospitalName = styled.h5`
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #36454F;
+  margin: 0;
+  line-height: 1.4;
+  flex: 1;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  
+  ${Card}:hover & {
+    color: white;
+    font-size: 16px;
+    flex: none;
+    width: 100%;
+    line-height: 1.25;
+  }
+`;
+
+const HospitalAddress = styled.p`
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: #fff;
+  margin: 0 0 14px 0;
+  line-height: 1.35;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  flex-shrink: 0;
+`;
+
+const ActionsRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: auto;
+  @media (max-width: 768px) {
+    gap: 12px;
+  }
+`;
+
+const CallButton = styled.button`
+  flex: 1;
+  padding: 6px 12px;
+  background: #FF69B4;
+  border: none;
+  border-radius: 12px;
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  min-height: 30px;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+  
+  svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+`;
+
+const IconButton = styled.button`
+  width: 60px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+   
+  &:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: white;
+  }
+`;
+
+const IconButtonsGroup = styled.div`
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+  
+  @media (max-width: 768px) {
+    gap: 8px;
+  }
+`;
+
+const ArrowIcon = styled.div`
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  cursor: pointer;
+  
+  svg {
+    width: 20px;
+    height: 20px;
+    stroke: #36454F;
+    transition: all 0.3s ease;
+  }
+  
+  ${Card}:hover & {
+    display: none;
+  }
+`;
 
 export default HospitalGrid;
 

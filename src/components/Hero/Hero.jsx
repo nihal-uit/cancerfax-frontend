@@ -68,7 +68,7 @@ const Hero = ({ componentData, pageData }) => {
       heroSection: !!heroSection,
       heroSectionData: heroSection ? {
         heading: heroSection.heading,
-        sub_heading: heroSection.sub_heading,
+        subHeading: heroSection.subHeading,
         description: heroSection.description?.substring(0, 50) + '...',
         hasImage: !!heroSection.image,
         hasCTAs: !!heroSection.CTAs
@@ -89,7 +89,7 @@ const Hero = ({ componentData, pageData }) => {
   // Don't use fallback while loading - wait for Strapi data to load first
   const storyData = heroSection ? {
     label: heroSection.heading,
-    title: heroSection.sub_heading,
+    title: heroSection.subHeading,
     description: heroSection.description,
     buttonText: heroSection.CTAs?.[0]?.text,
     buttonUrl: heroSection.CTAs?.[0]?.URL

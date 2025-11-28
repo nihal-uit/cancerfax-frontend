@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import Navigation from '../components/Navigation/Navigation';
+import Header from '../components/Header/Header';
 import FAQHero from '../components/FAQHero/FAQHero';
 import FAQSection from '../components/FAQSection/FAQSection';
 import Footer from '../components/Footer/Footer';
@@ -11,30 +11,14 @@ const FAQ = () => {
   }, []);
 
   return (
-    <FAQPage>
+    <div className='page_wrapper'>
+      <Header />
       <FAQHero />
-      <NavigationWrapper>
-        <Navigation darkText={true} />
-      </NavigationWrapper>
       <FAQSection />
       <Footer />
-    </FAQPage>
+    </div>
   );
 };
-
-const FAQPage = styled.div`
-  width: 100%;
-  background: #FAF5F0;
-  position: relative;
-`;
-
-const NavigationWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 200;
-`;
 
 export default FAQ;
 

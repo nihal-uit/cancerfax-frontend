@@ -10,14 +10,31 @@ export const theme = {
     lightGray: '#C2CBD1',
     teal: '#2D8EA4',
     lightTeal: 'rgba(186, 229, 229, 0.05)',
-    blackText: '#1E1928',
+    blackText: '#36454F',
+    lightText: '#8C8282',
+    red: '#F54B1E'
+  }, 
+
+  backgroundColor: {
+    background: '#F8F8F8',
+    primary: '#36454F',
+    primaryDark: '#2A3840',
+    pink: '#FF69B4',
+    white: '#FFFFFF',
+    gray: '#727B81',
+    darkGray: '#4B5E6B',
+    lightGray: '#C2CBD1',
+    teal: '#2D8EA4',
+    lightTeal: 'rgba(186, 229, 229, 0.05)',
+    blackText: '#36454F',
     lightText: '#8C8282',
     red: '#F54B1E'
   },
   
   fonts: {
     heading: "'Montserrat', sans-serif",
-    body: "'Montserrat', sans-serif"
+    body: "'Montserrat', sans-serif",
+    primary: "'Be Vietnam Pro', sans-serif"
   },
   
   fontSizes: {
@@ -40,7 +57,8 @@ export const theme = {
     light: 300,
     normal: 400,
     medium: 500,
-    semibold: 600
+    semibold: 600,
+    bold: 700
   },
   
   lineHeights: {

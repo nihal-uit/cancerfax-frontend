@@ -14,14 +14,14 @@ const defaultData = {
       title: 'Press Inquiry',
       description: 'For any press-related inquiry, please write to us on the below email directly.',
       email: 'pressinfo@email.com',
-      icon: '📧', // Fallback emoji
+      icon: '../images/dedicated_support_img-1.svg', // Fallback emoji
     },
     {
       id: 2,
       title: 'Business Inquiry',
       description: 'For any press-related inquiry, please write to us on the below email directly.',
       email: 'business@email.com',
-      icon: '🤝', // Fallback emoji
+      icon: '../images/dedicated_support_img-2.svg', // Fallback emoji
     },
   ],
 };
@@ -40,11 +40,11 @@ const DedicatedSupport = () => {
   const supportCards = cards.length > 0 ? cards : defaultData.cards;
 
   return (
-    <SectionContainer>
-      <ContentWrapper>
-        <HeaderSection>
-          <Subtitle>{subtitle}</Subtitle>
-          <Title>{title}</Title>
+    <section className='dedicatedSupport_sec py-120'>
+      <div className='containerWrapper'>
+        <HeaderSection className='commContent_wrap'>
+          <span className='contentLabel'>{subtitle}</span>
+          <h3 className='title-3'>{title}</h3>
         </HeaderSection>
 
         <CardsGrid>
@@ -66,7 +66,7 @@ const DedicatedSupport = () => {
                 {iconUrl ? (
                   <IconImage src={iconUrl} alt={cardTitle} />
                 ) : (
-                  <IconFallback>{cardData.icon || '📧'}</IconFallback>
+                  <IconImage src={cardData.icon} alt={cardTitle} />
                 )}
               </IconContainer>
             );
@@ -80,7 +80,7 @@ const DedicatedSupport = () => {
                     <CardTitle>{cardTitle}</CardTitle>
                     <CardDescription>{cardDescription}</CardDescription>
                     
-                    <EmailButton href={`mailto:${cardEmail}`}>
+                    <EmailButton className='btn btn-pink-solid' href={`mailto:${cardEmail}`}>
                       {cardEmail}
                     </EmailButton>
                   </TextContent>
@@ -91,42 +91,10 @@ const DedicatedSupport = () => {
             );
           })}
         </CardsGrid>
-      </ContentWrapper>
-    </SectionContainer>
+      </div>
+    </section>
   );
 };
-
-const SectionContainer = styled.section`
-  width: 100%;
-  background: #F7F8FA;
-  padding: 100px 20px;
-  
-  @media (max-width: 968px) {
-    padding: 80px 20px;
-  }
-  
-  @media (max-width: 768px) {
-    padding: 60px 20px;
-  }
-`;
-
-const ContentWrapper = styled.div`
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 120px;
-  
-  @media (max-width: 1200px) {
-    padding: 0 60px;
-  }
-  
-  @media (max-width: 968px) {
-    padding: 0 40px;
-  }
-  
-  @media (max-width: 768px) {
-    padding: 0 20px;
-  }
-`;
 
 const HeaderSection = styled.div`
   text-align: center;
@@ -137,54 +105,16 @@ const HeaderSection = styled.div`
   }
 `;
 
-const Subtitle = styled.p`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: #475569;
-  margin: 0 0 20px 0;
-  
-  @media (max-width: 768px) {
-    font-size: 11px;
-    letter-spacing: 3px;
-  }
-`;
-
-const Title = styled.h2`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 45px;
-  font-weight: 550;
-  line-height: 1.2;
-  color: #1e293b;
-  margin: 0;
-  
-  @media (max-width: 1024px) {
-    font-size: 42px;
-  }
-  
-  @media (max-width: 768px) {
-    font-size: 36px;
-  }
-  
-  @media (max-width: 480px) {
-    font-size: 28px;
-  }
-`;
-
 const CardsGrid = styled.div`
   display: flex;
-  gap: 40px;
-  justify-content: center;
-  align-items: stretch;
+  gap: 27px;
+  align-items: center;
   
   @media (max-width: 1200px) {
-    gap: 30px;
-    flex-wrap: wrap;
+    gap: 24px;
   }
   
-  @media (max-width: 968px) {
+  @media (max-width: 1024px) {
     flex-direction: column;
     align-items: center;
   }
@@ -193,46 +123,24 @@ const CardsGrid = styled.div`
 const Card = styled.div`
   background: #FFFFFF;
   border-radius: 24px;
-  padding: 30px 35px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 25px 30px;
+  border: 1px solid #E3E2E2;
   transition: all 0.3s ease;
-  width: 520px;
-  min-width: 520px;
-  max-width: 520px;
-  height: 185px;
-  flex-shrink: 0;
+  min-height: 215px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   box-sizing: border-box;
-  
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  }
-  
-  @media (max-width: 1120px) {
-    width: 100%;
-    min-width: 300px;
-    max-width: 520px;
-    height: auto;
-  }
-  
+    
   @media (max-width: 768px) {
-    width: 100%;
-    min-width: 280px;
-    max-width: 100%;
-    height: auto;
-    padding: 30px 25px;
   }
 `;
 
 const CardContent = styled.div`
   display: flex;
-  gap: 25px;
-  align-items: flex-start;
+  gap: 30px;
+  align-items: center;
   height: 100%;
-  flex-direction: ${props => props.isRightAligned ? 'row-reverse' : 'row'};
   
   @media (max-width: 768px) {
     flex-direction: column;
@@ -244,31 +152,17 @@ const CardContent = styled.div`
 
 const IconContainer = styled.div`
   flex-shrink: 0;
-  width: 80px;
-  height: 80px;
+  width: 165px;
+  height: 165px;
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  @media (max-width: 768px) {
-    width: 70px;
-    height: 70px;
-  }
 `;
 
 const IconImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: contain;
-`;
-
-const IconFallback = styled.div`
-  font-size: 48px;
-  line-height: 1;
-  
-  @media (max-width: 768px) {
-    font-size: 42px;
-  }
 `;
 
 const TextContent = styled.div`
@@ -288,64 +182,24 @@ const TextContent = styled.div`
 `;
 
 const CardTitle = styled.h3`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 22px;
-  font-weight: 600;
-  color: #1e293b;
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #36454F;
   margin: 0;
-  line-height: 1.2;
-  
-  @media (max-width: 768px) {
-    font-size: 20px;
-  }
+  line-height: 28px;
 `;
 
 const CardDescription = styled.p`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 13px;
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 1.4;
-  color: #64748b;
+  line-height: 28px;
+  color: #454140;
   margin: 0;
-  
-  @media (max-width: 768px) {
-    font-size: 13px;
-  }
 `;
 
 const EmailButton = styled.a`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 185px;
-  height: 40px;
-  background: linear-gradient(135deg, #FF69B4 0%, #FF8EC5 100%);
-  color: #FFFFFF;
-  text-decoration: none;
-  border-radius: 50px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
-  padding: 0 20px;
-  box-sizing: border-box;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
-    background: linear-gradient(135deg, #FF5FAB 0%, #FF7DB8 100%);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-  
-  @media (max-width: 768px) {
-    font-size: 12px;
-    width: 100%;
-    max-width: 185px;
-  }
 `;
 
 export default memo(DedicatedSupport);
