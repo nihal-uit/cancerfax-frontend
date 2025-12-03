@@ -109,7 +109,24 @@ const DrugsDetailsInfo = () => {
                       </div>
                   </div>
                 </div>
-                
+                <div className="row g-4">
+                  <div className="col-lg-12">
+                    <div className="content-gap-20">
+                      <h6 className="text-24">Prof. Shuhand Wang – Specialization</h6>
+                      <p>Prof. Shuhang Wang is an accomplished oncologist, clinical researcher, and clinical trial specialist affiliated with the Chinese Academy of Medical Sciences (CAMS) Cancer Center in Beijing, one of China’s most prestigious cancer treatment and research institutions.</p>
+                      <p>Her dual roles as Associate Chief Physician and GCP (Good Clinical Practice) Center Secretary highlight his expertise in both clinical oncology and the management of cutting-edge cancer trials. Below is a detailed breakdown of his specialty and contributions to the field.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="read-more-wrap">
+                  <button className="readMore_btn">
+                    Read more
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M14.8057 9.3511C14.5658 9.10776 14.1866 9.08493 13.9207 9.28441L13.8511 9.34433L9.675 13.4625L9.675 2.925C9.675 2.55221 9.37279 2.25 9 2.25C8.65588 2.25 8.37191 2.5075 8.33026 2.84033L8.325 2.925V13.4625L4.1489 9.34433C3.90556 9.10441 3.52616 9.08697 3.26302 9.2902L3.19433 9.3511C2.95441 9.59444 2.93697 9.97384 3.1402 10.237L3.2011 10.3057L8.5261 15.5557C8.76701 15.7932 9.14184 15.813 9.40506 15.615L9.4739 15.5557L14.7989 10.3057C15.0644 10.0439 15.0674 9.61657 14.8057 9.3511Z" fill="currentColor"/>
+                    </svg>
+                  </button>
+                </div>
              </div>
             </div>
 

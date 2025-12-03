@@ -45,6 +45,20 @@ export const fetchBlogById = createAsyncThunk(
   }
 );
 
+export const fetchRelatedBlogs = createAsyncThunk(
+  'resources/fetchRelatedBlogs',
+  async (id, { rejectWithValue }) => {
+    try {
+      const data = await resourcesAPI.getRelatedBlogs(id);
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || 'Failed to fetch related blogs'
+      );
+    }
+  }
+);
+
 const resourcesSlice = createSlice({
   name: 'resources',
   initialState: {
@@ -54,7 +68,11 @@ const resourcesSlice = createSlice({
     blogsHasMore: true,
     blogsLoading: false,
     singleBlog: null,
+    relatedBlogs: null,
     loading: false,
+    loadingBlogs: false,
+    loadingSingleBlog: false,
+    loadingRelatedBlogs: false,
     error: null,
   },
   reducers: {},
@@ -103,16 +121,29 @@ const resourcesSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(fetchBlogById.pending, (state) => {
-        state.loading = true;
+        state.loadingSingleBlog = true;
         state.error = null;
         state.singleBlog = null;
       })
       .addCase(fetchBlogById.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loadingSingleBlog = false;
         state.singleBlog = action.payload;
       })
       .addCase(fetchBlogById.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingSingleBlog = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchRelatedBlogs.pending, (state) => {
+        state.loadingRelatedBlogs = true;
+        state.error = null;
+        state.relatedBlogs = null;
+      })
+      .addCase(fetchRelatedBlogs.fulfilled, (state, action) => {
+        state.loadingRelatedBlogs = false;
+        state.relatedBlogs = action.payload;
+      })
+      .addCase(fetchRelatedBlogs.rejected, (state, action) => {
+        state.loadingRelatedBlogs = false;
         state.error = action.payload;
       });
   },

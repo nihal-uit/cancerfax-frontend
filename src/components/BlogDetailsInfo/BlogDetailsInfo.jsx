@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { renderRichTextWithImages } from '../../utils/strapiHelpers';
 import { getMediaUrl } from '../../services/api';
+import { Link } from "react-router-dom";
 
 const FIXED_SECTIONS = [
   { id: 'author', label: 'Author' },
@@ -20,7 +21,7 @@ const BlogDetailsInfo = ({ data, loading }) => {
     const dynamicSections = contentArray
       .sort((a, b) => a.order - b.order)
       .map((c) => ({
-        id: getSectionId(c.id),
+        id: c.section_name,
         label: c.section_name,
         content: c,
       }));
@@ -82,11 +83,29 @@ const BlogDetailsInfo = ({ data, loading }) => {
             </ul>
           </aside>
 
-          <div className='hospitalDetails_info blogDetails_info doctorsDetails_info'>
+          <div className="hospitalDetails_info blogDetails_info doctorsDetails_info">
+            {data.featured_video ? (
+              <div className="featuredMedia mb-4">
+                <video
+                  src={getMediaUrl(data.featured_video)}
+                  controls
+                  style={{ width: "100%", borderRadius: "8px" }}
+                />
+              </div>
+            ) : data.featured_image ? (
+              <div className="featuredMedia mb-4">
+                <img
+                  src={getMediaUrl(data.featured_image)}
+                  alt="featured"
+                  style={{ width: "100%", borderRadius: "8px" }}
+                />
+              </div>
+            ) : null}
+
             {sections.map((section) => {
-              if (section.id === 'author') {
-                const authorName = `${data.author?.firstName || ''} ${
-                  data.author?.lastName || ''
+              if (section.id === "author") {
+                const authorName = `${data.author?.firstName || ""} ${
+                  data.author?.lastName || ""
                 }`.trim();
                 const authorAvatar = getMediaUrl(data.author?.avatar);
                 const firstInitial = authorName.charAt(0).toUpperCase();
@@ -104,23 +123,23 @@ const BlogDetailsInfo = ({ data, loading }) => {
                         <div className='col-lg-4'>
                           <div className='doctors-details-img'>
                             {hasAvatar ? (
-                              <img src={authorAvatar} alt='author_image' />
+                              <img src={authorAvatar} alt="author_image" />
                             ) : (
                               <div
                                 style={{
-                                  width: '100%',
-                                  height: '100%',
-                                  minHeight: '300px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
+                                  width: "100%",
+                                  height: "100%",
+                                  minHeight: "300px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
                                   background:
-                                    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                  color: '#ffffff',
-                                  fontSize: '120px',
-                                  fontWeight: '700',
-                                  textTransform: 'uppercase',
-                                  borderRadius: '8px',
+                                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                  color: "#ffffff",
+                                  fontSize: "120px",
+                                  fontWeight: "700",
+                                  textTransform: "uppercase",
+                                  borderRadius: "8px",
                                 }}
                               >
                                 {firstInitial || 'A'}
@@ -128,10 +147,10 @@ const BlogDetailsInfo = ({ data, loading }) => {
                             )}
                           </div>
                         </div>
-                        <div className='col-lg-8'>
-                          <div className='content-gap-20'>
-                            <h4 className='f-w-600'>
-                              {authorName || 'Author'}
+                        <div className="col-lg-8">
+                          <div className="content-gap-20">
+                            <h4 className="f-w-600">
+                              {authorName || "Author"}
                             </h4>
                             <AuthorBio bio={data.author?.bio} />
                           </div>
@@ -157,7 +176,7 @@ const BlogDetailsInfo = ({ data, loading }) => {
                             <h4 className='f-w-600'>Related Tags</h4>
                             <div className='tags_wrap'>
                               <ul className='tags_ul'>
-                                {data.tags?.map((tag) => (
+                                {data?.resource_tags?.map((tag) => (
                                   <li key={tag.id}>{tag.name}</li>
                                 ))}
                               </ul>
@@ -165,6 +184,61 @@ const BlogDetailsInfo = ({ data, loading }) => {
                           </div>
                         </div>
                       </div>
+                    </div>
+
+                    <div className="blog-arrow-wrap">
+                      {data?.content?.length > 0 && data?.content?.length === 1 && (
+                        <>
+                        <div className="blog-arrow-left">
+                          </div>
+
+                        <div className="blog-arrow-right">
+                          <p>{data.content[0].heading}</p>
+                          <Link
+                            className="arrow-btn"
+                            to={
+                              data?.content?.[0]?.documentId
+                                ? `/resources/${data.content[0].documentId}`
+                                : "#"
+                            }
+                          >
+                            <ArrowRight />
+                          </Link>
+                        </div>
+                        </>
+                      )}
+
+                      {data?.content?.length >= 2 && (
+                        <>
+                          <div className="blog-arrow-left">
+                            <Link
+                              className="arrow-btn"
+                              to={
+                                data?.content?.[0]?.documentId
+                                  ? `/resources/${data.content[0].documentId}`
+                                  : "#"
+                              }
+                            >
+                              <ArrowLeft />
+                            </Link>
+                            <p>{data.content[0].heading}</p>
+                          </div>
+
+                          <div className="blog-arrow-right">
+                            <p>{data.content[1].heading}</p>
+                            <Link
+                              className="arrow-btn"
+                              to={
+                                data?.content?.[1]?.documentId
+                                  ? `/resources/${data.content[1].documentId}`
+                                  : "#"
+                              }
+                            >
+                              <ArrowRight />
+                            </Link>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 );
@@ -177,11 +251,16 @@ const BlogDetailsInfo = ({ data, loading }) => {
                   ref={(el) => (sectionRefs.current[section.id] = el)}
                   className='section'
                 >
-                  <div className='commContent_wrap content-gap-24'>
-                    <div className='row g-4'>
-                      <div className='col-lg-12'>
-                        <div className='content-gap-20'>
-                          <h4 className='f-w-600'>{section.label}</h4>
+                  <div className="commContent_wrap content-gap-24">
+                    <div className="row g-4">
+                      <div className="col-lg-12">
+                        <div className="content-gap-20">
+                          <h4 className="f-w-600">
+                            {section.label
+                              ? section.label[0].toUpperCase() +
+                                section.label.slice(1)
+                              : ""}
+                          </h4>
                           {renderRichTextWithImages(
                             section.content?.description
                           )}
@@ -202,14 +281,14 @@ const BlogDetailsInfo = ({ data, loading }) => {
 const AuthorBio = ({ bio }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const safeBio = bio || ''; // <-- prevents null / undefined issues
+  const safeBio = bio || "";
   const shortBio = safeBio.slice(0, 500);
 
   return (
     <p className='text-16'>
       {expanded ? safeBio : shortBio}
 
-      {safeBio.length > 500 && (
+      {safeBio?.length && safeBio?.length > 500 && (
         <>
           {!expanded ? '...' : ''}
 
@@ -217,12 +296,12 @@ const AuthorBio = ({ bio }) => {
             onClick={() => setExpanded(!expanded)}
             className='readMoreBtn'
             style={{
-              border: 'none',
-              background: 'none',
-              color: '#FF69B4',
-              fontWeight: '600',
-              cursor: 'pointer',
-              marginLeft: '6px',
+              border: "none",
+              background: "none",
+              color: "#FF69B4",
+              fontWeight: "600",
+              cursor: "pointer",
+              marginLeft: "6px",
               padding: 0,
             }}
           >
@@ -233,5 +312,63 @@ const AuthorBio = ({ bio }) => {
     </p>
   );
 };
+
+const topMedia = (data) => {
+  if (data.featured_video) {
+    return (
+      <div className="featuredMedia">
+        <video
+          src={getMediaUrl(data.featured_video)}
+          controls
+          style={{ width: "100%", borderRadius: "8px" }}
+        />
+      </div>
+    );
+  }
+
+  if (data.featured_image) {
+    return (
+      <div className="featuredMedia">
+        <img
+          src={getMediaUrl(data.featured_image)}
+          alt="featured"
+          style={{ width: "100%", borderRadius: "8px" }}
+        />
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const ArrowRight = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="17"
+    height="10"
+    viewBox="0 0 17 10"
+    fill="none"
+  >
+    <path
+      d="M11.4717 9.05705C11.7363 9.30201 12.1653 9.30189 12.43 9.05705L16.7427 5.06401C17.0073 4.81899 17.0073 4.42182 16.7427 4.1768L12.43 0.183757C12.1653 -0.0610779 11.7363 -0.0612019 11.4717 0.183757C11.2072 0.428717 11.2073 0.825928 11.4717 1.07096L14.6277 3.99299H0V5.24782H14.6277L11.4717 8.16984C11.2073 8.41488 11.2072 8.81209 11.4717 9.05705Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+const ArrowLeft = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="17"
+    height="10"
+    viewBox="0 0 17 10"
+    fill="none"
+  >
+    <path
+      d="M5.46968 9.05705C5.20511 9.30201 4.7761 9.30189 4.51144 9.05705L0.198709 5.06401C-0.0659302 4.81899 -0.0659303 4.42182 0.198709 4.1768L4.51144 0.183757C4.7761 -0.0610779 5.20511 -0.0612019 5.46968 0.183757C5.73425 0.428717 5.73412 0.825928 5.46968 1.07096L2.31372 3.99299H16.9414V5.24782H2.31372L5.46968 8.16984C5.73412 8.41488 5.73425 8.81209 5.46968 9.05705Z"
+      fill="currentColor"
+    />
+  </svg>
+);
 
 export default BlogDetailsInfo;

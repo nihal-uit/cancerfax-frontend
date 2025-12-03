@@ -106,42 +106,6 @@ const LeftColumn = styled.div`
   gap: 20px;
 `;
 
-const Subtitle = styled.p`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: #475569;
-  margin: 0;
-  
-  @media (max-width: 768px) {
-    font-size: 11px;
-    letter-spacing: 3px;
-  }
-`;
-
-const Title = styled.h2`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 40px;
-  font-weight: 550;
-  line-height: 1.2;
-  color: #1e293b;
-  margin: 0;
-  
-  @media (max-width: 1024px) {
-    font-size: 42px;
-  }
-  
-  @media (max-width: 768px) {
-    font-size: 36px;
-  }
-  
-  @media (max-width: 480px) {
-    font-size: 28px;
-  }
-`;
-
 const RightColumn = styled.div`
   display: flex;
   align-items: center;
@@ -149,19 +113,6 @@ const RightColumn = styled.div`
   
   @media (max-width: 768px) {
     padding-top: 0;
-  }
-`;
-
-const Description = styled.p`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 15px;
-  font-weight: 450;
-  line-height: 1.7;
-  color: #64748b;
-  margin: 0;
-  
-  @media (max-width: 768px) {
-    font-size: 14px;
   }
 `;
 

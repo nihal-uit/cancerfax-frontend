@@ -57,11 +57,13 @@ const BlogDetails = () => {
       <Header />
       <BlogDetailsHero data={singleBlog} loading={loading} />
       <BlogDetailsInfo data={singleBlog} loading={loading} />
-      <section className='relatedBlog_sec bg_light_blue py-120'>
-        <div className='containerWrapper' style={{ overflow: 'hidden' }}>
-          <RelatedBlogComponent data={blogList} />
+      { singleBlog?.related_posts?.length > 0 &&
+        <section className='relatedBlog_sec bg_light_blue py-120'>
+        <div className='containerWrapper' style={{overflow: 'hidden'}}>
+            <RelatedBlogComponent data={singleBlog?.related_posts} />
         </div>
       </section>
+      }
       <section className='supporting_life_sec py-120'>
         <div className='containerWrapper'>
           <SupportingLifeComponent

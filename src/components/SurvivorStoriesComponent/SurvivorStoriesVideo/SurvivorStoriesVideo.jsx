@@ -6,15 +6,13 @@ const SurvivorStoriesVideo = ({
   StoriesVideo = "../videos/stories-video.mp4",
   StoriesbtnLink = "Read Aisha’s Full Story",
   StoriesDescription = "“Cancer taught me how strong I truly am.” – Aisha, Lung Cancer Survivor. When Aisha was diagnosed with stage III lung cancer, her world turned upside down. Determined to fight, she explored advanced treatment options...",
-  onGetDirections,
-  onShare,
   onSubmitReports
 }) => {
   return (
     <div className='storiesVideo_wrap'>
       <div className='stories_video'>
         <div className='ratio'>
-          <BackgroundVideo class="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/doctors-video-poster.jpg">
+          <BackgroundVideo class="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/stories-video-poster.jpg">
           <source src={StoriesVideo} type="video/mp4" />
           {/* <source src="../videos/doctors-video.mov" type="video/mov" />
           <source src="../videos/doctors-video.webm" type="video/webm" />

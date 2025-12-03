@@ -21,7 +21,7 @@ const BlogDetailsHero = ({ data, loading }) => {
     const firstInitial = authorName.charAt(0).toUpperCase();
 
     return {
-      tags: data.tags ?? defaultContent.tags,
+      tags: data.resource_tags ?? defaultContent.tags,
       blogTitle: data.title ?? defaultContent.blogTitle,
       backgroundImage:
         getMediaUrl(data.featuredImage) ?? defaultContent.backgroundImage,

@@ -72,9 +72,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
     description:
       'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
   };
-
-  console.log('blogs --> ', blogs);
-
+  
   const content = data
     ? {
         label: data?.heading || defaultContent.label,

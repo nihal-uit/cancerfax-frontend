@@ -35,8 +35,6 @@ const SupportingLifeComponent = ({ supportContent }) => {
     image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800",
   };
 
-  console.log("supportContent --> ", supportContent);
-
   const content = supportContent || sectionContent || defaultContent;
 
   return (

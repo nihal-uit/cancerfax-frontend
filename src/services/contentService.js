@@ -117,6 +117,11 @@ export const resourcesAPI = {
     const response = await api.get(`/resources/${id}?populate=all`);
     return response.data.data;
   },
+
+  getRelatedBlogs: async (id) => {
+    const response = await api.get(`/resources/${id}?filters[isActive][$eq]=true&populate[related_posts][populate][related_posts][populate]=*&sort=publishedAt:desc`);
+    return response.data.data;
+  },
 };
 
 // Clinical Trials Showcase API

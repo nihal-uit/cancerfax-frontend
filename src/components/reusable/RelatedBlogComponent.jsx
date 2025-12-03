@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -5,21 +7,36 @@ import { Navigation } from "swiper/modules";
 import 'swiper/css';
 import { getMediaUrl } from '../../services/api';
 import { formatDate } from '../../utils/strapiHelpers';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchRelatedBlogs } from '../../store/slices/resourcesSlice';
+import NameAvatar from './NameAvatar';
 
-const RelatedBlogComponent = ({ data, loading }) => {
+const RelatedBlogComponent = ({ data }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  const relatedBlogs = useSelector(state => state.resources.relatedBlogs);
+
+
+  useEffect(() => {
+    dispatch(fetchRelatedBlogs(id));
+  }, [id, dispatch]);
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
 
+  console.log("related blogs --> ", relatedBlogs?.related_posts?.related_posts);
+
   return (
     <>
       <ScrollAnimationComponent animationVariants={fadeIn}>
         <div className='commContent_wrap'>
           <Header>
-            <Label className='contentLabel'>Knowledge Chest</Label>
-            <Title className='title-3'>Related Posts</Title>
+            <Label className='contentLabel'>{data?.heading}</Label>
+            <Title className='title-3'>{data?.subHeading}</Title>
           </Header>
         </div>
       </ScrollAnimationComponent>
@@ -42,15 +59,15 @@ const RelatedBlogComponent = ({ data, loading }) => {
         }}
         className="commCircle_navigation"
       >
-        {data && data.map((blog) => (
+        {relatedBlogs?.related_posts?.related_posts && relatedBlogs?.related_posts?.related_posts?.map((blog) => (
           <SwiperSlide key={blog.id}>
-              <BlogCard key={blog.id}>
+              <BlogCard as="div" key={blog.id} onClick={() => navigate(`/resources/${blog.documentId}`)}>
                 <BlogImage>
                   <img 
                     src={getMediaUrl(blog.featuredImage) ?? 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800'} 
                     alt='blog_image' 
                   />
-                  {blog.category && <CategoryBadge className='lg-badge'>{blog.category}</CategoryBadge>}
+                  {blog?.resource_category && <CategoryBadge className='lg-badge'>{blog.resource_category}</CategoryBadge>}
                 </BlogImage>
 
                 <BlogMeta>
@@ -64,13 +81,18 @@ const RelatedBlogComponent = ({ data, loading }) => {
                 <BlogContent>
                   <div>
                     <BlogTitle>{blog.title}</BlogTitle>
-                    <BlogDescription>{blog.title}</BlogDescription>
+                    <BlogDescription>{blog.excerpt ?? ''}</BlogDescription>
                   </div>            
                   <AuthorInfo>
                     <AuthorAvatar>
-                      <img 
-                        src={blog.author.avatar ?? 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800'} 
-                        alt={blog.author.name || 'Author'} 
+                      {/* <img 
+                        src={blog?.author?.avatar ?? 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800'} 
+                        alt={blog?.author?.firstName + ' ' + blog?.author?.lastName || 'Author'} 
+                      /> */}
+                      <NameAvatar 
+                        src={blog?.author?.avatar} 
+                        name={blog?.author?.firstName}
+                        size={30}
                       />
                     </AuthorAvatar>
                     <div>
@@ -143,6 +165,9 @@ const BlogCard = styled.article`
 `;
 
 const BlogImage = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 220px;
   position: relative;

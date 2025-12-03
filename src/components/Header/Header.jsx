@@ -26,7 +26,20 @@ const NavContainer = styled.nav`
         : props.theme.backgroundColor.primary};
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
-
+  &.header-overlay {
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      mask-image: linear-gradient(to bottom, rgba(54, 69, 79, 0.901) 50%, transparent 90%);
+      backdrop-filter: blur(30px);
+    }
+  }  
+  
   > * {
     pointer-events: auto;
   }
@@ -60,7 +73,7 @@ const NavContent = styled.div`
   padding: 0 40px;
   box-sizing: border-box;
   position: relative;
-
+  z-index: 2;
   @media (max-width: 1400px) {
     padding: 0 32px;
   }
@@ -73,6 +86,12 @@ const NavContent = styled.div`
     height: 44px;
     min-height: 44px;
   }
+  
+  @media (max-width: 768px) {
+    height: 40px;
+    min-height: 40px;
+  }
+
 `;
 
 const Logo = styled.a`
@@ -653,6 +672,10 @@ const LanguageButton = styled.button`
       height: 32px;
     }
   }
+  @media (max-width: 767px) {
+    width: 40px;
+    height: 40px;
+  }
 `;
 
 const LanguageDropdown = styled.div`
@@ -765,13 +788,18 @@ const ConnectButton = styled(Link)`
     width: auto;
     height: 44px;
   }
-
+  @media (max-width: 767px) {
+    height: 40px;
+  }
   @media (max-width: 1024px) {
     padding: 10px 12px;
   }
 
   @media (max-width: 480px) {
     font-size: 13px;
+  }
+  @media (max-width: 400px) {
+    font-size: 12px;
   }
 `;
 
@@ -806,31 +834,23 @@ const HamburgerButton = styled.button`
 
   @media (max-width: 1024px) {
     display: flex;
-    width: 38px;
-    height: 38px;
     padding: 7px;
   }
 
   @media (max-width: 768px) {
     display: flex;
-    width: 36px;
-    height: 36px;
     padding: 6px;
     gap: 4px;
     border-radius: 18px;
   }
 
   @media (max-width: 480px) {
-    width: 32px;
-    height: 32px;
     padding: 5px;
     gap: 3px;
     border-radius: 16px;
   }
 
   @media (max-width: 360px) {
-    width: 28px;
-    height: 28px;
     padding: 4px;
     gap: 2px;
     border-radius: 14px;
@@ -1797,10 +1817,7 @@ const Header = ({ darkText = false }) => {
   }, []);
 
   return (
-    <NavContainer
-      $darkText={darkText}
-      className={`header ${isSticky ? 'header-fixed' : ''}`}
-    >
+    <NavContainer $darkText={darkText}  className={`header ${isSticky ? "header-fixed" : ""} ${darkText ? '' : 'header-overlay'}`}>
       <NavContent>
         <Logo href='/'>
           {darkText ? (
