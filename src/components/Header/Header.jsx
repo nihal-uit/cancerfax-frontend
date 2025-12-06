@@ -1593,12 +1593,12 @@ const Header = ({ darkText = false }) => {
 
   // Fallback data
   const defaultMenuItems = [
-    { label: 'About', link: '#about' },
+    { label: 'About', link: '/about-us' },
     { label: 'Hospitals & Doctors', link: '/hospitals' },
-    { label: 'Treatments', link: '#treatments' },
-    { label: 'Clinical Trials', link: '#trials' },
-    { label: 'Survivor Stories', link: '#stories' },
-    { label: 'Resources', link: '#resources' },
+    { label: 'Treatments', link: '/treatments' },
+    { label: 'Clinical Trials', link: '/clinical-trials' },
+    { label: 'Survivor Stories', link: '/survivor-stories' },
+    { label: 'Resources', link: '/resources' },
   ];
 
   const defaultLanguages = [

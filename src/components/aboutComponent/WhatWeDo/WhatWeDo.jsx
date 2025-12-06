@@ -3,10 +3,11 @@ import styled from "styled-components";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
+import { Link } from "react-router-dom";
 
-const WhatWeDo = () => {
+const WhatWeDo = ( { data } ) => {
 
-  const defaultData = [
+  const defaultData = [ 
     {
       id: 1,
       name: "Medical Report Review",
@@ -48,16 +49,17 @@ const WhatWeDo = () => {
       <div className='containerWrapper'>
         <HeaderSection className="commContent_wrap">
           <HeaderContent>
-            <Label className="contentLabel">What We Do</Label>
-            <Title className="title-3">Connecting Patients to Science, Support, and Second Chances</Title>
-            <Description className='text-16'>From diagnosis to recovery, we make every step of your global treatment journey seamless. Our 4 pillars</Description>
+            <Label className="contentLabel">{data?.heading || "Lorem Ipsum"}</Label>
+            <Title className="title-3">{data?.subHeading || "Lorem Ipsum Text"}</Title>
+            <Description className='text-16'>{data?.description_text || "Lorem Ipsum dolor sit amet"}</Description>
           </HeaderContent>
-          <ViewAllButton
+          <Link
             className="btn btn-pink-solid"
-            href="#"
+            to={data?.cta?.URL || "#"}
+            target={data?.cta?.target || "_blank"}
           >
-            Submit reports for expert review
-          </ViewAllButton>
+            {data?.cta?.text || "Lorem Ipsum"}
+          </Link>
         </HeaderSection>        
         <div className="swiper__holder">
           <Swiper
@@ -193,8 +195,6 @@ const Title = styled.h3`
 const Description = styled.p`
   color: #36454f;
 `;
-
-const ViewAllButton = styled.button``;
 
 const TherapyCard = styled.div`
   position: relative;

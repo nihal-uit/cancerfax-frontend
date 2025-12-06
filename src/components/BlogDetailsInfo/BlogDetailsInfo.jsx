@@ -1,18 +1,19 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { renderRichTextWithImages } from '../../utils/strapiHelpers';
-import { getMediaUrl } from '../../services/api';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { renderRichTextWithImages } from "../../utils/strapiHelpers";
+import { getMediaUrl } from "../../services/api";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
 
 const FIXED_SECTIONS = [
-  { id: 'author', label: 'Author' },
-  { id: 'related_tags', label: 'Related Tags' },
+  { id: "author", label: "Author" },
+  { id: "related_tags", label: "Related Tags" },
 ];
 
 const getSectionId = (value) =>
-  typeof value === 'number' ? `section-${value}` : String(value);
+  typeof value === "number" ? `section-${value}` : String(value);
 
 const BlogDetailsInfo = ({ data, loading }) => {
-  const [activeId, setActiveId] = useState('about');
+  const [activeId, setActiveId] = useState("about");
   const sectionRefs = useRef({});
 
   const sections = useMemo(() => {
@@ -38,7 +39,7 @@ const BlogDetailsInfo = ({ data, loading }) => {
   useEffect(() => {
     const options = {
       root: null,
-      rootMargin: '-45% 0px -45% 0px', // center-ish
+      rootMargin: "-45% 0px -45% 0px", // center-ish
       threshold: 0,
     };
 
@@ -61,20 +62,22 @@ const BlogDetailsInfo = ({ data, loading }) => {
   const handleClick = (id) => {
     const el = sectionRefs.current[id];
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
+  console.log("data", data);
+
   return (
-    <section className='hospitalDetailsInfo_sec py-120'>
-      <div className='containerWrapper'>
-        <div className='hospitalDetailsInfo_wrap'>
-          <aside className='sidebar'>
+    <section className="hospitalDetailsInfo_sec py-120">
+      <div className="containerWrapper">
+        <div className="hospitalDetailsInfo_wrap">
+          <aside className="sidebar disease-sidebar">
             <ul>
               {sections.map((item) => (
                 <li
                   key={item.id}
-                  className={item.id === activeId ? 'active' : ''}
+                  className={item.id === activeId ? "active" : ""}
                   onClick={() => handleClick(item.id)}
                 >
                   <span>{item.label}</span>
@@ -107,7 +110,7 @@ const BlogDetailsInfo = ({ data, loading }) => {
                 const authorName = `${data.author?.firstName || ""} ${
                   data.author?.lastName || ""
                 }`.trim();
-                const authorAvatar = getMediaUrl(data.author?.avatar);
+                const authorAvatar = getMediaUrl(data.author?.profilePicture);
                 const firstInitial = authorName.charAt(0).toUpperCase();
                 const hasAvatar = !!authorAvatar;
 
@@ -116,12 +119,12 @@ const BlogDetailsInfo = ({ data, loading }) => {
                     key={section.id}
                     id={section.id}
                     ref={(el) => (sectionRefs.current[section.id] = el)}
-                    className='section'
+                    className="section"
                   >
-                    <div className='commContent_wrap content-gap-20'>
-                      <div className='row g-4'>
-                        <div className='col-lg-4'>
-                          <div className='doctors-details-img'>
+                    <div className="commContent_wrap content-gap-20">
+                      <div className="row g-4">
+                        <div className="col-lg-4">
+                          <div className="doctors-details-img">
                             {hasAvatar ? (
                               <img src={authorAvatar} alt="author_image" />
                             ) : (
@@ -142,7 +145,7 @@ const BlogDetailsInfo = ({ data, loading }) => {
                                   borderRadius: "8px",
                                 }}
                               >
-                                {firstInitial || 'A'}
+                                {firstInitial || "A"}
                               </div>
                             )}
                           </div>
@@ -161,21 +164,21 @@ const BlogDetailsInfo = ({ data, loading }) => {
                 );
               }
 
-              if (section.id === 'related_tags') {
+              if (section.id === "related_tags") {
                 return (
                   <div
                     key={section.id}
                     id={section.id}
                     ref={(el) => (sectionRefs.current[section.id] = el)}
-                    className='section'
+                    className="section"
                   >
-                    <div className='commContent_wrap content-gap-20'>
-                      <div className='row g-4'>
-                        <div className='col-lg-12'>
-                          <div className='content-gap-20'>
-                            <h4 className='f-w-600'>Related Tags</h4>
-                            <div className='tags_wrap'>
-                              <ul className='tags_ul'>
+                    <div className="commContent_wrap content-gap-20">
+                      <div className="row g-4">
+                        <div className="col-lg-12">
+                          <div className="content-gap-20">
+                            <h4 className="f-w-600">Related Tags</h4>
+                            <div className="tags_wrap">
+                              <ul className="tags_ul">
                                 {data?.resource_tags?.map((tag) => (
                                   <li key={tag.id}>{tag.name}</li>
                                 ))}
@@ -187,55 +190,61 @@ const BlogDetailsInfo = ({ data, loading }) => {
                     </div>
 
                     <div className="blog-arrow-wrap">
-                      {data?.content?.length > 0 && data?.content?.length === 1 && (
-                        <>
-                        <div className="blog-arrow-left">
-                          </div>
+                      {data?.content?.length > 0 &&
+                        data?.content?.length === 1 && (
+                          <>
+                            <div className="blog-arrow-left"></div>
 
-                        <div className="blog-arrow-right">
-                          <p>{data.content[0].heading}</p>
-                          <Link
-                            className="arrow-btn"
-                            to={
-                              data?.content?.[0]?.documentId
-                                ? `/resources/${data.content[0].documentId}`
-                                : "#"
-                            }
-                          >
-                            <ArrowRight />
-                          </Link>
-                        </div>
-                        </>
-                      )}
+                            <div className="blog-arrow-right">
+                              <p>{data.content[0].heading}</p>
+                              {data.content[0].heading ? (
+                                <Link
+                                  className="arrow-btn"
+                                  to={
+                                    data?.content?.[0]?.documentId
+                                      ? `/resources/${data.content[0].documentId}`
+                                      : "#"
+                                  }
+                                >
+                                  <ArrowRight />
+                                </Link>
+                              ) : null}
+                            </div>
+                          </>
+                        )}
 
                       {data?.content?.length >= 2 && (
                         <>
                           <div className="blog-arrow-left">
-                            <Link
-                              className="arrow-btn"
-                              to={
-                                data?.content?.[0]?.documentId
-                                  ? `/resources/${data.content[0].documentId}`
-                                  : "#"
-                              }
-                            >
-                              <ArrowLeft />
-                            </Link>
+                            {data.content[0].heading ? (
+                              <Link
+                                className="arrow-btn"
+                                to={
+                                  data?.content?.[0]?.documentId
+                                    ? `/resources/${data.content[0].documentId}`
+                                    : "#"
+                                }
+                              >
+                                <ArrowLeft />
+                              </Link>
+                            ) : null}
                             <p>{data.content[0].heading}</p>
                           </div>
 
                           <div className="blog-arrow-right">
                             <p>{data.content[1].heading}</p>
-                            <Link
-                              className="arrow-btn"
-                              to={
-                                data?.content?.[1]?.documentId
-                                  ? `/resources/${data.content[1].documentId}`
-                                  : "#"
-                              }
-                            >
-                              <ArrowRight />
-                            </Link>
+                            {data.content[1].heading ? (
+                              <Link
+                                className="arrow-btn"
+                                to={
+                                  data?.content?.[1]?.documentId
+                                    ? `/resources/${data.content[1].documentId}`
+                                    : "#"
+                                }
+                              >
+                                <ArrowRight />
+                              </Link>
+                            ) : null}
                           </div>
                         </>
                       )}
@@ -249,7 +258,7 @@ const BlogDetailsInfo = ({ data, loading }) => {
                   key={section.id}
                   id={section.id}
                   ref={(el) => (sectionRefs.current[section.id] = el)}
-                  className='section'
+                  className="section"
                 >
                   <div className="commContent_wrap content-gap-24">
                     <div className="row g-4">
@@ -261,8 +270,41 @@ const BlogDetailsInfo = ({ data, loading }) => {
                                 section.label.slice(1)
                               : ""}
                           </h4>
+                          {
+                            section?.content?.cta
+                              ? <CTAButton
+                                to={section?.content?.cta?.URL}
+                                target={section?.content?.cta?.target}
+                                className="btn btn-pink-solid align-right"
+                              >
+                                {section?.content?.cta?.text}
+                              </CTAButton>
+                            : null
+                          }
+                          {
+                            section?.content?.featured_video
+                              ? <div className="featuredMedia">
+                                <video
+                                  src={getMediaUrl(section?.content?.featured_video)}
+                                  controls
+                                  style={{ width: "100%", borderRadius: "8px" }}
+                                />
+                              </div>
+                            : null
+                          }
+                           {
+                            section?.content?.featured_image
+                              ? <div className="featuredMedia">
+                                <img
+                                  src={getMediaUrl(section?.content?.featured_image)}
+                                  alt="featured"
+                                  style={{ width: "100%", borderRadius: "8px" }}
+                                />
+                              </div>
+                            : null
+                          }
                           {renderRichTextWithImages(
-                            section.content?.description
+                            section.content?.description_block
                           )}
                         </div>
                       </div>
@@ -285,16 +327,16 @@ const AuthorBio = ({ bio }) => {
   const shortBio = safeBio.slice(0, 500);
 
   return (
-    <p className='text-16'>
+    <p className="text-16">
       {expanded ? safeBio : shortBio}
 
       {safeBio?.length && safeBio?.length > 500 && (
         <>
-          {!expanded ? '...' : ''}
+          {!expanded ? "..." : ""}
 
           <button
             onClick={() => setExpanded(!expanded)}
-            className='readMoreBtn'
+            className="readMoreBtn"
             style={{
               border: "none",
               background: "none",
@@ -305,7 +347,7 @@ const AuthorBio = ({ bio }) => {
               padding: 0,
             }}
           >
-            {expanded ? 'Read less' : 'Read more'}
+            {expanded ? "Read less" : "Read more"}
           </button>
         </>
       )}
@@ -370,5 +412,15 @@ const ArrowLeft = () => (
     />
   </svg>
 );
+
+const CTAButton = styled(Link)`
+  background: ${(props) => props.theme.colors.pink};
+  color: ${(props) => props.theme.colors.white};
+  max-width: 200px;
+  @media (max-width: 575px) {
+    max-width: 100%;
+  }
+  align-self: flex-end;
+`;
 
 export default BlogDetailsInfo;

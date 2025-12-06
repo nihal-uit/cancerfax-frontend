@@ -38,34 +38,38 @@ const SupportingLifeComponent = ({ supportContent }) => {
   const content = supportContent || sectionContent || defaultContent;
 
   return (
-    <TopSection>
-      <LeftContent className="commContent_wrap">
-        <ScrollAnimationComponent animationVariants={slideLeft}>
-          <div className="content-gap-20">
-            <Label className="contentLabel text_theme_dark">
-              {content.label}
-            </Label>
-            <Title className="title-3 text_theme_dark">{content.title}</Title>
-            <Description className="text-16">{content.description}</Description>
-            <CTAButton
-              className="btn btn-pink-solid"
-              to={content.buttonLink}
-              target={content.buttonTarget}
-            >
-              {content.buttonText}
-            </CTAButton>
-          </div>
-        </ScrollAnimationComponent>
-      </LeftContent>
+    <div className="containerWrapper">
+      <TopSection>
+        <LeftContent className="commContent_wrap">
+          <ScrollAnimationComponent animationVariants={slideLeft}>
+            <div className="content-gap-20">
+              <Label className="contentLabel text_theme_dark">
+                {content.label}
+              </Label>
+              <Title className="title-3 text_theme_dark">{content.title}</Title>
+              <Description className="text-16">
+                {content?.description || content?.description_text}
+              </Description>
+              <CTAButton
+                className="btn btn-pink-solid"
+                to={content.buttonLink}
+                target={content.buttonTarget}
+              >
+                {content.buttonText}
+              </CTAButton>
+            </div>
+          </ScrollAnimationComponent>
+        </LeftContent>
 
-      <RightContent className="commContent_wrap">
-        <ScrollAnimationComponent animationVariants={slideRight}>
-          <div class="img-wrapper">
-            <img src={content.image} alt="" className="img-clip" />
-          </div>
-        </ScrollAnimationComponent>
-      </RightContent>
-    </TopSection>
+        <RightContent className="commContent_wrap">
+          <ScrollAnimationComponent animationVariants={slideRight}>
+            <div className="img-wrapper">
+              <img src={content.image} alt="" className="img-clip" />
+            </div>
+          </ScrollAnimationComponent>
+        </RightContent>
+      </TopSection>
+    </div>
   );
 };
 

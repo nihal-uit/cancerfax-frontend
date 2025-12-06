@@ -30,12 +30,12 @@ const HospitalDetails = () => {
 
   return (
     <PageContainer>
-      <Header/>
+      {/* <Header/> */}
       <HospitalDetailsHero/>
       <HospitalDetailsInfo />
       <HospitalDetailsTestimonials />
       <HospitalDetailsInnovatioveSolutions />
-      <Footer />
+      {/* <Footer /> */}
     </PageContainer>
   );
 };

@@ -1,8 +1,153 @@
-import { useSelector } from 'react-redux';
+import { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { getMediaUrl } from '../../services/api';
-import { getSectionData, formatMedia } from '../../utils/strapiHelpers';
+import { formatMedia } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { Link } from 'react-router-dom';
+
+
+const VideoTestimonialComponents = ({ data }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef(null);
+
+  // Extract background image from featuredVideo field (actual structure from Strapi)
+  // featuredVideo can be a direct media object with url field, or nested in data.attributes
+  const getBackgroundImage = () => {
+    if (!data) return null;
+    
+    if (data?.testimonial_card?.featuredVideo) {
+      if (data?.testimonial_card?.featuredVideo?.url) {
+        return getMediaUrl(data?.testimonial_card?.featuredVideo?.url);
+      }
+      if (data?.testimonial_card?.featuredVideo?.data?.attributes?.url) {
+        return formatMedia(data?.testimonial_card?.featuredVideo);
+      }
+      if (typeof data?.testimonial_card?.featuredVideo === 'string') {
+        return getMediaUrl(data?.featuredVideo);
+      }
+    }
+    
+    if (data?.backgroundImage || data?.featuredImage) {
+      return formatMedia(data?.backgroundImage || data?.featuredImage);
+    }
+    return null;
+  };
+
+  // Get video URL for playback
+  const getVideoUrl = () => {
+    if (!data) return null;
+    
+    if (data?.testimonial_card?.featuredVideo) {
+      if (data?.testimonial_card?.featuredVideo?.url) {
+        return getMediaUrl(data?.testimonial_card?.featuredVideo?.url);
+      }
+      if (data?.testimonial_card?.featuredVideo?.data?.attributes?.url) {
+        return formatMedia(data?.testimonial_card?.featuredVideo);
+      }
+      if (typeof data?.testimonial_card?.featuredVideo === 'string') {
+        return getMediaUrl(data?.testimonial_card?.featuredVideo);
+      }
+    }
+    
+    if (data?.featuredVideo) {
+      if (data?.featuredVideo?.url) {
+        return getMediaUrl(data?.featuredVideo?.url);
+      }
+      if (data?.featuredVideo?.data?.attributes?.url) {
+        return formatMedia(data?.featuredVideo);
+      }
+      if (typeof data?.featuredVideo === 'string') {
+        return getMediaUrl(data?.featuredVideo);
+      }
+    }
+    
+    return null;
+  };
+
+  const handlePlayVideo = () => {
+    setIsPlaying(true);
+  };
+
+  const handleCloseVideo = () => {
+    setIsPlaying(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
+
+  // Close video on escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isPlaying) {
+        setIsPlaying(false);
+        if (videoRef.current) {
+          videoRef.current.pause();
+          videoRef.current.currentTime = 0;
+        }
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isPlaying]);
+
+  // Auto-play video when modal opens
+  useEffect(() => {
+    if (isPlaying && videoRef.current) {
+      videoRef.current.play().catch(err => {
+        console.error('Error playing video:', err);
+      });
+    }
+  }, [isPlaying]);
+
+  console.log("img ->", getBackgroundImage());
+
+  const videoUrl = getVideoUrl();
+
+  return (
+      <>
+        <div className='videoTestimonials_wrap'>
+          <BackgroundImage image={getBackgroundImage()}/>
+          <ScrollAnimationComponent animationVariants={slideLeft}>
+          <Content className='commContent_wrap'>
+            <Label className='contentLabel'>{data?.heading}</Label>
+            <Title>{data?.subHeading}</Title>
+            <ExploreButton className='btn btn-pink-solid' to={data?.cta?.URL || '#'} target={data?.cta?.target || '_blank'}>
+             {data?.cta?.text || "Lorem Ipsum"}
+            </ExploreButton>
+          </Content>
+          </ScrollAnimationComponent>
+          
+          <PlayButtonWrapper>
+            <PlayButton onClick={handlePlayVideo} aria-label="Play video testimonials" type="button">
+              <PlayIcon viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                <path d="M8 5v14l11-7z" fill="#FF1493" />
+              </PlayIcon>
+            </PlayButton>
+          </PlayButtonWrapper>
+        </div>
+
+        {isPlaying && videoUrl && (
+          <VideoModal onClick={handleCloseVideo}>
+            <VideoModalContent onClick={(e) => e.stopPropagation()}>
+              <CloseButton onClick={handleCloseVideo} aria-label="Close video">
+                <CloseIcon viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </CloseIcon>
+              </CloseButton>
+              <VideoPlayer
+                ref={videoRef}
+                src={videoUrl}
+                controls
+                autoPlay
+                playsInline
+              />
+            </VideoModalContent>
+          </VideoModal>
+        )}
+      </>
+  );
+};
 
 const BackgroundImage = styled.div`
   position: absolute;
@@ -92,7 +237,7 @@ const Title = styled.h4`
   }
   `;
 
-const ExploreButton = styled.a`
+const ExploreButton = styled(Link)`
     max-width: 178px;
     @media (max-width: 575px) {
      max-width: 100%;
@@ -222,111 +367,88 @@ const PlayIcon = styled.svg`
   }
 `;
 
-const VideoTestimonialComponents = ({ componentData, pageData }) => {
-  // Get data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector(state => state.global?.data);
-  // Legacy Redux state (kept for fallback, but not actively used)
-  const { sectionContent } = useSelector((state) => state.videoTestimonials || {});
+const VideoModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+`;
 
-  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
-  // Note: VideoTestimonials uses 'dynamic-zone.testimonials' (different from regular Testimonials)
-  const videoTestimonialsSection = componentData || getSectionData(globalData, 'testimonials');
+const VideoModalContent = styled.div`
+  position: relative;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 90vh;
+  cursor: default;
   
-  // Fallback data
-  const fallbackSection = {
-    label: 'Lorem Ipsum',
-    title: 'Lorem ipsum dolor sit amet',
-    backgroundImage: '../images/video-testimonial-img.jpg',
-    videoUrl: '#'
-  };
-
-  // Extract background image from featuredVideo field (actual structure from Strapi)
-  // featuredVideo can be a direct media object with url field, or nested in data.attributes
-  const getBackgroundImage = () => {
-    if (!videoTestimonialsSection) return fallbackSection.backgroundImage;
-    
-    // Check featuredVideo first (this is the background image in Strapi)
-    if (videoTestimonialsSection.featuredVideo) {
-      // If featuredVideo has direct url field (from populate)
-      if (videoTestimonialsSection.featuredVideo.url) {
-        return getMediaUrl(videoTestimonialsSection.featuredVideo.url);
-      }
-      // If nested in data.attributes
-      if (videoTestimonialsSection.featuredVideo.data?.attributes?.url) {
-        return formatMedia(videoTestimonialsSection.featuredVideo);
-      }
-      // If it's already a URL string
-      if (typeof videoTestimonialsSection.featuredVideo === 'string') {
-        return getMediaUrl(videoTestimonialsSection.featuredVideo);
-      }
-    }
-    
-    // Fallback to backgroundImage field
-    if (videoTestimonialsSection.backgroundImage) {
-      return formatMedia(videoTestimonialsSection.backgroundImage);
-    }
-    
-    // Final fallback
-    return fallbackSection.backgroundImage;
-  };
-
-  // Map Strapi data: heading -> label, subHeading -> title
-  const section = videoTestimonialsSection ? {
-    label: videoTestimonialsSection.heading || fallbackSection.label,
-    title: videoTestimonialsSection.subHeading || fallbackSection.title,
-    backgroundImage: getBackgroundImage(),
-    videoUrl: videoTestimonialsSection.videoUrl || videoTestimonialsSection.cta?.URL || fallbackSection.videoUrl,
-  } : (sectionContent || fallbackSection);
-
-  // Debug: Log to check if global data exists (moved after section is defined)
-  const globalLoading = useSelector(state => state.global?.loading);
-  if (globalData && !globalLoading) {
-    console.log('VideoTestimonials: globalData loaded', {
-      hasDynamicZone: !!globalData.dynamicZone,
-      videoTestimonialsSection: !!videoTestimonialsSection,
-      hasFeaturedVideo: !!videoTestimonialsSection?.featuredVideo,
-      featuredVideoRaw: videoTestimonialsSection?.featuredVideo,
-      backgroundImageUrl: videoTestimonialsSection?.featuredVideo?.url || videoTestimonialsSection?.featuredVideo?.data?.attributes?.url || null,
-      finalBackgroundImage: section?.backgroundImage
-    });
+  @media (max-width: 768px) {
+    width: 95%;
+    max-height: 85vh;
   }
+`;
 
-  const handlePlayVideo = () => {
-    // Handle video play functionality
-    const videoUrl = section.videoUrl || '#';
-    console.log('Play video:', videoUrl);
-    // You can implement video modal/player here
-  };
+const VideoPlayer = styled.video`
+  width: 100%;
+  height: auto;
+  max-height: 90vh;
+  border-radius: 8px;
+  outline: none;
+  
+  @media (max-width: 768px) {
+    max-height: 85vh;
+  }
+`;
 
-  const slideLeft = {
-    hidden: { x: -100, opacity: 0 },
-    visible: { x: 0, opacity: 1 },
-  };
+const CloseButton = styled.button`
+  position: absolute;
+  top: -50px;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10000;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.1);
+  }
+  
+  @media (max-width: 768px) {
+    top: -45px;
+    width: 36px;
+    height: 36px;
+  }
+`;
 
-  return (
-      <div className='videoTestimonials_wrap'>
-        <BackgroundImage 
-          image={section.backgroundImage || fallbackSection.backgroundImage}
-        />
-        <ScrollAnimationComponent animationVariants={slideLeft}>
-        <Content className='commContent_wrap'>
-          <Label className='contentLabel'>{section.label}</Label>
-          <Title>{section.title}</Title>
-          <ExploreButton className='btn btn-pink-solid' href={section.buttonUrl || '#'}>
-           View all Stories
-          </ExploreButton>
-        </Content>
-        </ScrollAnimationComponent>
-        
-        <PlayButtonWrapper>
-          <PlayButton onClick={handlePlayVideo} aria-label="Play video testimonials" type="button">
-            <PlayIcon viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-              <path d="M8 5v14l11-7z" fill="#FF1493" />
-            </PlayIcon>
-          </PlayButton>
-        </PlayButtonWrapper>
-      </div>
-  );
+const CloseIcon = styled.svg`
+  width: 24px;
+  height: 24px;
+  stroke: white;
+  
+  @media (max-width: 768px) {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const slideLeft = {
+  hidden: { x: -100, opacity: 0 },
+  visible: { x: 0, opacity: 1 },
 };
 
 export default VideoTestimonialComponents;

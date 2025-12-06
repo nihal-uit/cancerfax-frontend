@@ -91,34 +91,13 @@ const resourcesSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(fetchBlogs.pending, (state) => {
-        state.blogsLoading = true;
+        state.loadingBlogs = true;
         state.error = null;
+        state.blogs = [];
       })
       .addCase(fetchBlogs.fulfilled, (state, action) => {
-        const { data, meta, start } = action.payload;
-        if (start === 0) {
-          state.blogs = data;
-        } else {
-          const existingIds = new Set(
-            state.blogs.map((blog) => blog?.documentId || blog?.id)
-          );
-          const newItems = data.filter((blog) => {
-            const identifier = blog?.documentId || blog?.id;
-            return identifier ? !existingIds.has(identifier) : true;
-          });
-          state.blogs = [...state.blogs, ...newItems];
-        }
-        state.blogsMeta = meta;
-        const total = meta?.pagination?.total;
-        state.blogsHasMore =
-          typeof total === 'number'
-            ? state.blogs.length < total
-            : data.length > 0;
-        state.blogsLoading = false;
-      })
-      .addCase(fetchBlogs.rejected, (state, action) => {
-        state.blogsLoading = false;
-        state.error = action.payload;
+        state.loadingBlogs = false;
+        state.blogs = action.payload;
       })
       .addCase(fetchBlogById.pending, (state) => {
         state.loadingSingleBlog = true;

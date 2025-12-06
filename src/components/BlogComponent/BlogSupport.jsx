@@ -34,7 +34,7 @@ const BlogSupport = ({ data, loading }) => {
   const content = data ? {
     label: data?.heading || defaultContent.label,
     title: data?.subHeading || defaultContent.title,
-    description: formatRichText(data?.description) ||data?.description || defaultContent.description,
+    description: formatRichText(data?.description_block) || defaultContent.description,
     image: formatMedia(data?.media) || defaultContent.image,
   } : defaultContent;
 
@@ -98,7 +98,7 @@ const BlogSupport = ({ data, loading }) => {
 
           <RightContent className="commContent_wrap">
             <ScrollAnimationComponent animationVariants={slideRight}>
-              <div class="img-wrapper">
+              <div className="img-wrapper">
                 <img src={content.image} alt="" className="img-clip" />
               </div>
             </ScrollAnimationComponent>

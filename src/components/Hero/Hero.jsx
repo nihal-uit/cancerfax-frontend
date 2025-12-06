@@ -33,15 +33,10 @@ const StoryDescription = styled.p`
   color: ${props => props.theme.colors.white};
 `;
 
-const Hero = ({ componentData, pageData }) => {
-  // Get hero data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector(state => state.global?.data);
-  const globalLoading = useSelector(state => state.global?.loading);
+const Hero = ({ data }) => {
 
-  // Legacy Redux state (kept for fallback, but not actively used)
-  const { heroContent, survivorStory } = useSelector((state) => state.hero);
+  console.log("data", data);
 
-  // Build background style with dynamic image - hooks must be called before early returns
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -51,66 +46,13 @@ const Hero = ({ componentData, pageData }) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
-  // This check must come before computing any fallback data
-  if (globalLoading) {
-    return null;
-  }
+  const backgroundImage = formatMedia(data?.image)
+    || 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920';
 
-  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
-  // If componentData is provided, use it directly; otherwise get from globalData
-  const heroSection = componentData || getSectionData(globalData, 'hero');
 
-  // Debug: Log to check if global data exists
-  if (globalData && !globalLoading) {
-    console.log('Hero: globalData loaded', {
-      hasDynamicZone: !!globalData.dynamicZone,
-      heroSection: !!heroSection,
-      heroSectionData: heroSection ? {
-        heading: heroSection.heading,
-        subHeading: heroSection.subHeading,
-        description: heroSection.description?.substring(0, 50) + '...',
-        hasImage: !!heroSection.image,
-        hasCTAs: !!heroSection.CTAs
-      } : null
-    });
-  }
-
-  // Don't show fallback data while loading - wait for Strapi data
-  const fallbackStory = {
-    label: 'Survivor Stories',
-    title: 'Andrea... A hero, a fighter..\nKnow her journey..',
-    description: 'CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, we guide you every step of the way.',
-    buttonText: "Read Andrea's Story",
-    buttonUrl: '#'
-  };
-
-  // Map Strapi API fields to component fields
-  // Don't use fallback while loading - wait for Strapi data to load first
-  const storyData = heroSection ? {
-    label: heroSection.heading,
-    title: heroSection.subHeading,
-    description: heroSection.description,
-    buttonText: heroSection.CTAs?.[0]?.text,
-    buttonUrl: heroSection.CTAs?.[0]?.URL
-  } : (survivorStory || (hideFallbacks ? null : fallbackStory));
-
-  // Get background image from global data or fallback
-  // Don't use fallback image while loading
-  const backgroundImage = formatMedia(heroSection?.image)
-    || formatMedia(heroContent?.backgroundImage)
-    || (hideFallbacks ? null : 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920');
-
-  const shouldHideHero = hideFallbacks && (!storyData || !storyData.title || !backgroundImage);
-
-  if (shouldHideHero) {
-    return null;
-  }
 
   const backgroundStyle = {
     backgroundImage: `linear-gradient(90deg, rgba(54, 69, 79, 0.57) 40%, rgba(54, 69, 79, 0) 70%, transparent 100%), radial-gradient(circle at 59% 40%, rgba(54, 69, 79, 0.26) 0%, rgba(54, 69, 79, 0) 100%), url('${backgroundImage}')`,
-    // background: linear-gradient(0deg, rgba(54, 69, 79, 0.26) 0%, rgba(54, 69, 79, 0) 100%);
-
     backgroundSize: isMobile ? 'cover' : 'auto, auto, 1558px 977px',
     backgroundPosition: isMobile ? 'center' : 'center, center, -13px -124px',
     backgroundRepeat: 'no-repeat',
@@ -133,21 +75,12 @@ const Hero = ({ componentData, pageData }) => {
           <div className='containerWrapper'>
             <div className='commContent_wrap'>
               <SurvivorLabel className='contentLabel'>
-                {storyData.label || 'SURVIVOR STORIES'}
+                {data?.heading || 'Lorem Ipsum'}
               </SurvivorLabel>
 
               <StoryTitle className="title-1">
                 {(() => {
-                  if (!storyData.title) {
-                    return (
-                      <>
-                        <StoryTitleBold>Andrea... A hero, a fighter..</StoryTitleBold>
-                        <StoryTitleRegular>Know her journey..</StoryTitleRegular>
-                      </>
-                    );
-                  }
-
-                  const parts = storyData.title.split(/(?<=[.!?]+)\s(?!.*[.!?]+\s)/);
+                  const parts = data?.subHeading?.split(/(?<=[.!?]+)\s(?!.*[.!?]+\s)/);
 
                   return (
                     <>
@@ -159,9 +92,9 @@ const Hero = ({ componentData, pageData }) => {
               </StoryTitle>
 
               <div className='storyCard_wrap'>
-                <StoryButton className='btn btn-pink-solid' as="a" href={storyData.buttonUrl || '#'}>{storyData.buttonText || "Read Andrea's Story"}</StoryButton>
+                <StoryButton className='btn btn-pink-solid' as="a" href={data?.CTAs?.[0]?.URL || '#'} target={data?.CTAs?.[0]?.target || '_blank'}>{data?.CTAs?.[0]?.text || "Read Andrea's Story"}</StoryButton>
                 <StoryDescription className='text-16'>
-                  {storyData.description || 'CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, we guide you every step of the way.'}
+                  {data?.description_text || ''}
                 </StoryDescription>
               </div>
             </div>

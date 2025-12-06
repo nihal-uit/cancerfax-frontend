@@ -92,7 +92,7 @@ const Research = () => {
                       <div className="card__body">
                         <h4 className="card__title">{item?.title}</h4>
                         <div className="btn__holder">
-                          <Link class="btn btn-pink-solid" to="#">
+                          <Link className="btn btn-pink-solid" to="#">
                             Explore
                           </Link>
                         </div>

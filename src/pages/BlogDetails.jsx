@@ -11,6 +11,8 @@ import RelatedBlogComponent from '../components/reusable/RelatedBlogComponent';
 import { fetchBlogById, fetchBlogs } from '../store/slices/resourcesSlice';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import { formatRichText, formatMedia } from '../utils/strapiHelpers';
+import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
+import DynamicComponents from './DynamicComponents';
 
 const BlogDetails = () => {
   const { id } = useParams();
@@ -19,7 +21,6 @@ const BlogDetails = () => {
     (state) => state.global
   );
   const { singleBlog, loading } = useSelector((state) => state.resources);
-  const blogList = useSelector((state) => state.resources.blogs);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -37,14 +38,14 @@ const BlogDetails = () => {
   }, [id, dispatch]);
 
   if (globalLoading || loading || !singleBlog) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />
   }
 
   const supportContent = singleBlog?.expert
     ? {
         label: singleBlog?.expert?.heading,
         title: singleBlog?.expert?.subHeading,
-        description: formatRichText(singleBlog?.expert?.description),
+        description: formatRichText(singleBlog?.expert?.description_text),
         buttonText: singleBlog?.expert?.cta?.text,
         buttonLink: singleBlog?.expert?.cta?.URL,
         buttonTarget: singleBlog?.expert?.cta?.target,
@@ -54,7 +55,7 @@ const BlogDetails = () => {
 
   return (
     <PageContainer>
-      <Header />
+      {/* <Header darkText={true}/> */}
       <BlogDetailsHero data={singleBlog} loading={loading} />
       <BlogDetailsInfo data={singleBlog} loading={loading} />
       { singleBlog?.related_posts?.length > 0 &&
@@ -72,7 +73,8 @@ const BlogDetails = () => {
           />
         </div>
       </section>
-      <Footer />
+      <DynamicComponents pageData={singleBlog} pageLoading={loading} darkText={true} />
+      {/* <Footer /> */}
     </PageContainer>
   );
 };

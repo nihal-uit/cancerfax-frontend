@@ -7,6 +7,7 @@ import DrugsDetailsInfo from '../components/DrugsDetailsInfo/DrugsDetailsInfo';
 import SupportingLifeComponent from '../components/reusable/SupportingLifeComponent';
 import PopularFaqComponent from '../components/reusable/PopularFaqComponent';
 
+
 const DrugsDetails = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -14,7 +15,7 @@ const DrugsDetails = () => {
 
   return (
     <PageContainer>
-      <Header/>
+      {/* <Header/> */}
       <DrugsDetailsHero/>
       <DrugsDetailsInfo/>
       <section className='popularFaq_sec pb-120'>
@@ -27,7 +28,8 @@ const DrugsDetails = () => {
             <SupportingLifeComponent />
         </div>
       </section>
-      <Footer />
+      {/* <DynamicComponents pageData={pageData} pageLoading={pageLoading} /> */}
+      {/* <Footer /> */}
     </PageContainer>
   );
 };

@@ -11,7 +11,7 @@ const DiseaseHero = ({
     <section className='homeHero_sec'>
       <div className='home-hero-banner hospital_details_hero'>
         <div className='ratio'>
-          <BackgroundVideo class="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/disease-video-poster.jpg">
+          <BackgroundVideo className="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/disease-video-poster.jpg">
           <source src={DiseaseVideo} type="video/mp4" />
           {/* <source src="../videos/disease-video.mov" type="video/mov" />
           <source src="../videos/d.webm" type="video/webm" />

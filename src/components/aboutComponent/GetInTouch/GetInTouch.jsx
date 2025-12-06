@@ -3,6 +3,60 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { getSectionData, formatRichText } from "../../../utils/strapiHelpers";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
+import { Link } from "react-router-dom";
+
+
+
+const GetInTouch = ({ data }) => {
+  return (
+    <section className="getInTouch_sec py-120" id="get-in-touch">
+      <div className="containerWrapper z-2 position-relative">
+        <ContentWrapper>
+          <div>
+            <ScrollAnimationComponent animationVariants={slideLeft}>
+              <CommContent className="commContent_wrap">
+                <Label className="contentLabel">
+                  {data?.heading ||  "Lorem Ipsum"}
+                </Label>
+                <Title className="title-3">
+                    {data?.subHeading || "Lorem Ipsum Text"}
+                </Title>
+              </CommContent>
+            </ScrollAnimationComponent>
+          </div>
+
+          <div>
+            <ScrollAnimationComponent animationVariants={slideRight}>
+              <CommContentRight className="commContent_wrap">
+                <Description className="text-16">
+                  {data?.description_text ||
+                    "Lorem Ipsum dolor sit amet"}
+                </Description>
+                <CTAButton
+                  className="btn btn-pink-solid"
+                  to={data?.cta?.URL || "#"}
+                  target={data?.cta?.target || "_blank"}
+                >
+                  {data?.cta?.text || "Lorem Ipsum"}
+                </CTAButton>
+              </CommContentRight>
+            </ScrollAnimationComponent>
+          </div>
+        </ContentWrapper>
+      </div>
+    </section>
+  );
+};
+
+const slideLeft = {
+  hidden: { x: -100, opacity: 0 },
+  visible: { x: 0, opacity: 1 },
+};
+
+const slideRight = {
+  hidden: { x: 100, opacity: 0 },
+  visible: { x: 0, opacity: 1 },
+};
 
 const ContentWrapper = styled.div`
   display: grid;
@@ -23,8 +77,6 @@ const ContentWrapper = styled.div`
     gap: 24px;
   }
 `;
-
-const LeftContent = styled.div``;
 
 const CommContent = styled.div`
   display: flex;
@@ -52,8 +104,6 @@ const Title = styled.h3`
   color: ${(props) => props.theme.colors.white};
 `;
 
-const RightContent = styled.div``;
-
 const CommContentRight = styled.div`
   display: flex;
   flex-direction: column;
@@ -76,119 +126,11 @@ const Description = styled.p`
   color: ${(props) => props.theme.colors.white};
 `;
 
-const CTAButton = styled.button`
+const CTAButton = styled(Link)`
   max-width: 324px;
   @media (max-width: 575px) {
     max-width: 100%;
   }
 `;
-
-const GetInTouch = ({ componentData }) => {
-  // Get data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector((state) => state.global?.data);
-  const globalLoading = useSelector((state) => state.global?.loading);
-  // Legacy Redux state (kept for fallback, but not actively used)
-  const { sectionContent } = useSelector((state) => state.getInTouch);
-
-  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
-  if (globalLoading) {
-    return null;
-  }
-
-  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
-  const getInTouchSection =
-    componentData || getSectionData(globalData, "getInTouch");
-
-  // Debug: Log to check if global data exists
-  if (globalData && !globalLoading) {
-    console.log("GetInTouch: globalData loaded", {
-      hasDynamicZone: !!globalData.dynamicZone,
-      getInTouchSection: !!getInTouchSection,
-      sectionData: getInTouchSection
-        ? {
-            heading: getInTouchSection.heading,
-            subHeading: getInTouchSection.subHeading,
-          }
-        : null,
-    });
-  }
-
-  // Fallback content for when Strapi data is not yet available
-  const defaultContent = {
-    label: "GET IN TOUCH",
-    title: "Your Best Treatment Options Start Here",
-    description:
-      "Submit your reports to get a personalized assessment from our medical experts and discover the most advanced therapies available globally.",
-    buttonText: "Submit Reports For Expert Review",
-    buttonLink: "#submit-reports",
-  };
-
-  // Map Strapi data: heading -> label, subHeading -> title
-  const content = getInTouchSection
-    ? {
-        label: getInTouchSection.heading || defaultContent.label,
-        title: getInTouchSection.subHeading || defaultContent.title,
-        description:
-          formatRichText(getInTouchSection.description) ||
-          getInTouchSection.description ||
-          defaultContent.description,
-        buttonText: getInTouchSection.cta?.text || defaultContent.buttonText,
-        buttonLink: getInTouchSection.cta?.URL || defaultContent.buttonLink,
-        backgroundColor: getInTouchSection.backgroundColor,
-      }
-    : sectionContent || defaultContent;
-
-  const slideLeft = {
-    hidden: { x: -100, opacity: 0 },
-    visible: { x: 0, opacity: 1 },
-  };
-
-  const slideRight = {
-    hidden: { x: 100, opacity: 0 },
-    visible: { x: 0, opacity: 1 },
-  };
-
-  return (
-    <section className="getInTouch_sec py-120" id="get-in-touch">
-      <div className="containerWrapper z-2 position-relative">
-        <ContentWrapper>
-          <LeftContent>
-            <ScrollAnimationComponent animationVariants={slideLeft}>
-              <CommContent className="commContent_wrap">
-                <Label className="contentLabel">
-                  {defaultContent.label || content.label || "GET IN TOUCH"}
-                </Label>
-                <Title className="title-3">
-                  {defaultContent.title ||
-                    content.title ||
-                    "Your Best Treatment Options Start Here"}
-                </Title>
-              </CommContent>
-            </ScrollAnimationComponent>
-          </LeftContent>
-
-          <RightContent>
-            <ScrollAnimationComponent animationVariants={slideRight}>
-              <CommContentRight className="commContent_wrap">
-                <Description className="text-16">
-                  {defaultContent.description ||
-                    content.description ||
-                    "Submit your reports to get a personalized assessment from our medical experts and discover the most advanced therapies available globally."}
-                </Description>
-                <CTAButton
-                  className="btn btn-pink-solid"
-                  as={content.buttonLink ? "a" : "button"}
-                  href={content.buttonLink || undefined}
-                >
-                  {content.buttonText || "Submit Reports For Expert Review"}
-                </CTAButton>
-              </CommContentRight>
-            </ScrollAnimationComponent>
-          </RightContent>
-        </ContentWrapper>
-      </div>
-    </section>
-  );
-};
 
 export default GetInTouch;

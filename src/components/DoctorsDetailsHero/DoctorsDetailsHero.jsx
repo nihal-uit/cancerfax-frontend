@@ -1,22 +1,14 @@
-import React from 'react';
+import { Button } from 'react-bootstrap';
 import styled from 'styled-components';
 
-const DoctorsDetailsHero = ({ 
-  DoctorName = "Prof. Shuhang Wang",
-  DoctorText = "Associate Chief Physician & GCP center secretary , Experience: 25 Years",
-  DoctorVideo = "../videos/doctors-video.mp4",
-  onSubmitReports
-}) => {
+const DoctorsDetailsHero = ({ data }) => {
+
   return (
     <section className='homeHero_sec'>
-
       <div className='home-hero-banner hospital_details_hero'>
         <div className='ratio'>
-          <BackgroundVideo class="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/doctors-video-poster.jpg">
-          <source src={DoctorVideo} type="video/mp4" />
-          {/* <source src="../videos/doctors-video.mov" type="video/mov" />
-          <source src="../videos/doctors-video.webm" type="video/webm" />
-          <source src="../videos/doctors-video.ogv" type="video/ogv" /> */}
+          <BackgroundVideo className="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/doctors-video-poster.jpg">
+          <source src={data?.video?.url || '../videos/doctors-video.mp4'} type="video/mp4" />
         </BackgroundVideo>
         </div>
       </div>
@@ -26,16 +18,16 @@ const DoctorsDetailsHero = ({
        
           <HeroContentGrid>
             <TopRow>
-              <DoctorTitle className='title-1'>{DoctorName}</DoctorTitle>
-              <SubText className="text-18">{DoctorText}</SubText>
+              <DoctorTitle className='title-1'>{data?.first_name } {data?.last_name ? data?.last_name : ''}</DoctorTitle>
+              <SubText className="text-18">{data?.about}</SubText>
             </TopRow>
             
             <BottomRow>
-              <SubmitButton className='btn btn-md btn-pink-solid' onClick={onSubmitReports}>
-                Check availability & book a slot
-              </SubmitButton>
+              <Button className='btn btn-md btn-pink-solid' href={data?.cta?.url || '#'} target={data?.cta?.target || '_blank'}>
+                {data?.cta?.text || 'Lorem Ipsum'}
+              </Button>
               <Description className='text-16'>
-                Read the remarkable story of Chen Yan, who achieved transfusion-independence after treatment with CRISPR gene therapy for beta-thalassemia. A journey of hope and resiliency.
+                {data?.about || 'Lorem Ipsum'}
               </Description>
             </BottomRow>
           </HeroContentGrid>          
@@ -96,9 +88,6 @@ const BottomRow = styled.div`
     gap: 24px;
     flex-direction: column;
   }
-`;
-
-const SubmitButton = styled.button`
 `;
 
 const Description = styled.p`

@@ -10,130 +10,26 @@ import SkeletonBlogCard from "../reusable/SkeletonBlogCard";
 const BlogGrid = ({ data, loading }) => {
   const navigate = useNavigate();
 
-  const defaultBlog = [
-    {
-      id: 1,
-      title:
-        "Atezolizumab Plus Chemotherapy Improves Survival in Advanced-Stage Small-Cell Lung Cancer: Insights from the IMpower133 Study",
-      description:
-        "At CancerFax, we’re transforming the way patients discover and receive life-saving therapies...",
-      author: {
-        name: "Author name goes here",
-        avatar:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-      },
-      publishedAt: "May 27, 2024",
-      readTime: "7 min read",
-      category: "Research",
-      image:
-        "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800",
-      featured: true,
-    },
-    {
-      id: 2,
-      title:
-        "Darolutamide is approved by the USFDA for metastatic castration-sensitive prostate cancer",
-      description:
-        "At CancerFax, we’re transforming the way patients discover and receive life-saving therapies...",
-      author: {
-        name: "Author name goes here",
-        avatar:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-      },
-      publishedAt: "May 27, 2024",
-      readTime: "7 min read",
-      category: "Research",
-      image:
-        "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400",
-    },
-    {
-      id: 3,
-      title:
-        "Taletrectinib is approved by the USFDA for ROS1-positive non-small cell lung cancer",
-      description:
-        "At CancerFax, we’re transforming the way patients discover and receive life-saving therapies...",
-      author: {
-        name: "Author name goes here",
-        avatar:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-      },
-      publishedAt: "May 27, 2024",
-      readTime: "7 min read",
-      category: "Research",
-      image:
-        "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400",
-    },
-    {
-      id: 4,
-      title:
-        "Neoadjuvant and adjuvant pembrolizumab is approved by the USFDA for resectable locally adv...",
-      description:
-        "At CancerFax, we’re transforming the way patients discover and receive life-saving therapies...",
-      author: {
-        name: "Author name goes here",
-        avatar:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-      },
-      publishedAt: "May 27, 2024",
-      readTime: "27",
-      category: "Research",
-      image:
-        "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=400",
-    },
-    {
-      id: 5,
-      title:
-        "Neoadjuvant and adjuvant pembrolizumab is approved by the USFDA for resectable locally adv...",
-      description:
-        "At CancerFax, we’re transforming the way patients discover and receive life-saving therapies...",
-      author: {
-        name: "Author name goes here",
-        avatar:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-      },
-      publishedAt: "May 27, 2024",
-      readTime: "17",
-      category: "Research",
-      image: "https://picsum.photos/300/400?random=1",
-    },
-    {
-      id: 6,
-      title:
-        "Neoadjuvant and adjuvant pembrolizumab is approved by the USFDA for resectable locally adv...",
-      description:
-        "At CancerFax, we’re transforming the way patients discover and receive life-saving therapies...",
-      author: {
-        name: "Author name goes here",
-        avatar:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-      },
-      publishedAt: "May 27, 2024",
-      readTime: "5",
-      category: "Research",
-      image: "https://picsum.photos/300/400?random=2",
-    },
-  ];
-
   const blogContent =
     data?.length > 0
-      ? data.map((blog, index) => ({
+      ? data.map((blog) => ({
           id: blog?.documentId,
-          title: blog?.title || defaultBlog[index % 3].title,
-          description: defaultBlog[index % 3].description,
+          title: blog?.title || '',
+          description: blog?.description || '',
           author: {
             name: `${blog?.author?.firstName} ${
               blog?.author?.lastName || ""
             }`.trim(),
             avatar: blog?.author?.avatar || null,
           },
-          publishedAt: formatDate(blog?.publishedAt),
+          publishedDate: formatDate(blog?.publishedDate),
           readTime: blog?.readTime,
           category: blog?.resource_category
             ? blog?.resource_category
-            : defaultBlog[index % 3].category,
-          image: defaultBlog[index % 3].image,
+            : '',
+          image: blog?.featuredImage || '',
         }))
-      : defaultBlog;
+      : [];
 
   const { visibleItems, loadMore, hasMore, isLoadingMore } = useLoadMore(
     blogContent,
@@ -199,8 +95,8 @@ const BlogGrid = ({ data, loading }) => {
                     fill="#36454F"
                   />
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M6.99961 1.22498C3.81016 1.22498 1.22461 3.81053 1.22461 6.99998C1.22461 10.1894 3.81016 12.775 6.99961 12.775C10.1891 12.775 12.7746 10.1894 12.7746 6.99998C12.7746 3.81053 10.1891 1.22498 6.99961 1.22498ZM2.27461 6.99998C2.27461 4.39043 4.39006 2.27498 6.99961 2.27498C9.60916 2.27498 11.7246 4.39043 11.7246 6.99998C11.7246 9.60952 9.60916 11.725 6.99961 11.725C4.39006 11.725 2.27461 9.60952 2.27461 6.99998Z"
                     fill="#36454F"
                   />
@@ -230,7 +126,7 @@ const BlogGrid = ({ data, loading }) => {
                   </AuthorAvatar>
                   <div>
                     <AuthorName>{blog.author.name}</AuthorName>
-                    <PostDate>{blog.publishedAt}</PostDate>
+                    <PostDate>{blog.publishedDate}</PostDate>
                   </div>
                 </AuthorInfo>
               </BlogContent>

@@ -5,7 +5,7 @@ import BlogGrid from './BlogGrid';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
 import { fetchBlogs } from '../../store/slices/resourcesSlice';
 
-const BLOGS_PAGE_SIZE = 3;
+const BLOGS_PAGE_SIZE = 6;
 
 const BlogKnowledgeChest = ({ data, loading }) => {
   const dispatch = useDispatch();
@@ -77,7 +77,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
     ? {
         label: data?.heading || defaultContent.label,
         title: data?.subHeading ?? defaultContent.title,
-        description: data?.description || defaultContent.description,
+        description: data?.description_text || defaultContent.description,
         resources: data?.resources,
       }
     : defaultContent;

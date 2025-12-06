@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSectionData } from "../../utils/strapiHelpers";
-import { fetchPageBySlug } from "../../store/slices/globalSlice";
+import { fetchPageBySlug } from "../../store/slices/pageSlice";
 import { formatRichText } from "../../utils/strapiHelpers";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
 

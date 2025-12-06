@@ -116,4 +116,4 @@ const Title = styled.h3`
   color: ${(props) => props.theme.colors.white};
 `;
 
-export default AboutHeroBanner;
+export default React.memo(AboutHeroBanner);

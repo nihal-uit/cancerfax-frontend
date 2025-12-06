@@ -181,7 +181,7 @@ const Dot = styled.button`
   }
 `;
 
-const ClinicalTrialsShowcase = ({ componentData, pageData }) => {
+const ClinicalTrialsShowcase = ({ componentData, data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   // Get data from global Strapi API (no need for separate fetches)
   const globalData = useSelector(state => state.global?.data);
@@ -301,8 +301,8 @@ const ClinicalTrialsShowcase = ({ componentData, pageData }) => {
   return (
     <section className='clinicalTrials_sec'>
       <SlideContainer className='clinicalTrials_sliderWrap' activeIndex={activeIndex}>
-        {slidesData.map((slide, index) => {
-          const backgroundImage = slide.backgroundImage || resolveSlideBackgroundImage(slide, sliderSection, defaultSlides, index);
+        {data?.Slide?.map((slide, index) => {
+          const backgroundImage = slide?.featuredImage || resolveSlideBackgroundImage(slide, sliderSection, defaultSlides, index);
             return (
               <Slide 
                 key={`slide-${index}-${slide.title || index}`} 

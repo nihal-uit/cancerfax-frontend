@@ -12,7 +12,7 @@ const SurvivorStoriesVideo = ({
     <div className='storiesVideo_wrap'>
       <div className='stories_video'>
         <div className='ratio'>
-          <BackgroundVideo class="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/stories-video-poster.jpg">
+          <BackgroundVideo className="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/stories-video-poster.jpg">
           <source src={StoriesVideo} type="video/mp4" />
           {/* <source src="../videos/doctors-video.mov" type="video/mov" />
           <source src="../videos/doctors-video.webm" type="video/webm" />
@@ -27,7 +27,7 @@ const SurvivorStoriesVideo = ({
               <HospitalName className='title-3'>{StoriesName}</HospitalName>
               
               <ActionButtonsGroup>
-                <a href="#" class="play-btn-pulse">
+                <a href="#" className="play-btn-pulse">
                     <span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 28 30" fill="none">
                             <path d="M5.6717 1.1394C3.05718 -0.360326 0.9375 0.868266 0.9375 3.88134V26.1165C0.9375 29.1326 3.05718 30.3596 5.6717 28.8613L25.1063 17.7156C27.7217 16.2154 27.7217 13.7848 25.1063 12.2849L5.6717 1.1394Z" fill="#727B81"></path>

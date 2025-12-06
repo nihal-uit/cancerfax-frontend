@@ -6,11 +6,12 @@ import { getSectionData as getSectionDataRaw } from "../utils/strapiHelpers";
 import styled from "styled-components";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
-import Hero from "../components/TreatmentComponent/Hero/Hero";
+import TreatmentHero from "../components/TreatmentComponent/Hero/TreatmentHero";
 import TreatmentSlider from "../components/TreatmentComponent/TreatmentSlider/TreatmentSlider";
 import TreatmentCost from "../components/TreatmentComponent/TreatmentCost/TreatmentCost";
 import TreatmentRisk from "../components/TreatmentComponent/TreatmentRisk/TreatmentRisk";
 import GetInTouch from "../components/TreatmentComponent/GetInTouch/GetInTouch";
+import DynamicComponents from "./DynamicComponents";
 
 const Journey = lazy(() =>
   import("../components/TreatmentComponent/Journey/Journey")
@@ -93,46 +94,47 @@ const TreatmentPage = () => {
   }
 
   return (
-    <PageWrapper>
-      <Header darkText={true} />
-      <Hero sectionClass="treatment__here" data={sections.hero} loading={pageLoading}/>
-      <TreatmentSlider sectionClass="treatment__banner" data={sections.slider} loading={pageLoading}/>
+    // <PageWrapper>
+    //   <Header darkText={true} />
+    //   <TreatmentHero sectionClass="treatment__here" data={sections.hero} loading={pageLoading}/>
+    //   <TreatmentSlider sectionClass="treatment__banner" data={sections.slider} loading={pageLoading}/>
 
-      <Suspense fallback={<SectionSkeleton />}>
-        <>
-          <HowItWorks data={sections.howItWorks} loading={pageLoading} />
-          <WhyOpt data={sections.whyOpt} loading={pageLoading} />
-          <Evidance data={sections.evidance} loading={pageLoading} />
-          <Journey data={sections.journey} loading={pageLoading} />
-        </>
-      </Suspense>
+    //   <Suspense fallback={<SectionSkeleton />}>
+    //     <>
+    //       <HowItWorks data={sections.howItWorks} loading={pageLoading} />
+    //       <WhyOpt data={sections.whyOpt} loading={pageLoading} />
+    //       <Evidance data={sections.evidance} loading={pageLoading} />
+    //       <Journey data={sections.journey} loading={pageLoading} />
+    //     </>
+    //   </Suspense>
 
-      <Suspense fallback={<SectionSkeleton />}>
-        <>
-          <IsForYou data={sections.isForYou} loading={pageLoading} />
-          <Testimonials data={sections.testimonials} loading={pageLoading} />
-          <InnovativeCare data={sections.innovative} loading={pageLoading} />
-        </>
-      </Suspense>
+    //   <Suspense fallback={<SectionSkeleton />}>
+    //     <>
+    //       <IsForYou data={sections.isForYou} loading={pageLoading} />
+    //       <Testimonials data={sections.testimonials} loading={pageLoading} />
+    //       <InnovativeCare data={sections.innovative} loading={pageLoading} />
+    //     </>
+    //   </Suspense>
 
-      <GetInTouch data={sections.getInTouch} loading={pageLoading} />
-      <TreatmentRisk data={sections.risk} loading={pageLoading} />
-      <TreatmentCost data={sections.cost} loading={pageLoading} />
+    //   <GetInTouch data={sections.getInTouch} loading={pageLoading} />
+    //   <TreatmentRisk data={sections.risk} loading={pageLoading} />
+    //   <TreatmentCost data={sections.cost} loading={pageLoading} />
 
-      <Suspense fallback={<SectionSkeleton />}>
-        <>
-          <WhatWeDo data={sections.whatWeDo} loading={pageLoading} />
-          <FAQ data={sections.faq} loading={pageLoading} />
-          <Resources
-            sectionClass="bg-white treatment__resource"
-            data={sections.resources}
-            loading={pageLoading}
-          />
-        </>
-      </Suspense>
+    //   <Suspense fallback={<SectionSkeleton />}>
+    //     <>
+    //       <WhatWeDo data={sections.whatWeDo} loading={pageLoading} />
+    //       <FAQ data={sections.faq} loading={pageLoading} />
+    //       <Resources
+    //         sectionClass="bg-white treatment__resource"
+    //         data={sections.resources}
+    //         loading={pageLoading}
+    //       />
+    //     </>
+    //   </Suspense>
 
-      <Footer />
-    </PageWrapper>
+    //   <Footer />
+    // </PageWrapper>
+    <DynamicComponents pageData={pageData} pageLoading={pageLoading} darkText={true} />
   );
 };
 

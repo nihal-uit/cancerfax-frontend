@@ -1,25 +1,9 @@
 import React from "react";
 import styled from 'styled-components';
-
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
+import { getMediaUrl } from "@/services/api";
 
-const OurValues = () => {
-
-  const slideLeft = {
-    hidden: { x: -100, opacity: 0 },
-    visible: { x: 0, opacity: 1 },
-  };
-
-  const slideRight = {
-    hidden: { x: 100, opacity: 0 },
-    visible: { x: 0, opacity: 1 },
-  };
-
-  const fadeIn = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0 },
-  };
-
+const OurValues = ( { data } ) => {
   return (
     <section className='ourValues_sec py-120'>
       <div className='containerWrapper'>
@@ -28,19 +12,16 @@ const OurValues = () => {
             <ScrollAnimationComponent animationVariants={slideLeft}>
               <div className="mission_image_wrap">
                 <div className='ratio'>
-                  <BackgroundVideo class="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/our-values-video-poster.jpg">
+                  <BackgroundVideo className="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/our-values-video-poster.jpg">
                   <source src="../videos/our-values-video.mp4" type="video/mp4" />
-                  {/* <source src="../videos/our-values-video.mov" type="video/mov" />
-                  <source src="../videos/our-values-video.webm" type="video/webm" />
-                  <source src="../videos/our-values-video.ogv" type="video/ogv" /> */}
                   </BackgroundVideo>
                 </div>
 
                 
                 <div className="mission_image_content">
                   <div className="commContent_wrap content-gap-20 max-w-600">
-                    <span className="contentLabel">Our Values</span>
-                    <h3 className="title-size-36">The Principles That Guide Every Patient Journey</h3>
+                    <span className="contentLabel">{data?.heading || "Lorem Ipsum"}</span>
+                    <h3 className="title-size-36">{data?.subHeading || "Lorem Ipsum Text"}</h3>
                   </div>
                 </div>
               </div>
@@ -52,10 +33,10 @@ const OurValues = () => {
                 <div className="values_card">
                   <div className="values_card_content">
                     <span className="mission_icon">
-                      <img src="../images/our-values-icon-1.svg" alt="" />
+                      <img src={getMediaUrl(data?.card_1?.icon)} alt="our values icon" />
                     </span>
-                    <h5>Integrity</h5>
-                    <p>Upholding honesty and transparency in every patient interaction.</p>
+                    <h5>{data?.card_1?.title || "Lorem Ipsum"}</h5>
+                    <p>{data?.card_1?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </div>
                 </ScrollAnimationComponent>
@@ -63,10 +44,10 @@ const OurValues = () => {
                 <div className="values_card with_border">
                   <div className="values_card_content">
                     <span className="mission_icon">
-                      <img src="../images/our-values-icon-2.svg" alt="" />
+                      <img src={getMediaUrl(data?.card_2?.icon)} alt="our values icon" />
                     </span>
-                    <h5>Compassion</h5>
-                    <p>Caring deeply for every patient’s journey and well-being.</p>
+                    <h5>{data?.card_2?.title || "Lorem Ipsum"}</h5>
+                    <p>{data?.card_2?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </div>
                 </ScrollAnimationComponent>
@@ -77,10 +58,10 @@ const OurValues = () => {
                 <div className="values_card with_border">
                   <div className="values_card_content">
                     <span className="mission_icon">
-                      <img src="../images/our-values-icon-3.svg" alt="" />
+                      <img src={getMediaUrl(data?.card_3?.icon)} alt="our values icon" />
                     </span>
-                    <h5>Accountability</h5>
-                    <p>Taking full responsibility for outcomes and continuous improvement.</p>
+                    <h5>{data?.card_3?.title || "Lorem Ipsum"}</h5>
+                    <p>{data?.card_3?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </div>
               </ScrollAnimationComponent>
@@ -90,10 +71,10 @@ const OurValues = () => {
                 <div className="values_card">
                   <div className="values_card_content">
                     <span className="mission_icon">
-                      <img src="../images/our-values-icon-4.svg" alt="" />
+                      <img src={getMediaUrl(data?.card_4?.icon)} alt="our values icon" />
                     </span>
-                    <h5>Accountability</h5>
-                    <p>Taking full responsibility for outcomes and continuous improvement.</p>
+                    <h5>{data?.card_4?.title || "Lorem Ipsum"}</h5>
+                    <p>{data?.card_4?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </div>
               </ScrollAnimationComponent>
@@ -103,10 +84,10 @@ const OurValues = () => {
                 <div className="values_card with_green_bg">
                   <div className="values_card_content">
                     <span className="mission_icon">
-                      <img src="../images/our-values-icon-5.svg" alt="" />
+                      <img src={getMediaUrl(data?.card_5?.icon)} alt="our values icon" />
                     </span>
-                    <h5>Accountability</h5>
-                    <p>Taking full responsibility for outcomes and continuous improvement.</p>
+                    <h5>{data?.card_5?.title || "Lorem Ipsum"}</h5>
+                    <p>{data?.card_5?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </div>
               </ScrollAnimationComponent>
@@ -125,5 +106,20 @@ const BackgroundVideo = styled.video`
   object-fit: cover;
   object-position: center;
 `;
+
+const slideLeft = {
+  hidden: { x: -100, opacity: 0 },
+  visible: { x: 0, opacity: 1 },
+};
+
+const slideRight = {
+  hidden: { x: 100, opacity: 0 },
+  visible: { x: 0, opacity: 1 },
+};
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0 },
+};
 
 export default OurValues;

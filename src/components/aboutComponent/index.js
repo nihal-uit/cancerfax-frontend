@@ -1,0 +1,9 @@
+export { default as AboutHeroBanner } from "./AboutHeroBanner/AboutHeroBanner";
+export { default as AboutGetInTouch } from "./GetInTouch/GetInTouch";
+export { default as AboutHero } from "./Hero/Hero";
+export { default as MissionVision } from "./MissionVision/MissionVision";
+export { default as OurJourney } from "./OurJourney/OurJourney";
+export { default as OurStory } from "./OurStory/OurStory";
+export { default as OurValues } from "./OurValues/OurValues";
+export { default as AboutResources } from "./Resources/Resources";
+export { default as WhatWeDo } from "./WhatWeDo/WhatWeDo";

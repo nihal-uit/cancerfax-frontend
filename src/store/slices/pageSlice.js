@@ -67,7 +67,7 @@ export const fetchPageBySlug = createAsyncThunk(
       pageParams.append("filters[slug][$eq]", normalizedSlug);
       // pageParams.append("populate[dynamic_zone][populate]", "*");
       // pageParams.append("populate[seo][populate]", "*");
-      pageParams.append("populate", "all");
+      pageParams.append("populate", "*");
       pageParams.append("_t", timestamp.toString());
 
       const apiUrl = `${API_URL}/api/pages?${pageParams.toString()}`;

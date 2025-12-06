@@ -19,6 +19,8 @@ import LocationNetwork from '../components/LocationNetwork/LocationNetwork';
 import Footer from '../components/Footer/Footer';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import store from '../store';
+import DynamicComponents from './DynamicComponents';
+import { fetchPageBySlug } from '../store/slices/pageSlice';
 
 // Lazy load components for code splitting and better performance
 const HeroLazy = lazy(() => import('../components/Hero/Hero'));
@@ -337,13 +339,22 @@ const HomePage = () => {
     [renderDynamicComponents]
   );
 
+  const { pageData, pageLoading } = useSelector((state) => state.page);
+
+  useEffect(() => {
+    if (!pageData && !pageLoading) {
+      dispatch(fetchPageBySlug("home"));
+    }
+  }, [pageData, pageLoading, dispatch]);
+
   return (
-    <PageWrapper>
-      <SEO />
-      <Header />
-      {renderedComponents}
-      <Footer />
-    </PageWrapper>
+    // <PageWrapper>
+    //   <SEO />
+    //   <Header />
+    //   {renderedComponents}
+    //   <Footer />
+    // </PageWrapper>
+    <DynamicComponents pageData={pageData} pageLoading={pageLoading} />
   );
 };
 

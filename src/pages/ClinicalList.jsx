@@ -1,11 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "../components/Header/Header";
-import Hero from "../components/TreatmentComponent/Hero/Hero";
 import TreatmentSlider from "../components/TreatmentComponent/TreatmentSlider/TreatmentSlider";
 import Resources from "../components/TreatmentComponent/Resources/Resources";
 import styled from "styled-components";
 import Footer from "../components/Footer/Footer";
-import ClinicalTrials from "../components/ClinicalTrials/ClinicalTrials";
 import ClinicalPlan from "../components/ClinicalComponents/ClinicalPlan";
 import ClinicalHelp from "../components/ClinicalComponents/ClinicalHelp";
 import ClinicalPhases from "../components/ClinicalComponents/ClinicalPhases";
@@ -16,6 +14,9 @@ import ClinicalHowWork from "../components/ClinicalComponents/ClinicalHowWork";
 import ClinicalFeature from "../components/ClinicalComponents/ClinicalFeature";
 import ClinicalHero from "../components/ClinicalComponents/ClinicalHero";
 import GetInTouch from "../components/GetInTouch/GetInTouch";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPageBySlug } from "../store/slices/pageSlice";
+import DynamicComponents from "./DynamicComponents";
 
 const ClinicalListPage = () => {
   const fadeIn = {
@@ -30,25 +31,34 @@ const ClinicalListPage = () => {
     hidden: { opacity: 0, x: 50 },
     visible: { opacity: 1, x: 0 },
   };
+
+  const dispatch = useDispatch();
+  const { pageData, pageLoading } = useSelector(state => state.page);
+
+  useEffect(() => {
+    dispatch(fetchPageBySlug("clinical-listing"));
+  }, [dispatch]);
+
   return (
-    <>
-      <PageWrapper>
-        <Header darkText={true} />
-        <ClinicalHero sectionClass="clinical__hero" />
-        <TreatmentSlider sectionClass="clinical__banner" />
-        <ClinicalFeature />
-        <ClinicalHowWork />
-        <ClinicalProcess />
-        <GetInTouch sectionClass="getInTouch__clinical__sec" />
-        <ClinicalCenter />
-        <ClinicalPartner />
-        <ClinicalPhases />
-        <ClinicalHelp />
-        <ClinicalPlan />
-        <Resources sectionClass="treatment__resource" />
-        <Footer />
-      </PageWrapper>
-    </>
+    // <>
+    //   <PageWrapper>
+    //     <Header darkText={true} />
+    //     <ClinicalHero sectionClass="clinical__hero" />
+    //     <TreatmentSlider sectionClass="clinical__banner" />
+    //     <ClinicalFeature />
+    //     <ClinicalHowWork />
+    //     <ClinicalProcess />
+    //     <GetInTouch sectionClass="getInTouch__clinical__sec" />
+    //     <ClinicalCenter />
+    //     <ClinicalPartner />
+    //     <ClinicalPhases />
+    //     <ClinicalHelp />
+    //     <ClinicalPlan />
+    //     <Resources sectionClass="treatment__resource" />
+    //     <Footer />
+    //   </PageWrapper>
+    // </>
+    <DynamicComponents pageData={pageData} pageLoading={pageLoading} darkText={true} />
   );
 };
 const PageWrapper = styled.div`

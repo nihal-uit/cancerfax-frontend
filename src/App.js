@@ -57,6 +57,7 @@ function App() {
 
         {/* Detail Pages with ID */}
         <Route path="/resources/:id" element={<BlogDetails />} />
+        <Route path="/doctors/:slug" element={<DoctorsDetails />} />
 
         {/* Dynamic route for all Strapi pages (must be last) */}
         {/* This will match /about-us, /any-slug, etc. */}

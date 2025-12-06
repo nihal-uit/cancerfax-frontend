@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
 
-const Hero = ({ sectionClass, data }) => {
+const TreatmentHero = ({ sectionClass, data, loading }) => {
+  if (loading) {
+    return null;
+  }
+
   const defaultHeroContent = {
     title: `Lorem Ipsum`,
     description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a est velit. In ut eros dapibus, consectetur metus nec, dictum metus.`,
     buttonText: "Lorem Ipsum",
-    buttonLink: "#about-us",
-    buttonTarget: "_blank",
+    buttonLink: "#",
   };
 
   const heroContent = data ? {
     title: data.heading || defaultHeroContent.title,
-    description: data.description_text || defaultHeroContent.description,
-    buttonText: data.cta?.text || defaultHeroContent.buttonText,
-    buttonLink: data.cta?.URL || defaultHeroContent.buttonLink,
-    buttonTarget: data.cta?.target || defaultHeroContent.buttonTarget,
+    description: data.description || defaultHeroContent.description,
+    buttonText: data.CTAs?.[0]?.text || defaultHeroContent.buttonText,
+    buttonLink: data.CTAs?.[0]?.URL || defaultHeroContent.buttonLink,
   } : defaultHeroContent;
 
   return (
@@ -38,8 +39,8 @@ const Hero = ({ sectionClass, data }) => {
                 </p>
                 <ExploreButton
                   className="btn btn-pink-solid"
-                  to={heroContent.buttonLink}
-                  target={heroContent.buttonTarget}
+                  as={heroContent.buttonLink ? "a" : "button"}
+                  href={heroContent.buttonLink}
                 >
                   {heroContent.buttonText}
                 </ExploreButton>
@@ -62,11 +63,11 @@ const slideRight = {
   visible: { x: 0, opacity: 1 },
 };
 
-const ExploreButton = styled(Link)`
-  max-width: 276px;
-  @media (max-width: 575px) {
-    max-width: 100%;
-  }
+const ExploreButton = styled.button`
+max-width: 276px;
+@media (max-width: 575px) {
+  max-width: 100%;
+}
 `;
 
-export default Hero;
+export default React.memo(TreatmentHero);

@@ -4,47 +4,43 @@ import { getMediaUrl } from '../../services/api';
 import { formatDate } from '../../utils/strapiHelpers';
 
 const BlogDetailsHero = ({ data, loading }) => {
-  const defaultContent = {
-    tags : [{id: 1, name: 'Tag'}],
-    blogTitle: "PiggyBac Transposon System: A Revolutionary Tool in Cancer Gene Therapy",
-    backgroundImage: "../images/blog-details-hero-img.jpg",
-    author: { name: 'Author name goes here', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100' },
-    publishedAt: 'May 27, 2024',
-    readTime: '19',
-  }
-
   const content = useMemo(() => {
-    if (loading || !data) return defaultContent;
+    if (loading || !data) return {};
 
-    const authorName = `${data.author?.firstName || ''} ${data.author?.lastName || ''}`.trim() || defaultContent.author.name;
-    const authorAvatar = getMediaUrl(data.author?.avatar);
+    const authorName = `${data.author?.firstName || ''} ${data.author?.lastName || ''}`.trim() || '';
+    const authorAvatar = getMediaUrl(data.author?.profilePicture);
     const firstInitial = authorName.charAt(0).toUpperCase();
 
     return {
-      tags: data.resource_tags ?? defaultContent.tags,
-      blogTitle: data.title ?? defaultContent.blogTitle,
+      tags: data.resource_tags ?? [],
+      category: data?.resource_category?.name ?? '',
+      blogTitle: data.title ?? '',
       backgroundImage:
-        getMediaUrl(data.featuredImage) ?? defaultContent.backgroundImage,
+        getMediaUrl(data.featuredImage) ?? '',
       author: {
         name: authorName,
-        avatar: authorAvatar ?? defaultContent.author.avatar,
+        avatar: authorAvatar ?? '',
         hasAvatar: !!authorAvatar,
         initial: firstInitial,
       },
-      publishedAt: formatDate(data.publishedAt) ?? defaultContent.publishedAt,
-      readTime: data.readTime ?? defaultContent.readTime,
+      publishedDate: formatDate(data.publishedDate) ?? '',
+      readTime: data.readTime ?? '',
     };
-  }, [data, loading]);
+  }, [data]);
 
   return (
-    <section className='homeHero_sec'>
+    <section className='homeHero_sec blog_banner_hero'>
       <div className='home-hero-banner hospital_details_hero'>
         <div className='ratio'>
-          <BackgroundImage
-            src={content.backgroundImage}
-            alt={content.blogTitle}
-            loading="lazy"
-          />
+          {content.backgroundImage ? (
+            <BackgroundImage
+              src={content.backgroundImage}
+              alt={content.blogTitle}
+              loading="lazy"
+            />
+          ) : (
+            <GreyGradientBackground />
+          )}
         </div>
       </div>
       <div className='heroContent_wrap'>
@@ -52,9 +48,7 @@ const BlogDetailsHero = ({ data, loading }) => {
           <div className='commContent_wrap'>       
             <HeroContentGrid>
             <div style={{ display: "flex", gap: "8px", flexWrap: "nowrap" }}>
-              {content?.tags?.map(tag => (
-                <CategoryBadge key={tag.id}>{tag.name}</CategoryBadge>
-              ))}
+              <CategoryBadge>{content?.category}</CategoryBadge>
             </div>
             <HospitalName>{content.blogTitle}</HospitalName>
             <TopRow>
@@ -73,7 +67,7 @@ const BlogDetailsHero = ({ data, loading }) => {
                     <AuthorName>{content.author.name}</AuthorName>
                   </div>
                 </AuthorInfo>
-                <PostDate>{content.publishedAt}  |  {content.readTime} min read</PostDate>
+                <PostDate>{content.publishedDate}  |  {content.readTime} min read</PostDate>
             </TopRow>
           </HeroContentGrid>          
          </div>
@@ -91,6 +85,14 @@ const BackgroundImage = styled.img`
   height: 100%;
   object-fit: cover;
   object-position: center;
+`;
+
+const GreyGradientBackground = styled.div`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
 `;
 
 const HeroContentGrid = styled.div`
@@ -111,7 +113,7 @@ const TopRow = styled.div`
 
 const HospitalName = styled.h3`
   color: ${props => props.theme.colors.white};
-  font-size: 40px !important;
+  font-size: 24px !important;
 `;
 
 const CategoryBadge = styled.div`

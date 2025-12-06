@@ -110,6 +110,10 @@ a:focus-visible {
   overflow: hidden;
   box-sizing: border-box;
 }
+.blog_banner_hero.homeHero_sec{
+  height: 40vh;
+  min-height: 400px;
+}
 .home-hero-banner {
   width: 100%;
   position: relative;
@@ -147,6 +151,11 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0) 41.55%, #000000 100%);
     padding-top: calc(751 / 1440 * 100%);
     min-height: 751px;
     height: 100vh;
+}
+.blog_banner_hero .home-hero-banner .ratio::before {
+  padding-top: calc(400 / 1440 * 100%);
+  min-height: 400px;
+  height: 40vh;
 }
 .homeHero_sec .heroContent_wrap {
   max-width: 100%;

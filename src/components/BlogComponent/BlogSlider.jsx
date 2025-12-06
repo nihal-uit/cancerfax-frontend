@@ -19,53 +19,20 @@ const BlogSlider = ({ data, loading }) => {
     return null;
   }
 
-  const defaultBlogSliderContent = [
-    {
-    id: 1,
-    title: "Lorem Ipsum",
-    description:"Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-    image: "../images/blog-hero-slider-img-1.jpg",
-    tag: "Tag",
-    author: {
-      name: "Author Name",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-    },
-    publishedAt: "May 27, 2024",
-    readTime: "17 min read",
-    buttonLink: "#",
-    buttonText: "Know more",
-  },
-  {
-    id: 2,
-    title: "Lorem Ipsum 2",
-    description:"Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-    image: "../images/blog-hero-slider-img-2.jpg",
-    tag: "Tag 2",
-    author: {
-      name: "Author Name 2",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-    },
-    publishedAt: "May 27, 2024",
-    readTime: "4 min read",
-    buttonLink: "#",
-    buttonText: "Know more",
-  },
-  ];
-
   const blogSliderContent = data?.resources?.length > 0 ? data?.resources?.map((resource, index) => ({
-    title: resource?.title || defaultBlogSliderContent[index % 2]?.title,
-    publishedAt: formatDate(resource?.publishedAt) || defaultBlogSliderContent[index % 2]?.publishedAt,
-    readTime: resource?.readTime || defaultBlogSliderContent[index % 2]?.readTime,
+    title: resource?.title || '',
+    publishedDate: formatDate(resource?.publishedDate) || '',
+    readTime: resource?.readTime || '',
     author: {
-      name: `${resource?.author?.firstName} ${resource?.author?.lastName ? resource?.author?.lastName : ''}` || defaultBlogSliderContent.author,
-      avatar: getMediaUrl(resource?.author?.avatar) || null,
+      name: `${resource?.author?.firstName ?? ''} ${resource?.author?.lastName ? resource?.author?.lastName : ''}` || '',
+      avatar: getMediaUrl(resource?.author?.profilePicture) || null,
     },
-    image: getMediaUrl(resource?.featuredImage) ?? defaultBlogSliderContent[index % 2]?.image,
-    tags:  resource?.resource_tags || defaultBlogSliderContent[index % 2]?.tag,
+    image: getMediaUrl(resource?.featuredImage) ?? '',
+    tags:  resource?.resource_tags || '',
     buttonText: "Know more",
     buttonLink: `/resources/${resource?.documentId}`,
     buttonTarget: '_self',
-  })) : defaultBlogSliderContent;
+  })) : [];
 
   return (
     <section className="hospital_slider_sec">
@@ -108,7 +75,7 @@ const BlogSlider = ({ data, loading }) => {
                         <h3 className="line-2-text mb-2">
                           {slide.title}
                         </h3>
-                        <BlogMeta>{slide.publishedAt} | {slide.readTime} min read</BlogMeta>
+                        <BlogMeta>{slide.publishedDate} | {slide.readTime} min read</BlogMeta>
                         <Link to={slide.buttonLink} className="btn btn-pink-solid" target={slide.buttonTarget}>
                           {slide.buttonText}
                         </Link>

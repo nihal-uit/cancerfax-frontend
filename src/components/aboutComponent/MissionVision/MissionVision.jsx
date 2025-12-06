@@ -1,18 +1,8 @@
 import React from "react";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
+import { getMediaUrl } from "@/services/api";
 
-const MissionVision = () => {
-
-  const slideLeft = {
-    hidden: { x: -100, opacity: 0 },
-    visible: { x: 0, opacity: 1 },
-  };
-
-  const slideRight = {
-    hidden: { x: 100, opacity: 0 },
-    visible: { x: 0, opacity: 1 },
-  };
-
+const MissionVision = ( { data } ) => {
   return (
     <section className='mission_sec py-120'>
       <div className='containerWrapper'>
@@ -21,15 +11,15 @@ const MissionVision = () => {
             <ScrollAnimationComponent animationVariants={slideLeft}>
               <div className="mission_image_wrap">
                 <img
-                  src="../images/mission-vision-img.jpg"
-                  alt=""
+                  src={getMediaUrl(data?.featuredImage)}
+                  alt="featured image"
                 />
                 <div className="mission_image_content">
                   <div className="commContent_wrap content-gap-20">
-                    <span className="contentLabel mb-2">Values</span>
-                    <h3>Our Purpose is Personal</h3>
+                    <span className="contentLabel mb-2">{data?.heading || "Lorem Ipsum"}</span>
+                    <h3>{data?.subHeading || "Lorem Ipsum Text"}</h3>
                     <p className="text-16">
-                      At CancerFax, we believe that no patient should be limited by geography when it comes to hope or treatment.                    
+                      {data?.description_text || "Lorem Ipsum dolor sit amet"}
                     </p>
                   </div>
                 </div>
@@ -42,23 +32,23 @@ const MissionVision = () => {
                 <li>
                   <div className="mission_vision_content">
                     <span className="mission_icon">
-                      <img src="../images/mission_icon.svg" alt="" />
+                      <img src={getMediaUrl(data?.card_1?.icon)} alt="mission icon" />
                     </span>
                     <h5>
-                      Mission
+                      {data?.card_1?.title || "Lorem Ipsum"}
                     </h5>
-                    <p>Connecting patients worldwide with top cancer centers and innovations, empowering them with knowledge, choice, and hope for accessible, transparent, and compassionate care.</p>
+                    <p>{data?.card_1?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </li>
                 <li>
                   <div className="mission_vision_content">
                     <span className="mission_icon">
-                      <img src="../images/vision_icon.svg" alt="" />
+                      <img src={getMediaUrl(data?.card_2?.icon)} alt="vision icon" />
                     </span>
                     <h5>
-                      Mission
+                      {data?.card_2?.title || "Lorem Ipsum"}
                     </h5>
-                    <p>Connecting patients worldwide with top cancer centers and innovations, empowering them with knowledge, choice, and hope for accessible, transparent, and compassionate care.</p>
+                    <p>{data?.card_2?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </li>
               </ul>
@@ -68,6 +58,16 @@ const MissionVision = () => {
       </div>
     </section>
   );
+};
+
+const slideLeft = {
+  hidden: { x: -100, opacity: 0 },
+  visible: { x: 0, opacity: 1 },
+};
+
+const slideRight = {
+  hidden: { x: 100, opacity: 0 },
+  visible: { x: 0, opacity: 1 },
 };
 
 export default MissionVision;

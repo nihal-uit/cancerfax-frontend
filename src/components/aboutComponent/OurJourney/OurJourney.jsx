@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Nav, Tab, Image } from 'react-bootstrap';
 import './OurJourney.css'
 import styled from 'styled-components';
+import { getMediaUrl } from "@/services/api";
 
-
-const OurJourney = () => {
-
-    // ############################
+const OurJourney = ( { data } ) => {
     const [activeKey, setActiveKey] = useState('2017');
   
     const milestones = [
@@ -60,14 +58,14 @@ const OurJourney = () => {
       }
     ];
   
-    const selectedMilestone = milestones.find(m => m.year === activeKey) || milestones[0];
+    const selectedMilestone = data?.milestones.find(m => m.year === activeKey) || milestones[0];
 
   return (
     <section className='OurJourney_sec py-120'>
       <div className='containerWrapper'>
         <div className="commContent_wrap content-gap-24 max-w-800">
-          <span className="contentLabel">MILESTONES</span>
-          <h3 className="title-3">Our Journey of Impact and Medical Innovation</h3>
+          <span className="contentLabel">{data?.heading || "Lorem Ipsum"}</span>
+          <h3 className="title-3">{data?.subHeading || "Lorem Ipsum Text"}</h3>
         </div>
 
         <ContentWrapper className="milestones_grid">
@@ -75,7 +73,7 @@ const OurJourney = () => {
             <div className="milestones-timeline">
               <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k)}>
                 <Nav variant="pills" className="vertical-tabs">
-                  {milestones.map((milestone) => (
+                  {data?.milestones.map((milestone) => (
                     <Nav.Item key={milestone.year} className="milestone-item">
                       <Nav.Link 
                         eventKey={milestone.year}
@@ -97,7 +95,7 @@ const OurJourney = () => {
                 <div className="background-year">{selectedMilestone.year}</div>
                 <div className="image-container">
                   <Image 
-                    src={selectedMilestone.image} 
+                    src={getMediaUrl(selectedMilestone?.featuredImage)} 
                     alt={`${selectedMilestone.year} - ${selectedMilestone.title}`}
                     className="milestone-image"
                     fluid
@@ -107,7 +105,7 @@ const OurJourney = () => {
                   />
                 </div>
                 <div className="image-caption">
-                  {selectedMilestone.description}
+                  {selectedMilestone.description_text}
                 </div>
               </div>
             </div>

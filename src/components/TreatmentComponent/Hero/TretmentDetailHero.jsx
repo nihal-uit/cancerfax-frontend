@@ -12,7 +12,7 @@ const TreatmentDetailHero = ({
       <div className="home-hero-banner hospital_details_hero">
         <div className="ratio">
           <BackgroundVideo
-            class="video"
+            className="video"
             preload="none"
             autoplay="true"
             loop="true"

@@ -138,7 +138,7 @@ const FeaturedBlogCard = ({ blog, getMediaUrl }) => {
   );
 };
 
-const ResourcesComponent = ({ componentData, loading }) => {
+const ResourcesComponent = ({ componentData }) => {
   const section = useMemo(() => {
     const data = componentData || {};
     return {

@@ -108,13 +108,18 @@ export const resourcesAPI = {
 
   getBlogs: async ({ limit = 3, start = 0 } = {}) => {
     const response = await api.get(
-      `/resources?filters[isActive][$eq]=true&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=publishedAt:desc`
+      `/resources?filters[isActive][$eq]=true&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=publishedDate:desc`
     );
     return response.data;
   },
 
   getBlogById: async (id) => {
-    const response = await api.get(`/resources/${id}?populate=all`);
+    const response = await api.get(`/resources/${id}?populate=*`);
+    return response.data.data;
+  },
+
+  getRelatedBlogs: async (id) => {
+    const response = await api.get(`/resources/${id}?filters[isActive][$eq]=true&populate[related_posts][populate][related_posts][populate]=*&sort=publishedDate:desc`);
     return response.data.data;
   },
 
@@ -282,5 +287,13 @@ export const keyFactorsAPI = {
   getFactors: async () => {
     const response = await api.get('/key-factors?populate=*&sort=order:asc');
     return formatStrapiResponse(response.data.data);
+  },
+};
+
+// Doctor API
+export const doctorAPI = {
+  getDoctorBySlug: async (slug) => {
+    const response = await api.get(`/doctors?filters[slug][$eq]=${slug}&populate=*`);
+    return response.data.data;
   },
 };
