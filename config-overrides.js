@@ -1,5 +1,7 @@
 const webpack = require('webpack');
 
+const path = require('path');
+
 module.exports = function override(config) {
   const fallback = config.resolve.fallback || {};
   Object.assign(fallback, {
@@ -15,6 +17,22 @@ module.exports = function override(config) {
     "zlib": false
   });
   config.resolve.fallback = fallback;
+  
+  // Ensure resolve object exists
+  if (!config.resolve) {
+    config.resolve = {};
+  }
+  
+  // Add path alias for @ to point to src directory
+  config.resolve.alias = {
+    ...(config.resolve.alias || {}),
+    '@': path.resolve(__dirname, 'src')
+  };
+  
+  // Ensure .tsx and .ts extensions are resolved
+  if (!config.resolve.extensions) {
+    config.resolve.extensions = ['.js', '.jsx', '.json'];
+  }
   config.plugins = (config.plugins || []).concat([
     new webpack.ProvidePlugin({
       process: 'process/browser',
