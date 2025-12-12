@@ -9,44 +9,6 @@ const fadeIn = {
   visible: { opacity: 1, y: 0 },
 };
 
-const defaultFAQs = [
-  {
-    id: 1,
-    question: "What services does CancerFax provide?",
-    answer:
-      "CancerFax provides comprehensive cancer treatment support including access to advanced treatments, clinical trial matching, second opinions from leading oncologists, and coordination with top hospitals worldwide.",
-    category: "General",
-  },
-  {
-    id: 2,
-    question: "How do I get started with CancerFax?",
-    answer:
-      "Getting started is simple. Fill out our contact form or call us directly. Our team will schedule a consultation to understand your needs and create a personalized treatment plan.",
-    category: "Getting Started",
-  },
-  {
-    id: 3,
-    question: "Do you work with international patients?",
-    answer:
-      "Yes, we work with patients from all over the world. We provide support for travel arrangements, visa assistance, and coordinate with hospitals globally to ensure seamless care.",
-    category: "International",
-  },
-  {
-    id: 4,
-    question: "What types of cancer treatments do you help with?",
-    answer:
-      "We help patients access a wide range of treatments including CAR T-Cell therapy, immunotherapy, targeted therapy, clinical trials, stem cell transplants, and other advanced treatment options.",
-    category: "Treatments",
-  },
-  {
-    id: 5,
-    question: "How much does your service cost?",
-    answer:
-      "Our consultation and coordination services vary based on your needs. We provide transparent pricing and work with you to find treatment options that fit your budget. Contact us for a detailed consultation.",
-    category: "Pricing",
-  },
-];
-
 const FAQAccordion = ({ data, loading }) => {
   const displayFAQs = useMemo(() => {
     if (loading) return [];
@@ -54,13 +16,10 @@ const FAQAccordion = ({ data, loading }) => {
     if (data?.faqs && Array.isArray(data.faqs) && data.faqs.length > 0) {
       return data.faqs;
     }
-
-    if (Array.isArray(data) && data.length > 0) {
-      return data;
-    }
-
-    return defaultFAQs;
+    return [];
   }, [data, loading]);
+
+  if (loading) return null;
 
   return (
     <SectionContainer className="py-120 pt-0 treatment__faq__sec">
@@ -68,9 +27,9 @@ const FAQAccordion = ({ data, loading }) => {
         <ContentWrapper>
           <ScrollAnimationComponent animationVariants={fadeIn}>
             <Header className="commContent_wrap mx-auto text-center">
-              <p className="contentLabel">{data?.heading || "Lorem Ipsum"}</p>
+              <p className="contentLabel">{data?.heading || ''}</p>
               <h3 className="title-3">
-                {data?.subHeading || "Lorem Ipsum Text"}
+                {data?.subHeading || ''}
               </h3>
             </Header>
           </ScrollAnimationComponent>
@@ -81,10 +40,10 @@ const FAQAccordion = ({ data, loading }) => {
                 return (
                   <Accordion.Item eventKey={String(index)} key={faq.id || index}>
                     <Accordion.Header>
-                      {faqItem.question || "Untitled Question"}
+                      {faqItem.question || ''}
                     </Accordion.Header>
                     <Accordion.Body>
-                      <p>{faqItem.answer || "No answer available."}</p>
+                      <p>{faqItem.answer || ''}</p>
                     </Accordion.Body>
                   </Accordion.Item>
                 );
@@ -157,9 +116,9 @@ const CategoryButton = styled.button`
 
   &:hover {
     background: ${(props) =>
-      props.isActive
-        ? "linear-gradient(135deg, #FF1493 0%, #FF69B4 100%)"
-        : "#E5E7EB"};
+    props.isActive
+      ? "linear-gradient(135deg, #FF1493 0%, #FF69B4 100%)"
+      : "#E5E7EB"};
     transform: translateY(-2px);
   }
 

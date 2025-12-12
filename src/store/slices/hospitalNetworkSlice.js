@@ -17,12 +17,24 @@ export const fetchHospitalHeroSection = createAsyncThunk(
 // Fetch hospitals list
 export const fetchHospitals = createAsyncThunk(
   'hospitalNetwork/fetchHospitals',
-  async (_, { rejectWithValue }) => {
+  async ({ limit = 3, start = 0, query = '' } = {}, { rejectWithValue }) => {
     try {
-      const data = await hospitalNetworkAPI.getHospitals();
+      const data = await hospitalNetworkAPI.getHospitals({ limit, start, query });
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch hospitals');
+    }
+  }
+);
+
+export const fetchHospitalBySlug = createAsyncThunk(
+  'hospitalNetwork/fetchHospitalBySlug',
+  async (slug, { rejectWithValue }) => {
+    try {
+      const data = await hospitalNetworkAPI.getHospitalBySlug(slug);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch hospital by slug');
     }
   }
 );

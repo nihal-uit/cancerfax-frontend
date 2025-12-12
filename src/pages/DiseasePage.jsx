@@ -18,7 +18,7 @@ const DiseasePage = () => {
   const { pageData, pageLoading } = useSelector(state => state.page);
 
   useEffect(() => {
-    dispatch(fetchPageBySlug("disease-listing"));
+    dispatch(fetchPageBySlug("disease"));
   }, [dispatch]);
 
   return (

@@ -14,7 +14,7 @@ const HospitalTestimonials = ( { data: hospitalTestimonialsSection, loading }) =
       id="video-testimonials"
     >
       <div className="containerWrapper">
-        <VideoTestimonialComponents componentData={hospitalTestimonialsSection}/>
+        <VideoTestimonialComponents data={hospitalTestimonialsSection}/>
       </div>
     </section>
   );

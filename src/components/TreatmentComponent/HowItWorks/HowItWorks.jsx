@@ -43,31 +43,28 @@ const HowItWorks = ({ data, loading }) => {
   }
 
   const content = {
-    label: data?.heading || 'Lorem Ipsum',
-    title: data?.subHeading || 'Lorem Ipsum',
-    description: data?.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a est velit. In ut eros dapibus, consectetur metus nec, dictum metus.',
-    image: getMediaUrl(data?.backgroundImage) || '../images/about-banner-slider-img-1.jpg',
-    imageAlt: data?.backgroundImage?.alternativeText || 'How It Works',
+    label: data?.heading,
+    title: data?.subHeading,
+    description: data?.description_text,
+    image: getMediaUrl(data?.backgroundImage),
   } ;
 
   return (
     <section className="treatment__howwork_sec py-120" id="how-it-works">
       <div className="howItWork_bg">
-        <img src="./images/how-work-bg.svg" alt="How It Works" />
+        <img src={content.image} alt='' />
       </div>
       <div className="containerWrapper z-2 position-relative">
         <ScrollAnimationComponent animationVariants={fadeIn}>
           <CommContent className="commContent_wrap">
             <Label className="contentLabel">
-              {content.label || "HOW IT WORKS"}
+              {content.label}
             </Label>
             <Title className="title-3">
-              {content.title || "Understanding CAR T-Cell Therapy"}
+              {content.title}
             </Title>
             <Description className="text-16">
-              {content.description ||
-                `CAR T-Cell therapy (Chimeric Antigen Receptor T-Cell therapy) is a groundbreaking form of immunotherapy. It involves reprogramming a patient’s own T cells to detect and destroy cancer cells by expressing engineered receptors (CARs).
-            This therapy has revolutionized treatment for certain blood cancers, offering deep remissions and durable responses for patients who’ve exhausted conventional options.`}
+              {content.description}
             </Description>
           </CommContent>
         </ScrollAnimationComponent>

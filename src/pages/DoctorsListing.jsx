@@ -10,11 +10,11 @@ const DoctorsListing = () => {
   const { pageData, pageLoading } = useSelector(state => state.page);
 
   useEffect(() => {
-    dispatch(fetchPageBySlug("doctor-listing"));
+    dispatch(fetchPageBySlug("doctors"));
   }, [dispatch]);
 
   return (
-    <DynamicComponents pageData={pageData} pageLoading={pageLoading} />
+    <DynamicComponents pageData={pageData} pageLoading={pageLoading} darkText={true}/>
   );
 };
 

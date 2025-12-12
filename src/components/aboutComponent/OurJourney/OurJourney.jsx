@@ -4,68 +4,16 @@ import './OurJourney.css'
 import styled from 'styled-components';
 import { getMediaUrl } from "@/services/api";
 
-const OurJourney = ( { data } ) => {
-    const [activeKey, setActiveKey] = useState('2017');
-  
-    const milestones = [
-      {
-        year: '2017',
-        title: 'Vision Begins',
-        description: 'CancerFax was founded with a mission to bridge global gaps in cancer treatment access and awareness.',
-        image: '../images/our-journey-img-1.jpg' // Replace with actual image path
-      },
-      {
-        year: '2018',
-        title: 'Global Network Expansion',
-        description: 'Expanded our network to reach more patients worldwide, connecting them with leading cancer treatment centers.',
-        image: '../images/mission-vision-img.jpg'
-      },
-      {
-        year: '2019',
-        title: 'Patient Assistance Program',
-        description: 'Launched comprehensive patient assistance programs to help those in need access quality cancer care.',
-        image: '../images/what-we-do-03.webp'
-      },
-      {
-        year: '2020',
-        title: 'Digital Transformation',
-        description: 'Embarked on digital transformation to make cancer care information more accessible through technology.',
-        image: '../images/what-we-do-04.webp'
-      },
-      {
-        year: '2021',
-        title: 'Collaboration with Research Institutions',
-        description: 'Partnered with leading research institutions to advance cancer treatment and patient care.',
-        image: '../images/our-journey-img-1.jpg'
-      },
-      {
-        year: '2022',
-        title: 'Recognition for Patient Advocacy',
-        description: 'Received recognition for our commitment to patient advocacy and improving cancer care access.',
-        image: '../images/our-journey-img-1.jpg'
-      },
-      {
-        year: '2023',
-        title: 'Expanding to Emerging Markets',
-        description: 'Extended our reach to emerging markets, bringing hope and quality care to underserved communities.',
-        image: '../images/our-journey-img-1.jpg'
-      },
-      {
-        year: '2024',
-        title: 'Innovation in Cancer Care Access',
-        description: 'Continuing to innovate in cancer care access, leveraging technology and partnerships for better outcomes.',
-        image: '../images/our-journey-img-1.jpg'
-      }
-    ];
-  
-    const selectedMilestone = data?.milestones.find(m => m.year === activeKey) || milestones[0];
+const OurJourney = ({ data }) => {
+  const [activeKey, setActiveKey] = useState('2017');
+  const selectedMilestone = data?.milestones.find(m => m.year === activeKey);
 
   return (
     <section className='OurJourney_sec py-120'>
       <div className='containerWrapper'>
         <div className="commContent_wrap content-gap-24 max-w-800">
-          <span className="contentLabel">{data?.heading || "Lorem Ipsum"}</span>
-          <h3 className="title-3">{data?.subHeading || "Lorem Ipsum Text"}</h3>
+          <span className="contentLabel">{data?.heading || ""}</span>
+          <h3 className="title-3">{data?.subHeading || ""}</h3>
         </div>
 
         <ContentWrapper className="milestones_grid">
@@ -73,13 +21,13 @@ const OurJourney = ( { data } ) => {
             <div className="milestones-timeline">
               <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k)}>
                 <Nav variant="pills" className="vertical-tabs">
-                  {data?.milestones.map((milestone) => (
+                  { data?.milestones && data?.milestones?.length > 0 && data?.milestones?.map((milestone) => (
                     <Nav.Item key={milestone.year} className="milestone-item">
-                      <Nav.Link 
+                      <Nav.Link
                         eventKey={milestone.year}
                         className={`milestone-link ${activeKey === milestone.year ? 'active' : ''}`}
                       >
-                        <div className="milestone-content">                        
+                        <div className="milestone-content">
                           <span className="milestone-title"><span className="milestone-year">{milestone.year}</span>-{milestone.title}</span>
                         </div>
                       </Nav.Link>
@@ -94,8 +42,8 @@ const OurJourney = ( { data } ) => {
               <div className="image-wrapper">
                 <div className="background-year">{selectedMilestone.year}</div>
                 <div className="image-container">
-                  <Image 
-                    src={getMediaUrl(selectedMilestone?.featuredImage)} 
+                  <Image
+                    src={getMediaUrl(selectedMilestone?.featuredImage)}
                     alt={`${selectedMilestone.year} - ${selectedMilestone.title}`}
                     className="milestone-image"
                     fluid

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import Marquee from "react-fast-marquee";
-import { getMediaUrl } from '../../services/api';
+import { formatMedia } from "@/utils/strapiHelpers";
 
 const InnovativeGalleryMarqueComponent = ( { data } ) => {
 
@@ -19,18 +19,18 @@ const InnovativeGalleryMarqueComponent = ( { data } ) => {
             <ImageCard style={{width: 288, height: 441}}>
               <InnerCard>
                 <InnerCard1>
-                  <Image src={getMediaUrl(data?.image_1)} alt={'Hospital network'} />
+                  <Image src={formatMedia(data?.image_1)} alt={'Hospital network'} />
                 </InnerCard1>
                 <InnerCard2>
-                  <Image src={getMediaUrl(data?.image_2)} alt={'Hospital network'} />
+                  <Image src={formatMedia(data?.image_2)} alt={'Hospital network'} />
                 </InnerCard2>
               </InnerCard>
             </ImageCard>
             <ImageCard style={{width: 480, height: 441}}>
-                <Image src={getMediaUrl(data?.image_3)} alt={'Hospital network'} />
+                <Image src={formatMedia(data?.image_3)} alt={'Hospital network'} />
             </ImageCard>
             <ImageCard style={{width: 288, height: 441}}>
-                <Image src={getMediaUrl(data?.image_4)} alt={'Hospital network'} />
+                <Image src={formatMedia(data?.image_4)} alt={'Hospital network'} />
             </ImageCard>
           </ImagesGrid>
         </Marquee>

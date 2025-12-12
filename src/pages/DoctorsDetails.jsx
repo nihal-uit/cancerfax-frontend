@@ -18,8 +18,6 @@ const DoctorsDetails = () => {
     (state) => state.global
   );
   const { doctor, loading } = useSelector((state) => state.doctor);
-  console.log("doctor ->", doctor);
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -32,7 +30,6 @@ const DoctorsDetails = () => {
 
   useEffect(() => {
     dispatch(fetchDoctorBySlug(slug));
-    // dispatch(fetchBlogs({ limit: 3, start: 0 }));
   }, [slug, dispatch]);
 
   if (globalLoading || loading || !doctor) {
@@ -41,11 +38,11 @@ const DoctorsDetails = () => {
 
   return (
     <PageContainer>
-      {/* <Header/> */}
+      <Header/>
       <DoctorsDetailsHero data={doctor}/>
       <DoctorsDetailsInfo data={doctor}/>
-      {/* <DynamicComponents pageData={pageData} pageLoading={pageLoading} /> */}
-      {/* <Footer /> */}
+      <DynamicComponents pageData={doctor} pageLoading={loading} showHeader={false} showFooter={false} />
+      <Footer />
     </PageContainer>
   );
 };

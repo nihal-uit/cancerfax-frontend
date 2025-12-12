@@ -8,22 +8,15 @@ const Testimonials = ({ data, loading }) => {
     return null;
   }
 
-  const testimonialsSection = data ? {
-    heading: data.heading || 'Lorem Ipsum',
-    subHeading: formatRichText(data?.survivor_story?.story) || 'Lorem Ipsum dolor sit amet',
-    image: getMediaUrl(data?.survivor_story?.featuredImage),
-    author: data.survivor_story?.name || 'Lorem Ipsum',
-  } : null;
-
   return (
     <section
       className='testimonials_single_sec py-120'
       id='testimonials'
-      style={{ backgroundImage: `url(${testimonialsSection.image})` }}
+      style={{ backgroundImage: `url(${data?.image})` }}
     >
       <div className='containerWrapper'>
         <div className='commContent_wrap z-2 position-relative'>
-          <TestimonialsComponent componentData={testimonialsSection} loading={loading} />
+          <TestimonialsComponent componentData={data} loading={loading} />
         </div>
       </div>
     </section>

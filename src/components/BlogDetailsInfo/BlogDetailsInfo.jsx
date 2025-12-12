@@ -12,7 +12,7 @@ const FIXED_SECTIONS = [
 const getSectionId = (value) =>
   typeof value === "number" ? `section-${value}` : String(value);
 
-const BlogDetailsInfo = ({ data, loading }) => {
+const BlogDetailsInfo = ({ data }) => {
   const [activeId, setActiveId] = useState("about");
   const sectionRefs = useRef({});
 
@@ -65,8 +65,6 @@ const BlogDetailsInfo = ({ data, loading }) => {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
-
-  console.log("data", data);
 
   return (
     <section className="hospitalDetailsInfo_sec py-120">

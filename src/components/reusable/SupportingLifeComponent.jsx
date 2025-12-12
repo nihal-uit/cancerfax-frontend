@@ -1,11 +1,9 @@
-import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { fetchQuickFindsSection } from "../../store/slices/quickFindsSlice";
 import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAnimationComponent";
+import { formatMedia } from "../../utils/strapiHelpers";
 
-const SupportingLifeComponent = ({ supportContent }) => {
+const SupportingLifeComponent = ({ data }) => {
   const slideLeft = {
     hidden: { x: -100, opacity: 0 },
     visible: { x: 0, opacity: 1 },
@@ -16,46 +14,25 @@ const SupportingLifeComponent = ({ supportContent }) => {
     visible: { x: 0, opacity: 1 },
   };
 
-  const dispatch = useDispatch();
-  const { sectionContent } = useSelector((state) => state.quickFinds);
-
-  useEffect(() => {
-    dispatch(fetchQuickFindsSection());
-  }, [dispatch]);
-
-  // Fallback content
-  const defaultContent = {
-    label: "Lorem Ipsum",
-    title: "Lorem ipsum dolor sit amet",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a est velit. In ut eros dapibus, consectetur metus nec, dictum metus.",
-    buttonText: "Lorem Ipsum",
-    buttonLink: "#",
-    buttonTarget: "_blank",
-    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800",
-  };
-
-  const content = supportContent || sectionContent || defaultContent;
-
   return (
     <div className="containerWrapper">
       <TopSection>
         <LeftContent className="commContent_wrap">
           <ScrollAnimationComponent animationVariants={slideLeft}>
             <div className="content-gap-20">
-              <Label className="contentLabel text_theme_dark">
-                {content.label}
-              </Label>
-              <Title className="title-3 text_theme_dark">{content.title}</Title>
-              <Description className="text-16">
-                {content?.description || content?.description_text}
-              </Description>
+              <div className="contentLabel text_theme_dark">
+                {data?.heading}
+              </div>
+              <Title className="title-3 text_theme_dark">{data?.subHeading}</Title>
+              <p className="text-16">
+                {data?.description_text}
+              </p>
               <CTAButton
                 className="btn btn-pink-solid"
-                to={content.buttonLink}
-                target={content.buttonTarget}
+                to={data?.cta?.URL}
+                target={data?.cta?.target}
               >
-                {content.buttonText}
+                {data?.cta?.text}
               </CTAButton>
             </div>
           </ScrollAnimationComponent>
@@ -64,7 +41,7 @@ const SupportingLifeComponent = ({ supportContent }) => {
         <RightContent className="commContent_wrap">
           <ScrollAnimationComponent animationVariants={slideRight}>
             <div className="img-wrapper">
-              <img src={content.image} alt="" className="img-clip" />
+              <img src={formatMedia(data?.featuredImage)} alt="" className="img-clip" />
             </div>
           </ScrollAnimationComponent>
         </RightContent>
@@ -104,8 +81,6 @@ const LeftContent = styled.div`
   }
 `;
 
-const Label = styled.div``;
-
 const Title = styled.h3`
   max-width: 500px;
 `;
@@ -116,8 +91,6 @@ const RightContent = styled.div`
   align-items: center;
   justify-content: flex-end;
 `;
-
-const Description = styled.p``;
 
 const CTAButton = styled(Link)`
   background: ${(props) => props.theme.colors.pink};

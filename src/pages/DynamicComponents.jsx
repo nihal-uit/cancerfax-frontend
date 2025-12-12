@@ -9,7 +9,7 @@ import SEO from "../components/SEO/SEO";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import styled from "styled-components";
 
-const DynamicComponents = ({ pageData, pageLoading, darkText = false }) => {
+const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader = true, showFooter = true }) => {
   const dispatch = useDispatch();
   const { data: globalData, loading: globalLoading} = useSelector(state => state.global);
 
@@ -27,17 +27,17 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false }) => {
   ) {
     return (
       <PageWrapper>
-        <Header darkText={true} />
+        {showHeader && <Header darkText={true} />}
         <SEO />
         {/* <div>No components available</div> */}
-        <Footer />
+        {showFooter && <Footer />}
       </PageWrapper>
     );
   }
 
   return (
     <PageWrapper>
-      <Header darkText={darkText} />
+      {showHeader && <Header darkText={darkText} />}
       <SEO />
       <Suspense fallback={<LoadingSpinner />}>
         {pageData?.dynamicZone?.map((block, idx) => {
@@ -50,7 +50,7 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false }) => {
           return <Component key={`${key}-${idx}`} data={block} />;
         })}
       </Suspense>
-      <Footer />
+      {showFooter && <Footer />}
       </PageWrapper>
   );
 };

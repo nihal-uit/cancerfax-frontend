@@ -4,90 +4,51 @@ import styled from 'styled-components';
 import { fetchDedicatedSupport } from '../../store/slices/dedicatedSupportSlice';
 import { getMediaUrl } from '../../services/api';
 
-// Default fallback data
-const defaultData = {
-  subtitle: 'CONTACT US',
-  title: 'More Dedicated Support',
-  cards: [
-    {
-      id: 1,
-      title: 'Press Inquiry',
-      description: 'For any press-related inquiry, please write to us on the below email directly.',
-      email: 'pressinfo@email.com',
-      icon: '../images/dedicated_support_img-1.svg', // Fallback emoji
-    },
-    {
-      id: 2,
-      title: 'Business Inquiry',
-      description: 'For any press-related inquiry, please write to us on the below email directly.',
-      email: 'business@email.com',
-      icon: '../images/dedicated_support_img-2.svg', // Fallback emoji
-    },
-  ],
-};
+const DedicatedSupport = ({ data }) => {
 
-const DedicatedSupport = () => {
-  const dispatch = useDispatch();
-  const { sectionData, cards } = useSelector((state) => state.dedicatedSupport);
+  // const contactInfo = [];
+  // contactInfo.push(...data?.contact_info_1);
+  // contactInfo.push(...data?.contact_info_2);
 
-  useEffect(() => {
-    dispatch(fetchDedicatedSupport());
-  }, [dispatch]);
-
-  // Extract data with fallbacks
-  const subtitle = sectionData?.attributes?.subtitle || defaultData.subtitle;
-  const title = sectionData?.attributes?.title || defaultData.title;
-  const supportCards = cards.length > 0 ? cards : defaultData.cards;
+  const contactInfo = Object.entries(data || {})
+  .filter(([key, value]) => key.startsWith("contact_info_") && Array.isArray(value))
+  .flatMap(([_, value]) => value);
 
   return (
     <section className='dedicatedSupport_sec py-120'>
       <div className='containerWrapper'>
         <HeaderSection className='commContent_wrap'>
-          <span className='contentLabel'>{subtitle}</span>
-          <h3 className='title-3'>{title}</h3>
+          <span className='contentLabel'>{data?.heading}</span>
+          <h3 className='title-3'>{data?.subHeading}</h3>
         </HeaderSection>
 
         <CardsGrid>
-          {supportCards.map((card, index) => {
-            const cardData = card.attributes || card;
-            const cardTitle = cardData.title;
-            const cardDescription = cardData.description;
-            const cardEmail = cardData.email;
+          {contactInfo.map((card, index) => {
             const isRightAligned = index % 2 === 1; // Right-align every second card
-            
-            // Get icon/image URL
-            let iconUrl = null;
-            if (cardData.icon?.data?.attributes?.url) {
-              iconUrl = getMediaUrl(cardData.icon.data.attributes.url);
-            }
-
             const iconElement = (
               <IconContainer>
-                {iconUrl ? (
-                  <IconImage src={iconUrl} alt={cardTitle} />
-                ) : (
-                  <IconImage src={cardData.icon} alt={cardTitle} />
-                )}
+                <IconImage src={getMediaUrl(card.icon)} alt={card.label} />
               </IconContainer>
             );
 
             return (
-              <Card key={card.id || index}>
+              <Card key={card.id}>
                 <CardContent isRightAligned={isRightAligned}>
                   {!isRightAligned && iconElement}
                   
                   <TextContent>
-                    <CardTitle>{cardTitle}</CardTitle>
-                    <CardDescription>{cardDescription}</CardDescription>
+                    <CardTitle>{card.label}</CardTitle>
+                    <CardDescription>{card.value}</CardDescription>
                     
-                    <EmailButton className='btn btn-pink-solid' href={`mailto:${cardEmail}`}>
-                      {cardEmail}
+                    <EmailButton className='btn btn-pink-solid' href={`mailto:${card.email}`}>
+                      {card.email}
                     </EmailButton>
                   </TextContent>
                   
                   {isRightAligned && iconElement}
                 </CardContent>
               </Card>
+              
             );
           })}
         </CardsGrid>

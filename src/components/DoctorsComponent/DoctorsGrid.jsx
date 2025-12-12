@@ -1,115 +1,52 @@
-import React from 'react';
+import { formatMedia } from '../../utils/strapiHelpers';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { getMediaUrl } from '../../services/api';
+import { useLoadMore } from '../../utils/useLoadMore';
+import SkeletonBlogCard from '../reusable/SkeletonBlogCard';
 
 const DoctorsGrid = ( { doctors, loading }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = (doctor) => {
+    if (!doctor?.slug) return;
+    navigate(`/doctors/${doctor?.slug}`);
+  };
+
+  const { visibleItems, loadMore, hasMore, isLoadingMore } = useLoadMore(
+    doctors,
+    6,
+    3
+  );
+
   if (loading) {
-    return null;
+    return (
+      <Grid>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <SkeletonBlogCard key={i} />
+        ))}
+      </Grid>
+    );
   }
 
-  // Fallback hospital data for demonstration
-  const defaultDoctors = [
-    {
-      id: 1,
-      name: 'Doctor name goes here',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800' } } },
-      specialty: 'Specialty goes here',
-    },
-    {
-      id: 2,
-      name: 'Doctor name goes here',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?w=800' } } },
-      specialty: 'Specialty goes here',
-    },
-    {
-      id: 3,
-      name: 'Doctor name goes here',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800' } } },
-      specialty: 'Specialty goes here',
-    },
-    {
-      id: 4,
-      name: 'Doctor name goes here',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=800' } } },
-      specialty: 'Specialty goes here',
-    },
-    {
-      id: 5,
-      name: 'Doctor name goes here',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1512678080530-7760d81faba6?w=800' } } },
-      specialty: 'Specialty goes here',
-    },
-    {
-      id: 6,
-      name: 'Doctor name goes here',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1519167758481-83f29da8c9d0?w=800' } } },
-      specialty: 'Specialty goes here',
-    },
-    {
-      id: 7,
-      name: 'Doctor name goes here',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800' } } },
-      specialty: 'Specialty goes here',
-    },
-    {
-      id: 8,
-      name: 'Doctor name goes here',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=800' } } },
-      specialty: 'Specialty goes here',
-    },
-    {
-      id: 9,
-      name: 'Doctor name goes here',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800' } } },
-      specialty: 'Specialty goes here',
-    },
-  ];
-
-  const doctorsList = doctors?.length > 0 ? doctors.map((doctor,index) => ({
-    id: doctor.id || defaultDoctors[index % 9].id,
-    name: `${doctor.first_name} ${doctor.last_name ? doctor.last_name : ''}` || defaultDoctors[index % 9].name,
-    image: getMediaUrl(doctor.profilePicture) || defaultDoctors[index % 9].image,
-    specialty: doctor.specialization || defaultDoctors[index % 9].specialty,
-  })) : defaultDoctors;
+  if(doctors.length === 0) {
+    return (
+      <Grid>
+        <EmptyState>No doctors found</EmptyState>
+      </Grid>
+    );
+  }
 
   return (
     <>
         <Grid>
-          {doctorsList.map((doctor) => {
+          {visibleItems.map((doctor) => {
             return (
-              <Card key={doctor.id}>
-                <CardImage bgImage={doctor.image} />
+              <Card key={doctor.id} onClick={() => handleCardClick(doctor)}>
+                <CardImage bgImage={formatMedia(doctor?.profilePicture)} />
                 <CardContent>
                   <div className='doctors-text'>
-                    <DoctorName>{doctor.name}</DoctorName>
-                    <span>{doctor.specialty}</span>
+                    <DoctorName>{doctor?.first_name ?? ''} {doctor?.last_name ?? ''}</DoctorName>
+                    <span>{doctor?.specialization ?? ''}</span>
                   </div>
                   <ArrowIcon>
                     <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -121,6 +58,18 @@ const DoctorsGrid = ( { doctors, loading }) => {
             );
           })}
         </Grid>
+
+        {hasMore && (
+        <LoadMoreWrapper>
+          <button
+            className="load-more-btn"
+            onClick={loadMore}
+            disabled={isLoadingMore}
+          >
+            {isLoadingMore ? "Loading..." : "Load More"}
+          </button>
+        </LoadMoreWrapper>
+      )}
     </>
   );
 };
@@ -145,6 +94,20 @@ const Grid = styled.div`
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
+`;
+
+const EmptyState = styled.div`
+  grid-column: 1 / -1;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #36454f;
+  font-size: 18px;
+  background: #f7f9fa;
+  border-radius: 16px;
+  padding: 40px 20px;
 `;
 
 const Card = styled.div`
@@ -244,6 +207,31 @@ const ArrowIcon = styled.div`
     height: 20px;
     stroke: #36454F;
     transition: all 0.3s ease;
+  }
+`;
+
+const LoadMoreWrapper = styled.div`
+  text-align: center;
+  margin-top: 40px;
+
+  .load-more-btn {
+    background: #36454f;
+    color: #fff;
+    padding: 14px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: 0.25s ease;
+
+    &:hover {
+      background: #000;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   }
 `;
 

@@ -25,6 +25,18 @@ export const fetchTherapies = createAsyncThunk(
   }
 );
 
+export const fetchTherapiesBySlug = createAsyncThunk(
+  'therapies/fetchTherapiesBySlug',
+  async (slug, { rejectWithValue }) => {
+    try {
+      const data = await innovativeCareAPI.getTherapiesBySlug(slug);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch therapies by slug');
+    }
+  }
+);
+
 const therapiesSlice = createSlice({
   name: 'therapies',
   initialState: {

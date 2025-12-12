@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import "./IsForYou.scss";
 import {
   Col,
@@ -12,43 +12,10 @@ import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationCompo
 import { getMediaUrl } from "../../../services/api";
 
 const IsForYou = ({ data, loading }) => {
-
-  const fallbackCriteria = {
-    heading: "Lorem Ipsum",
-    image: null,
-    points: [{ id: 1, point: "Lorem ipsum dolor sit amet" }],
-    cta: { URL: "#", target: "_blank", text: "Learn More" },
-  };
-
-  const content = useMemo(() => {
-    const criteria = data?.criteria || [];
-    const inclusion = criteria[0] || fallbackCriteria;
-    const exclusion = criteria[1] || fallbackCriteria;
-
-    return {
-      label: data?.heading || "Lorem Ipsum",
-      title: data?.subHeading || data?.subHeading || "Lorem Ipsum",
-      description: data?.description || "Lorem Ipsum",
-      inclusionCriteria: {
-        heading: inclusion.heading || fallbackCriteria.heading,
-        image: inclusion.image || fallbackCriteria.image,
-        points: Array.isArray(inclusion.points) && inclusion.points.length > 0
-          ? inclusion.points
-          : fallbackCriteria.points,
-        cta: inclusion.cta || fallbackCriteria.cta,
-      },
-      exclusionCriteria: {
-        heading: exclusion.heading || fallbackCriteria.heading,
-        image: exclusion.image || fallbackCriteria.image,
-        points: Array.isArray(exclusion.points) && exclusion.points.length > 0
-          ? exclusion.points
-          : fallbackCriteria.points,
-        cta: exclusion.cta || fallbackCriteria.cta,
-      },
-    };
-  }, [data]);
-
   if (loading) return null;
+
+  const inclusionCriteria = data?.criteria[0];
+  const exclusionCriteria = data?.criteria[1];
 
   return (
     <section
@@ -58,12 +25,12 @@ const IsForYou = ({ data, loading }) => {
       <Container className="containerWrapper z-2 position-relative">
         <ScrollAnimationComponent animationVariants={fadeIn}>
           <div className="commContent_wrap commContent_new">
-            <p className="contentLabel">{content.label}</p>
+            <p className="contentLabel">{data?.heading}</p>
             <h3 className="title-3">
-              {content.title}
+              {data?.subHeading}
             </h3>
             <div className="content__des">
-              {content.description}
+              {data?.description_text}
             </div>
           </div>
         </ScrollAnimationComponent>
@@ -83,7 +50,7 @@ const IsForYou = ({ data, loading }) => {
                     fill="#FF69B4"
                   />
                 </svg>
-                <span>{content.inclusionCriteria.heading}</span>
+                <span>{data?.criteria[0]?.heading}</span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -100,7 +67,7 @@ const IsForYou = ({ data, loading }) => {
                     fill="#FF69B4"
                   />
                 </svg>
-                <span>{content.exclusionCriteria.heading}</span>
+                <span>{exclusionCriteria?.heading}</span>
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -113,7 +80,7 @@ const IsForYou = ({ data, loading }) => {
                     <div className="ratio__holder">
                       <div className="ratio">
                         <img
-                          src={getMediaUrl(content.inclusionCriteria.image)}
+                          src={getMediaUrl(inclusionCriteria?.image)}
                           alt="Expert Review"
                         />
                       </div>
@@ -124,15 +91,15 @@ const IsForYou = ({ data, loading }) => {
                   <ScrollAnimationComponent animationVariants={sideRight}>
                     <Stack direction="vertical" className="content">
                       <ul>
-                        {content.inclusionCriteria.points.map((item) => (
+                        {inclusionCriteria?.points.map((item) => (
                           <li key={item.id}>
                             {item.point}
                           </li>
                         ))}
                       </ul>
                       <div className="btn__holder">
-                        <a href={content.inclusionCriteria.cta.URL} target={content.inclusionCriteria.cta.target} className="btn btn-pink-solid">
-                          {content.inclusionCriteria.cta.text}
+                        <a href={inclusionCriteria?.cta?.URL} target={inclusionCriteria?.cta?.target} className="btn btn-pink-solid">
+                          {inclusionCriteria?.cta?.text}
                         </a>
                       </div>
                     </Stack>
@@ -147,7 +114,7 @@ const IsForYou = ({ data, loading }) => {
                     <div className="ratio__holder">
                       <div className="ratio">
                         <img
-                          src={getMediaUrl(content.exclusionCriteria.image)}
+                          src={getMediaUrl(exclusionCriteria?.image)}
                           alt="Expert Review"
                         />
                       </div>
@@ -158,15 +125,15 @@ const IsForYou = ({ data, loading }) => {
                   <ScrollAnimationComponent animationVariants={sideRight}>
                     <Stack direction="vertical" className="content">
                       <ul>
-                        {content.exclusionCriteria.points.map((item) => (
+                        {exclusionCriteria?.points.map((item) => (
                           <li key={item.id}>
                             {item.point}
                           </li>
                         ))}
                       </ul>
                       <div className="btn__holder">
-                        <a href={content.exclusionCriteria.cta.URL} target={content.exclusionCriteria.cta.target} className="btn btn-pink-solid">
-                          {content.exclusionCriteria.cta.text}
+                        <a href={exclusionCriteria?.cta?.URL} target={exclusionCriteria?.cta?.target} className="btn btn-pink-solid">
+                          {exclusionCriteria?.cta?.text}
                         </a>
                       </div>
                     </Stack>

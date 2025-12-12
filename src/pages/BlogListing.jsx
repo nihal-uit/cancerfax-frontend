@@ -9,7 +9,7 @@ const BlogListing = () => {
   const { pageData, pageLoading } = useSelector(state => state.page);
 
   useEffect(() => {
-    dispatch(fetchPageBySlug("resource-listing"));
+    dispatch(fetchPageBySlug("resource"));
   }, [dispatch]);
 
   return (

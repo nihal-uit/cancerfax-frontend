@@ -7,7 +7,7 @@ const Resources = ({ sectionClass, data }) => {
       id="resources"
     >
       <div className="containerWrapper">
-        <ResourcesComponent componentData={data} />
+        <ResourcesComponent data={data} />
       </div>
     </section>
   );

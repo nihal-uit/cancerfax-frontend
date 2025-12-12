@@ -4,43 +4,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import { Link } from "react-router-dom";
+import { formatMedia } from "@/utils/strapiHelpers";
 
 const WhatWeDo = ( { data } ) => {
-
-  const defaultData = [ 
-    {
-      id: 1,
-      name: "Medical Report Review",
-      description:
-        "A breakthrough treatment that reprograms your own immune cells to recognize and destroy cancer. It offers new hope for patients with leukemia, lymphoma, and other hard-to-treat cancers.",
-      image:
-        "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800",
-    },
-    {
-      id: 2,
-      name: "Gene Therapy",
-      description:
-        "Cutting-edge treatment that modifies genes to fight cancer at the molecular level, offering personalized solutions for various cancer types.",
-      image:
-        "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800",
-    },
-    {
-      id: 3,
-      name: "Immunotherapy",
-      description:
-        "Harnesses the power of your immune system to target and eliminate cancer cells with precision and minimal side effects.",
-      image:
-        "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800",
-    },
-    {
-      id: 4,
-      name: "Gene Test",
-      description:
-        "Cutting-edge treatment that modifies genes to fight cancer at the molecular level, offering personalized solutions for various cancer types.",
-      image:
-        "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800",
-    },
-  ];
 
   const carouselRef = useRef(null);
 
@@ -49,16 +15,16 @@ const WhatWeDo = ( { data } ) => {
       <div className='containerWrapper'>
         <HeaderSection className="commContent_wrap">
           <HeaderContent>
-            <Label className="contentLabel">{data?.heading || "Lorem Ipsum"}</Label>
-            <Title className="title-3">{data?.subHeading || "Lorem Ipsum Text"}</Title>
-            <Description className='text-16'>{data?.description_text || "Lorem Ipsum dolor sit amet"}</Description>
+            <Label className="contentLabel">{data?.heading || ''}</Label>
+            <Title className="title-3">{data?.subHeading || ''}</Title>
+            <Description className='text-16'>{data?.description_text || ''}</Description>
           </HeaderContent>
           <Link
             className="btn btn-pink-solid"
             to={data?.cta?.URL || "#"}
             target={data?.cta?.target || "_blank"}
           >
-            {data?.cta?.text || "Lorem Ipsum"}
+            {data?.cta?.text || ''}
           </Link>
         </HeaderSection>        
         <div className="swiper__holder">
@@ -84,16 +50,15 @@ const WhatWeDo = ( { data } ) => {
             style={{ overflow: "visible" }}
             className="commCircle_navigation"
           >
-            {defaultData.map((defaultdata) => {
-              // Get image URL from Strapi - handle multiple possible structures
+            {data?.cards?.map((item) => {
               return (
                 <SwiperSlide
-                  key={defaultdata.id}
+                  key={item.id}
                 >
                   <TherapyCard>
-                    <CardImage image={defaultdata.image || "./images/theraties-01.png"}>
+                    <CardImage image={formatMedia(item.image)}>
                       <CardOverlay className="card-overlay">
-                        <CardTitle>{defaultdata.name}</CardTitle>
+                        <CardTitle>{item.title}</CardTitle>
                         <PlusIcon>
                           <svg
                             width="20"
@@ -110,8 +75,8 @@ const WhatWeDo = ( { data } ) => {
                         </PlusIcon>
                       </CardOverlay>
                       <CardHoverContent className="card-hover-content">
-                        <HoverTitle>{defaultdata.name}</HoverTitle>
-                        <HoverDescription>{defaultdata.description}</HoverDescription>
+                        <HoverTitle>{item?.title || ''}</HoverTitle>
+                        <HoverDescription>{item?.description_text || ''}</HoverDescription>
                       </CardHoverContent>
                     </CardImage>
                   </TherapyCard>

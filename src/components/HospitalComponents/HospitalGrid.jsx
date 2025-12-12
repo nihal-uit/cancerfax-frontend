@@ -1,110 +1,22 @@
 import React from 'react';
 import styled from 'styled-components';
 import { getMediaUrl } from '../../services/api';
-import { formatRichText } from '../../utils/strapiHelpers';
+import { formatMedia, formatRichText } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { useNavigate } from 'react-router-dom';
+import { useLoadMore } from '../../utils/useLoadMore';
+import SkeletonBlogCard from '../reusable/SkeletonBlogCard';
 
 const HospitalGrid = ( { data, loading }) => {
-
+  const navigate = useNavigate();
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
 
-  if(loading) {
-    return null;
-  }
-
-  // Fallback hospital data for demonstration
-  const defaultHospitals = [
-    {
-      id: 1,
-      name: 'Hospital name',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800' } } },
-    },
-    {
-      id: 2,
-      name: 'Hospital name',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?w=800' } } },
-    },
-    {
-      id: 3,
-      name: 'Hospital name',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800' } } },
-    },
-    {
-      id: 4,
-      name: 'Hospital name',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=800' } } },
-    },
-    {
-      id: 5,
-      name: 'Hospital name',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1512678080530-7760d81faba6?w=800' } } },
-    },
-    {
-      id: 6,
-      name: 'Hospital name',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1519167758481-83f29da8c9d0?w=800' } } },
-    },
-    {
-      id: 7,
-      name: 'Hospital name',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800' } } },
-    },
-    {
-      id: 8,
-      name: 'Hospital name',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=800' } } },
-    },
-    {
-      id: 9,
-      name: 'Hospital name',
-      doctor: 'Dr Bharat Patodiya',
-      address: '4th Floor, Pi Cancer Care, Above Pi Electronics, Indira Nagar, Gachibowli, Hyderabad, India',
-      phone: '(+91) 83741 90429',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800' } } },
-    },
-  ];
-
-  console.log('data->', data);
-
-  const hospitalList = data?.length > 0 ? data.map((hospital, index) => ({
-    id: hospital.id || index,
-    name: hospital.name || defaultHospitals[index % 8].name,
-    doctor: `${hospital.doctors[0].first_name} ${hospital.doctors[0].last_name? hospital.doctors[0].last_name : ''}` || defaultHospitals[index % 8].doctor,
-    address: `${hospital.address?.title} ${hospital.address?.heading}` || defaultHospitals[index % 8].address,
-    phone: hospital.contact_details ? hospital.contact_details.phone : defaultHospitals[index % 8].phone,
-    image: getMediaUrl(hospital.hospitalImage) || defaultHospitals[index % 8].image,
-  })) : defaultHospitals;
-
-
   const handleCardClick = (hospital) => {
-    console.log('Hospital clicked:', hospital);
+    if (!hospital?.slug) return;
+    navigate(`/hospitals/${hospital?.slug}`);
   };
 
   const handleCallClick = (e, phone) => {
@@ -123,16 +35,40 @@ const HospitalGrid = ( { data, loading }) => {
     }
   };
 
+  const { visibleItems, loadMore, hasMore, isLoadingMore } = useLoadMore(
+    data,
+    6,
+    3
+  );
+
+  if (loading) {
+    return (
+      <Grid>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <SkeletonBlogCard key={i} />
+        ))}
+      </Grid>
+    );
+  }
+
+  if(data?.length === 0) {
+    return (
+      <Grid>
+        <EmptyState>No hospitals found</EmptyState>
+      </Grid>
+    );
+  }
+
   return (
     <>
         <Grid>
-          {hospitalList.map((hospital) => {
+          {visibleItems.map((hospital) => {
             return (
               <ScrollAnimationComponent animationVariants={fadeIn}>
-              <Card key={hospital.id}>
-                <CardImage bgImage={hospital.image} />
+              <Card key={hospital?.id} onClick={() => handleCardClick(hospital)}>
+                <CardImage bgImage={formatMedia(hospital?.hospitalImage)} />
                 <CardContent>
-                  <HospitalName>{hospital.name}</HospitalName>
+                  <HospitalName>{hospital?.name}</HospitalName>
                   <ArrowIcon>
                     <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -140,14 +76,14 @@ const HospitalGrid = ( { data, loading }) => {
                   </ArrowIcon>
                   <HoverContent>
                     <HospitalAddress>
-                      {hospital.doctor}, {hospital.address}
+                      {hospital?.doctors[0]?.first_name} {hospital?.doctors[0]?.last_name}, {hospital?.address?.address?.city}, {hospital?.address?.address?.country}
                     </HospitalAddress>
                     <ActionsRow>
-                      <CallButton onClick={(e) => handleCallClick(e, hospital.phone)}>
+                      <CallButton onClick={(e) => handleCallClick(e, hospital?.contact_details?.phone)}>
                         <svg viewBox="0 0 24 24" fill="currentColor">
                           <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
                         </svg>
-                        {hospital.phone}
+                        {hospital?.contact_details?.phone}
                       </CallButton>
                       <IconButtonsGroup>
                         <IconButton onClick={(e) => handleShareClick(e, hospital)}>
@@ -169,6 +105,19 @@ const HospitalGrid = ( { data, loading }) => {
             );
           })}
         </Grid>
+
+        {hasMore && (
+        <LoadMoreWrapper>
+          <button
+            className="load-more-btn"
+            onClick={loadMore}
+            disabled={isLoadingMore}
+          >
+            {isLoadingMore ? "Loading..." : "Load More"}
+          </button>
+        </LoadMoreWrapper>
+      )}
+
     </>
   );
 };
@@ -397,6 +346,45 @@ const ArrowIcon = styled.div`
   ${Card}:hover & {
     display: none;
   }
+`;
+
+const LoadMoreWrapper = styled.div`
+  text-align: center;
+  margin-top: 40px;
+
+  .load-more-btn {
+    background: #36454f;
+    color: #fff;
+    padding: 14px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: 0.25s ease;
+
+    &:hover {
+      background: #000;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+`;
+
+const EmptyState = styled.div`
+  grid-column: 1 / -1;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #36454f;
+  font-size: 18px;
+  background: #f7f9fa;
+  border-radius: 16px;
+  padding: 40px 20px;
 `;
 
 export default HospitalGrid;

@@ -1,19 +1,24 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { formatRichText } from '../../utils/strapiHelpers';
 import DoctorsGrid from './DoctorsGrid';
+import { fetchDoctors } from '../../store/slices/doctorSlice';
 
-const DoctorsQuickFinds = ({ data: doctorsQuickFindsSection, loading }) => {
-  const { sectionContent, countries, specialties, treatments } = useSelector((state) => state.quickFinds);
+const DOCTORS_PAGE_SIZE = 6;
+
+const DoctorsQuickFinds = ({ data }) => {
+  const dispatch = useDispatch();
+  const { countries, specialties, treatments } = useSelector((state) => state.quickFinds);
+  const { doctors, doctorsLoading, doctorsHasMore } = useSelector(state => state.doctor);
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [selectedTreatment, setSelectedTreatment] = useState('');
 
-  if (loading) {
-    return null;
-  }
+  useEffect(() => {
+    dispatch(fetchDoctors({ limit: DOCTORS_PAGE_SIZE, start: 0 }));
+  }, [dispatch]);
 
   const defaultCountries = [
     { id: 1, name: 'United States', value: 'us' },
@@ -41,27 +46,8 @@ const DoctorsQuickFinds = ({ data: doctorsQuickFindsSection, loading }) => {
   const specialtyOptions = Array.isArray(specialties) && specialties.length > 0 ? specialties : defaultSpecialties;
   const treatmentOptions = Array.isArray(treatments) && treatments.length > 0 ? treatments : defaultTreatments;
 
-  const defaultContent = {
-    label: 'Lorem Ipsum',
-    title: 'Lorem ipsum dolor sit amet',
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a est velit. In ut eros dapibus, consectetur metus nec, dictum metus.",
-  };
-
-  const content = doctorsQuickFindsSection ? {
-    label: doctorsQuickFindsSection.heading || defaultContent.label,
-    title: doctorsQuickFindsSection.subHeading || defaultContent.title,
-    description: formatRichText(doctorsQuickFindsSection.description) || defaultContent.description,
-    doctors: doctorsQuickFindsSection.doctors,
-  } : defaultContent;
-
   const handleSearch = () => {
-    // Implement search functionality
-    console.log('Search:', {
-      searchTerm,
-      country: selectedCountry,
-      specialty: selectedSpecialty,
-      treatment: selectedTreatment,
-    });
+    dispatch(fetchDoctors({ limit: DOCTORS_PAGE_SIZE, start: 0, query: searchTerm }));
   };
 
   const handleKeyPress = (e) => {
@@ -75,12 +61,12 @@ const DoctorsQuickFinds = ({ data: doctorsQuickFindsSection, loading }) => {
       <div className='containerWrapper'>
         <TopSection>
           <LeftContent className='commContent_wrap'>
-            <Label className='contentLabel text_theme_dark'>{content.label}</Label>
-            <Title className='title-3 text_theme_dark'>{content.title}</Title>
+            <Label className='contentLabel text_theme_dark'>{data?.heading || ''}</Label>
+            <Title className='title-3 text_theme_dark'>{data?.subHeading || ''}</Title>
           </LeftContent>
           
           <RightContent className='commContent_wrap'>
-            <Description className='text-16'>{content.description}</Description>
+            <Description className='text-16'>{data?.description_block || ''}</Description>
           </RightContent>
         </TopSection>
 
@@ -174,7 +160,24 @@ const DoctorsQuickFinds = ({ data: doctorsQuickFindsSection, loading }) => {
           </SelectWrapper>
         </FiltersContainer>
 
-        <DoctorsGrid doctors={content.doctors} />
+        <DoctorsGrid doctors={doctors || []} loading={doctorsLoading} />
+
+        {doctors?.length > 0 && doctorsHasMore && (
+          <LoadMoreWrapper>
+            <LoadMoreButton
+              type='button'
+              onClick={() =>
+                dispatch(
+                  fetchDoctors({ limit: DOCTORS_PAGE_SIZE, start: doctors.length })
+                )
+              }
+              disabled={doctorsLoading}
+            >
+              {doctorsLoading ? 'Loading...' : 'Load More'}
+            </LoadMoreButton>
+          </LoadMoreWrapper>
+        )}
+
       </div>
     </section>
   );
@@ -395,6 +398,35 @@ const DropdownIcon = styled.div`
   svg {
     width: 16px;
     height: 16px;
+  }
+`;
+
+const LoadMoreWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+`;
+
+const LoadMoreButton = styled.button`
+  padding: 14px 36px;
+  border-radius: 999px;
+  border: 1px solid #36454f;
+  background: transparent;
+  color: #36454f;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    background: #36454f;
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 

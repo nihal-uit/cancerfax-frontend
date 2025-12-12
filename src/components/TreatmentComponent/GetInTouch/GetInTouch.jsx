@@ -1,35 +1,12 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "styled-components";
-import { formatRichText } from "../../../utils/strapiHelpers";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
+import { Link } from "react-router-dom";
 
 const GetInTouch = ({ data, loading }) => {
-  const defaultContent = {
-    label: "Lorem Ipsum",
-    title: "Lorem Ipsum Text",
-    description: "Lorem Ipsum dolor sit amet",
-    buttonText: "Lorem Ipsum",
-    buttonLink: "#submit-reports",
-    backgroundColor: "#fff",
-  };
-
-  const content = useMemo(() => {
-    if (loading) return defaultContent;
-
-    if (!data || typeof data !== "object") return defaultContent;
-
-    return {
-      label: data.heading || data.label || defaultContent.label,
-      title: data.subHeading || data.title || defaultContent.title,
-      description:
-        formatRichText?.(data.description) ||
-        data.description ||
-        defaultContent.description,
-      buttonText: data.cta?.text || defaultContent.buttonText,
-      buttonLink: data.cta?.URL || defaultContent.buttonLink,
-      backgroundColor: data.backgroundColor || defaultContent.backgroundColor,
-    };
-  }, [data, loading]);
+  if (loading) {
+    return null;
+  }
 
   return (
     <section className="getInTouch_sec py-120" id="get-in-touch">
@@ -38,8 +15,8 @@ const GetInTouch = ({ data, loading }) => {
           <div>
             <ScrollAnimationComponent animationVariants={slideLeft}>
               <CommContent className="commContent_wrap">
-                <Label className="contentLabel">{content.label}</Label>
-                <Title className="title-3">{content.title}</Title>
+                <Label className="contentLabel">{data?.heading}</Label>
+                <Title className="title-3">{data?.subHeading}</Title>
               </CommContent>
             </ScrollAnimationComponent>
           </div>
@@ -48,14 +25,14 @@ const GetInTouch = ({ data, loading }) => {
             <ScrollAnimationComponent animationVariants={slideRight}>
               <CommContentRight className="commContent_wrap">
                 <Description className="text-16">
-                  {content.description}
+                  {data?.description_text}
                 </Description>
                 <CTAButton
                   className="btn btn-pink-solid"
-                  as={content.buttonLink ? "a" : "button"}
-                  href={content.buttonLink || undefined}
+                  target={data?.cta?.target}
+                  to={data?.cta?.URL}
                 >
-                  {content.buttonText}
+                  {data?.cta?.text}
                 </CTAButton>
               </CommContentRight>
             </ScrollAnimationComponent>
@@ -144,7 +121,7 @@ const Description = styled.p`
   color: ${(props) => props.theme.colors.white};
 `;
 
-const CTAButton = styled.button`
+const CTAButton = styled(Link)`
   max-width: 324px;
   @media (max-width: 575px) {
     max-width: 100%;

@@ -5,7 +5,7 @@ const Resources = ({ sectionClass, data, loading }) => {
   return (
     <section className={`resources_sec py-120  ${sectionClass}`} id="resources">
       <div className="containerWrapper">
-        <ResourcesComponent componentData={data} loading={loading} />
+        <ResourcesComponent data={data} loading={loading} />
       </div>
     </section>
   );

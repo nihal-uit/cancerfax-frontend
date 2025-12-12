@@ -17,7 +17,7 @@ import 'swiper/css/pagination';
 import ReactStars from "react-rating-stars-component";
 
   
-const ContactFormSection = () => {
+const ContactFormSection = ({ data }) => {
   const carouselRef = useRef(null);
 
   const testimonialData = [ 
@@ -63,14 +63,14 @@ const ContactFormSection = () => {
   } = useSelector((state) => state.contactForm);
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     phone: '',
-    zipCode: '',
-    inquiryType: '',
+    zip_code: '',
+    inquiry_type: '',
     message: '',
-    agreeToTerms: false,
+    consent: false,
   });
 
   useEffect(() => {
@@ -83,14 +83,14 @@ const ContactFormSection = () => {
     if (submissionStatus === 'succeeded') {
       // Reset form after successful submission
       setFormData({
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         email: '',
         phone: '',
-        zipCode: '',
-        inquiryType: '',
+        zip_code: '',
+        inquiry_type: '',
         message: '',
-        agreeToTerms: false,
+        consent: false,
       });
       
       // Show success message and reset after 3 seconds
@@ -152,10 +152,7 @@ const ContactFormSection = () => {
           <LeftBox>
             <TextContent>
               <Description>
-                Our team is highly dedicated to help you with your queries.
-              </Description>
-              <Description>
-                Just drop an 'hi' through the form & our team will be in touch with you with-in same day.
+                {data?.description_text}
               </Description>
             </TextContent>
 
@@ -219,9 +216,9 @@ const ContactFormSection = () => {
                   <Label>{formFields.firstNameLabel || 'First Name*'}</Label>
                   <Input
                     type="text"
-                    name="firstName"
+                    name="first_name"
                     placeholder={formFields.firstNamePlaceholder || 'Enter first name'}
-                    value={formData.firstName}
+                    value={formData.first_name}
                     onChange={handleChange}
                     required
                     disabled={submissionStatus === 'loading'}
@@ -231,9 +228,9 @@ const ContactFormSection = () => {
                   <Label>{formFields.lastNameLabel || 'Last Name*'}</Label>
                   <Input
                     type="text"
-                    name="lastName"
+                    name="last_name"
                     placeholder={formFields.lastNamePlaceholder || 'Enter last name'}
-                    value={formData.lastName}
+                    value={formData.last_name}
                     onChange={handleChange}
                     required
                     disabled={submissionStatus === 'loading'}
@@ -273,9 +270,9 @@ const ContactFormSection = () => {
                   <Label>{formFields.zipCodeLabel || 'Zip code*'}</Label>
                   <Input
                     type="text"
-                    name="zipCode"
+                    name="zip_code"
                     placeholder={formFields.zipCodePlaceholder || 'Enter zip code'}
-                    value={formData.zipCode}
+                    value={formData.zip_code}
                     onChange={handleChange}
                     required
                     disabled={submissionStatus === 'loading'}
@@ -284,8 +281,8 @@ const ContactFormSection = () => {
                 <FormGroup>
                   <Label>{formFields.inquiryTypeLabel || 'Inquiry type*'}</Label>
                   <Select
-                    name="inquiryType"
-                    value={formData.inquiryType}
+                    name="inquiry_type"
+                    value={formData.inquiry_type}
                     onChange={handleChange}
                     required
                     disabled={submissionStatus === 'loading'}
@@ -316,14 +313,14 @@ const ContactFormSection = () => {
               <CheckboxWrapper>
                 <Checkbox
                   type="checkbox"
-                  name="agreeToTerms"
+                  name="consent"
                   id="agreeToTerms"
-                  checked={formData.agreeToTerms}
+                  checked={formData.consent}
                   onChange={handleChange}
                   required
                   disabled={submissionStatus === 'loading'}
                 />
-                <CheckboxLabel htmlFor="agreeToTerms">
+                <CheckboxLabel htmlFor="consent">
                   {formFields.termsText || 'By reaching out to us, you agree to our'}{' '}
                   <TermsLink href={formFields.termsLink || '#'}>
                     {formFields.termsLinkText || 'Terms & Condition'}

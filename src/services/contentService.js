@@ -55,6 +55,11 @@ export const innovativeCareAPI = {
     const response = await api.get('/therapies?populate=*');
     return formatStrapiResponse(response.data.data);
   },
+
+  getTherapiesBySlug: async (slug) => {
+    const response = await api.get(`/therapies?filters[slug][$eq]=${slug}&populate=*`);
+    return response.data.data;
+  },
 };
 
 // Testimonials API
@@ -106,10 +111,13 @@ export const resourcesAPI = {
     return formatStrapiResponse(response.data.data);
   },
 
-  getBlogs: async ({ limit = 3, start = 0 } = {}) => {
-    const response = await api.get(
-      `/resources?filters[isActive][$eq]=true&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=publishedDate:desc`
-    );
+  getBlogs: async ({ limit = 3, start = 0, query = '' } = {}) => {
+    let response;
+    if (query) {
+      response = await api.get(`/resources?filters[isActive][$eq]=true&filters[title][$containsi]=${query}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=publishedDate:desc`);
+    } else{
+      response = await api.get(`/resources?filters[isActive][$eq]=true&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=publishedDate:desc`);
+    }
     return response.data;
   },
 
@@ -122,6 +130,12 @@ export const resourcesAPI = {
     const response = await api.get(`/resources/${id}?filters[isActive][$eq]=true&populate[related_posts][populate][related_posts][populate]=*&sort=publishedDate:desc`);
     return response.data.data;
   },
+
+  getBlogBySlug: async (slug) => {
+    const response = await api.get(`/resources?filters[slug][$eq]=${slug}&populate=*`);
+    return response.data.data;
+  },
+
 };
 
 // Clinical Trials Showcase API
@@ -179,9 +193,19 @@ export const locationNetworkAPI = {
     return formatStrapiResponse(response.data.data);
   },
 
-  getHospitals: async () => {
-    const response = await api.get('/hospitals?populate=*&sort=order:asc');
+  getHospitals: async ({ limit = 3, start = 0, query = '' } = {}) => {
+    let response;
+    if (query) {
+      response = await api.get(`/hospitals?populate=*&sort=order:asc&filters[name][$containsi]=${query}`);
+    } else{
+      response = await api.get('/hospitals?populate=*&sort=order:asc');
+    }
     return formatStrapiResponse(response.data.data);
+  },
+
+  getHospitalBySlug: async (slug) => {
+    const response = await api.get(`/hospitals?filters[slug][$eq]=${slug}&populate=*`);
+    return response.data.data;
   },
 };
 
@@ -221,9 +245,19 @@ export const hospitalNetworkAPI = {
     return formatStrapiResponse(response.data.data);
   },
 
-  getHospitals: async () => {
-    const response = await api.get('/hospitals?populate=deep&sort=order:asc');
-    return formatStrapiResponse(response.data.data);
+  getHospitals: async ({ limit = 3, start = 0, query = '' } = {}) => {
+    let response;
+    if (query) {
+      response = await api.get(`/hospitals?populate=*&filters[name][$containsi]=${query}&pagination[start]=${start}&pagination[limit]=${limit}&sort=order:asc`);
+    } else{
+      response = await api.get(`/hospitals?populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=order:asc`);
+    }
+    return response.data.data;
+  },
+
+  getHospitalBySlug: async (slug) => {
+    const response = await api.get(`/hospitals?filters[slug][$eq]=${slug}&populate=*`);
+    return response.data.data;
   },
 };
 
@@ -287,8 +321,52 @@ export const keyFactorsAPI = {
 
 // Doctor API
 export const doctorAPI = {
+
+  getDoctors: async ({ limit = 3, start = 0, query = '' } = {}) => {
+    let response
+    if (query) {
+      response = await api.get(`/doctors?[isActive][$eq]=true&filters[first_name][$containsi]=${query}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}`);
+    } else{
+      response = await api.get(`/doctors?[isActive][$eq]=true&populate=*&pagination[start]=${start}&pagination[limit]=${limit}`);
+    }
+    return response.data;
+  },
+
   getDoctorBySlug: async (slug) => {
     const response = await api.get(`/doctors?filters[slug][$eq]=${slug}&populate=*`);
+    return response.data.data;
+  },
+};
+
+// Categories API
+export const categoriesAPI = {
+  getCategories: async () => {
+    const response = await api.get('/categories');
+    return response.data.data;
+  },
+};
+
+// Treatment API
+export const treatmentAPI = {
+  getTreatments: async ({ limit = 3, start = 0, query = '' } = {}) => {
+    let response;
+    if (query) {
+      response = await api.get(`/treatments?filters[isActive][$eq]=true&filters[title][$containsi]=${query}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=order:asc`);
+    } else{
+      response = await api.get(`/treatments?filters[isActive][$eq]=true&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=order:asc`);
+    }
+    return response.data.data;
+  },
+  getTreatmentBySlug: async (slug) => {
+    const response = await api.get(`/treatments?filters[slug][$eq]=${slug}&populate=*`);
+    return response.data.data;
+  },
+};
+
+// Country Treatment API
+export const countryTreatmentAPI = {
+  getCountryTreatmentBySlug: async (slug) => {
+    const response = await api.get(`/country-treatments?filters[slug][$eq]=${slug}&populate=*`);
     return response.data.data;
   },
 };

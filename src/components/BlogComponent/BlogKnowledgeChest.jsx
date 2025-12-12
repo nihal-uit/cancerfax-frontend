@@ -18,7 +18,6 @@ const BlogKnowledgeChest = ({ data, loading }) => {
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
 
   useEffect(() => {
-    // dispatch(fetchQuickFindsSection());
     dispatch(fetchBlogs({ limit: BLOGS_PAGE_SIZE, start: 0 }));
   }, [dispatch]);
 
@@ -47,12 +46,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
       : defaultSpecialties;
 
   const handleSearch = () => {
-    // Implement search functionality
-    console.log('Search:', {
-      searchTerm,
-      country: selectedCountry,
-      specialty: selectedSpecialty,
-    });
+    dispatch(fetchBlogs({ limit: BLOGS_PAGE_SIZE, start: 0, query: searchTerm }));
   };
 
   const handleKeyPress = (e) => {
@@ -66,21 +60,15 @@ const BlogKnowledgeChest = ({ data, loading }) => {
     visible: { opacity: 1, y: 0 },
   };
 
-  const defaultContent = {
-    label: 'Lorem Ipsum',
-    title: 'Duis et sagittis nunc. Aliquam ornare diam velit',
-    description:
-      'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...',
-  };
   
   const content = data
     ? {
-        label: data?.heading || defaultContent.label,
-        title: data?.subHeading ?? defaultContent.title,
-        description: data?.description_text || defaultContent.description,
+        label: data?.heading || '',
+        title: data?.subHeading ?? '',
+        description: data?.description_text || '',
         resources: data?.resources,
       }
-    : defaultContent;
+    : {};
 
   if (loading) {
     return null;

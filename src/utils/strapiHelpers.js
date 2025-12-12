@@ -73,6 +73,7 @@ export const getSectionData = (globalData, sectionKey) => {
     'treatmentWhatWeDo': 'treatment.treatment-we-do-therapy',
     'treatmentFAQ': 'treatment.faq-section',
     'treatmentResources': 'treatment.resources-section',
+    
   };
   
   const componentType = componentTypeMap[sectionKey];

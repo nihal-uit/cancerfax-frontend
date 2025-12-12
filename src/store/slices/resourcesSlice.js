@@ -17,9 +17,9 @@ export const fetchResourcesSection = createAsyncThunk(
 
 export const fetchBlogs = createAsyncThunk(
   'resources/fetchBlogs',
-  async ({ limit = 3, start = 0 } = {}, { rejectWithValue }) => {
+  async ({ limit = 3, start = 0, query = '' } = {}, { rejectWithValue }) => {
     try {
-      const response = await resourcesAPI.getBlogs({ limit, start });
+      const response = await resourcesAPI.getBlogs({ limit, start, query });
       return {
         data: response.data,
         meta: response.meta,
@@ -40,6 +40,20 @@ export const fetchBlogById = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error.response?.data || 'Failed to fetch blog by ID'
+      );
+    }
+  }
+);
+
+export const fetchBlogBySlug = createAsyncThunk(
+  'resources/fetchBlogBySlug',
+  async (slug, { rejectWithValue }) => {
+    try {
+      const data = await resourcesAPI.getBlogBySlug(slug);
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || 'Failed to fetch blog by Slug'
       );
     }
   }

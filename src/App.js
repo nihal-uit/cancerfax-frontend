@@ -18,8 +18,8 @@ import AboutUsPage from "./pages/AboutUsPage";
 import SurvivorStoriesPage from "./pages/SurvivorStoriesPage";
 import SurvivorStoriesDetailsPage from "./pages/SurvivorStoriesDetailsPage";
 import DiseasePage from "./pages/DiseasePage";
-import CancerTreatmentInUSA from "./pages/CancerTreatmentInUSA";
-import TreatmentDetailPage from "./pages/TreatmentDetailPage";
+import CancerTreatmentInUSA from "./pages/CountryTreatment";
+import TreatmentDetailPage from "./pages/TherapyPage";
 import ClinicalListPage from "./pages/ClinicalList";
 import NotFound from "./pages/NotFound";
 import ClinicalOngoingPage from "./pages/ClinicalOngoing";
@@ -33,35 +33,36 @@ function App() {
       <Routes>
         {/* Reserved routes - must come before dynamic route */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/hospitals" element={<HospitalListing />} />
-        <Route path="/hospitaldetails" element={<HospitalDetails />} />
-        <Route path="/doctors" element={<DoctorsListing />} />
-        <Route path="/doctorsdetails" element={<DoctorsDetails />} />
-        <Route path="/drugs" element={<DrugsListing />} />
-        <Route path="/drugsDetails" element={<DrugsDetails />} />
-        <Route path="/resources" element={<BlogListing />} />
-        <Route path="/blogDetails" element={<BlogDetails />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/treatments" element={<TreatmentPage />} />
-        <Route path="/about-us" element={<AboutUsPage />} />
-        <Route path="/treatmentdetails" element={<TreatmentDetailPage />} />
-        <Route path="/survivor-stories" element={<SurvivorStoriesPage />} />
-        <Route path="/survivor-stories-details" element={<SurvivorStoriesDetailsPage />}/>
-        <Route path="/clinical-list" element={<ClinicalListPage />} />
-        <Route path="/clinical-ongoing" element={<ClinicalOngoingPage />} />
-        <Route path="/disease" element={<DiseasePage />} />
-        <Route path="/cancer-treatment-USA" element={<CancerTreatmentInUSA />} />
         <Route path="/thank-you" element={<ThankYou />} />
-        <Route path="/terms-service" element={<TermsService />} />
-
-        {/* Detail Pages with ID */}
-        <Route path="/resources/:id" element={<BlogDetails />} />
-        <Route path="/doctors/:slug" element={<DoctorsDetails />} />
 
         {/* Dynamic route for all Strapi pages (must be last) */}
         {/* This will match /about-us, /any-slug, etc. */}
         <Route path="/:slug" element={<DynamicPage />} />
+        
+        {/* <Route path="/hospitals" element={<HospitalListing />} />
+        <Route path="/doctors" element={<DoctorsListing />} />
+        <Route path="/drugs" element={<DrugsListing />} />
+        <Route path="/resources" element={<BlogListing />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/faqs" element={<FAQ />} />
+        <Route path="/about-us" element={<AboutUsPage />} />
+        <Route path="/survivor-stories" element={<SurvivorStoriesPage />} />
+        <Route path="/clinical-trials" element={<ClinicalListPage />} />
+        <Route path="/clinical-ongoing" element={<ClinicalOngoingPage />} />
+        <Route path="/terms-service" element={<TermsService />} /> */}
+
+        {/* Detail Pages with ID */}
+        <Route path="/resources/:id" element={<BlogDetails />} />
+        <Route path="/doctors/:slug" element={<DoctorsDetails />} />
+        <Route path="/hospitals/:slug" element={<HospitalDetails />} />
+        <Route path="/drugs/:slug" element={<DrugsDetails />} />
+        <Route path="/survivor-stories/:slug" element={<SurvivorStoriesDetailsPage />}/>
+        <Route path="/treatments/:slug" element={<TreatmentPage />} />
+        <Route path="/therapy/:slug" element={<TreatmentDetailPage />} />
+        <Route path="/disease/:slug" element={<DiseasePage />} />
+        <Route path="/country-treatment/:slug" element={<CancerTreatmentInUSA />} />
+
+
 
         {/* Catch-all 404 */}
         <Route path='*' element={<NotFound />} />

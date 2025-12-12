@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, lazy, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchGlobalData } from "../store/slices/globalSlice";
-import { fetchPageBySlug } from "../store/slices/pageSlice";
 import { getSectionData as getSectionDataRaw } from "../utils/strapiHelpers";
 import styled from "styled-components";
 import Header from "../components/Header/Header";
@@ -12,6 +11,9 @@ import TreatmentCost from "../components/TreatmentComponent/TreatmentCost/Treatm
 import TreatmentRisk from "../components/TreatmentComponent/TreatmentRisk/TreatmentRisk";
 import GetInTouch from "../components/TreatmentComponent/GetInTouch/GetInTouch";
 import DynamicComponents from "./DynamicComponents";
+import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
+import { useParams } from "react-router-dom";
+import { fetchTreatmentBySlug } from "@/store/slices/treatmentSlice";
 
 const Journey = lazy(() =>
   import("../components/TreatmentComponent/Journey/Journey")
@@ -50,11 +52,10 @@ const PageWrapper = styled.div`
 
 const TreatmentPage = () => {
   const dispatch = useDispatch();
+  const { slug } = useParams();
 
-  const { data: globalData, loading: globalLoading } = useSelector(
-    (state) => state.global
-  );
-  const { pageData, pageLoading } = useSelector((state) => state.page);
+  const { data: globalData, loading: globalLoading } = useSelector((state) => state.global);
+  const { treatment, loading: treatmentLoading } = useSelector((state) => state.treatment || {});
 
   useEffect(() => {
     if (!globalData && !globalLoading) {
@@ -63,78 +64,78 @@ const TreatmentPage = () => {
   }, [globalData, globalLoading, dispatch]);
 
   useEffect(() => {
-    dispatch(fetchPageBySlug("treatment-listing"));
-  }, [dispatch]);
+    dispatch(fetchTreatmentBySlug(slug));
+  }, [dispatch, slug]);
 
   const getSectionData = useMemo(() => getSectionDataRaw, []);
 
   const sections = useMemo(
     () => ({
-      hero: getSectionData(pageData, "treatmentHero"),
-      slider: getSectionData(pageData, "treatmentSlider"),
-      howItWorks: getSectionData(pageData, "treatmentHowItWorks"),
-      whyOpt: getSectionData(pageData, "treatmentWhyOpt"),
-      evidance: getSectionData(pageData, "treatmentEvidance"),
-      journey: getSectionData(pageData, "treatmentJourney"),
-      isForYou: getSectionData(pageData, "treatmentIsForYou"),
-      testimonials: getSectionData(pageData, "treatmentTestimonials"),
-      innovative: getSectionData(pageData, "treatmentInnovativeCare"),
-      getInTouch: getSectionData(pageData, "treatmentGetInTouch"),
-      risk: getSectionData(pageData, "treatmentRisk"),
-      cost: getSectionData(pageData, "treatmentCost"),
-      whatWeDo: getSectionData(pageData, "treatmentWhatWeDo"),
-      faq: getSectionData(pageData, "treatmentFAQ"),
-      resources: getSectionData(pageData, "treatmentResources"),
+      hero: getSectionData(treatment, "treatmentHero"),
+      slider: getSectionData(treatment, "treatmentSlider"),
+      howItWorks: getSectionData(treatment, "treatmentHowItWorks"),
+      whyOpt: getSectionData(treatment, "treatmentWhyOpt"),
+      evidance: getSectionData(treatment, "treatmentEvidance"),
+      journey: getSectionData(treatment, "treatmentJourney"),
+      isForYou: getSectionData(treatment, "treatmentIsForYou"),
+      testimonials: getSectionData(treatment, "treatmentTestimonials"),
+      innovative: getSectionData(treatment, "treatmentInnovativeCare"),
+      getInTouch: getSectionData(treatment, "treatmentGetInTouch"),
+      risk: getSectionData(treatment, "treatmentRisk"),
+      cost: getSectionData(treatment, "treatmentCost"),
+      whatWeDo: getSectionData(treatment, "treatmentWhatWeDo"),
+      faq: getSectionData(treatment, "treatmentFAQ"),
+      resources: getSectionData(treatment, "treatmentResources"),
     }),
-    [pageData, getSectionData]
+    [treatment, getSectionData]
   );
 
-  if (globalLoading || pageLoading || !pageData) {
-    return <div className="page_wrapper">Loading...</div>;
+  if (globalLoading || treatmentLoading || !treatment) {
+    return <LoadingSpinner />
   }
 
   return (
-    // <PageWrapper>
-    //   <Header darkText={true} />
-    //   <TreatmentHero sectionClass="treatment__here" data={sections.hero} loading={pageLoading}/>
-    //   <TreatmentSlider sectionClass="treatment__banner" data={sections.slider} loading={pageLoading}/>
+    <PageWrapper>
+      <Header darkText={true} />
+      <TreatmentHero sectionClass="treatment__here" data={sections.hero} loading={treatmentLoading}/>
+      <TreatmentSlider sectionClass="treatment__banner" data={sections.slider} loading={treatmentLoading}/>
 
-    //   <Suspense fallback={<SectionSkeleton />}>
-    //     <>
-    //       <HowItWorks data={sections.howItWorks} loading={pageLoading} />
-    //       <WhyOpt data={sections.whyOpt} loading={pageLoading} />
-    //       <Evidance data={sections.evidance} loading={pageLoading} />
-    //       <Journey data={sections.journey} loading={pageLoading} />
-    //     </>
-    //   </Suspense>
+      <Suspense fallback={<SectionSkeleton />}>
+        <>
+          <HowItWorks data={sections.howItWorks} loading={treatmentLoading} />
+          <WhyOpt data={sections.whyOpt} loading={treatmentLoading} />
+          <Evidance data={sections.evidance} loading={treatmentLoading} />
+          <Journey data={sections.journey} loading={treatmentLoading} />
+        </>
+      </Suspense>
 
-    //   <Suspense fallback={<SectionSkeleton />}>
-    //     <>
-    //       <IsForYou data={sections.isForYou} loading={pageLoading} />
-    //       <Testimonials data={sections.testimonials} loading={pageLoading} />
-    //       <InnovativeCare data={sections.innovative} loading={pageLoading} />
-    //     </>
-    //   </Suspense>
+       <Suspense fallback={<SectionSkeleton />}>
+        <>
+          <IsForYou data={sections.isForYou} loading={treatmentLoading} />
+          <Testimonials data={sections.testimonials} loading={treatmentLoading} />
+          <InnovativeCare data={sections.innovative} loading={treatmentLoading} />
+        </>
+      </Suspense>
 
-    //   <GetInTouch data={sections.getInTouch} loading={pageLoading} />
-    //   <TreatmentRisk data={sections.risk} loading={pageLoading} />
-    //   <TreatmentCost data={sections.cost} loading={pageLoading} />
+      <GetInTouch data={sections.getInTouch} loading={treatmentLoading} />
+      <TreatmentRisk data={sections.risk} loading={treatmentLoading} />
+      <TreatmentCost data={sections.cost} loading={treatmentLoading} />
 
-    //   <Suspense fallback={<SectionSkeleton />}>
-    //     <>
-    //       <WhatWeDo data={sections.whatWeDo} loading={pageLoading} />
-    //       <FAQ data={sections.faq} loading={pageLoading} />
-    //       <Resources
-    //         sectionClass="bg-white treatment__resource"
-    //         data={sections.resources}
-    //         loading={pageLoading}
-    //       />
-    //     </>
-    //   </Suspense>
+      <Suspense fallback={<SectionSkeleton />}>
+        <>
+          <WhatWeDo data={sections.whatWeDo} loading={treatmentLoading} />
+          <FAQ data={sections.faq} loading={treatmentLoading} />
+          <Resources
+            sectionClass="bg-white treatment__resource"
+            data={sections.resources}
+            loading={treatmentLoading}
+          />
+        </>
+      </Suspense>
 
-    //   <Footer />
-    // </PageWrapper>
-    <DynamicComponents pageData={pageData} pageLoading={pageLoading} darkText={true} />
+      <DynamicComponents pageData={treatment} pageLoading={treatmentLoading} darkText={true} showFooter={false} showHeader={false}/>
+      <Footer />
+    </PageWrapper>
   );
 };
 

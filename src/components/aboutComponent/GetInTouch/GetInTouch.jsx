@@ -1,11 +1,6 @@
-import React from "react";
-import { useSelector } from "react-redux";
 import styled from "styled-components";
-import { getSectionData, formatRichText } from "../../../utils/strapiHelpers";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import { Link } from "react-router-dom";
-
-
 
 const GetInTouch = ({ data }) => {
   return (
@@ -16,10 +11,10 @@ const GetInTouch = ({ data }) => {
             <ScrollAnimationComponent animationVariants={slideLeft}>
               <CommContent className="commContent_wrap">
                 <Label className="contentLabel">
-                  {data?.heading ||  "Lorem Ipsum"}
+                  {data?.heading || ''}
                 </Label>
                 <Title className="title-3">
-                    {data?.subHeading || "Lorem Ipsum Text"}
+                    {data?.subHeading || ''}
                 </Title>
               </CommContent>
             </ScrollAnimationComponent>
@@ -30,14 +25,14 @@ const GetInTouch = ({ data }) => {
               <CommContentRight className="commContent_wrap">
                 <Description className="text-16">
                   {data?.description_text ||
-                    "Lorem Ipsum dolor sit amet"}
+                    ''}
                 </Description>
                 <CTAButton
                   className="btn btn-pink-solid"
                   to={data?.cta?.URL || "#"}
                   target={data?.cta?.target || "_blank"}
                 >
-                  {data?.cta?.text || "Lorem Ipsum"}
+                  {data?.cta?.text || ''}
                 </CTAButton>
               </CommContentRight>
             </ScrollAnimationComponent>

@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
-import { getMediaUrl } from '../../services/api';
-import { formatMedia } from '../../utils/strapiHelpers';
-import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { formatMedia } from "@/utils/strapiHelpers";
+import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 
 
 const VideoTestimonialComponents = ({ data }) => {
@@ -14,19 +13,19 @@ const VideoTestimonialComponents = ({ data }) => {
   // featuredVideo can be a direct media object with url field, or nested in data.attributes
   const getBackgroundImage = () => {
     if (!data) return null;
-    
+
     if (data?.testimonial_card?.featuredVideo) {
       if (data?.testimonial_card?.featuredVideo?.url) {
-        return getMediaUrl(data?.testimonial_card?.featuredVideo?.url);
+        return formatMedia(data?.testimonial_card?.featuredVideo?.url);
       }
       if (data?.testimonial_card?.featuredVideo?.data?.attributes?.url) {
         return formatMedia(data?.testimonial_card?.featuredVideo);
       }
       if (typeof data?.testimonial_card?.featuredVideo === 'string') {
-        return getMediaUrl(data?.featuredVideo);
+        return formatMedia(data?.featuredVideo);
       }
     }
-    
+
     if (data?.backgroundImage || data?.featuredImage) {
       return formatMedia(data?.backgroundImage || data?.featuredImage);
     }
@@ -36,31 +35,31 @@ const VideoTestimonialComponents = ({ data }) => {
   // Get video URL for playback
   const getVideoUrl = () => {
     if (!data) return null;
-    
+
     if (data?.testimonial_card?.featuredVideo) {
       if (data?.testimonial_card?.featuredVideo?.url) {
-        return getMediaUrl(data?.testimonial_card?.featuredVideo?.url);
+        return formatMedia(data?.testimonial_card?.featuredVideo?.url);
       }
       if (data?.testimonial_card?.featuredVideo?.data?.attributes?.url) {
         return formatMedia(data?.testimonial_card?.featuredVideo);
       }
       if (typeof data?.testimonial_card?.featuredVideo === 'string') {
-        return getMediaUrl(data?.testimonial_card?.featuredVideo);
+        return formatMedia(data?.testimonial_card?.featuredVideo);
       }
     }
-    
+
     if (data?.featuredVideo) {
       if (data?.featuredVideo?.url) {
-        return getMediaUrl(data?.featuredVideo?.url);
+        return formatMedia(data?.featuredVideo?.url);
       }
       if (data?.featuredVideo?.data?.attributes?.url) {
         return formatMedia(data?.featuredVideo);
       }
       if (typeof data?.featuredVideo === 'string') {
-        return getMediaUrl(data?.featuredVideo);
+        return formatMedia(data?.featuredVideo);
       }
     }
-    
+
     return null;
   };
 
@@ -100,52 +99,56 @@ const VideoTestimonialComponents = ({ data }) => {
     }
   }, [isPlaying]);
 
-  console.log("img ->", getBackgroundImage());
-
   const videoUrl = getVideoUrl();
 
-  return (
-      <>
-        <div className='videoTestimonials_wrap'>
-          <BackgroundImage image={getBackgroundImage()}/>
-          <ScrollAnimationComponent animationVariants={slideLeft}>
-          <Content className='commContent_wrap'>
-            <Label className='contentLabel'>{data?.heading}</Label>
-            <Title>{data?.subHeading}</Title>
-            <ExploreButton className='btn btn-pink-solid' to={data?.cta?.URL || '#'} target={data?.cta?.target || '_blank'}>
-             {data?.cta?.text || "Lorem Ipsum"}
-            </ExploreButton>
-          </Content>
-          </ScrollAnimationComponent>
-          
-          <PlayButtonWrapper>
-            <PlayButton onClick={handlePlayVideo} aria-label="Play video testimonials" type="button">
-              <PlayIcon viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-                <path d="M8 5v14l11-7z" fill="#FF1493" />
-              </PlayIcon>
-            </PlayButton>
-          </PlayButtonWrapper>
-        </div>
+  console.log("data - ", data);
 
-        {isPlaying && videoUrl && (
-          <VideoModal onClick={handleCloseVideo}>
-            <VideoModalContent onClick={(e) => e.stopPropagation()}>
-              <CloseButton onClick={handleCloseVideo} aria-label="Close video">
-                <CloseIcon viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </CloseIcon>
-              </CloseButton>
-              <VideoPlayer
-                ref={videoRef}
-                src={videoUrl}
-                controls
-                autoPlay
-                playsInline
-              />
-            </VideoModalContent>
-          </VideoModal>
-        )}
-      </>
+  return (
+    <>
+      <div className='videoTestimonials_wrap'>
+        <BackgroundImage image={getBackgroundImage()} />
+        <ScrollAnimationComponent animationVariants={slideLeft}>
+          <Content className='commContent_wrap'>
+            <Label className='contentLabel'>{data?.heading || ''}</Label>
+            <Title>{data?.subHeading || ''}</Title>
+            {
+              data?.testimonial_card?.cta?.URL && (
+                <ExploreButton className='btn btn-pink-solid' to={data?.testimonial_card?.cta?.URL || '#'} target={data?.testimonial_card?.cta?.target || '_blank'}>
+                  {data?.testimonial_card?.cta?.text || ''}
+                </ExploreButton>
+              )
+            }
+          </Content>
+        </ScrollAnimationComponent>
+
+        <PlayButtonWrapper>
+          <PlayButton onClick={handlePlayVideo} aria-label="Play video testimonials" type="button">
+            <PlayIcon viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+              <path d="M8 5v14l11-7z" fill="#FF1493" />
+            </PlayIcon>
+          </PlayButton>
+        </PlayButtonWrapper>
+      </div>
+
+      {isPlaying && videoUrl && (
+        <VideoModal onClick={handleCloseVideo}>
+          <VideoModalContent onClick={(e) => e.stopPropagation()}>
+            <CloseButton onClick={handleCloseVideo} aria-label="Close video">
+              <CloseIcon viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </CloseIcon>
+            </CloseButton>
+            <VideoPlayer
+              ref={videoRef}
+              src={videoUrl}
+              controls
+              autoPlay
+              playsInline
+            />
+          </VideoModalContent>
+        </VideoModal>
+      )}
+    </>
   );
 };
 

@@ -8,14 +8,14 @@ import BlogDetailsHero from '../components/BlogDetailsHero/BlogDetailsHero';
 import BlogDetailsInfo from '../components/BlogDetailsInfo/BlogDetailsInfo';
 import SupportingLifeComponent from '../components/reusable/SupportingLifeComponent';
 import RelatedBlogComponent from '../components/reusable/RelatedBlogComponent';
-import { fetchBlogById, fetchBlogs } from '../store/slices/resourcesSlice';
+import { fetchBlogBySlug, fetchBlogs } from '../store/slices/resourcesSlice';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import { formatRichText, formatMedia } from '../utils/strapiHelpers';
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
 import DynamicComponents from './DynamicComponents';
 
 const BlogDetails = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const dispatch = useDispatch();
   const { data: globalData, loading: globalLoading } = useSelector(
     (state) => state.global
@@ -33,9 +33,9 @@ const BlogDetails = () => {
   }, [globalData, globalLoading, dispatch]);
 
   useEffect(() => {
-    dispatch(fetchBlogById(id));
+    dispatch(fetchBlogBySlug(slug));
     dispatch(fetchBlogs({ limit: 3, start: 0 }));
-  }, [id, dispatch]);
+  }, [slug, dispatch]);
 
   if (globalLoading || loading || !singleBlog) {
     return <LoadingSpinner />

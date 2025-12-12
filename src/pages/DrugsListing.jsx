@@ -9,7 +9,7 @@ const DrugsListing = () => {
 
   useEffect(() => {
     if (!pageData && !pageLoading) {
-      dispatch(fetchPageBySlug("drug-listing"));
+      dispatch(fetchPageBySlug("drugs"));
     }
   }, [pageData, pageLoading, dispatch]);
 

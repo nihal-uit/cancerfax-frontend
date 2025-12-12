@@ -1,6 +1,5 @@
-import React from "react";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
-import { getMediaUrl } from "@/services/api";
+import { formatMedia } from "@/utils/strapiHelpers";
 
 const MissionVision = ( { data } ) => {
   return (
@@ -11,15 +10,15 @@ const MissionVision = ( { data } ) => {
             <ScrollAnimationComponent animationVariants={slideLeft}>
               <div className="mission_image_wrap">
                 <img
-                  src={getMediaUrl(data?.featuredImage)}
-                  alt="featured image"
+                  src={formatMedia(data?.featuredImage)}
+                  alt={data?.featuredImageAlt || ''}
                 />
                 <div className="mission_image_content">
                   <div className="commContent_wrap content-gap-20">
-                    <span className="contentLabel mb-2">{data?.heading || "Lorem Ipsum"}</span>
-                    <h3>{data?.subHeading || "Lorem Ipsum Text"}</h3>
+                    <span className="contentLabel mb-2">{data?.heading || ''}</span>
+                    <h3>{data?.subHeading || ''}</h3>
                     <p className="text-16">
-                      {data?.description_text || "Lorem Ipsum dolor sit amet"}
+                      {data?.description_text || ''}
                     </p>
                   </div>
                 </div>
@@ -32,23 +31,23 @@ const MissionVision = ( { data } ) => {
                 <li>
                   <div className="mission_vision_content">
                     <span className="mission_icon">
-                      <img src={getMediaUrl(data?.card_1?.icon)} alt="mission icon" />
+                      <img src={formatMedia(data?.card_1?.icon)} alt="mission icon" />
                     </span>
                     <h5>
-                      {data?.card_1?.title || "Lorem Ipsum"}
+                      {data?.card_1?.title || ''}
                     </h5>
-                    <p>{data?.card_1?.description_text || "Lorem Ipsum dolor sit amet"}</p>
+                    <p>{data?.card_1?.description_text || ''}</p>
                   </div>
                 </li>
                 <li>
                   <div className="mission_vision_content">
                     <span className="mission_icon">
-                      <img src={getMediaUrl(data?.card_2?.icon)} alt="vision icon" />
+                      <img src={formatMedia(data?.card_2?.icon)} alt="vision icon" />
                     </span>
                     <h5>
-                      {data?.card_2?.title || "Lorem Ipsum"}
+                      {data?.card_2?.title || ''}
                     </h5>
-                    <p>{data?.card_2?.description_text || "Lorem Ipsum dolor sit amet"}</p>
+                    <p>{data?.card_2?.description_text || ''}</p>
                   </div>
                 </li>
               </ul>

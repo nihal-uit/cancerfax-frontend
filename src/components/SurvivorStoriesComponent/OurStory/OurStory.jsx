@@ -3,10 +3,11 @@ import styled from "styled-components";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
+import { Link } from "react-router-dom";
 import "swiper/css";
 
 
-const OurStory = () => {
+const OurStory = ({ data }) => {
 
   const slideLeft = {
     hidden: { x: -100, opacity: 0 },
@@ -23,16 +24,9 @@ const OurStory = () => {
     visible: { opacity: 1, y: 0 },
   };
 
-  const content = {
-    label: "Innovative Solutions",
-    title: "Flagship Centers of Excellence",
-    details: "These institutions represent the pinnacle of innovation, patient care, and research in cancer treatment.",
-    // image: "../images/about-banner-slider-img-1.jpg",
-    imageAlt: "How It Works",
-  };
-
   const carouselRef = useRef(null);
-  
+
+  console.log(data);
 
   return (
     <section className='ourstory_sec ourStory_slider_sec py-120'>
@@ -41,14 +35,14 @@ const OurStory = () => {
         <ScrollAnimationComponent animationVariants={fadeIn}>
           <CommContent className="commContent_wrap">
             <Label className="contentLabel">
-              {content.label || "Accredited Excellence"}
+              {data?.heading || ""}
             </Label>
             <div className="content-gap-12">
                 <Title className="title-3">
-                  {content.title || "Our Certifications and Recognitions in Healthcare Excellence"}
+                  {data?.subHeading || ""}
                 </Title>
                 <Description>
-                  {content.details || "These institutions represent the pinnacle of innovation, patient care, and research in cancer treatment."}
+                  {data?.description_text || ""}
                 </Description>
             </div>
           </CommContent>
@@ -72,15 +66,15 @@ const OurStory = () => {
             style={{ overflow: "visible" }}
             className="commCircle_navigation"
           >
+            {data?.stories?.map((story) => (
             <SwiperSlide>
               <div className="ourstory_card">
                 <div className="ourstory_grid align-start">
                   <div className="ourstory_left">
                       <div className="commContent_wrap content-gap-24">
-                        <h3 className="title-size-36">Built on Experience. Driven by Empathy.</h3>
+                        <h3 className="title-size-36">{story?.story_content?.heading}</h3>
                         <p className="text-16">
-                          CancerFax began with a simple realization, that the biggest barrier in cancer treatment isn’t always medicine, but access. <br/>
-                          Over the past 15 years, we’ve helped thousands of patients and families find new possibilities through verified global collaborations, clinical trials, and ethical healthcare guidance.
+                          {story?.story_content?.heading}
                         </p>
                         <ButtonLink href="#" className="btn btn-pink-solid mt-3">Read Full Story</ButtonLink>
                       </div>
@@ -105,39 +99,7 @@ const OurStory = () => {
                 </div>
               </div>            
             </SwiperSlide>
-            <SwiperSlide>
-              <div className="ourstory_card">
-                <div className="ourstory_grid align-start">
-                  <div className="ourstory_left">
-                      <div className="commContent_wrap content-gap-24">
-                        <h3 className="title-size-36">Built on Experience. Driven by Empathy.</h3>
-                        <p className="text-16">
-                          CancerFax began with a simple realization, that the biggest barrier in cancer treatment isn’t always medicine, but access. <br/>
-                          Over the past 15 years, we’ve helped thousands of patients and families find new possibilities through verified global collaborations, clinical trials, and ethical healthcare guidance.
-                        </p>
-                        <ButtonLink href="#" className="btn btn-pink-solid mt-3">Read Full Story</ButtonLink>
-                      </div>
-                  </div>
-                  <div className="mission_right">
-                      <div className="ourstory_image_wrap">
-                        <img
-                          src="../images/our-story-img.jpg"
-                          alt=""
-                        />
-                        <PlayButtons>
-                          <a href="#" className="play-btn-pulse">
-                              <span>
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 28 30" fill="none">
-                                      <path d="M5.6717 1.1394C3.05718 -0.360326 0.9375 0.868266 0.9375 3.88134V26.1165C0.9375 29.1326 3.05718 30.3596 5.6717 28.8613L25.1063 17.7156C27.7217 16.2154 27.7217 13.7848 25.1063 12.2849L5.6717 1.1394Z" fill="#727B81"></path>
-                                  </svg>
-                              </span>
-                          </a>
-                        </PlayButtons>
-                      </div>
-                  </div>
-                </div>
-              </div>            
-            </SwiperSlide>            
+            ))}
             <NavButton className="customPrev">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -198,7 +160,7 @@ const Description = styled.p`
   color: ${(props) => props.theme.colors.white};
 `;
 
-const ButtonLink = styled.a`
+const ButtonLink = styled(Link)`
   max-width: 190px;
   @media (max-width: 575px) {
     max-width: 100%;

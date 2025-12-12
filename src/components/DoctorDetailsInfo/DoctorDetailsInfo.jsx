@@ -19,7 +19,9 @@ const SECTIONS = [
   { id: "related_tags", label: "Related Tags" },
 ];
 
-const DoctorsDetailsInfo = () => {
+const DoctorsDetailsInfo = ( { data } ) => {
+
+  console.log("data ->", data);
 
   const [activeId, setActiveId] = useState("about");
   const sectionRefs = useRef({});

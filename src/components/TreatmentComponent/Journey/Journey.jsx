@@ -5,15 +5,6 @@ import { Container } from "react-bootstrap";
 import { getMediaUrl } from "../../../services/api";
 
 const Journey = ({ data, loading }) => {
-  const content = useMemo(() => {
-    return {
-      label: data?.heading || "Lorem Ipsum",
-      title: data?.subHeading || data?.subHeading || "Lorem Ipsum",
-      description: data?.description || "Lorem Ipsum",
-      steps: Array.isArray(data?.steps) ? data.steps : [],
-    };
-  }, [data]);
-
   if (loading) {
     return null;
   }
@@ -22,14 +13,14 @@ const Journey = ({ data, loading }) => {
     <div className="journey_sec py-120" id="journey">
       <Container className="containerWrapper z-2 position-relative">
         <Header className="commContent_wrap">
-          <Label className="contentLabel">{content.label}</Label>
-          <Title className="title-3">{content.title}</Title>
-          <Description>{content.description}</Description>
+          <Label className="contentLabel">{data?.heading}</Label>
+          <Title className="title-3">{data?.subHeading}</Title>
+          <Description>{data?.description_text}</Description>
         </Header>
         
         <div className="card__list__holder mx-auto">
           <div className="card__list">
-            {content.steps.map((step) => (
+            {data?.steps?.map((step) => (
             <div className="card" key={step.id}>
               <p className="card__title">{step.title}</p>
               <div className="ratio__holder position-relative">

@@ -20,7 +20,7 @@ const SurvivorStoriesPage = () => {
   const { pageData, pageLoading } = useSelector(state => state.page);
 
   useEffect(() => {
-    dispatch(fetchPageBySlug("survivor-stories-listing"));
+    dispatch(fetchPageBySlug("survivor-stories"));
   }, [dispatch]);
 
   return (

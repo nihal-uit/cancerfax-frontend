@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import { formatMedia } from "../../utils/strapiHelpers";
 import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAnimationComponent";
@@ -7,31 +6,12 @@ import { Navigation, EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-fade";
 
-const DoctorsSlider = ({ data: doctorsSliderSection, loading }) => {
-  if (loading) {
-    return null;
-  }
-
-  const defaultSliderContent = [
-    {
-      id: 1,
-      heading: "Doctors name 1",
-      description: "CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, weguide you every step of the way.",
-      backgroundImage: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1600",
-    },
-    {
-      id: 2,
-      heading: "Doctors name 2",
-      description: "CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, weguide you every step of the way.",
-      backgroundImage: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1600",
-    },
-  ];
-
-  const sliderContent = doctorsSliderSection?.doctors?.length > 0 ? doctorsSliderSection.doctors.map((slide, index) => ({
-    heading: `${slide.first_name} ${slide.last_name ? slide.last_name : ''}` || defaultSliderContent[index].heading,
-    description: slide.about || defaultSliderContent[index].description,
-    backgroundImage: formatMedia(slide.profilePicture) || defaultSliderContent[index].backgroundImage,
-  })) : defaultSliderContent;
+const DoctorsSlider = ({ data: doctorsSliderSection }) => {
+  const sliderContent = doctorsSliderSection?.doctors?.length > 0 ? doctorsSliderSection.doctors.map((slide) => ({
+    heading: `${slide.first_name} ${slide.last_name ? slide.last_name : ''}` || '',
+    description: slide.about || '',
+    backgroundImage: formatMedia(slide.profilePicture) || '',
+  })) : [];
 
 
   const fadeIn = {
@@ -48,30 +28,30 @@ const DoctorsSlider = ({ data: doctorsSliderSection, loading }) => {
             // loop={true}
             modules={[Navigation, EffectFade]}
             effect="fade"
-            navigation={{ 
+            navigation={{
               nextEl: ".customNext",
               prevEl: ".customPrev",
             }}
           >
             {sliderContent.map((slide, index) => (
-            <SwiperSlide key={index}>
-              <div className="hospital_info_slider">
-                <img src={slide.backgroundImage} alt={slide.heading} />
-                <div className="hospital_info_slider_content">
-                  <div className="inner_container">
-                    <ScrollAnimationComponent animationVariants={fadeIn}>
-                      <div className="commContent_wrap">
-                        <h3>{slide.heading}</h3>
-                        <p>{slide.description}</p>
-                        <a href={slide.buttonLink} className="btn btn-pink-solid">
-                          View Details
-                        </a>
-                      </div>
-                    </ScrollAnimationComponent>
+              <SwiperSlide key={index}>
+                <div className="hospital_info_slider">
+                  <img src={slide.backgroundImage} alt={slide.heading} />
+                  <div className="hospital_info_slider_content">
+                    <div className="inner_container">
+                      <ScrollAnimationComponent animationVariants={fadeIn}>
+                        <div className="commContent_wrap">
+                          <h3>{slide.heading}</h3>
+                          <p>{slide.description}</p>
+                          <a href={slide.buttonLink} className="btn btn-pink-solid">
+                            View Details
+                          </a>
+                        </div>
+                      </ScrollAnimationComponent>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </SwiperSlide>
+              </SwiperSlide>
             ))}
             <NavigationContainer className="customNavigation">
               <NavButton className="customPrev">

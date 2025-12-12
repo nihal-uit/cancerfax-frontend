@@ -70,15 +70,17 @@ export const componentMap = {
 
   // Survivor Stories
   "survivor-story-listing.hero-section": lazy(() => import("@/components/SurvivorStoriesComponent/Hero/SurvivorStoriesHero.jsx")),
-  "survivor-story-listing.featured-story-section": lazy(() => import("@/components/SurvivorStoriesComponent/OurStory/OurStory.jsx")),
-  "survivor-story-listing.insights-section": lazy(() => import("@/components/SurvivorStoriesComponent/SurvivorStoriesVideo/SurvivorStoriesVideo.jsx")),
-  "survivor-story-listing.slider-section": lazy(() => import("@/components/SurvivorStoriesComponent/SurvivorStoriesVideo/SurvivorStoriesVideo.jsx")),
-  "survivor-story-listing.centers-section": lazy(() => import("@/components/SurvivorStoriesComponent/SurvivorStoriesVideo/SurvivorStoriesVideo.jsx")),
-  "survivor-story-listing.guidance-section": lazy(() => import("@/components/SurvivorStoriesComponent/SurvivorStoriesVideo/SurvivorStoriesVideo.jsx")),
+  "survivor-story-listing.slider-section": lazy(() => import("@/components/SurvivorStoriesComponent/OurStory/OurStory.jsx")),
+  "survivor-story-listing.insights-section": lazy(() => import("@/components/reusable/SupportingLifeComponent.jsx")),
 
-  // About - check
+  // About
   "about.hero-section": lazy(() => import("@/components/aboutComponent/Hero/Hero.jsx")),
-  "about.slider-section": lazy(() => import("@/components/aboutComponent/AboutHeroBanner/AboutHeroBanner.jsx")),
+
+  "about.slider-section": lazy(() => import("@/components/aboutComponent/AboutSlider.jsx")),
+  "about.certification-section": lazy(() => import("@/components/aboutComponent/AboutCerticication.jsx")),
+
+  // "about.slider-section": lazy(() => import("@/components/aboutComponent/AboutHeroBanner/AboutHeroBanner.jsx")),
+
   "about.vision-section": lazy(() => import("@/components/aboutComponent/MissionVision/MissionVision.jsx")),
   "about.our-story-section": lazy(() => import("@/components/aboutComponent/OurStory/OurStory.jsx")),
   "about.mile-stone-section": lazy(() => import("@/components/aboutComponent/OurJourney/OurJourney.jsx")),
@@ -88,23 +90,39 @@ export const componentMap = {
   "about.galary-section": lazy(() => import("@/components/reusable/InnovativeGalleryMarqueComponent.jsx")),
   "about.testimonial-section": lazy(() => import("@/components/reusable/VideoTestimonialComponent.jsx")),
   "about.resources-section": lazy(() => import("@/components/aboutComponent/Resources/Resources.jsx")),
+
+  // FAQ
+  "faq.hero-section": lazy(() => import("@/components/FAQHero/FAQHero.jsx")),
+  "faq.faq-section": lazy(() => import("@/components/FAQSection/FAQSection.jsx")),
+
+  // Clinical Trials
+  "clinical-trial-listing.hero-section": lazy(() => import("@/components/ClinicalComponents/ClinicalHero.jsx")),
+  "clinical-trial-listing.slider-section": lazy(() => import("@/components/TreatmentComponent/TreatmentSlider/TreatmentSlider.jsx")),
+  "clinical-trial-listing.get-in-touch": lazy(() => import("@/components/GetInTouch/GetInTouch.jsx")),
+  "clinical-trial-listing.phases-section": lazy(() => import("@/components/ClinicalComponents/ClinicalPhases.jsx")),
+  "clinical-trial-listing.pricing-section": lazy(() => import("@/components/ClinicalComponents/ClinicalPlan.jsx")),
+  "clinical-trial-listing.listing-section": lazy(() => import("@/components/TreatmentComponent/Resources/Resources.jsx")),
   
+  "clinical-trial-listing.understanding-section": lazy(() => import("@/components/ClinicalComponents/ClinicalHelp.jsx")),
+  "clinical-trial-listing.collaboration-section": lazy(() => import("@/components/ClinicalComponents/ClinicalPartner.jsx")),
+  "clinical-trial-listing.benefits-section": lazy(() => import("@/components/ClinicalComponents/ClinicalCenter.jsx")),
+  "clinical-trial-listing.insights-section": lazy(() => import("@/components/ClinicalComponents/ClinicalProcess.jsx")),
+  "clinical-trial-listing.trial-requirement-section": lazy(() => import("@/components/ClinicalComponents/ClinicalHowWork.jsx")),
+  "clinical-trial-listing.process-section": lazy(() => import("@/components/ClinicalComponents/ClinicalFeature.jsx")),
+
+  // Ongoing Trials
+  // "ongoing-trials-listing.hero-section": lazy(() => import("@/components/OngoingTrialsComponent/OngoingTrialsHero.jsx")),
+  // "ongoing-trials-listing.trials-grid-section": lazy(() => import("@/components/ClinicalComponents/ClinicalTrialsGrid.jsx")),
+  // "ongoing-trials-listing.guidance-section": lazy(() => import("@/components/OngoingTrialsComponent/OngoingTrialsGuidance.jsx")),
+  // "ongoing-trials-listing.insights-section": lazy(() => import("@/components/OngoingTrialsComponent/OngoingTrialsInsights.jsx")),
+
+  // Contact
+  "contact.contact-form-section": lazy(() => import("@/components/ContactComponent/ContactHero.jsx")),
+  "contact.partners-section": lazy(() => import("@/components/PartnerHospitals/PartnerHospitals.jsx")),
+  "contact.contact-info-section": lazy(() => import("@/components/DedicatedSupport/DedicatedSupport.jsx")),
+  "contact.location": lazy(() => import("@/components/LocationNetwork/LocationNetwork.jsx")),
+  "contact.testimonial-section": lazy(() => import("@/components/reusable/VideoTestimonialComponent.jsx")),
   
-
-
-
-
-  // Disease - todo
-  "dynamic-zone.disease-hero": lazy(() => import("@/components/DiseaseComponent/DiseaseHero/DiseaseHero.jsx")),
-  "dynamic-zone.disease-info": lazy(() => import("@/components/DiseaseComponent/DiseaseInfo/DiseaseInfo.jsx")),
-
-
-  // Clinical - todo
-  "dynamic-zone.clinical-hero": lazy(() => import("@/components/ClinicalComponents/ClinicalHero.jsx")),
-  "dynamic-zone.clinical-center": lazy(() => import("@/components/ClinicalComponents/ClinicalCenter.jsx")),
-  "dynamic-zone.clinical-feature": lazy(() => import("@/components/ClinicalComponents/ClinicalFeature.jsx")),
-  "dynamic-zone.clinical-guidance": lazy(() => import("@/components/ClinicalComponents/ClinicalGuidance.jsx")),
-
   // Reusable
   "dynamic-zone.supporting-life-component": lazy(() => import("@/components/reusable/SupportingLifeComponent.jsx")),
 };

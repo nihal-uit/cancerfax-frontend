@@ -8,7 +8,7 @@ const HospitalListing = () => {
   const { pageData, pageLoading } = useSelector(state => state.page);
 
   useEffect(() => {
-    dispatch(fetchPageBySlug("hospital-listing"));
+    dispatch(fetchPageBySlug("hospitals"));
   }, [dispatch]);
 
   return (

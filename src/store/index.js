@@ -27,6 +27,8 @@ import faqReducer from './slices/faqSlice';
 import globalReducer from './slices/globalSlice';
 import pageReducer from './slices/pageSlice';
 import doctorReducer from './slices/doctorSlice';
+import categoryReducer from './slices/categorySlice';
+import treatmentReducer from './slices/treatmentSlice';
 
 const store = configureStore({
   reducer: {
@@ -58,6 +60,8 @@ const store = configureStore({
     global: globalReducer,
     page: pageReducer,
     doctor: doctorReducer,
+    categories: categoryReducer,
+    treatment: treatmentReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

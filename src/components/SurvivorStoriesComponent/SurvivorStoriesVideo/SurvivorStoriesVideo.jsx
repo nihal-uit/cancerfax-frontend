@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const SurvivorStoriesVideo = ({ 
+  story,
   StoriesName = "Featured Survivor of the Month: Aisha",
   StoriesVideo = "../videos/stories-video.mp4",
   StoriesbtnLink = "Read Aisha’s Full Story",
@@ -14,9 +15,6 @@ const SurvivorStoriesVideo = ({
         <div className='ratio'>
           <BackgroundVideo className="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/stories-video-poster.jpg">
           <source src={StoriesVideo} type="video/mp4" />
-          {/* <source src="../videos/doctors-video.mov" type="video/mov" />
-          <source src="../videos/doctors-video.webm" type="video/webm" />
-          <source src="../videos/doctors-video.ogv" type="video/ogv" /> */}
         </BackgroundVideo>
         </div>
       </div>

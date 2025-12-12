@@ -1,15 +1,6 @@
-import React, { memo, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { memo } from 'react';
 import styled from 'styled-components';
 import Marquee from "react-fast-marquee";
-import { fetchPartnerHospitals } from '../../store/slices/partnerHospitalsSlice';
-
-// Default fallback data (defined outside component to prevent recreating on each render)
-const defaultSectionData = {
-  subtitle: 'HAND IN HAND',
-  title: 'Our Partner Hospitals',
-  description: 'Dr. Wang is skilled in individualized targeted and immunotherapy for rare tumors and lung cancer, as well as multidisciplinary comprehensive treatment',
-};
 
 const partnersData = [
   { 
@@ -44,32 +35,18 @@ const partnersData = [
   },
 ];
 
-const PartnerHospitals = () => {
-  const dispatch = useDispatch();
-  const { sectionData, partners } = useSelector((state) => state.partnerHospitals);
-  const [isPaused, setIsPaused] = useState(false);
-
-  useEffect(() => {
-    dispatch(fetchPartnerHospitals());
-  }, [dispatch]);
-
-  // Extract section data with fallbacks
-  const sectionAttributes = sectionData?.attributes || {};
-  const subtitle = sectionAttributes.subtitle || defaultSectionData.subtitle;
-  const title = sectionAttributes.title || defaultSectionData.title;
-  const description = sectionAttributes.description || defaultSectionData.description;
-
-  // Memoize duplicated logos to prevent recreation
+const PartnerHospitals = ({ data }) => {
+  console.log(data);
   return (
     <SectionWrapper>
       <ContentWrapper className='containerWrapper'>
         <HeaderSection className='commContent_wrap'>
           <LeftColumn>
-            <span className='contentLabel'>{subtitle}</span>
-            <h3 className='title-3'>{title}</h3>
+            <span className='contentLabel'>{data?.heading}</span>
+            <h3 className='title-3'>{data?.subHeading}</h3>
           </LeftColumn>
           <RightColumn>
-            <p className='text-16 line-2-text'>{description}</p>
+            <p className='text-16 line-2-text'>{data?.description_text}</p>
           </RightColumn>
         </HeaderSection>
 

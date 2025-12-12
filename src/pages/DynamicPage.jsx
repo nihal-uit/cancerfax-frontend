@@ -20,6 +20,9 @@ import Footer from '../components/Footer/Footer';
 import { fetchPageBySlug, clearPageData } from '../store/slices/pageSlice';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import ScrollAnimationComponent from '../components/ScrollAnimation/ScrollAnimationComponent';
+import DynamicComponents from './DynamicComponents';
+import NotFound from './NotFound';
+import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -134,7 +137,7 @@ const SubText = styled.p`
 
 // Reserved routes that should use their own components (not dynamic pages)
 // These routes are handled by specific components in App.js
-const RESERVED_ROUTES = ['home', 'hospitals', 'contact', 'faq'];
+const RESERVED_ROUTES = ['home'];
 
 const DynamicPage = () => {
 
@@ -145,9 +148,9 @@ const DynamicPage = () => {
 
   const { slug } = useParams();
   const dispatch = useDispatch();
-  const pageData = useSelector((state) => state.global?.pageData);
-  const pageLoading = useSelector((state) => state.global?.pageLoading);
-  const pageError = useSelector((state) => state.global?.pageError);
+  const pageData = useSelector((state) => state.page?.pageData);
+  const pageLoading = useSelector((state) => state.page?.pageLoading);
+  const pageError = useSelector((state) => state.page?.pageError);
 
   // Also fetch global data for navbar/footer
   const globalData = useSelector((state) => state.global?.data);
@@ -218,53 +221,11 @@ const DynamicPage = () => {
     []
   );
 
-  // Debug logging - must be before any early returns
-  useEffect(() => {
-    console.log('DynamicPage: Component state', {
-      slug: slug,
-      pageLoading: pageLoading,
-      hasPageData: !!pageData,
-      hasPageError: !!pageError,
-      pageError: pageError,
-      dynamicZoneLength: pageData?.dynamicZone?.length || 0,
-      reservedRoute: RESERVED_ROUTES.includes(slug),
-    });
-
-    if (pageData && !pageLoading) {
-      console.log('DynamicPage: Page data loaded successfully', {
-        slug: slug,
-        pageId: pageData.pageId,
-        hasDynamicZone: !!pageData.dynamicZone,
-        dynamicZoneLength: pageData.dynamicZone?.length || 0,
-        hasSeo: !!pageData.seo,
-        seoTitle: pageData.seo?.metaTitle,
-        componentOrder:
-          pageData.dynamicZone?.map((item) => item.__component) || [],
-        componentDetails:
-          pageData.dynamicZone?.map((item) => ({
-            type: item.__component,
-            id: item.id,
-            hasMapping: !!componentMap[item.__component],
-          })) || [],
-      });
-    }
-
-    if (pageError) {
-      console.error('DynamicPage: Error loading page', {
-        slug: slug,
-        error: pageError,
-        errorStatus: pageError.status,
-        errorMessage: pageError.message,
-      });
-    }
-  }, [pageData, pageLoading, pageError, slug, componentMap]);
-
   // Redirect reserved routes
   if (slug && RESERVED_ROUTES.includes(slug)) {
     if (slug === 'home') {
       return <Navigate to='/' replace />;
     }
-    // Other reserved routes are handled by App.js routes
     return null;
   }
 
@@ -274,7 +235,7 @@ const DynamicPage = () => {
       <PageWrapper>
         <Header />
         <LoadingContainer>
-          <div>Loading page...</div>
+          <LoadingSpinner />
         </LoadingContainer>
         <Footer />
       </PageWrapper>
@@ -288,42 +249,14 @@ const DynamicPage = () => {
       (pageError.message && pageError.message.includes('not found'));
 
     if (is404) {
-      // Option 1: Show 404 page (current behavior)
       return (
         <PageWrapper>
           <Header darkText={true} />
-          <div className='others_hero_content comm_hero_pt'>
-            <div className='containerWrapper py-88'>
-              <div className='row'>
-                <div className='col-md-12'>
-                  <ScrollAnimationComponent animationVariants={fadeIn}>
-                    <div className='commContent_wrap content-gap-24 text-center'>
-                      <img className='error-404-img' src="../images/404-img.svg" alt="" />
-                      <h4 className='title-4 text_theme_dark'>
-                        Oops! Page not found.
-                      </h4>
-                      <p className='text-16 text_theme_dark'>
-                        Sorry, the page you're looking for doesn't exist or has been moved. Check the URL.
-                      </p>
-                      <BackButton className='btn' onClick={() => window.location.href = '/'}>
-                       Go to Home
-                      </BackButton>
-                      <span className='text-16'><a className='text-pink' href="#">Contact Support</a> if you need further assistance.</span>
-                    </div>
-                  </ScrollAnimationComponent>
-                </div>
-              </div>
-            </div>
-          </div>
+          <NotFound />
           <Footer />
         </PageWrapper>
       );
-
-      // Option 2: Uncomment below to redirect to home instead of showing 404
-      // return <Navigate to="/" replace />;
     }
-
-    // For other errors, also redirect to home or show error
     return <Navigate to='/' replace />;
   }
 
@@ -361,9 +294,6 @@ const DynamicPage = () => {
         <Footer />
       </PageWrapper>
     );
-
-    // Alternative: Uncomment to redirect to home instead of showing 404
-    // return <Navigate to="/" replace />;
   }
 
   // Render components dynamically based on Strapi dynamic zone order
@@ -444,12 +374,13 @@ const DynamicPage = () => {
   };
 
   return (
-    <PageWrapper>
-      <SEO />
-      <Header />
-      {renderDynamicComponents()}
-      <Footer />
-    </PageWrapper>
+    // <PageWrapper>
+    //   <SEO />
+    //   <Header />
+    //   {renderDynamicComponents()}
+    //   <Footer />
+    // </PageWrapper>
+    <DynamicComponents pageData={pageData} pageLoading={pageLoading} darkText={!pageData?.dark_header}/>
   );
 };
 

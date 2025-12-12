@@ -1,18 +1,15 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import styled from 'styled-components';
 
-const FAQHero = ({
-  faqTitle = "Frequently Asked Questions",
-  faqDescription = "High on Questions? We’ve Got Higher Answers."
-}) => {
+const FAQHero = ({ data }) => {
   return (
     <section className='faqHero_sec homeHero_sec'>
       <div className='heroContent_wrap'>
         <div className='containerWrapper'>
           <div className='commContent_wrap'>      
             <HeroContentGrid>
-              <FaqTitle className='title-1'>{faqTitle}</FaqTitle>
-              <FaqDescription className='text-16'>{faqDescription}</FaqDescription>
+              <FaqTitle className='title-1'>{data?.heading}</FaqTitle>
+              <FaqDescription className='text-16'>{data?.subHeading}</FaqDescription>
             </HeroContentGrid>          
          </div>
         </div>

@@ -1,101 +1,38 @@
-import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { getMediaUrl } from '../../services/api';
-import { formatDate } from '../../utils/strapiHelpers';
+import { formatDate, formatMedia } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
-
-const DEFAULT_AVATAR =
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100';
-
-const fallbackBlogs = [
-  {
-    id: 1,
-    title:
-      'Atezolizumab Plus Chemotherapy Improves Survival in Advanced-Stage Small-Cell Lung Cancer: Insights from the IMpower133 Study',
-    author: { name: 'Author name goes here', avatar: null },
-    publishedAt: 'May 27, 2024',
-    readTime: '7',
-    category: 'Research',
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800',
-    featured: true,
-  },
-  {
-    id: 2,
-    title:
-      'Darolutamide is approved by the USFDA for metastatic castration-sensitive prostate cancer',
-    author: { name: 'Author name goes here', avatar: null },
-    publishedAt: 'May 27, 2024',
-    readTime: '7',
-    category: 'Research',
-    image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400',
-  },
-  {
-    id: 3,
-    title:
-      'Taletrectinib is approved by the USFDA for ROS1-positive non-small cell lung cancer',
-    author: { name: 'Author name goes here', avatar: null },
-    publishedAt: 'May 27, 2024',
-    readTime: '7',
-    category: 'Research',
-    image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400',
-  },
-  {
-    id: 4,
-    title:
-      'Neoadjuvant and adjuvant pembrolizumab is approved by the USFDA for resectable locally adv...',
-    author: { name: 'Author name goes here', avatar: null },
-    publishedAt: 'May 27, 2024',
-    readTime: '7',
-    category: 'Research',
-    image: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=400',
-  },
-];
-
-const fallbackSection = {
-  label: 'RESOURCES',
-  title: 'Explore the Latest Insights in Cancer Research',
-  viewAllButtonText: 'View all Insights',
-  viewAllButtonUrl: '/blog',
-};
-
-const buildAuthorName = (author) => {
-  if (!author) return 'Author';
-  return [author.firstName, author.lastName].filter(Boolean).join(' ');
-};
-
-const buildImageUrl = (img, getMediaUrl) => {
-  if (!img) return null;
-  return img?.url ? getMediaUrl(img) : img;
-};
+import { Link } from 'react-router-dom';
+import NameAvatar from './NameAvatar';
 
 // ---- Blog Small Card ---- //
 const BlogSmallCard = ({ blog, getMediaUrl }) => {
-  const img = buildImageUrl(blog.image, getMediaUrl);
-  const avatar = buildImageUrl(blog.author?.avatar, getMediaUrl);
-  const authorName = buildAuthorName(blog.author);
-
   return (
     <ScrollAnimationComponent animationVariants={fadeIn}>
       <SmallCard key={blog.id}>
         <SmallImage>
-          <img src={img} alt={blog.title} />
-          <CategoryBadge>
-            {blog.category ? blog.category : 'Research'}
-          </CategoryBadge>
+          <img src={getMediaUrl} alt={blog.title} />
+          {
+            blog.resource_category && (
+              <CategoryBadge>
+                {blog.resource_category?.name}
+              </CategoryBadge>
+            )
+          }
         </SmallImage>
 
         <SmallCardContent>
           <AuthorInfo>
             <AuthorAvatar>
-              <img src={avatar || DEFAULT_AVATAR} alt={authorName} />
+              <NameAvatar src={formatMedia(blog.author?.profilePicture)} name={blog?.author?.firstName} size={24} />
+              {/* <img src={formatMedia(blog.author?.profilePicture)} alt={blog?.author?.firstName} /> */}
             </AuthorAvatar>
-            <AuthorName>{authorName ? authorName : 'Author'}</AuthorName>
+            <AuthorName>{blog?.author?.firstName || ''} {blog?.author?.lastName || ''}</AuthorName>
           </AuthorInfo>
 
           <SmallCardTitle>{blog.title}</SmallCardTitle>
 
           <BlogMeta>
-            {formatDate(blog.publishedAt)}
+            {formatDate(blog.publishedDate)}
             {blog.readTime && ` | ${blog.readTime} min read`}
           </BlogMeta>
         </SmallCardContent>
@@ -106,31 +43,32 @@ const BlogSmallCard = ({ blog, getMediaUrl }) => {
 
 // ---- Featured Blog Card ---- //
 const FeaturedBlogCard = ({ blog, getMediaUrl }) => {
-  const img = buildImageUrl(blog.image, getMediaUrl);
-  const avatar = buildImageUrl(blog.author?.avatar, getMediaUrl);
-  const authorName = buildAuthorName(blog.author);
-
   return (
     <FeaturedCard>
       <FeaturedImage>
-        <img src={img ? img : fallbackBlogs[0].image} alt='blog image' />
-        <CategoryBadge className='lg-badge'>
-          {blog.category ? blog.category : 'Research'}
-        </CategoryBadge>
+        <img src={getMediaUrl} alt='blog image' />
+        {
+          blog.resource_category && (
+            <CategoryBadge className='lg-badge'>
+              {blog.resource_category?.name}
+            </CategoryBadge>
+          )
+        }
       </FeaturedImage>
 
       <FeaturedContentCard>
         <AuthorInfo>
           <AuthorAvatar>
-            <img src={avatar || DEFAULT_AVATAR} alt={authorName} />
+            <NameAvatar src={formatMedia(blog.author?.profilePicture)} name={blog?.author?.firstName} size={24} />
+            {/* <img src={formatMedia(blog.author?.profilePicture)} alt={blog?.author?.firstName} /> */}
           </AuthorAvatar>
-          <AuthorName>{authorName}</AuthorName>
+          <AuthorName>{blog?.author?.firstName || ''} {blog?.author?.lastName || ''}</AuthorName>
         </AuthorInfo>
 
         <BlogTitle>{blog.title}</BlogTitle>
 
         <BlogMeta>
-          {formatDate(blog.publishedAt)}
+          {formatDate(blog.publishedDate)}
           {blog.readTime && ` | ${blog.readTime} min read`}
         </BlogMeta>
       </FeaturedContentCard>
@@ -138,55 +76,38 @@ const FeaturedBlogCard = ({ blog, getMediaUrl }) => {
   );
 };
 
-const ResourcesComponent = ({ componentData }) => {
-  const section = useMemo(() => {
-    const data = componentData || {};
-    return {
-      label: data.heading || fallbackSection.label,
-      title: data.subHeading || fallbackSection.title,
-
-      viewAllButtonText: data.cta?.text || fallbackSection.viewAllButtonText,
-      viewAllButtonUrl: data.cta?.URL || fallbackSection.viewAllButtonUrl,
-      viewAllButtonTarget: data.cta?.target || '_self',
-
-      resources:
-        Array.isArray(data.resources) && data.resources.length > 0
-          ? data.resources
-          : fallbackBlogs,
-    };
-  }, [componentData]);
-
-  // Always guaranteed to have at least fallback data
-  const resources = section.resources;
-  const featuredBlog = resources[0] || fallbackBlogs[0];
-  const smallBlogs = resources.slice(1);
+const ResourcesComponent = ({ data, loading }) => {
+  if(loading) return null;
+  const resources = data?.resources || [];
+  const featuredBlog = resources[0] || null;
+  const smallBlogs = resources.slice(1) || [];
 
   return (
     <ScrollAnimationComponent animationVariants={fadeIn}>
       <HeaderSection className='commContent_wrap'>
         <HeaderContent>
           <Label className='contentLabel'>
-            {section.label || fallbackSection.label}
+            {data?.heading || ''}
           </Label>
 
           <Title className='title-3'>
-            {section.title || fallbackSection.title}
+            {data?.subHeading || ''}
           </Title>
         </HeaderContent>
 
-        <ViewAllButton
+        <Link
           className='btn btn-pink-solid'
-          href={section.viewAllButtonUrl || fallbackSection.viewAllButtonUrl}
-          target={section.viewAllButtonTarget || '_self'}
+          to={data?.cta?.URL || '#'}
+          target={data?.cta?.target || '_blank'}
         >
-          {section.viewAllButtonText || fallbackSection.viewAllButtonText}
-        </ViewAllButton>
+          {data?.cta?.text || ''}
+        </Link>
       </HeaderSection>
 
       <BlogsGrid>
         {/* Featured Large Card */}
         {featuredBlog && (
-          <FeaturedBlogCard blog={featuredBlog} getMediaUrl={getMediaUrl} />
+          <FeaturedBlogCard blog={featuredBlog} getMediaUrl={formatMedia(featuredBlog?.featuredImage)} />
         )}
 
         {/* Small Cards */}
@@ -196,18 +117,10 @@ const ResourcesComponent = ({ componentData }) => {
                 <BlogSmallCard
                   key={blog?.id || blog.title}
                   blog={blog}
-                  getMediaUrl={getMediaUrl}
+                  getMediaUrl={formatMedia(blog?.featuredImage)}
                 />
               ))
-            : fallbackBlogs
-                .slice(1)
-                .map((blog) => (
-                  <BlogSmallCard
-                    key={blog.id}
-                    blog={blog}
-                    getMediaUrl={getMediaUrl}
-                  />
-                ))}
+            : null}
         </SmallCardsColumn>
       </BlogsGrid>
     </ScrollAnimationComponent>
@@ -256,8 +169,6 @@ const Label = styled.p`
 const Title = styled.h3`
   color: #36454f;
 `;
-
-const ViewAllButton = styled.a``;
 
 const BlogsGrid = styled.div`
   display: grid;

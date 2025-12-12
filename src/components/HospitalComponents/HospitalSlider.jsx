@@ -1,9 +1,9 @@
-import React from "react";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAnimationComponent";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectFade } from "swiper/modules";
 import { formatRichText } from "../../utils/strapiHelpers";
+import { formatMedia } from "../../utils/strapiHelpers";
 import "swiper/css";
 import "swiper/css/effect-fade";
 
@@ -62,39 +62,13 @@ const NavButton = styled.button`
   }
 `;
 
-const HospitalSlider = ( { data: hospitalSliderSection, loading }) => {
-  if (loading) {
-    return null;
-  }
-
-  const defaultSliderContent = [
-  {
-    id: 1,
-    label: "Lorem Ipsum",
-    title: "Lorem ipsum dolor sit amet",
-    backgroundImage:
-      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1600",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    buttonText: "View Details",
-    buttonLink: "#",
-  },
-  {
-    id: 2,
-    label: "Lorem Ipsum",
-    title: "Lorem ipsum dolor sit amet",
-    backgroundImage:
-      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1600",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    buttonText: "View Details",
-    buttonLink: "#",
-  }];
-
+const HospitalSlider = ( { data: hospitalSliderSection }) => {
   const sliderContent = hospitalSliderSection?.hospitals?.length > 0 ? hospitalSliderSection.hospitals.map((slide, index) => ({
-    title: slide.name || defaultSliderContent.title,
-    label: formatRichText(slide.description) || slide.description || defaultSliderContent.label,
-    backgroundImage:  slide.backgroundImage || defaultSliderContent[index].backgroundImage,
-    videoUrl: slide.videoUrl || slide.cta?.URL || defaultSliderContent.videoUrl,
-  })) : defaultSliderContent;
+    title: slide.name || '',
+    label: formatRichText(slide.description) || slide.description_texts || '',
+    backgroundImage: formatMedia(slide?.hospitalImage),
+    videoUrl: formatMedia(slide?.hospitalImage),
+  })) : [];
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },

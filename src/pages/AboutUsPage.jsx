@@ -36,7 +36,7 @@ const AboutUsPage = () => {
     //   <Footer />
     // </PageWrapper>
 
-    <DynamicComponents pageData={pageData} pageLoading={pageLoading} />
+    <DynamicComponents pageData={pageData} pageLoading={pageLoading} darkText={true}/>
 
   );
 };

@@ -1,13 +1,9 @@
-import { useMemo } from "react";
+
 import styled from "styled-components";
 import Marquee from "react-fast-marquee";
 import { getMediaUrl } from "../../services/api";
 
-const DoctorsInnovativeGalleryMarque = ({ images, loading }) => {
-  if (loading) {
-    return null;
-  }
-
+const DoctorsInnovativeGalleryMarque = ({ images }) => {
   return (
     <>
       <div className="gallery_marquee_wrap">

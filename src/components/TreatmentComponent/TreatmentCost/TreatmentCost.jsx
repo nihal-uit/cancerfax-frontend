@@ -1,7 +1,7 @@
 import React from "react";
 import "./TreatmentCost.scss";
-import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import { getMediaUrl } from "../../../services/api";
+import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 
 const TreatmentCost = ({ data, loading }) => {
   const fadeIn = {
@@ -18,9 +18,9 @@ const TreatmentCost = ({ data, loading }) => {
           <div className="col-lg-7 mx-auto">
             <ScrollAnimationComponent animationVariants={fadeIn}>
               <div className="commContent_wrap commContent_new text-center">
-                <p className="contentLabel">{data?.heading || "Lorem Ipsum"}</p>
+                <p className="contentLabel">{data?.heading || ''}</p>
                 <h3 className="title-3">
-                  {data?.subHeading || "Lorem Ipsum Text"}
+                  {data?.subHeading || ''}
                 </h3>
               </div>
             </ScrollAnimationComponent>

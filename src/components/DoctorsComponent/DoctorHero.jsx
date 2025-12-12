@@ -1,78 +1,34 @@
-import React from "react";
-import styled from "styled-components";
-import { formatRichText } from "../../utils/strapiHelpers";
-import { hideFallbacks } from "../../utils/config";
-import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
-import "swiper/css";
-import "swiper/css/effect-fade";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
+import 'swiper/css';
+import 'swiper/css/effect-fade';
 
-const DoctorHero = ({ data: doctorsHeroSection, loading }) => {
-  const defaultHeroContent = {
-    title: "Lorem Ipsum",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a est velit. In ut eros dapibus, consectetur metus nec, dictum metus.",
-    buttonText: "Click Here",
-    buttonLink: "#",
-    target: "_blank",
-  };
-
-  const heroContent = doctorsHeroSection
-    ? {
-        title: doctorsHeroSection.heading || defaultHeroContent.title,
-        description:
-          formatRichText(doctorsHeroSection.description) ||
-          doctorsHeroSection.description ||
-          defaultHeroContent.description,
-        buttonText:
-          doctorsHeroSection.CTAs?.[0]?.text ||
-          defaultHeroContent.buttonText,
-        buttonLink:
-          doctorsHeroSection.CTAs?.[0]?.URL ||
-          defaultHeroContent.buttonLink,
-        target: doctorsHeroSection.CTAs?.[0]?.target || defaultHeroContent.target,
-      }
-    : hideFallbacks
-    ? null
-    : defaultHeroContent;
-
-  const shouldHideHero = hideFallbacks && (!heroContent || !heroContent.title);
-
-  if (shouldHideHero) {
-    return null;
-  }
-
-  if (loading) {
-    return null;
-  }
-
+const DoctorHero = ({ data }) => {
   return (
-    <div className="others_hero_content comm_hero_pt">
-      <div className="containerWrapper py-88">
-        <div className="hero_content_row">
-          <div className="hero_content_left commContent_wrap">
+    <div className='others_hero_content comm_hero_pt'>
+      <div className='containerWrapper py-88'>
+        <div className='hero_content_row'>
+          <div className='hero_content_left commContent_wrap'>
             <ScrollAnimationComponent animationVariants={slideLeft}>
-              <h1 className="title-1 text_theme_dark">
-                {heroContent.title || defaultHeroContent.title}
-              </h1>
+              <h1 className='title-1 text_theme_dark'>{data?.heading || ''}</h1>
             </ScrollAnimationComponent>
           </div>
 
-          <div className="hero_content_right">
+          <div className='hero_content_right'>
             <ScrollAnimationComponent animationVariants={slideRight}>
-              <div className="commContent_wrap content-gap-40">
-                <p className="text-16 text_theme_dark">
-                  {heroContent.description || defaultHeroContent.description}
+              <div className='commContent_wrap content-gap-40'>
+                <p className='text-16 text_theme_dark'>
+                  {data?.description_text || ''}
                 </p>
-                {heroContent.buttonText && (
+                {data?.CTAs?.length > 0 && (
                   <ExploreButton
-                    className="btn btn-pink-solid"
-                    as={heroContent.buttonLink ? "a" : "button"}
-                    href={
-                      heroContent.buttonLink || defaultHeroContent.buttonLink
-                    }
-                    target={heroContent.target}
+                    className='btn btn-pink-solid'
+                    to={data?.CTAs?.URL || '#'}
+                    target={data?.CTAs?.target || '_blank'}
                   >
-                    {heroContent.buttonText}
+                    {data?.CTAs?.text || ''}
                   </ExploreButton>
                 )}
               </div>
@@ -94,7 +50,7 @@ const slideRight = {
   visible: { x: 0, opacity: 1 },
 };
 
-const ExploreButton = styled.button`
+const ExploreButton = styled(Link)`
   max-width: 276px;
   @media (max-width: 575px) {
     max-width: 100%;

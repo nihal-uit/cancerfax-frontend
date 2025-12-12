@@ -178,69 +178,18 @@ const StaticCard = styled.div`
   }
 `;
 
-const HospitalInnovationInsights = ( { data: hospitalInnovationInsightsSection, loading }) => {
-  if (loading) {
-    return null;
-  }
-
-  const defaultContent = {
-    label: "Lorem Ipsum",
-    title: "Lorem ipsum dolor sit amet",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a est velit. In ut eros dapibus, consectetur metus nec, dictum metus.",
-    images: [
-      {
-        id: 1,
-        url: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800",
-        alt: "Patient consultation",
-        shape: "rounded-left",
-      },
-      {
-        id: 2,
-        url: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800",
-        alt: "Medical team",
-        shape: "rounded-center",
-      },
-      {
-        id: 3,
-        url: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800",
-        alt: "Doctor with patient",
-        shape: "rounded-right",
-      },
-    ],
-    staticImages: [
-      {
-        id: 4,
-        url: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800",
-        alt: "Healthcare professionals",
-        shape: "rounded-left",
-      },
-      {
-        id: 5,
-        url: "https://images.unsplash.com/photo-1586105251261-72a756497a11?w=800",
-        alt: "Patient care",
-        shape: "rounded-center",
-      },
-      {
-        id: 6,
-        url: "https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800",
-        alt: "Medical consultation",
-        shape: "rounded-right",
-      },
-    ],
-  };
-
+const HospitalInnovationInsights = ( { data: hospitalInnovationInsightsSection }) => {
   const shape = ["rounded-left", "rounded-center", "rounded-right"];
 
   const content = hospitalInnovationInsightsSection ? {
-    label: hospitalInnovationInsightsSection.heading || defaultContent.label,
-    title: hospitalInnovationInsightsSection.subHeading || defaultContent.title,
-    description: hospitalInnovationInsightsSection.description || defaultContent.description,
-    images: hospitalInnovationInsightsSection.media_galary || defaultContent.images,
-  } : defaultContent;
+    label: hospitalInnovationInsightsSection.heading || '',
+    title: hospitalInnovationInsightsSection.subHeading || '',
+    description: hospitalInnovationInsightsSection.description || '',
+    images: hospitalInnovationInsightsSection.media_galary || [],
+  } : {};
 
-  const imagesList = Array.isArray(content.images) && content.images.length > 0 ? content.images : defaultContent.images;
-  const staticImagesList = Array.isArray(content.staticImages) && content.staticImages.length > 0 ? content.staticImages : defaultContent.staticImages || [];
+  const imagesList = Array.isArray(content.images) && content.images.length > 0 ? content.images : [];
+  const staticImagesList = Array.isArray(content.staticImages) && content.staticImages.length > 0 ? content.staticImages : [];
 
   const getImageUrl = (image) => {
     if (!image) return null;

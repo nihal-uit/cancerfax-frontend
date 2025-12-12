@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { getSectionData, formatMedia, formatRichText } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { hideFallbacks } from '../../utils/config';
+import { Link } from 'react-router-dom';
 
 const extractMediaUrl = (media) => {
   if (!media) return null;
@@ -56,6 +57,211 @@ const resolveSlideBackgroundImage = (slide, section, defaultSlides, index) => {
   return fallbackImage;
 };
 
+const ClinicalTrialsShowcase = ({ componentData, data }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  // Get data from global Strapi API (no need for separate fetches)
+  const globalData = useSelector(state => state.global?.data);
+  const globalLoading = useSelector(state => state.global?.loading);
+  // Legacy Redux state (kept for fallback, but not actively used)
+  const { slides } = useSelector((state) => state.clinicalTrialsShowcase || { slides: [], loading: false });
+
+  // Default slides if no data from Strapi - only use if Strapi data doesn't exist
+  const defaultSlides = hideFallbacks ? [] : [
+    {
+      label: 'TREATMENTS',
+      title: "CancerFax's Role In Clinical Trial Advancements",
+      description: 'CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, we guide you every step of the way.',
+      buttonText: 'Find Relevant Clinical Trials',
+      buttonLink: '#clinical-trials',
+      backgroundImage: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=80'
+    },
+    {
+      label: 'INNOVATION',
+      title: "Advanced Treatment Options Available Worldwide",
+      description: 'Discover breakthrough therapies and cutting-edge treatments from leading medical institutions. Our network connects you with the best care options globally.',
+      buttonText: 'Explore Treatments',
+      buttonLink: '#treatments',
+      backgroundImage: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=1920&q=80'
+    }
+  ];
+
+// Priority: Use componentData prop (for dynamic pages) > incoming data prop > globalData (for home page)
+const sliderSection =
+  componentData || data || getSectionData(globalData, 'clinicalTrialsShowcase');
+  const shouldHideMissingSection = hideFallbacks && !sliderSection;
+  
+  // Extract slides from the Slide array in slider-section component
+  const globalSlides = sliderSection?.Slide || [];
+  
+
+  
+  // Format global slides if available
+  // Use Strapi data if section exists AND has slides, otherwise use fallback
+  const formattedGlobalSlides =
+    sliderSection && globalSlides.length > 0
+      ? globalSlides
+          .map((slide, index) => {
+            // Handle nested structure - slide might be in attributes or direct
+            const slideData = slide?.attributes || slide;
+            const description =
+              formatRichText(slideData?.description_block) ??
+              formatRichText(slideData?.description) ??
+              slideData?.description_block ??
+              slideData?.description ??
+              '';
+            return {
+              label: slideData?.heading ?? slideData?.label ?? '',
+              title: slideData?.subHeading ?? slideData?.title ?? '',
+              description,
+              buttonText: slideData?.cta?.text ?? slideData?.buttonText ?? '',
+              buttonLink:
+                slideData?.cta?.URL ??
+                slideData?.buttonLink ??
+                slideData?.cta?.link ??
+                '#',
+              backgroundImage: resolveSlideBackgroundImage(
+                slideData,
+                sliderSection,
+                defaultSlides,
+                index
+              ),
+            };
+          })
+          .filter((slide) => slide.title) // Filter out empty slides
+      : [];
+
+  // Use global data or fallback to existing data or defaults
+  const slidesData = formattedGlobalSlides.length > 0 
+    ? formattedGlobalSlides 
+    : (slides && slides.length > 0 ? slides : defaultSlides);
+
+  const shouldHideShowcase = hideFallbacks && (!sliderSection || slidesData.length === 0);
+
+  const handlePrevious = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (slidesData.length <= 1) return;
+    setActiveIndex((prev) => (prev === 0 ? slidesData.length - 1 : prev - 1));
+  };
+
+  const handleNext = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (slidesData.length <= 1) return;
+    setActiveIndex((prev) => (prev === slidesData.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleDotClick = (index) => {
+    setActiveIndex(index);
+  };
+
+  // IMPORTANT: All hooks must be called before any early returns
+  // Auto-play slider
+  useEffect(() => {
+    if (shouldHideShowcase) {
+      return;
+    }
+    if (slidesData.length > 1) {
+      const interval = setInterval(() => {
+        setActiveIndex((prev) => (prev === slidesData.length - 1 ? 0 : prev + 1));
+      }, 6000); // Change slide every 6 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [slidesData.length, shouldHideShowcase]);
+
+  const fadeIn = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+  };
+  
+  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
+  // This check must come after all hooks
+  if (globalLoading) {
+    return null;
+  }
+
+  if (shouldHideMissingSection || shouldHideShowcase) {
+    return null;
+  }
+
+  return (
+    <section className='clinicalTrials_sec'>
+      <SlideContainer className='clinicalTrials_sliderWrap' activeIndex={activeIndex}>
+        {slidesData.map((slide, index) => {
+          const backgroundImage =
+            slide?.backgroundImage ||
+            slide?.featuredImage ||
+            resolveSlideBackgroundImage(slide, sliderSection, defaultSlides, index);
+            return (
+              <Slide 
+                key={`slide-${index}-${slide.title || index}`} 
+                backgroundImage={backgroundImage}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`Slide ${index + 1} of ${slidesData.length}`}
+                aria-hidden={index !== activeIndex}
+                className='clinicalTrials_slide'
+              >
+              <div className='containerWrapper'>
+                <div className='clinicalTrials_slide_content'>
+                  <ScrollAnimationComponent animationVariants={fadeIn}>
+                  <Content className='commContent_wrap content-gap-32'>
+                    <Label className='contentLabel'>{slide.label || ''}</Label>
+                    <Title className='title-2'>{slide.title || ''}</Title>
+                    <Description className='text-16'>{slide.description || ''}</Description>
+                    <Button className='btn btn-dark-solid' to={slide?.buttonLink || '#'} target={slide?.cta?.target || '_blank'}>
+                      {slide?.buttonText || 'Click Here'}
+                    </Button>
+                  </Content>
+                  </ScrollAnimationComponent>
+                </div>
+                  <div className='slider-nav-wrap'>
+                    <NavButton
+                      className='slider-nav-button'
+                      onClick={handlePrevious}
+                      disabled={slidesData.length <= 1}
+                      aria-label="Previous slide"
+                      type="button"
+                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="46" height="32" viewBox="0 0 46 32" fill="none">
+                    <path d="M15.8656 31.7313L17.6493 30.01L4.75497 17.1156H45.0481V14.6156H4.70684L17.5868 1.72125L15.8656 0L-3.43323e-05 15.8656L15.8656 31.7313Z" fill="white"/>
+                    </svg>
+                    </NavButton>
+                    <NavButton
+                      className='slider-nav-button'
+                      onClick={handleNext}
+                      disabled={slidesData.length <= 1}
+                      aria-label="Next slide"
+                      type="button"
+                    >
+                    <svg width="46" height="32" viewBox="0 0 46 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M29.1825 31.7313L27.3988 30.01L40.2931 17.1156H0V14.6156H40.3413L27.4613 1.72125L29.1825 0L45.0481 15.8656L29.1825 31.7313Z" fill="white"/>
+                    </svg>
+                    </NavButton>
+                  </div>
+                </div>
+              </Slide>
+            );
+        })}
+      </SlideContainer>
+
+      {slidesData.length > 1 && (
+          <DotsContainer>
+            {slidesData.map((_, index) => (
+              <Dot
+                key={index}
+                active={index === activeIndex}
+                onClick={() => handleDotClick(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </DotsContainer>
+      )}
+    </section>
+  );
+};
+
 const SlideContainer = styled.div`
   transform: translateX(${props => -props.activeIndex * 100}%);
 `;
@@ -98,7 +304,7 @@ const Description = styled.p`
   color: ${props => props.theme.colors.white};
 `;
 
-const Button = styled.button`
+const Button = styled(Link)`
   background: ${props => props.theme.colors.primary || '#1E40AF'};
   color: ${props => props.theme.colors.white};
   max-width: 273px;
@@ -108,9 +314,6 @@ const Button = styled.button`
   &:hover {
     background: ${props => props.theme.colors.primaryDark || '#1E3A8A'};
   }
-`;
-
-const NavigationContainer = styled.div`
 `;
 
 const NavButton = styled.button`
@@ -180,197 +383,6 @@ const Dot = styled.button`
     height: 7px;
   }
 `;
-
-const ClinicalTrialsShowcase = ({ componentData, data }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  // Get data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector(state => state.global?.data);
-  const globalLoading = useSelector(state => state.global?.loading);
-  // Legacy Redux state (kept for fallback, but not actively used)
-  const { slides } = useSelector((state) => state.clinicalTrialsShowcase || { slides: [], loading: false });
-
-  // Default slides if no data from Strapi - only use if Strapi data doesn't exist
-  const defaultSlides = hideFallbacks ? [] : [
-    {
-      label: 'TREATMENTS',
-      title: "CancerFax's Role In Clinical Trial Advancements",
-      description: 'CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, we guide you every step of the way.',
-      buttonText: 'Find Relevant Clinical Trials',
-      buttonLink: '#clinical-trials',
-      backgroundImage: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=80'
-    },
-    {
-      label: 'INNOVATION',
-      title: "Advanced Treatment Options Available Worldwide",
-      description: 'Discover breakthrough therapies and cutting-edge treatments from leading medical institutions. Our network connects you with the best care options globally.',
-      buttonText: 'Explore Treatments',
-      buttonLink: '#treatments',
-      backgroundImage: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=1920&q=80'
-    }
-  ];
-
-  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
-  const sliderSection = componentData || getSectionData(globalData, 'clinicalTrialsShowcase');
-  const shouldHideMissingSection = hideFallbacks && !sliderSection;
-  
-  // Extract slides from the Slide array in slider-section component
-  const globalSlides = sliderSection?.Slide || [];
-  
-  // Debug: Log to check if global data exists
-  if (globalData && !globalLoading) {
-    console.log('ClinicalTrialsShowcase: globalData loaded', {
-      hasDynamicZone: !!globalData.dynamicZone,
-      dynamicZoneLength: globalData.dynamicZone?.length,
-      sliderSection: !!sliderSection,
-      slidesCount: globalSlides.length
-    });
-  }
-  
-  // Format global slides if available
-  // Use Strapi data if section exists AND has slides, otherwise use fallback
-  const formattedGlobalSlides = sliderSection && globalSlides.length > 0
-    ? globalSlides.map((slide, index) => {
-        // Handle nested structure - slide might be in attributes or direct
-        const slideData = slide?.attributes || slide;
-        return {
-          label: slideData?.heading ?? slideData?.label ?? '',
-          title: slideData?.subHeading ?? slideData?.title ?? '',
-          description: formatRichText(slideData?.description) ?? slideData?.description ?? '',
-          buttonText: slideData?.cta?.text ?? slideData?.buttonText ?? '',
-          buttonLink: slideData?.cta?.URL ?? slideData?.buttonLink ?? slideData?.cta?.link ?? '#',
-          backgroundImage: resolveSlideBackgroundImage(slideData, sliderSection, defaultSlides, index)
-        };
-      }).filter(slide => slide.title) // Filter out empty slides
-    : [];
-
-  // Use global data or fallback to existing data or defaults
-  const slidesData = formattedGlobalSlides.length > 0 
-    ? formattedGlobalSlides 
-    : (slides && slides.length > 0 ? slides : defaultSlides);
-
-  const shouldHideShowcase = hideFallbacks && (!sliderSection || slidesData.length === 0);
-
-  const handlePrevious = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (slidesData.length <= 1) return;
-    setActiveIndex((prev) => (prev === 0 ? slidesData.length - 1 : prev - 1));
-  };
-
-  const handleNext = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (slidesData.length <= 1) return;
-    setActiveIndex((prev) => (prev === slidesData.length - 1 ? 0 : prev + 1));
-  };
-
-  const handleDotClick = (index) => {
-    setActiveIndex(index);
-  };
-
-  // IMPORTANT: All hooks must be called before any early returns
-  // Auto-play slider
-  useEffect(() => {
-    if (shouldHideShowcase) {
-      return;
-    }
-    if (slidesData.length > 1) {
-      const interval = setInterval(() => {
-        setActiveIndex((prev) => (prev === slidesData.length - 1 ? 0 : prev + 1));
-      }, 6000); // Change slide every 6 seconds
-
-      return () => clearInterval(interval);
-    }
-  }, [slidesData.length, shouldHideShowcase]);
-
-  const fadeIn = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0 },
-  };
-  
-  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
-  // This check must come after all hooks
-  if (globalLoading) {
-    return null;
-  }
-
-  if (shouldHideMissingSection || shouldHideShowcase) {
-    return null;
-  }
-
-  return (
-    <section className='clinicalTrials_sec'>
-      <SlideContainer className='clinicalTrials_sliderWrap' activeIndex={activeIndex}>
-        {data?.Slide?.map((slide, index) => {
-          const backgroundImage = slide?.featuredImage || resolveSlideBackgroundImage(slide, sliderSection, defaultSlides, index);
-            return (
-              <Slide 
-                key={`slide-${index}-${slide.title || index}`} 
-                backgroundImage={backgroundImage}
-                role="group"
-                aria-roledescription="slide"
-                aria-label={`Slide ${index + 1} of ${slidesData.length}`}
-                aria-hidden={index !== activeIndex}
-                className='clinicalTrials_slide'
-              >
-              <div className='containerWrapper'>
-                <div className='clinicalTrials_slide_content'>
-                  <ScrollAnimationComponent animationVariants={fadeIn}>
-                  <Content className='commContent_wrap content-gap-32'>
-                    <Label className='contentLabel'>{slide.label || 'TREATMENTS'}</Label>
-                    <Title className='title-2'>{slide.title}</Title>
-                    <Description className='text-16'>{slide.description}</Description>
-                    <Button className='btn btn-dark-solid' as="a" href={slide.buttonLink || '#clinical-trials'}>
-                      {slide.buttonText || 'Find Relevant Clinical Trials'}
-                    </Button>
-                  </Content>
-                  </ScrollAnimationComponent>
-                </div>
-                  <NavigationContainer className='slider-nav-wrap'>
-                    <NavButton
-                      className='slider-nav-button'
-                      onClick={handlePrevious}
-                      disabled={slidesData.length <= 1}
-                      aria-label="Previous slide"
-                      type="button"
-                    >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="46" height="32" viewBox="0 0 46 32" fill="none">
-                    <path d="M15.8656 31.7313L17.6493 30.01L4.75497 17.1156H45.0481V14.6156H4.70684L17.5868 1.72125L15.8656 0L-3.43323e-05 15.8656L15.8656 31.7313Z" fill="white"/>
-                    </svg>
-                    </NavButton>
-                    <NavButton
-                      className='slider-nav-button'
-                      onClick={handleNext}
-                      disabled={slidesData.length <= 1}
-                      aria-label="Next slide"
-                      type="button"
-                    >
-                    <svg width="46" height="32" viewBox="0 0 46 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M29.1825 31.7313L27.3988 30.01L40.2931 17.1156H0V14.6156H40.3413L27.4613 1.72125L29.1825 0L45.0481 15.8656L29.1825 31.7313Z" fill="white"/>
-                    </svg>
-                    </NavButton>
-                  </NavigationContainer>
-                </div>
-              </Slide>
-            );
-        })}
-      </SlideContainer>
-
-      {slidesData.length > 1 && (
-          <DotsContainer>
-            {slidesData.map((_, index) => (
-              <Dot
-                key={index}
-                active={index === activeIndex}
-                onClick={() => handleDotClick(index)}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </DotsContainer>
-      )}
-    </section>
-  );
-};
 
 export default ClinicalTrialsShowcase;
 

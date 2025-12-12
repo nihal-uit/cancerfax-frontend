@@ -1,32 +1,15 @@
-import React, { useEffect, useState } from "react";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 const Hero = ({ sectionClass, data }) => {
-  const defaultHeroContent = {
-    title: `Lorem Ipsum`,
-    description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a est velit. In ut eros dapibus, consectetur metus nec, dictum metus.`,
-    buttonText: "Lorem Ipsum",
-    buttonLink: "#about-us",
-    buttonTarget: "_blank",
-  };
-
-  const heroContent = data ? {
-    title: data.heading || defaultHeroContent.title,
-    description: data.description_text || defaultHeroContent.description,
-    buttonText: data.cta?.text || defaultHeroContent.buttonText,
-    buttonLink: data.cta?.URL || defaultHeroContent.buttonLink,
-    buttonTarget: data.cta?.target || defaultHeroContent.buttonTarget,
-  } : defaultHeroContent;
-
   return (
     <div className={`others_hero_content comm_hero_pt ${sectionClass}`}>
       <div className="containerWrapper py-88">
         <div className="hero_content_row">
           <div className="hero_content_left commContent_wrap">
             <ScrollAnimationComponent animationVariants={slideLeft}>
-              <h1 className="title-1 text_theme_dark">{heroContent.title}</h1>
+              <h1 className="title-1 text_theme_dark">{data?.heading || ''}</h1>
             </ScrollAnimationComponent>
           </div>
 
@@ -34,14 +17,14 @@ const Hero = ({ sectionClass, data }) => {
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className="commContent_wrap content-gap-40">
                 <p className="text-16 text_theme_dark">
-                  {heroContent.description}
+                  {data?.description_text || ''}
                 </p>
                 <ExploreButton
                   className="btn btn-pink-solid"
-                  to={heroContent.buttonLink}
-                  target={heroContent.buttonTarget}
+                  to={data?.cta?.URL || '#'}
+                  target={data?.cta?.target || '_blank'}
                 >
-                  {heroContent.buttonText}
+                  {data?.cta?.text || ''}
                 </ExploreButton>
               </div>
             </ScrollAnimationComponent>

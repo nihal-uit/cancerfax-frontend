@@ -6,18 +6,12 @@ import { EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-fade";
 import Marquee from "react-fast-marquee";
+import { formatMedia } from "@/utils/strapiHelpers";
 
-const AboutHeroBanner = ({ sectionClass }) => {
+const AboutHeroBanner = ({ sectionClass, data }) => {
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
-  };
-
-  const content = {
-    label: "Accredited Excellence",
-    title: "Our Certifications and Recognitions in Healthcare Excellence",
-    image: "../images/about-banner-slider-img-1.jpg",
-    imageAlt: "How It Works",
   };
 
   return (
@@ -35,8 +29,8 @@ const AboutHeroBanner = ({ sectionClass }) => {
               <ScrollAnimationComponent animationVariants={fadeIn}>
                 <div className="hospital_info_slider">
                   <img
-                    src="../images/about-hero-banner-img.jpg"
-                    alt=""
+                    src={formatMedia(data?.image)}
+                    alt={data?.imageAlt || ''}
                   />
                 </div>
               </ScrollAnimationComponent>
@@ -48,10 +42,10 @@ const AboutHeroBanner = ({ sectionClass }) => {
         <ScrollAnimationComponent animationVariants={fadeIn}>
           <CommContent className="commContent_wrap">
             <Label className="contentLabel">
-              {content.label || "Accredited Excellence"}
+              {data?.heading || ''}
             </Label>
             <Title className="title-3">
-              {content.title || "Our Certifications and Recognitions in Healthcare Excellence"}
+              {data?.subHeading || ''}
             </Title>
           </CommContent>
         </ScrollAnimationComponent>
@@ -65,10 +59,10 @@ const AboutHeroBanner = ({ sectionClass }) => {
             gradientColor={'#36454F'}
           >
             <div className="certificate_grid">
-              {Array.from({ length: 5 }).map((item, index) => (
+              {data?.badges?.map((item, index) => (
                 <div key={index} className="certificate__item">
                   <img
-                    src={`./images/our_certifications_logo_${index + 1}.svg`}
+                    src={formatMedia(item?.image)}
                     alt="logos"
                   />
                 </div>

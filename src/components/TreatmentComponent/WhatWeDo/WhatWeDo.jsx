@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import "./WhatWeDo.scss";
 import { Link } from "react-router-dom";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
@@ -9,22 +9,6 @@ const WhatWeDo = ({ data, loading }) => {
     visible: { opacity: 1, y: 0 },
   };
 
-  const content = useMemo(()=>{
-    return {
-      label: data?.heading || "Lorem Ipsum",
-      title: data?.subHeading || "Lorem Ipsum Text",
-      description: data?.description || "Lorem Ipsum dolor sit amet",
-      card_1: data?.card_1 || {},
-      card_2: data?.card_2 || {},
-      card_3: data?.card_3 || {},
-      card_4: data?.card_4 || {},
-      card_5: data?.card_5 || {},
-      buttonText: data?.cta?.text || "Lorem Ipsum",
-      buttonLink: data?.cta?.URL || "#",
-      buttonTarget: data?.cta?.target || "_blank",
-    }
-  },[data])
-
   if(loading) return null;
 
   return (
@@ -32,13 +16,13 @@ const WhatWeDo = ({ data, loading }) => {
       <div className="containerWrapper z-2 position-relative">
         <ScrollAnimationComponent animationVariants={fadeIn}>
           <div className="commContent_wrap commContent_new">
-            <p className="contentLabel">{content.label}</p>
+            <p className="contentLabel">{data?.heading || ''}</p>
             <h3 className="title-3">
-              {content.title}
+              {data?.subHeading || ''}
             </h3>
             <div className="content__des text_theme_dark">
               <p>
-                {content.description}
+                {data?.description_text || ''}
               </p>
             </div>
           </div>
@@ -61,7 +45,7 @@ const WhatWeDo = ({ data, loading }) => {
                   {/* <div className="card__overlay__bg"></div> */}
                   <div className="card__overlay__content">
                     <h5 className="card__title">
-                      {content.card_1?.heading || "Lorem Ipsum"}
+                      {data?.card_1?.heading || ''}
                     </h5>
                   </div>
                 </div>
@@ -84,7 +68,7 @@ const WhatWeDo = ({ data, loading }) => {
                 <div className="card__overlay">
                   <div className="card__overlay__content">
                     <h5 className="card__title">
-                    {content.card_2?.heading || "Lorem Ipsum"}
+                    {data?.card_2?.heading || ''}
                     </h5>
                   </div>
                 </div>
@@ -107,7 +91,7 @@ const WhatWeDo = ({ data, loading }) => {
                 <div className="card__overlay">
                   <div className="card__overlay__content">
                     <h5 className="card__title">
-                    {content.card_3?.heading || "Lorem Ipsum"}
+                    {data?.card_3?.heading || ''}
                     </h5>
                   </div>
                 </div>
@@ -130,7 +114,7 @@ const WhatWeDo = ({ data, loading }) => {
                 <div className="card__overlay">
                   <div className="card__overlay__content">
                     <h5 className="card__title">
-                    {content.card_4?.heading || "Lorem Ipsum"}
+                    {data?.card_4?.heading || ''}
                     </h5>
                   </div>
                 </div>
@@ -153,7 +137,7 @@ const WhatWeDo = ({ data, loading }) => {
                 <div className="card__overlay">
                   <div className="card__overlay__content">
                     <h5 className="card__title">
-                    {content.card_5?.heading || "Lorem Ipsum"}
+                    {data?.card_5?.heading || ''}
                     </h5>
                   </div>
                 </div>
@@ -163,8 +147,8 @@ const WhatWeDo = ({ data, loading }) => {
         </div>
         <ScrollAnimationComponent animationVariants={fadeIn}>
           <div className="btn__holder">
-            <Link to={content.buttonLink} className="btn btn-pink-solid" target={content.buttonTarget}>
-              {content.buttonText}
+            <Link to={data?.cta?.URL} className="btn btn-pink-solid" target={data?.cta?.target}>
+              {data?.cta?.text || ''}
             </Link>
           </div>
         </ScrollAnimationComponent>

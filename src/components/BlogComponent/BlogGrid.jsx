@@ -1,35 +1,36 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
 import { formatDate } from "../../utils/strapiHelpers";
 import { useLoadMore } from "../../utils/useLoadMore";
 import SkeletonBlogCard from "../reusable/SkeletonBlogCard";
+import { getMediaUrl } from "../../services/api";
 
 
 const BlogGrid = ({ data, loading }) => {
   const navigate = useNavigate();
 
-  const blogContent =
-    data?.length > 0
+  const blogContent = useMemo(() => {
+    return data?.length > 0
       ? data.map((blog) => ({
           id: blog?.documentId,
+          slug: blog?.slug || '',
           title: blog?.title || '',
           description: blog?.description || '',
           author: {
             name: `${blog?.author?.firstName} ${
               blog?.author?.lastName || ""
             }`.trim(),
-            avatar: blog?.author?.avatar || null,
+            avatar: getMediaUrl(blog?.author?.profilePicture) || null,
           },
           publishedDate: formatDate(blog?.publishedDate),
           readTime: blog?.readTime,
-          category: blog?.resource_category
-            ? blog?.resource_category
-            : '',
+          category: blog?.resource_category?.name || '',
           image: blog?.featuredImage || '',
         }))
       : [];
+  }, [data]);
 
   const { visibleItems, loadMore, hasMore, isLoadingMore } = useLoadMore(
     blogContent,
@@ -72,7 +73,7 @@ const BlogGrid = ({ data, loading }) => {
       <Grid>
         {visibleItems.map((blog) => (
           <ScrollAnimationComponent key={blog.id} animationVariants={fadeIn}>
-            <BlogCard as="div" onClick={() => navigate(`/resources/${blog.id}`)}>
+            <BlogCard as="div" onClick={() => navigate(`/resources/${blog.slug}`)}>
               <BlogImage>
                 <img src={blog.image} alt={blog.title} />
                 {blog.category && (
