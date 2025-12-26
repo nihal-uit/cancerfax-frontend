@@ -17,7 +17,6 @@ const CancerTreatmentHero = ({ data }) => {
 
   const [formData, setFormData] = useState({
     fullName: '',
-    lastName: '',
     email: '',
     phone: '',
     message: '',
@@ -31,10 +30,10 @@ const CancerTreatmentHero = ({ data }) => {
         phone: '',
         message: '',
       });
-      
       setTimeout(() => {
         dispatch(resetSubmissionStatus());
       }, 3000);
+      navigate('/thank-you');
     }
   }, [submissionStatus, dispatch]);
 
@@ -49,7 +48,20 @@ const CancerTreatmentHero = ({ data }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(submitContactForm(formData));
+    // Split fullName into first_name and last_name
+    const nameParts = formData.fullName.trim().split(/\s+/);
+    const first_name = nameParts[0] || '';
+    const last_name = nameParts.slice(1).join(' ') || '';
+    
+    const submissionData = {
+      ...formData,
+      first_name,
+      last_name,
+    };
+    // Remove fullName from submission data
+    delete submissionData.fullName;
+    
+    dispatch(submitContactForm(submissionData));
   };
 
   const defaultFormFields = {
@@ -122,7 +134,7 @@ const CancerTreatmentHero = ({ data }) => {
                         <Input
                           type="text"
                           name="fullName"
-                          placeholder={formFields.fullNamePlaceholder || 'Enter Full name'}
+                          placeholder={formFields.fullNamePlaceholder || 'Enter full name'}
                           value={formData.fullName}
                           onChange={handleChange}
                           required
