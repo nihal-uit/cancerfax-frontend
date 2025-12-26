@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
  * Dynamically injects SEO meta tags from Strapi /api/global endpoint
  * Handles: title, description, meta tags, Open Graph, Twitter cards
  */
-const SEO = () => {
+const SEO = ({data}) => {
   const globalData = useSelector(state => state.global?.data);
   const pageData = useSelector(state => state.global?.pageData);
   

@@ -1,63 +1,25 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { formatMedia } from "@/utils/strapiHelpers";
+import { formatMedia } from '@/utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
-
 
 const VideoTestimonialComponents = ({ data }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
 
-  // Extract background image from featuredVideo field (actual structure from Strapi)
-  // featuredVideo can be a direct media object with url field, or nested in data.attributes
-  const getBackgroundImage = () => {
-    if (!data) return null;
-
-    if (data?.testimonial_card?.featuredVideo) {
-      if (data?.testimonial_card?.featuredVideo?.url) {
-        return formatMedia(data?.testimonial_card?.featuredVideo?.url);
-      }
-      if (data?.testimonial_card?.featuredVideo?.data?.attributes?.url) {
-        return formatMedia(data?.testimonial_card?.featuredVideo);
-      }
-      if (typeof data?.testimonial_card?.featuredVideo === 'string') {
-        return formatMedia(data?.featuredVideo);
-      }
-    }
-
-    if (data?.backgroundImage || data?.featuredImage) {
-      return formatMedia(data?.backgroundImage || data?.featuredImage);
-    }
-    return null;
-  };
-
-  // Get video URL for playback
+  // Get video URL for background video
   const getVideoUrl = () => {
     if (!data) return null;
 
+    // Try testimonial_card.featuredVideo first
     if (data?.testimonial_card?.featuredVideo) {
-      if (data?.testimonial_card?.featuredVideo?.url) {
-        return formatMedia(data?.testimonial_card?.featuredVideo?.url);
-      }
-      if (data?.testimonial_card?.featuredVideo?.data?.attributes?.url) {
         return formatMedia(data?.testimonial_card?.featuredVideo);
-      }
-      if (typeof data?.testimonial_card?.featuredVideo === 'string') {
-        return formatMedia(data?.testimonial_card?.featuredVideo);
-      }
     }
 
+    // Fallback to featuredVideo
     if (data?.featuredVideo) {
-      if (data?.featuredVideo?.url) {
-        return formatMedia(data?.featuredVideo?.url);
-      }
-      if (data?.featuredVideo?.data?.attributes?.url) {
         return formatMedia(data?.featuredVideo);
-      }
-      if (typeof data?.featuredVideo === 'string') {
-        return formatMedia(data?.featuredVideo);
-      }
     }
 
     return null;
@@ -93,7 +55,7 @@ const VideoTestimonialComponents = ({ data }) => {
   // Auto-play video when modal opens
   useEffect(() => {
     if (isPlaying && videoRef.current) {
-      videoRef.current.play().catch(err => {
+      videoRef.current.play().catch((err) => {
         console.error('Error playing video:', err);
       });
     }
@@ -101,30 +63,55 @@ const VideoTestimonialComponents = ({ data }) => {
 
   const videoUrl = getVideoUrl();
 
-  console.log("data - ", data);
-
   return (
     <>
       <div className='videoTestimonials_wrap'>
-        <BackgroundImage image={getBackgroundImage()} />
+        {videoUrl && (
+          <BackgroundVideoWrapper>
+            <BackgroundVideo
+              preload="none"
+              autoPlay
+              loop
+              muted
+              playsInline
+            >
+              <source src={videoUrl} type="video/mp4" />
+            </BackgroundVideo>
+          </BackgroundVideoWrapper>
+        )}
         <ScrollAnimationComponent animationVariants={slideLeft}>
           <Content className='commContent_wrap'>
-            <Label className='contentLabel'>{data?.heading || ''}</Label>
-            <Title>{data?.subHeading || ''}</Title>
-            {
-              data?.testimonial_card?.cta?.URL && (
-                <ExploreButton className='btn btn-pink-solid' to={data?.testimonial_card?.cta?.URL || '#'} target={data?.testimonial_card?.cta?.target || '_blank'}>
-                  {data?.testimonial_card?.cta?.text || ''}
+            <Label className='contentLabel'>
+              {data?.testimonial_card?.heading || data?.heading || ''}
+            </Label>
+            <Title>
+              {data?.testimonial_card?.subHeading || data?.subHeading || ''}
+            </Title>
+            {data?.testimonial_card?.cta?.text && (
+              <ExploreButton
+                className='btn btn-pink-solid'
+                to={data?.testimonial_card?.cta?.URL || '#'}
+                target={data?.testimonial_card?.cta?.target || '_self'}
+              >
+                {data?.testimonial_card?.cta?.text}
                 </ExploreButton>
-              )
-            }
+            )}
           </Content>
         </ScrollAnimationComponent>
 
         <PlayButtonWrapper>
-          <PlayButton onClick={handlePlayVideo} aria-label="Play video testimonials" type="button">
-            <PlayIcon viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-              <path d="M8 5v14l11-7z" fill="#FF1493" />
+          <PlayButton
+            onClick={handlePlayVideo}
+            aria-label='Play video testimonials'
+            type='button'
+          >
+            <PlayIcon
+              viewBox='0 0 24 24'
+              xmlns='http://www.w3.org/2000/svg'
+              width='100%'
+              height='100%'
+            >
+              <path d='M8 5v14l11-7z' fill='#FF1493' />
             </PlayIcon>
           </PlayButton>
         </PlayButtonWrapper>
@@ -133,9 +120,14 @@ const VideoTestimonialComponents = ({ data }) => {
       {isPlaying && videoUrl && (
         <VideoModal onClick={handleCloseVideo}>
           <VideoModalContent onClick={(e) => e.stopPropagation()}>
-            <CloseButton onClick={handleCloseVideo} aria-label="Close video">
-              <CloseIcon viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <CloseButton onClick={handleCloseVideo} aria-label='Close video'>
+              <CloseIcon viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+                <path
+                  d='M18 6L6 18M6 6l12 12'
+                  stroke='currentColor'
+                  strokeWidth='2'
+                  strokeLinecap='round'
+                />
               </CloseIcon>
             </CloseButton>
             <VideoPlayer
@@ -152,18 +144,16 @@ const VideoTestimonialComponents = ({ data }) => {
   );
 };
 
-const BackgroundImage = styled.div`
+const BackgroundVideoWrapper = styled.div`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url(${props => props.image});
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   border-radius: 24px;
   overflow: hidden;
+  z-index: 0;
+
   &::before {
     content: '';
     position: absolute;
@@ -171,13 +161,38 @@ const BackgroundImage = styled.div`
     left: 0;
     width: 40%;
     height: 100%;
-    background: linear-gradient(0deg, rgba(54, 69, 79, 0.63) 0%, rgba(54, 69, 79, 0) 100%);
+    background: linear-gradient(
+      0deg,
+      rgba(54, 69, 79, 0.63) 0%,
+      rgba(54, 69, 79, 0) 100%
+    );
     border-radius: 24px;
     backdrop-filter: blur(53px);
-    -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(50%, rgba(54, 69, 79, 0.7)), to(rgba(54, 69, 79, 0)));
-    -webkit-mask-image: linear-gradient(to right, rgba(54, 69, 79, 0.7) 50%, rgba(54, 69, 79, 0) 100%);
-    mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(50%, rgba(54, 69, 79, 0.7)), to(rgba(54, 69, 79, 0)));
-    mask-image: linear-gradient(to right, rgba(54, 69, 79, 0.7) 50%, rgba(54, 69, 79, 0) 100%);
+    -webkit-mask-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(50%, rgba(54, 69, 79, 0.7)),
+      to(rgba(54, 69, 79, 0))
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      rgba(54, 69, 79, 0.7) 50%,
+      rgba(54, 69, 79, 0) 100%
+    );
+    mask-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(50%, rgba(54, 69, 79, 0.7)),
+      to(rgba(54, 69, 79, 0))
+    );
+    mask-image: linear-gradient(
+      to right,
+      rgba(54, 69, 79, 0.7) 50%,
+      rgba(54, 69, 79, 0) 100%
+    );
+    z-index: 1;
   }
   
   @media (max-width: 768px) {
@@ -194,6 +209,24 @@ const BackgroundImage = styled.div`
     &::before {
       border-radius: 16px;
     }
+  }
+`;
+
+const BackgroundVideo = styled.video`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 24px;
+
+  @media (max-width: 768px) {
+    border-radius: 20px;
+  }
+
+  @media (max-width: 480px) {
+    border-radius: 16px;
   }
 `;
 
@@ -349,7 +382,7 @@ const PlayIcon = styled.svg`
   width: 36px;
   height: 36px;
   margin-left: 4px;
-  fill: #FF1493;
+  fill: #ff1493;
   display: block;
   z-index: 1;
   position: relative;
@@ -455,4 +488,3 @@ const slideLeft = {
 };
 
 export default VideoTestimonialComponents;
-

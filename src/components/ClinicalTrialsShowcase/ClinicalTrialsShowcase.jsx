@@ -59,48 +59,16 @@ const resolveSlideBackgroundImage = (slide, section, defaultSlides, index) => {
 
 const ClinicalTrialsShowcase = ({ componentData, data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  // Get data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector(state => state.global?.data);
-  const globalLoading = useSelector(state => state.global?.loading);
-  // Legacy Redux state (kept for fallback, but not actively used)
-  const { slides } = useSelector((state) => state.clinicalTrialsShowcase || { slides: [], loading: false });
-
-  // Default slides if no data from Strapi - only use if Strapi data doesn't exist
-  const defaultSlides = hideFallbacks ? [] : [
-    {
-      label: 'TREATMENTS',
-      title: "CancerFax's Role In Clinical Trial Advancements",
-      description: 'CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, we guide you every step of the way.',
-      buttonText: 'Find Relevant Clinical Trials',
-      buttonLink: '#clinical-trials',
-      backgroundImage: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1920&q=80'
-    },
-    {
-      label: 'INNOVATION',
-      title: "Advanced Treatment Options Available Worldwide",
-      description: 'Discover breakthrough therapies and cutting-edge treatments from leading medical institutions. Our network connects you with the best care options globally.',
-      buttonText: 'Explore Treatments',
-      buttonLink: '#treatments',
-      backgroundImage: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=1920&q=80'
-    }
-  ];
-
-// Priority: Use componentData prop (for dynamic pages) > incoming data prop > globalData (for home page)
-const sliderSection =
-  componentData || data || getSectionData(globalData, 'clinicalTrialsShowcase');
-  const shouldHideMissingSection = hideFallbacks && !sliderSection;
+  const sliderSection = componentData || data;
   
   // Extract slides from the Slide array in slider-section component
   const globalSlides = sliderSection?.Slide || [];
   
-
-  
   // Format global slides if available
-  // Use Strapi data if section exists AND has slides, otherwise use fallback
   const formattedGlobalSlides =
-    sliderSection && globalSlides.length > 0
+    globalSlides.length > 0
       ? globalSlides
-          .map((slide, index) => {
+          .map((slide) => {
             // Handle nested structure - slide might be in attributes or direct
             const slideData = slide?.attributes || slide;
             const description =
@@ -119,23 +87,35 @@ const sliderSection =
                 slideData?.buttonLink ??
                 slideData?.cta?.link ??
                 '#',
-              backgroundImage: resolveSlideBackgroundImage(
+              buttonTarget: slideData?.cta?.target ?? '_blank',
+              backgroundImage: formatMedia(slideData?.featuredImage) || resolveSlideBackgroundImage(
                 slideData,
                 sliderSection,
-                defaultSlides,
-                index
+                [],
+                0
               ),
             };
           })
           .filter((slide) => slide.title) // Filter out empty slides
       : [];
 
-  // Use global data or fallback to existing data or defaults
-  const slidesData = formattedGlobalSlides.length > 0 
-    ? formattedGlobalSlides 
-    : (slides && slides.length > 0 ? slides : defaultSlides);
+  const slidesData = formattedGlobalSlides;
 
-  const shouldHideShowcase = hideFallbacks && (!sliderSection || slidesData.length === 0);
+  // IMPORTANT: All hooks must be called before any early returns
+  // Auto-play slider
+  useEffect(() => {
+    if (slidesData.length > 1) {
+      const interval = setInterval(() => {
+        setActiveIndex((prev) => (prev === slidesData.length - 1 ? 0 : prev + 1));
+      }, 6000); // Change slide every 6 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [slidesData.length]);
+
+  if (!sliderSection || slidesData.length === 0) {
+    return null;
+  }
 
   const handlePrevious = (e) => {
     e.preventDefault();
@@ -155,44 +135,16 @@ const sliderSection =
     setActiveIndex(index);
   };
 
-  // IMPORTANT: All hooks must be called before any early returns
-  // Auto-play slider
-  useEffect(() => {
-    if (shouldHideShowcase) {
-      return;
-    }
-    if (slidesData.length > 1) {
-      const interval = setInterval(() => {
-        setActiveIndex((prev) => (prev === slidesData.length - 1 ? 0 : prev + 1));
-      }, 6000); // Change slide every 6 seconds
-
-      return () => clearInterval(interval);
-    }
-  }, [slidesData.length, shouldHideShowcase]);
-
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
-  
-  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
-  // This check must come after all hooks
-  if (globalLoading) {
-    return null;
-  }
-
-  if (shouldHideMissingSection || shouldHideShowcase) {
-    return null;
-  }
 
   return (
     <section className='clinicalTrials_sec'>
       <SlideContainer className='clinicalTrials_sliderWrap' activeIndex={activeIndex}>
         {slidesData.map((slide, index) => {
-          const backgroundImage =
-            slide?.backgroundImage ||
-            slide?.featuredImage ||
-            resolveSlideBackgroundImage(slide, sliderSection, defaultSlides, index);
+          const backgroundImage = slide?.backgroundImage || formatMedia(slide?.featuredImage) || resolveSlideBackgroundImage(slide, sliderSection, [], index);
             return (
               <Slide 
                 key={`slide-${index}-${slide.title || index}`} 
@@ -207,12 +159,14 @@ const sliderSection =
                 <div className='clinicalTrials_slide_content'>
                   <ScrollAnimationComponent animationVariants={fadeIn}>
                   <Content className='commContent_wrap content-gap-32'>
-                    <Label className='contentLabel'>{slide.label || ''}</Label>
-                    <Title className='title-2'>{slide.title || ''}</Title>
-                    <Description className='text-16'>{slide.description || ''}</Description>
-                    <Button className='btn btn-dark-solid' to={slide?.buttonLink || '#'} target={slide?.cta?.target || '_blank'}>
-                      {slide?.buttonText || 'Click Here'}
+                    <Label className='contentLabel'>{slide?.label || ''}</Label>
+                    <Title className='title-2'>{slide?.title || ''}</Title>
+                    <Description className='text-16'>{slide?.description || ''}</Description>
+                    {slide?.buttonText && (
+                      <Button className='btn btn-dark-solid' to={slide?.buttonLink || '#'} target={slide?.buttonTarget || '_blank'}>
+                        {slide?.buttonText}
                     </Button>
+                    )}
                   </Content>
                   </ScrollAnimationComponent>
                 </div>

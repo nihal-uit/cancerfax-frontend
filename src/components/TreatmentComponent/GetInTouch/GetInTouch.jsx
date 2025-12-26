@@ -4,7 +4,7 @@ import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationCompo
 import { Link } from "react-router-dom";
 
 const GetInTouch = ({ data, loading }) => {
-  if (loading) {
+  if (loading || !data?.isActive) {
     return null;
   }
 
@@ -15,8 +15,12 @@ const GetInTouch = ({ data, loading }) => {
           <div>
             <ScrollAnimationComponent animationVariants={slideLeft}>
               <CommContent className="commContent_wrap">
-                <Label className="contentLabel">{data?.heading}</Label>
-                <Title className="title-3">{data?.subHeading}</Title>
+                {data?.heading && (
+                  <Label className="contentLabel">{data?.heading}</Label>
+                )}
+                {data?.subHeading && (
+                  <Title className="title-3">{data?.subHeading}</Title>
+                )}
               </CommContent>
             </ScrollAnimationComponent>
           </div>
@@ -24,16 +28,20 @@ const GetInTouch = ({ data, loading }) => {
           <div>
             <ScrollAnimationComponent animationVariants={slideRight}>
               <CommContentRight className="commContent_wrap">
-                <Description className="text-16">
-                  {data?.description_text}
-                </Description>
-                <CTAButton
-                  className="btn btn-pink-solid"
-                  target={data?.cta?.target}
-                  to={data?.cta?.URL}
-                >
-                  {data?.cta?.text}
-                </CTAButton>
+                {data?.description_text && (
+                  <Description className="text-16">
+                    {data?.description_text}
+                  </Description>
+                )}
+                {data?.cta?.URL && (
+                  <CTAButton
+                    className="btn btn-pink-solid"
+                    target={data?.cta?.target || '_blank'}
+                    to={data?.cta?.URL || ''}
+                  >
+                    {data?.cta?.text || ''}
+                  </CTAButton>
+                )}
               </CommContentRight>
             </ScrollAnimationComponent>
           </div>

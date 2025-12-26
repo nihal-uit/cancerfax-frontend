@@ -98,23 +98,22 @@ export const componentMap = {
   // Clinical Trials
   "clinical-trial-listing.hero-section": lazy(() => import("@/components/ClinicalComponents/ClinicalHero.jsx")),
   "clinical-trial-listing.slider-section": lazy(() => import("@/components/TreatmentComponent/TreatmentSlider/TreatmentSlider.jsx")),
+  "clinical-trial-listing.listing-section": lazy(() => import("@/components/ClinicalComponents/ClinicalFeature.jsx")),
+  "clinical-trial-listing.understanding-section": lazy(() => import("@/components/ClinicalComponents/ClinicalHowWork.jsx")),
+  "clinical-trial-listing.process-section": lazy(() => import("@/components/ClinicalComponents/ClinicalProcess.jsx")),
   "clinical-trial-listing.get-in-touch": lazy(() => import("@/components/GetInTouch/GetInTouch.jsx")),
-  "clinical-trial-listing.phases-section": lazy(() => import("@/components/ClinicalComponents/ClinicalPhases.jsx")),
-  "clinical-trial-listing.pricing-section": lazy(() => import("@/components/ClinicalComponents/ClinicalPlan.jsx")),
-  "clinical-trial-listing.listing-section": lazy(() => import("@/components/TreatmentComponent/Resources/Resources.jsx")),
-  
-  "clinical-trial-listing.understanding-section": lazy(() => import("@/components/ClinicalComponents/ClinicalHelp.jsx")),
+  "clinical-trial-listing.trial-requirement-section": lazy(() => import("@/components/ClinicalComponents/ClinicalCenter.jsx")),
   "clinical-trial-listing.collaboration-section": lazy(() => import("@/components/ClinicalComponents/ClinicalPartner.jsx")),
-  "clinical-trial-listing.benefits-section": lazy(() => import("@/components/ClinicalComponents/ClinicalCenter.jsx")),
-  "clinical-trial-listing.insights-section": lazy(() => import("@/components/ClinicalComponents/ClinicalProcess.jsx")),
-  "clinical-trial-listing.trial-requirement-section": lazy(() => import("@/components/ClinicalComponents/ClinicalHowWork.jsx")),
-  "clinical-trial-listing.process-section": lazy(() => import("@/components/ClinicalComponents/ClinicalFeature.jsx")),
+  "clinical-trial-listing.phases-section": lazy(() => import("@/components/ClinicalComponents/ClinicalPhases.jsx")),
+  "clinical-trial-listing.benefits-section": lazy(() => import("@/components/ClinicalComponents/ClinicalHelp.jsx")),
+  "clinical-trial-listing.pricing-section": lazy(() => import("@/components/ClinicalComponents/ClinicalPlan.jsx")),
+  "clinical-trial-listing.insights-section": lazy(() => import("@/components/TreatmentComponent/Resources/Resources.jsx")),
 
   // Ongoing Trials
-  // "ongoing-trials-listing.hero-section": lazy(() => import("@/components/OngoingTrialsComponent/OngoingTrialsHero.jsx")),
-  // "ongoing-trials-listing.trials-grid-section": lazy(() => import("@/components/ClinicalComponents/ClinicalTrialsGrid.jsx")),
-  // "ongoing-trials-listing.guidance-section": lazy(() => import("@/components/OngoingTrialsComponent/OngoingTrialsGuidance.jsx")),
-  // "ongoing-trials-listing.insights-section": lazy(() => import("@/components/OngoingTrialsComponent/OngoingTrialsInsights.jsx")),
+  "on-going-clinical-trial-listing.hero-section": lazy(() => import("@/components/ClinicalComponents/OngoingClinicalHero.jsx")),
+  // "on-going-clinical-trial-listing.listing-section": lazy(() => import("@/components/ClinicalComponents/OngoingQuickFinds.jsx")),
+  "on-going-clinical-trial-listing.slider-section": lazy(() => import("@/components/ClinicalComponents/ClinicalSafety.jsx")),
+  "on-going-clinical-trial-listing.expert-section": lazy(() => import("@/components/ClinicalComponents/ClinicalGuidance.jsx")),
 
   // Contact
   "contact.contact-form-section": lazy(() => import("@/components/ContactComponent/ContactHero.jsx")),

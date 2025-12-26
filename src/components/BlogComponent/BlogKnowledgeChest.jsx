@@ -1,58 +1,189 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams, useSearchParams, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import BlogGrid from './BlogGrid';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
 import { fetchBlogs } from '../../store/slices/resourcesSlice';
+import { fetchResourceCategories, fetchResourceSubCategories } from '../../store/slices/resourcesCategorySlice';
 
 const BLOGS_PAGE_SIZE = 6;
 
 const BlogKnowledgeChest = ({ data, loading }) => {
   const dispatch = useDispatch();
-  const { countries, specialties } = useSelector((state) => state.quickFinds);
-  const { blogs, blogsLoading, blogsHasMore } = useSelector(
-    (state) => state.resources
-  );
+  const { blogs, blogsLoading, blogsHasMore } = useSelector((state) => state.resources);
+  const { categories, subcategories: allSubcategories, loading: categoriesLoading } = useSelector((state) => state.resourceCategory);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState('');
-  const [selectedSpecialty, setSelectedSpecialty] = useState('');
+  const [selectedFilterCategory, setSelectedFilterCategory] = useState('');
+  const [selectedFilterSubcategory, setSelectedFilterSubcategory] = useState('');
+  const [selectedSorting, setSelectedSorting] = useState('');
+  
+  // Get category and subcategory from URL params (from DynamicPage route: /:slug/:category?/:subcategory?)
+  // Also check query params for subcategory (backward compatibility)
+  const { category: categoryParam, subcategory: subcategoryParam } = useParams();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const selectedSubcategory = subcategoryParam || searchParams.get('subcategory');
+  
+  // Extract category slug from URL pathname (for legacy routes or when not using DynamicPage params)
+  // Pattern: /resources/:category
+  const extractCategoryFromPath = (pathname) => {
+    if (!pathname.startsWith('/resources/')) return '';
+    if (pathname === '/resources') return '';
+    
+    // Check if it's a detail page (has 2+ segments after /resources/)
+    const segments = pathname.split('/').filter(Boolean);
+    if (segments.length >= 3 && segments[0] === 'resources') {
+      return ''; // Detail page, not category page
+    }
+    
+    // Extract category from /resources/:category
+    if (segments.length === 2 && segments[0] === 'resources') {
+      return segments[1];
+    }
+    
+    return '';
+  };
+  
+  // Get category slug with priority:
+  // 1. URL params from DynamicPage (/:slug/:category)
+  // 2. Pathname extraction (legacy /resources/:category)
+  // 3. Component data filter_category
+  const categoryFromUrlParams = categoryParam || '';
+  const categoryFromPathname = extractCategoryFromPath(location.pathname);
+  const categoryFromData = data?.filter_category?.data?.attributes?.slug || 
+                          data?.filter_category?.attributes?.slug || 
+                          data?.filter_category?.slug || '';
+  
+  // Use URL params first, then pathname, then component data
+  const categorySlug = categoryFromUrlParams || categoryFromPathname || categoryFromData;
 
+  // Fetch categories and subcategories from Redux on component mount
   useEffect(() => {
-    dispatch(fetchBlogs({ limit: BLOGS_PAGE_SIZE, start: 0 }));
+    dispatch(fetchResourceCategories());
+    dispatch(fetchResourceSubCategories());
   }, [dispatch]);
 
-  const defaultCountries = [
-    { id: 1, name: 'United States', value: 'us' },
-    { id: 2, name: 'United Kingdom', value: 'uk' },
-    { id: 3, name: 'Canada', value: 'ca' },
-    { id: 4, name: 'Germany', value: 'de' },
-    { id: 5, name: 'France', value: 'fr' },
-  ];
+  // Determine which category/subcategory to use (filter dropdown takes priority over URL params)
+  const activeCategorySlug = selectedFilterCategory || categorySlug || '';
+  const activeSubcategorySlug = selectedFilterSubcategory || selectedSubcategory || '';
 
-  const defaultSpecialties = [
-    { id: 1, name: 'Oncology', value: 'oncology' },
-    { id: 2, name: 'Cardiology', value: 'cardiology' },
-    { id: 3, name: 'Neurology', value: 'neurology' },
-    { id: 4, name: 'Immunotherapy', value: 'immunotherapy' },
-  ];
+  // Fetch blogs with category and subcategory filters
+  useEffect(() => {
+    dispatch(fetchBlogs({ 
+      limit: BLOGS_PAGE_SIZE, 
+      start: 0,
+      categorySlug: activeCategorySlug,
+      subcategorySlug: activeSubcategorySlug,
+      sorting: selectedSorting || ''
+    }));
+  }, [dispatch, activeCategorySlug, activeSubcategorySlug, selectedSorting]);
 
-  const countryOptions =
-    Array.isArray(countries) && countries.length > 0
-      ? countries
-      : defaultCountries;
-  const specialtyOptions =
-    Array.isArray(specialties) && specialties.length > 0
-      ? specialties
-      : defaultSpecialties;
+  const sortingOptions = [
+    { id: 1, name: 'Name A-Z', value: 'a-z' },
+    { id: 2, name: 'Name Z-A', value: 'z-a' },
+    { id: 3, name: 'Published Date Newest', value: 'published-date-newest' },
+    { id: 4, name: 'Published Date Oldest', value: 'published-date-oldest' },
+  ];
 
   const handleSearch = () => {
-    dispatch(fetchBlogs({ limit: BLOGS_PAGE_SIZE, start: 0, query: searchTerm }));
+    dispatch(fetchBlogs({ 
+      limit: BLOGS_PAGE_SIZE, 
+      start: 0, 
+      query: searchTerm,
+      categorySlug: activeCategorySlug,
+      subcategorySlug: activeSubcategorySlug,
+      sorting: selectedSorting || ''
+    }));
   };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
+  };
+
+  const handleSortingChange = (e) => {
+    const newSorting = e.target.value;
+    setSelectedSorting(newSorting);
+    dispatch(fetchBlogs({ 
+      limit: BLOGS_PAGE_SIZE, 
+      start: 0, 
+      query: searchTerm,
+      categorySlug: activeCategorySlug,
+      subcategorySlug: activeSubcategorySlug,
+      sorting: newSorting || ''
+    }));
+  };
+
+  const handleFilterChange = (e) => {
+    const value = e.target.value;
+    
+    if (!value) {
+      // Cleared selection - clear both filters
+      setSelectedFilterCategory('');
+      setSelectedFilterSubcategory('');
+      dispatch(fetchBlogs({ 
+        limit: BLOGS_PAGE_SIZE, 
+        start: 0, 
+        query: searchTerm,
+        categorySlug: '',
+        subcategorySlug: '',
+        sorting: selectedSorting || ''
+      }));
+      return;
+    }
+
+    // Check if it's a category or subcategory
+    const category = categories.find(c => c.slug === value);
+    const subcategory = allSubcategories.find(s => s.slug === value);
+
+    if (category) {
+      // Selected a category - set category filter, keep subcategory if already selected
+      setSelectedFilterCategory(value);
+      dispatch(fetchBlogs({ 
+        limit: BLOGS_PAGE_SIZE, 
+        start: 0, 
+        query: searchTerm,
+        categorySlug: value,
+        subcategorySlug: selectedFilterSubcategory || '',
+        sorting: selectedSorting || ''
+      }));
+    } else if (subcategory) {
+      // Selected a subcategory - set subcategory filter, keep category if already selected
+      setSelectedFilterSubcategory(value);
+      dispatch(fetchBlogs({ 
+        limit: BLOGS_PAGE_SIZE, 
+        start: 0, 
+        query: searchTerm,
+        categorySlug: selectedFilterCategory || '',
+        subcategorySlug: value,
+        sorting: selectedSorting || ''
+      }));
+    }
+  };
+
+  // Get display text for filter dropdown
+  const getFilterDisplayText = () => {
+    if (selectedFilterCategory && selectedFilterSubcategory) {
+      const categoryName = categories.find(c => c.slug === selectedFilterCategory)?.name || '';
+      const subcategoryName = allSubcategories.find(s => s.slug === selectedFilterSubcategory)?.name || '';
+      return `${categoryName} + ${subcategoryName}`;
+    }
+    if (selectedFilterCategory) {
+      return categories.find(c => c.slug === selectedFilterCategory)?.name || 'FilterBy';
+    }
+    if (selectedFilterSubcategory) {
+      return allSubcategories.find(s => s.slug === selectedFilterSubcategory)?.name || 'FilterBy';
+    }
+    return 'FilterBy';
+  };
+
+  // Get the current selected value for the dropdown (shows the last selected item)
+  const getFilterValue = () => {
+    if (selectedFilterSubcategory) return selectedFilterSubcategory;
+    if (selectedFilterCategory) return selectedFilterCategory;
+    return '';
   };
 
   const fadeIn = {
@@ -117,21 +248,31 @@ const BlogKnowledgeChest = ({ data, loading }) => {
 
             <SelectWrapper>
               <Select
-                value={selectedCountry}
-                onChange={(e) => setSelectedCountry(e.target.value)}
+                value={getFilterValue()}
+                onChange={handleFilterChange}
               >
-                <option value=''>Filter</option>
-                {countryOptions.map((country) => (
-                  <option key={country.id} value={country.value}>
-                    {country.name}
-                  </option>
-                ))}
+                <option value=''>FilterBy</option>
+                {categories.length > 0 && (
+                  <optgroup label='Categories'>
+                    {categories.map((category) => (
+                      <option key={`category-${category.id || category.documentId}`} value={category.slug}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                {allSubcategories.length > 0 && (
+                  <optgroup label='Subcategories'>
+                    {allSubcategories.map((subcategory) => (
+                      <option key={`subcategory-${subcategory.id || subcategory.documentId}`} value={subcategory.slug}>
+                        {subcategory.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
               </Select>
-              <SelectDisplay className={!selectedCountry ? 'placeholder' : ''}>
-                {selectedCountry
-                  ? countryOptions.find((c) => c.value === selectedCountry)
-                      ?.name || 'Filter'
-                  : 'Filter'}
+              <SelectDisplay className={!selectedFilterCategory && !selectedFilterSubcategory ? 'placeholder' : ''}>
+                {getFilterDisplayText()}
               </SelectDisplay>
               <DropdownIcon>
                 <svg
@@ -151,21 +292,21 @@ const BlogKnowledgeChest = ({ data, loading }) => {
 
             <SelectWrapper>
               <Select
-                value={selectedSpecialty}
-                onChange={(e) => setSelectedSpecialty(e.target.value)}
+                value={selectedSorting}
+                onChange={handleSortingChange}
               >
                 <option value=''>Sort by</option>
-                {specialtyOptions.map((specialty) => (
-                  <option key={specialty.id} value={specialty.value}>
-                    {specialty.name}
+                {sortingOptions.map((sorting) => (
+                  <option key={sorting.id} value={sorting.value}>
+                    {sorting.name}
                   </option>
                 ))}
               </Select>
               <SelectDisplay
-                className={!selectedSpecialty ? 'placeholder' : ''}
+                className={!selectedSorting ? 'placeholder' : ''}
               >
-                {selectedSpecialty
-                  ? specialtyOptions.find((s) => s.value === selectedSpecialty)
+                {selectedSorting
+                  ? sortingOptions.find((s) => s.value === selectedSorting)
                       ?.name || 'Sort by'
                   : 'Sort by'}
               </SelectDisplay>
@@ -183,6 +324,12 @@ const BlogKnowledgeChest = ({ data, loading }) => {
           </FiltersContainer>
         </ScrollAnimationComponent>
 
+        {!loading && !blogsLoading && (!blogs || blogs.length === 0) && (
+          <NoResultsMessage>
+            No blogs found with the selected filters
+          </NoResultsMessage>
+        )}
+
         <BlogGrid
           data={blogs}
           loading={loading || (blogsLoading && blogs.length === 0)}
@@ -194,7 +341,14 @@ const BlogKnowledgeChest = ({ data, loading }) => {
               type='button'
               onClick={() =>
                 dispatch(
-                  fetchBlogs({ limit: BLOGS_PAGE_SIZE, start: blogs.length })
+                  fetchBlogs({ 
+                    limit: BLOGS_PAGE_SIZE, 
+                    start: blogs.length,
+                    query: searchTerm,
+                    categorySlug: activeCategorySlug,
+                    subcategorySlug: activeSubcategorySlug,
+                    sorting: selectedSorting || ''
+                  })
                 )
               }
               disabled={blogsLoading}
@@ -259,7 +413,7 @@ const Description = styled.p``;
 
 const FiltersContainer = styled.div`
   display: grid;
-  grid-template-columns: 680px 1fr 1fr;
+  grid-template-columns: 680px repeat(auto-fit, minmax(200px, 1fr));
   gap: 12px;
   margin-bottom: 30px;
   @media (max-width: 1200px) {
@@ -451,6 +605,20 @@ const LoadMoreButton = styled.button`
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+`;
+
+const NoResultsMessage = styled.div`
+  text-align: center;
+  padding: 60px 20px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #36454f;
+  
+  @media (max-width: 768px) {
+    padding: 40px 20px;
+    font-size: 16px;
   }
 `;
 

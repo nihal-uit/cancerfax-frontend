@@ -12,6 +12,33 @@ const DoctorsGrid = ( { doctors, loading }) => {
     navigate(`/doctors/${doctor?.slug}`);
   };
 
+  const getSpecializationText = (specialization) => {
+    if (!specialization) return '';
+    
+    // Handle string specialization
+    if (typeof specialization === 'string') {
+      // Remove A., B., C. prefixes if present
+      return specialization.replace(/^[A-Z]\.\s*/g, '');
+    }
+    
+    // Handle object specialization - extract titles from specialities
+    if (specialization?.specialities && Array.isArray(specialization.specialities)) {
+      const titles = specialization.specialities
+        .flatMap((speciality) => 
+          speciality?.specialties?.map((item) => {
+            if (!item?.title) return null;
+            // Remove A., B., C. prefixes from titles
+            return item.title.replace(/^[A-Z]\.\s*/, '');
+          }).filter(Boolean) || []
+        )
+        .filter(Boolean);
+      
+      return titles.length > 0 ? titles.join(', ') : '';
+    }
+    
+    return '';
+  };
+
   const { visibleItems, loadMore, hasMore, isLoadingMore } = useLoadMore(
     doctors,
     6,
@@ -46,7 +73,7 @@ const DoctorsGrid = ( { doctors, loading }) => {
                 <CardContent>
                   <div className='doctors-text'>
                     <DoctorName>{doctor?.first_name ?? ''} {doctor?.last_name ?? ''}</DoctorName>
-                    <span>{doctor?.specialization ?? ''}</span>
+                    <SpecializationText>{getSpecializationText(doctor?.specialization)}</SpecializationText>
                   </div>
                   <ArrowIcon>
                     <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -169,6 +196,8 @@ const CardContent = styled.div`
     flex-direction: column;
     color: #008080;
     font-size: 14px;
+    min-width: 0;
+    flex: 1;
   }
 `;
 
@@ -188,6 +217,16 @@ const DoctorName = styled.h5`
   @media (max-width: 1200px) {
     font-size: 16px;
   }
+`;
+
+const SpecializationText = styled.span`
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  min-width: 0;
+  flex: 1;
 `;
 
 const ArrowIcon = styled.div`

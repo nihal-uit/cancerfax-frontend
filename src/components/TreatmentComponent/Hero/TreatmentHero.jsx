@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 const TreatmentHero = ({ sectionClass, data, loading }) => {
-  if (loading) {
+  if (loading || !data?.isActive) {
     return null;
   }
 
@@ -14,23 +14,27 @@ const TreatmentHero = ({ sectionClass, data, loading }) => {
         <div className='hero_content_row'>
           <div className='hero_content_left commContent_wrap'>
             <ScrollAnimationComponent animationVariants={slideLeft}>
-              <h1 className='title-1 text_theme_dark'>{data?.heading || ''}</h1>
+              {data?.heading && (
+                <h1 className='title-1 text_theme_dark'>{data?.heading}</h1>
+              )}
             </ScrollAnimationComponent>
           </div>
 
           <div className='hero_content_right'>
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className='commContent_wrap content-gap-40'>
-                <p className='text-16 text_theme_dark'>
-                  {data?.description_text || ''}
-                </p>
-                {data?.CTAs?.length > 0 && (
+                {data?.description_text && (
+                  <p className='text-16 text_theme_dark'>
+                    {data?.description_text}
+                  </p>
+                )}
+                {data?.cta?.URL && (
                   <ExploreButton
                     className='btn btn-pink-solid'
-                    to={data?.CTAs?.URL || ''}
-                    target={data?.CTAs?.target || '_blank'}
+                    to={data?.cta?.URL || ''}
+                    target={data?.cta?.target || '_blank'}
                   >
-                    {data?.CTAs?.text || ''}
+                    {data?.cta?.text || ''}
                   </ExploreButton>
                 )}
               </div>

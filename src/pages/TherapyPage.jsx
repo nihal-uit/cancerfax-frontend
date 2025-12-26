@@ -17,7 +17,7 @@ import CartCellTherapy from "../components/TreatmentComponent/CartCellTherapy/Ca
 import FdaTherapy from "../components/TreatmentComponent/FdaTherapy";
 import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
 
-const TreatmentDetailPage = () => {
+const TherapyPage = () => {
   const dispatch = useDispatch();
   const { slug } = useParams();
 
@@ -34,30 +34,74 @@ const TreatmentDetailPage = () => {
     dispatch(fetchTherapiesBySlug(slug));
   }, [dispatch, slug]);
 
-  if (globalLoading || therapiesLoading || !therapies) {
+  if (globalLoading || therapiesLoading || !therapies || !therapies?.[0]) {
     return <LoadingSpinner />
   }
 
   return (
     <div>
       <Header darkText={false} />
-      <TreatmentDetailHero data={therapies} loading={therapiesLoading} />
-      <Chronic data={therapies} loading={therapiesLoading} />
-      <CartCellTherapy
-        fadeIn={fadeIn}
-        sideLeft={sideLeft}
-        sideRight={sideRight}
-        data={therapies}
-        loading={therapiesLoading}
-      />
-      <WhyOpt sectionClass="theraphy__detail__sec" data={therapies} loading={therapiesLoading} />
-      <hr className="treatment__divider" />
-      <FdaTherapy fadeIn={fadeIn} sideLeft={sideLeft} sideRight={sideRight} data={therapies} loading={therapiesLoading} />
-      <Testimonials data={therapies} loading={therapiesLoading} />
-      <GetInTouch data={therapies} loading={therapiesLoading} />
-      <Research data={therapies} loading={therapiesLoading} />
-      <Transcend data={therapies} loading={therapiesLoading} />
-      <Resources sectionClass="treatment__resource" data={therapies} loading={therapiesLoading} />
+      {
+        therapies?.[0]?.hero?.isActive && (
+          <TreatmentDetailHero data={therapies?.[0]?.hero} loading={therapiesLoading} />
+        )
+      }
+      {
+        therapies?.[0]?.overview?.isActive && (
+          <Chronic data={therapies?.[0]?.overview} loading={therapiesLoading} />
+        )
+      }
+      {
+        therapies?.[0]?.understanding?.isActive && (
+          <CartCellTherapy
+            fadeIn={fadeIn}
+            sideLeft={sideLeft}
+            sideRight={sideRight}
+            data={therapies?.[0]?.understanding}
+            loading={therapiesLoading}
+          />
+        )
+      }
+      {
+        therapies?.[0]?.why_therapy?.isActive && (
+          <WhyOpt sectionClass="theraphy__detail__sec" data={therapies?.[0]?.why_therapy} loading={therapiesLoading} />
+        )
+      }
+      {
+        therapies?.[0]?.proof?.isActive && (
+          <hr className="treatment__divider"/>
+        )
+      }
+      {
+        therapies?.[0]?.proof?.isActive && (
+          <FdaTherapy fadeIn={fadeIn} sideLeft={sideLeft} sideRight={sideRight} data={therapies?.[0]?.proof} loading={therapiesLoading} />
+        )
+      }
+      {
+        therapies?.[0]?.testimonial?.isActive && (
+          <Testimonials data={therapies?.[0]?.testimonial} loading={therapiesLoading} />
+        )
+      }
+      {
+        therapies?.[0]?.get_in_touch?.isActive && (
+          <GetInTouch data={therapies?.[0]?.get_in_touch} loading={therapiesLoading} />
+        )
+      }
+      {
+        therapies?.[0]?.trials?.isActive && (
+          <Research data={therapies?.[0]?.trials} loading={therapiesLoading} />
+        )
+      }
+      {
+        therapies?.[0]?.study && Array.isArray(therapies?.[0]?.study) && therapies?.[0]?.study?.length > 0 && (
+          <Transcend data={therapies?.[0]?.study} loading={therapiesLoading} />
+        )
+      }
+      {
+        therapies?.[0]?.resources?.isActive && (
+          <Resources sectionClass="treatment__resource" data={therapies?.[0]?.resources} loading={therapiesLoading} />
+        )
+      }
       <Footer />
     </div>
   );
@@ -76,4 +120,4 @@ const sideRight = {
   visible: { opacity: 1, x: 0 },
 };
 
-export default TreatmentDetailPage;
+export default TherapyPage;

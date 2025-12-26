@@ -4,47 +4,17 @@ import { Navigation } from "swiper/modules";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import { Link } from "react-router-dom";
-const list = [
-  {
-    id: 1,
-    title: "CAR T Cell therapy clinical trials",
-  },
-  {
-    id: 2,
-    title: "Clinical trial for BALL CAR T-Cell therapy",
-  },
-  {
-    id: 3,
-    title: "CAR T Cell therapy trials for multiple myeloma",
-  },
-  {
-    id: 4,
-    title: "CAR T-Cell therapy clinical trials for Immune thrombocytopenia",
-  },
-  {
-    id: 5,
-    title: "CAR T Cell therapy clinical trials",
-  },
-  {
-    id: 6,
-    title: "Clinical trial for BALL CAR T-Cell therapy",
-  },
-  {
-    id: 7,
-    title: "CAR T Cell therapy trials for multiple myeloma",
-  },
-  {
-    id: 8,
-    title: "CAR T-Cell therapy clinical trials for Immune thrombocytopenia",
-  },
-];
-const Research = () => {
+
+const Research = ({ data, loading }) => {
   const carouselRef = useRef(null);
-  const swiperContainerRef = useRef(null);
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
+
+  if (loading || !data?.isActive || !data?.clinical_trials || !Array.isArray(data?.clinical_trials) || data?.clinical_trials?.length === 0) {
+    return null;
+  }
 
   return (
     <>
@@ -54,10 +24,14 @@ const Research = () => {
             <div className="row">
               <div className="col-lg-11 col-xl-10">
                 <div className="commContent_wrap commContent_new">
-                  <p className="contentLabel">Global Breakthroughs</p>
-                  <h3 className="title-3">
-                    Ongoing Clinical Trials & Research
-                  </h3>
+                  {data?.heading && (
+                    <p className="contentLabel">{data?.heading}</p>
+                  )}
+                  {data?.subHeading && (
+                    <h3 className="title-3">
+                      {data?.subHeading}
+                    </h3>
+                  )}
                 </div>
               </div>
             </div>
@@ -84,15 +58,18 @@ const Research = () => {
               }}
               style={{ overflow: "visible" }}
             >
-              {list.map((item) => {
+              {data?.clinical_trials?.map((item) => {
+                if (!item?.slug) return null;
                 return (
-                  <SwiperSlide key={item.id}>
+                  <SwiperSlide key={item?.id || item?.documentId}>
                     <div className="card">
                       <div className="card__overlay"></div>
                       <div className="card__body">
-                        <h4 className="card__title">{item?.title}</h4>
+                        {item?.name && (
+                          <h4 className="card__title">{item?.name}</h4>
+                        )}
                         <div className="btn__holder">
-                          <Link className="btn btn-pink-solid" to="#">
+                          <Link className="btn btn-pink-solid" to={`/clinical-trials/${item?.slug}`}>
                             Explore
                           </Link>
                         </div>

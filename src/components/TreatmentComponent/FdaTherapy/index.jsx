@@ -1,14 +1,19 @@
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
+import { formatMedia } from "../../../utils/strapiHelpers";
 
-const FdaTherapy = ({ fadeIn, sideLeft, sideRight }) => {
+const FdaTherapy = ({ fadeIn, sideLeft, sideRight, data }) => {  
+  if (!data || !data?.isActive) {
+    return null;
+  }
+  
   return (
     <>
       <div className="fda__therapy__sec py-120">
         <div className="fda__therapy__bg">
           <img
-            src="./images/fda-bg.svg"
+            src={formatMedia(data?.backgroundImage)}
             width={1400}
             height={1200}
             alt="Fda Therapy"
@@ -19,12 +24,10 @@ const FdaTherapy = ({ fadeIn, sideLeft, sideRight }) => {
             <Col lg={10} xl={8}>
               <ScrollAnimationComponent animationVariants={fadeIn}>
                 <div className="commContent_wrap commContent_new text-center">
-                  <p className="contentLabel">Clinically Proven</p>
-                  <h3 className="title-3">FDA-Approved Therapy</h3>
+                  <p className="contentLabel">{data?.heading}</p>
+                  <h3 className="title-3">{data?.subHeading}</h3>
                   <div className="content__des">
-                    With a 100% track record in successful clinical trial
-                    placement, CancerFax ensures complete transparency and
-                    accountability.
+                    {data?.description_text}
                   </div>
                 </div>
               </ScrollAnimationComponent>
@@ -37,18 +40,16 @@ const FdaTherapy = ({ fadeIn, sideLeft, sideRight }) => {
                   <div className="therapy__item__content">
                     <div className="icon">
                       <img
-                        src="./images/fda-icon-01.svg"
+                        src={formatMedia(data?.proofs[0]?.icon)}
                         width={23}
                         height={23}
                         alt="icon"
                       />
                     </div>
-                    <h4 className="therapy__item__title">FDA Approval</h4>
+                    <h4 className="therapy__item__title">{data?.proofs[0]?.title}</h4>
                     <div className="therapy__item__des">
                       <p>
-                        In March 2024, the FDA granted accelerated approval for
-                        lisocabtagene maraleucel (Breyanzi) for adult patients
-                        with relapsed or refractory CLL.
+                        {data?.proofs[0]?.description_text}
                       </p>
                     </div>
                   </div>
@@ -59,17 +60,16 @@ const FdaTherapy = ({ fadeIn, sideLeft, sideRight }) => {
                   <div className="therapy__item__content">
                     <div className="icon">
                       <img
-                        src="./images/fda-icon-01.svg"
+                        src={formatMedia(data?.proofs[1]?.icon)}
                         width={23}
                         height={23}
                         alt="icon"
                       />
                     </div>
-                    <h4 className="therapy__item__title">Success Rates</h4>
+                    <h4 className="therapy__item__title">{data?.proofs[1]?.title}</h4>
                     <div className="therapy__item__des">
                       <p>
-                        Studies show up to 60% complete remission in eligible
-                        patients with relapsed/refractory CLL.
+                        {data?.proofs[1]?.description_text}
                       </p>
                     </div>
                   </div>
@@ -79,7 +79,7 @@ const FdaTherapy = ({ fadeIn, sideLeft, sideRight }) => {
             <div className="ratio__holder">
               <div className="ratio">
                 <ScrollAnimationComponent animationVariants={fadeIn}>
-                  <img src="./images/approved-thumb.png" alt="icon" />
+                  <img src={formatMedia(data?.foregroundImage)} alt="icon" />
                 </ScrollAnimationComponent>
               </div>
             </div>

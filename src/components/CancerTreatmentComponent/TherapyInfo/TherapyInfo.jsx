@@ -1,13 +1,18 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 
-const TherapyInfo = () => {
-
+const TherapyInfo = ({ data }) => {
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
+
+  if (!data?.isActive) {
+    return null;
+  }
+
+  const steps = Array.isArray(data?.steps) ? data.steps : [];
 
   return (
       <section className='therapyInfo_sec py-120'>
@@ -15,55 +20,48 @@ const TherapyInfo = () => {
           <ScrollAnimationComponent animationVariants={fadeIn}>
           <TopSection>
             <LeftContent className='commContent_wrap'>
-              <h3 className='title-3 text_theme_dark'>Understanding CRISPR Gene Therapy for Beta-Thalassemia</h3>
+              {data?.heading && (
+                <h3 className='title-3 text_theme_dark'>
+                  {data.heading}
+                </h3>
+              )}
             </LeftContent>
             
-            <RightContent className='commContent_wrap'>
-              <p className='text-16'>
-                Here’s a simplified explanation of what happened:
-              </p>
-            </RightContent>
+            {(data?.subHeading || data?.description_text) && (
+              <RightContent className='commContent_wrap'>
+                <p className='text-16'>
+                  {data.subHeading || data.description_text}
+                </p>
+              </RightContent>
+            )}
           </TopSection>
 
-          <div className="row g-4">
-            <div className="col-sm-6 col-md-6 col-lg-3">
-              <TherapyInfoCard>
-                <StepContent>
-                  <StepTitle>Targeting the Genetic Switch</StepTitle>
-                  <StepDescription>CRISPR precisely edits the BCL11A enhancer in blood stem cells — the key gene controlling fetal hemoglobin production.</StepDescription>
-                </StepContent>
-              </TherapyInfoCard>
+          {steps.length > 0 && (
+            <div className="row g-4">
+              {steps.map((step) => {
+                const title = step?.title;
+                const description = step?.heading || step?.description_text;
+
+                if (!title && !description) return null;
+
+                return (
+                  <div
+                    className="col-sm-6 col-md-6 col-lg-3"
+                    key={step.id || title}
+                  >
+                    <TherapyInfoCard>
+                      <StepContent>
+                        {title && <StepTitle>{title}</StepTitle>}
+                        {description && (
+                          <StepDescription>{description}</StepDescription>
+                        )}
+                      </StepContent>
+                    </TherapyInfoCard>
+                  </div>
+                );
+              })}
             </div>
-            <div className="col-sm-6 col-md-6 col-lg-3">
-              <TherapyInfoCard>
-                <StepContent>
-                  <StepTitle>Boosting Fetal Hemoglobin (HbF)</StepTitle>
-                  <StepDescription>
-                    Once edited, the body naturally produces more fetal hemoglobin, which carries oxygen efficiently and replaces faulty adult hemoglobin.
-                  </StepDescription>
-                </StepContent>
-              </TherapyInfoCard>
-            </div>
-            <div className="col-sm-6 col-md-6 col-lg-3">
-              <TherapyInfoCard>
-                <StepContent>
-                  <StepTitle>Ending Dependence on Transfusions</StepTitle>
-                  <StepDescription>
-                    Higher HbF levels mean patients can maintain healthy blood counts without regular transfusions — a life-changing milestone.
-                  </StepDescription>
-                </StepContent>
-              </TherapyInfoCard>
-            </div>
-            <div className="col-sm-6 col-md-6 col-lg-3">
-              <TherapyInfoCard>
-                <StepContent>
-                  <StepTitle>Ending Dependence on Transfusions</StepTitle>
-                  <StepDescription>
-                    This breakthrough offers a curative path for beta-thalassemia and sickle-cell patients, even without a matched stem cell donor.                  </StepDescription>
-                </StepContent>
-              </TherapyInfoCard>
-            </div>
-          </div>
+          )}
           </ScrollAnimationComponent>
         </div>
       </section>

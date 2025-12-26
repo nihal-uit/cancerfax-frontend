@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { getMediaUrl } from "../../services/api";
+import { formatMedia } from "../../utils/strapiHelpers";
 import Marquee from "react-fast-marquee";
 
 const Header = styled.div`
@@ -178,24 +178,19 @@ const StaticCard = styled.div`
   }
 `;
 
-const HospitalInnovationInsights = ( { data: hospitalInnovationInsightsSection }) => {
+const HospitalInnovationInsights = ({ componentData, data }) => {
+  const insightsData = componentData || data;
+
+  if (!insightsData) {
+    return null;
+  }
+
   const shape = ["rounded-left", "rounded-center", "rounded-right"];
+  const imagesList = insightsData?.media_galary || [];
 
-  const content = hospitalInnovationInsightsSection ? {
-    label: hospitalInnovationInsightsSection.heading || '',
-    title: hospitalInnovationInsightsSection.subHeading || '',
-    description: hospitalInnovationInsightsSection.description || '',
-    images: hospitalInnovationInsightsSection.media_galary || [],
-  } : {};
-
-  const imagesList = Array.isArray(content.images) && content.images.length > 0 ? content.images : [];
-  const staticImagesList = Array.isArray(content.staticImages) && content.staticImages.length > 0 ? content.staticImages : [];
-
-  const getImageUrl = (image) => {
-    if (!image) return null;
-    if (image?.image) return getMediaUrl(image.image);
-    return getMediaUrl(image);
-  };
+  if (imagesList.length === 0) {
+    return null;
+  }
 
   const duplicatedImages = [...imagesList, ...imagesList];
 
@@ -204,11 +199,13 @@ const HospitalInnovationInsights = ( { data: hospitalInnovationInsightsSection }
       <div className="containerWrapper">
         <Header className="commContent_wrap content-gap-40">
           <Label className="contentLabel text_theme_dark">
-            {content.label}
+            {insightsData?.heading || ''}
           </Label>
-          <Title className="title-3 text_theme_dark">{content.title}</Title>
+          <Title className="title-3 text_theme_dark">
+            {insightsData?.subHeading || ''}
+          </Title>
           <Description className="text-16 text_theme_dark">
-            {content.description}
+            {insightsData?.description_text || ''}
           </Description>
         </Header>
       </div>
@@ -223,53 +220,21 @@ const HospitalInnovationInsights = ( { data: hospitalInnovationInsightsSection }
         >
           <ImagesGrid>
             {duplicatedImages.map((image, index) => {
-              const imageUrl = getImageUrl(image);
+              const imageUrl = formatMedia(image);
               const shapeClass = shape[index % 3] || "rounded-center";
               return (
-                <ImageCard key={`${image.id}-${index}`} className={shapeClass}>
+                <ImageCard key={`${image?.id || image?.documentId || index}-${index}`} className={shapeClass}>
                   {imageUrl ? (
                     <Image
                       src={imageUrl}
-                      alt={image.alt || "Hospital network"}
+                      alt={image?.alternativeText || "Hospital network"}
                     />
-                  ) : (
-                    <ImagePlaceholder>Image Placeholder</ImagePlaceholder>
-                  )}
+                  ) : null}
                 </ImageCard>
               );
             })}
           </ImagesGrid>
         </Marquee>
-
-        {staticImagesList.length > 0 && (
-          <Marquee
-            pauseOnHover={true}
-            speed={60}
-            gradient={true}
-            autoFill={true}
-            direction={"left"}
-            gradientColor={"#F8F8F8"}
-          >
-            <ImagesGrid>
-              {staticImagesList.map((image, index) => {
-                const imageUrl = getImageUrl(image);
-                const shapeClass = shape[index % 3] || "rounded-center";
-                return (
-                  <StaticCard key={image.id} className={shapeClass}>
-                    {imageUrl ? (
-                      <Image
-                        src={imageUrl}
-                        alt={image.alt || "Hospital network"}
-                      />
-                    ) : (
-                      <ImagePlaceholder>Image Placeholder</ImagePlaceholder>
-                    )}
-                  </StaticCard>
-                );
-              })}
-            </ImagesGrid>
-          </Marquee>
-        )}
       </div>
     </section>
   );

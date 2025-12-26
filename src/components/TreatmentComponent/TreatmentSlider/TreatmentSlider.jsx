@@ -6,9 +6,16 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, EffectFade } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
+import { formatMedia } from '../../../utils/strapiHelpers';
 
-const TreatmentSlider = ({ sectionClass, data, loading }) => {
-  if (loading) {
+const TreatmentSlider = ({ sectionClass, data }) => {
+  if (!data?.isActive) {
+    return null;
+  }
+
+  const slides = data?.therapies || [];
+  
+  if (!slides || slides.length === 0) {
     return null;
   }
 
@@ -27,27 +34,32 @@ const TreatmentSlider = ({ sectionClass, data, loading }) => {
               prevEl: '.customPrev',
             }}
           >
-            {data?.treatments?.length > 0 &&
-              data?.treatments?.map((treatment) => (
-                <SwiperSlide key={treatment.id}>
+            {slides.map((therapy) => (
+                <SwiperSlide key={therapy?.id || therapy?.documentId}>
                   <div className='hospital_info_slider'>
-                    <img
-                      src='../images/young-bald-woman-embracing-her-beauty-while-relaxing-cozy-couch-bright-living-room 1.png'
-                      alt=''
-                    />
+                    {therapy?.hero?.featuredImage && (
+                      <img
+                        src={formatMedia(therapy?.hero?.featuredImage)}
+                        alt={therapy?.hero?.featuredImage?.alternativeText || ''}
+                      />
+                    )}
                     <div className='hospital_info_slider_content'>
                       <div className='inner_container'>
                         <ScrollAnimationComponent animationVariants={fadeIn}>
                           <div className='commContent_wrap'>
-                            <h3>{treatment?.heading}</h3>
-                            <p>{treatment?.description_text}</p>
-                            {treatment?.CTAs?.length > 0 && (
+                            {therapy?.hero?.heading && (
+                              <h3>{therapy?.hero?.heading}</h3>
+                            )}
+                            {therapy?.hero?.subHeading && (
+                              <p>{therapy?.hero?.subHeading}</p>
+                            )}
+                            {therapy?.hero?.cta?.URL && (
                               <Link
-                                to={treatment?.CTAs?.URL}
-                                target={treatment?.CTAs?.target || '_blank'}
+                                to={therapy?.hero?.cta?.URL || ''}
+                                target={therapy?.hero?.cta?.target || '_blank'}
                                 className='btn btn-pink-solid'
                               >
-                                {treatment?.CTAs?.text}
+                                {therapy?.hero?.cta?.text || ''}
                               </Link>
                             )}
                           </div>

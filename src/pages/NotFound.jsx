@@ -166,11 +166,11 @@ const NotFound = ({ message = "The page you're looking for isn't available right
         <ActionButton href="/">Return To Homepage</ActionButton>
         <SupportLink href="/contact">Contact Support if you need further assistance.</SupportLink>
       </Content>
-      {shouldShowFooter && (
+      {/* {shouldShowFooter && (
         <FooterWrapper>
           <Footer />
         </FooterWrapper>
-      )}
+      )} */}
     </PageWrapper>
   );
 };

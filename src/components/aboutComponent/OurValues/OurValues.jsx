@@ -12,7 +12,15 @@ const OurValues = ( { data } ) => {
             <ScrollAnimationComponent animationVariants={slideLeft}>
               <div className="mission_image_wrap">
                 <div className='ratio'>
-                  <BackgroundVideo className="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/our-values-video-poster.jpg">
+                  <BackgroundVideo 
+                    className="video" 
+                    preload="none" 
+                    autoPlay 
+                    loop 
+                    muted 
+                    playsInline
+                    poster="../videos/our-values-video-poster.jpg"
+                  >
                   <source src="../videos/our-values-video.mp4" type="video/mp4" />
                   </BackgroundVideo>
                 </div>

@@ -1,20 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
+import { getMediaUrl } from '../../services/api';
 
-const DrugsDetailsHero = ({ 
-  drugName = "Acetaminophen",
-  drugDescription = "Associate Chief Physician & GCP center secretary , Experience: 25 Years",
-  backgroundImage = "../images/drugs-details-hero-img.jpg",
-  onShare,
-}) => {
+const DrugsDetailsHero = ({ data}) => {
   return (
     <section className='homeHero_sec'>
 
       <div className='home-hero-banner hospital_details_hero'>
         <div className='ratio'>
           <BackgroundImage
-            src={backgroundImage}
-            alt={drugName}
+            src={getMediaUrl(data?.featuredImage)}
+            alt={data?.heading || ''}
             loading="lazy"
           />
         </div>
@@ -25,11 +21,11 @@ const DrugsDetailsHero = ({
           <HeroContentGrid>
             <TopRow>
               <div>
-                <HospitalName className='title-1 mb-3'>{drugName}</HospitalName>
-                <Description className='text-16'>{drugDescription}</Description>
+                <HospitalName className='title-1 mb-3'>{data?.heading}</HospitalName>
+                <Description className='text-16'>{data?.subHeading}</Description>
               </div>
               
-              <IconButton onClick={onShare}>
+              <IconButton >
                 <Icon 
                   src="../images/icon-share.svg"
                   alt=""

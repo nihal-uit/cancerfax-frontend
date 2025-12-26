@@ -2,6 +2,8 @@ import React from "react";
 import { Col, Image, Ratio, Row } from "react-bootstrap";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
+import { formatMedia, formatRichText, renderRichTextWithImages } from "../../utils/strapiHelpers";
+
 const fadeIn = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0 },
@@ -12,9 +14,17 @@ const sideRight = {
   visible: { opacity: 1, x: 0 },
 };
 
-const ClinicalPlan = () => {
+const ClinicalPlan = ({ componentData, data }) => {
+  const pricingData = componentData || data;
+
+  if (!pricingData) {
+    return null;
+  }
+
+  const features = pricingData?.features || [];
+  const imageUrl = formatMedia(pricingData?.image);
+
   return (
-    <>
       <section className="clinical__plan__sec py-120 bg-white">
         <div className="containerWrapper z-2 position-relative">
           <Row>
@@ -22,63 +32,55 @@ const ClinicalPlan = () => {
               <ContentHolder>
                 <ScrollAnimationComponent animationVariants={fadeIn}>
                   <div className="commContent_wrap commContent_new">
-                    <p className="contentLabel">Pricing Plans</p>
+                  <p className="contentLabel">{pricingData?.heading || ''}</p>
                     <h3 className="title-3">
-                      Transparent Pricing for Clinical Trial Coordination
+                    {pricingData?.subHeading || ''}
                     </h3>
                     <div className="content__des text_theme_dark">
-                      <p>
-                        With a 100% track record in successful clinical trial
-                        placement, CancerFax ensures complete transparency and
-                        accountability.
-                      </p>
+                    <p>{pricingData?.description_text || ''}</p>
                     </div>
                   </div>
                 </ScrollAnimationComponent>
+              {features.length > 0 && (
                 <ScrollAnimationComponent animationVariants={fadeIn}>
                   <div className="list__holder">
                     <ul>
-                      <li>
-                        <h5 className="list__title">$10,000 USD</h5>
-                        <p>
-                          For clinical trial recruitment in the USA and China.
-                        </p>
+                      {features.map((feature) => (
+                        <li key={feature?.id}>
+                          <h5 className="list__title">{feature?.title || ''}</h5>
+                          <p>{feature?.description_text || ''}</p>
                       </li>
-                      <li>
-                        <h5 className="list__title">$3,000 USD</h5>
-                        <p>
-                          Payable at initiation; balance upon final recruitment.
-                        </p>
-                      </li>
+                      ))}
                     </ul>
                   </div>
                 </ScrollAnimationComponent>
+              )}
+              {pricingData?.policyMessage_block && (
                 <ScrollAnimationComponent animationVariants={fadeIn}>
                   <div className="note__holder">
-                    <p>
-                      <strong>Refund Policy:</strong> If recruitment is
-                      unsuccessful, $1,000 USD is refunded to the patient.
-                    </p>
+                    {renderRichTextWithImages(pricingData?.policyMessage_block)}
                   </div>
                 </ScrollAnimationComponent>
+              )}
               </ContentHolder>
             </Col>
+          {imageUrl && (
             <Col lg={6}>
               <FigureHolder>
                 <ScrollAnimationComponent animationVariants={sideRight}>
                   <Ratio aspectRatio={"16x9"}>
                     <Image
-                      src="./images/clinical-plan-01.png"
-                      alt="Clinical Plan"
+                      src={imageUrl}
+                      alt={pricingData?.image?.alternativeText || "Clinical Plan"}
                     />
                   </Ratio>
                 </ScrollAnimationComponent>
               </FigureHolder>
             </Col>
+          )}
           </Row>
         </div>
       </section>
-    </>
   );
 };
 const ContentHolder = styled.div`

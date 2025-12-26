@@ -13,16 +13,12 @@ const ExploreButton = styled(Link)`
   }
 `;
 
-const HospitalHero = ({ data: hospitalHeroSection }) => {
-  const heroContent = hospitalHeroSection
-    ? {
-        title: hospitalHeroSection.heading || '',
-        description: formatRichText(hospitalHeroSection.description_text) || '',
-        buttonText: hospitalHeroSection.CTAs?.text || '',
-        buttonLink: hospitalHeroSection.CTAs?.URL || '',
-        buttonTarget: hospitalHeroSection.CTAs?.target || '',
-      }
-    : {};
+const HospitalHero = ({ componentData, data }) => {
+  const heroData = componentData || data;
+
+  if (!heroData) {
+    return null;
+  }
 
   return (
     <div className='others_hero_content comm_hero_pt'>
@@ -30,7 +26,9 @@ const HospitalHero = ({ data: hospitalHeroSection }) => {
         <div className='hero_content_row'>
           <div className='hero_content_left commContent_wrap'>
             <ScrollAnimationComponent animationVariants={slideLeft}>
-              <h1 className='title-1 text_theme_dark'>{heroContent.title}</h1>
+              <h1 className='title-1 text_theme_dark'>
+                {heroData?.heading || ''}
+              </h1>
             </ScrollAnimationComponent>
           </div>
 
@@ -38,15 +36,17 @@ const HospitalHero = ({ data: hospitalHeroSection }) => {
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className='commContent_wrap content-gap-40'>
                 <p className='text-16 text_theme_dark'>
-                  {heroContent.description}
+                  {formatRichText(heroData?.description_text) || ''}
                 </p>
-                <ExploreButton
-                  className='btn btn-pink-solid'
-                  to={heroContent.buttonLink}
-                  target={heroContent.buttonTarget}
-                >
-                  {heroContent.buttonText}
-                </ExploreButton>
+                {heroData?.cta?.text && (
+                  <ExploreButton
+                    className='btn btn-pink-solid'
+                    to={heroData?.cta?.URL || '#'}
+                    target={heroData?.cta?.target || '_self'}
+                  >
+                    {heroData?.cta?.text}
+                  </ExploreButton>
+                )}
               </div>
             </ScrollAnimationComponent>
           </div>

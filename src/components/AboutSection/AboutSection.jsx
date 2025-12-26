@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getMediaUrl } from '../../services/api';
-import { hideFallbacks } from '../../utils/config';
-import { getSectionData, formatRichText } from '../../utils/strapiHelpers';
+import { formatMedia } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { Link } from 'react-router-dom';
 
 // Custom hook for counter animation
 const useCounterAnimation = (targetValue, duration = 2000) => {
@@ -122,6 +120,197 @@ const useCounterAnimation = (targetValue, duration = 2000) => {
   };
 };
 
+// Counter component that uses the animation hook
+const AnimatedStat = ({
+  number,
+  label,
+  isLarge = false,
+  labelSize = 'small',
+}) => {
+  const { displayValue, ref } = useCounterAnimation(number, 2000);
+
+  return (
+    <StatCard ref={ref} className={isLarge ? 'content-large' : 'content-small'}>
+      <StatNumber $size={isLarge ? 'large' : 'small'}>
+        {displayValue}
+      </StatNumber>
+      <StatLabel $labelSize={labelSize}>{label}</StatLabel>
+    </StatCard>
+  );
+};
+
+const AboutSection = ({ componentData, data }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef(null);
+
+  const handlePlayVideo = () => {
+    setIsPlaying(true);
+  };
+
+  const handleCloseVideo = () => {
+    setIsPlaying(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
+
+  useEffect(() => {
+    if (isPlaying && videoRef.current) {
+      videoRef.current.play().catch((err) => {
+        console.error('Error playing video:', err);
+      });
+    }
+  }, [isPlaying]);
+
+  const slideLeft = {
+    hidden: { x: -100, opacity: 0 },
+    visible: { x: 0, opacity: 1 },
+  };
+
+  const slideRight = {
+    hidden: { x: 100, opacity: 0 },
+    visible: { x: 0, opacity: 1 },
+  };
+
+  const aboutData = componentData || data;
+
+  if (!aboutData) {
+    return null;
+  }
+
+  const statistics =
+    aboutData?.statistic?.length > 0
+      ? aboutData?.statistic
+        .map((stat, index) => {
+          return {
+            number: stat?.value || '',
+            label: stat?.label || '',
+            isLarge: index === 0 ? true : false,
+            labelSize: index === 0 ? 'large' : 'small',
+          };
+        })
+        .filter((stat) => stat.number)
+      : [];
+
+  // Use formatMedia to get the complete URL with base origin
+  const videoUrl = formatMedia(aboutData?.video);
+  const imageUrl = formatMedia(aboutData?.image);
+
+  return (
+    <section id='about' className='about_sec py-120'>
+      <div className='containerWrapper'>
+        <div className='about_row'>
+          <LeftSection>
+            <ScrollAnimationComponent animationVariants={slideLeft}>
+              <div className='commContent_wrap about_left_content'>
+                <Label className='contentLabel'>
+                  {aboutData?.heading || ''}
+                </Label>
+                <Title className='title-3'>{aboutData?.subHeading || ''}</Title>
+                <Description className='text-16'>
+                  {aboutData?.description_text || ''}
+                </Description>
+                {aboutData?.cta?.text && (
+                  <CTAButton
+                    className='btn btn-pink-solid'
+                    to={aboutData?.cta?.URL || '#'}
+                    target={aboutData?.cta?.target || '_self'}
+                  >
+                    {aboutData?.cta?.text}
+                  </CTAButton>
+                )}
+              </div>
+
+              <ImageContainer>
+                {videoUrl ? (
+                  <>
+                    <video
+                      preload='none'
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      poster={imageUrl}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    >
+                      <source src={videoUrl} type='video/mp4' />
+                      Your browser does not support the video tag.
+                    </video>
+                    <PlayButtonWrapper>
+                      <PlayButton
+                        onClick={handlePlayVideo}
+                        aria-label='Play video testimonials'
+                        type='button'
+                      >
+                        <PlayIcon
+                          viewBox='0 0 24 24'
+                          xmlns='http://www.w3.org/2000/svg'
+                          width='100%'
+                          height='100%'
+                        >
+                          <path d='M8 5v14l11-7z' fill='#FF1493' />
+                        </PlayIcon>
+                      </PlayButton>
+                    </PlayButtonWrapper>
+                  </>
+                ) : (
+                  <img src={imageUrl} alt='CancerFax Care' />
+                )}
+              </ImageContainer>
+
+
+            </ScrollAnimationComponent>
+              {isPlaying && videoUrl && (
+                <VideoModal onClick={handleCloseVideo}>
+                  <VideoModalContent onClick={(e) => e.stopPropagation()}>
+                    <CloseButton onClick={handleCloseVideo} aria-label='Close video'>
+                      <CloseIcon viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+                        <path
+                          d='M18 6L6 18M6 6l12 12'
+                          stroke='currentColor'
+                          strokeWidth='2'
+                          strokeLinecap='round'
+                        />
+                      </CloseIcon>
+                    </CloseButton>
+                    <VideoPlayer
+                      ref={videoRef}
+                      src={videoUrl}
+                      controls
+                      autoPlay
+                      playsInline
+                    />
+                  </VideoModalContent>
+                </VideoModal>
+              )}
+          </LeftSection>
+
+          <RightSection>
+            <ScrollAnimationComponent animationVariants={slideRight}>
+              <StatisticsGrid>
+                {statistics.map((stat, index) => (
+                  <AnimatedStat
+                    key={index}
+                    number={stat.number}
+                    label={stat.label}
+                    isLarge={stat.isLarge}
+                    labelSize={stat.labelSize}
+                  />
+                ))}
+              </StatisticsGrid>
+            </ScrollAnimationComponent>
+          </RightSection>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const LeftSection = styled.div`
   flex: 1;
   display: flex;
@@ -140,7 +329,7 @@ const Description = styled.p`
   color: ${(props) => props.theme.colors.primary};
 `;
 
-const CTAButton = styled.button`
+const CTAButton = styled(Link)`
   background: ${(props) => props.theme.colors.pink};
   color: ${(props) => props.theme.colors.white};
   max-width: 283px;
@@ -168,7 +357,7 @@ const ImageContainer = styled.div`
   video {
     display: block;
   }
-  
+
   @media (max-width: 1024px) {
     max-width: 100%;
     height: 320px;
@@ -181,7 +370,7 @@ const RightSection = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 0;
-  
+
   @media (max-width: 1024px) {
     width: 100%;
     margin-top: 0;
@@ -267,311 +456,206 @@ const StatLabel = styled.p`
   }
 `;
 
-// Counter component that uses the animation hook
-const AnimatedStat = ({
-  number,
-  label,
-  isLarge = false,
-  labelSize = 'small',
-}) => {
-  const { displayValue, ref } = useCounterAnimation(number, 2000);
+const PlayButtonWrapper = styled.div`
+  position: absolute;
+  top: 50%;
+  right: 220px;
+  transform: translateY(-50%);
+  z-index: 10;
 
-  return (
-    <StatCard ref={ref} className={isLarge ? 'content-large' : 'content-small'}>
-      <StatNumber $size={isLarge ? 'large' : 'small'}>
-        {displayValue}
-      </StatNumber>
-      <StatLabel $labelSize={labelSize}>{label}</StatLabel>
-    </StatCard>
-  );
-};
-
-const AboutSection = ({ componentData, pageData }) => {
-  const slideLeft = {
-    hidden: { x: -100, opacity: 0 },
-    visible: { x: 0, opacity: 1 },
-  };
-
-  const slideRight = {
-    hidden: { x: 100, opacity: 0 },
-    visible: { x: 0, opacity: 1 },
-  };
-
-  // Get data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector((state) => state.global?.data);
-  const globalLoading = useSelector((state) => state.global?.loading);
-  // Legacy Redux state (kept for fallback, but not actively used)
-  const { content } = useSelector((state) => state.about);
-
-  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
-  // This check must come before computing any fallback data
-  if (globalLoading) {
-    return null;
+  @media (max-width: 1200px) {
+    right: 150px;
   }
 
-  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
-  // If componentData is provided, use it directly; otherwise get from globalData
-  const aboutSection = componentData || getSectionData(globalData, 'about');
-  const shouldHideMissingAbout = hideFallbacks && !aboutSection;
-
-  // For statistics, if we have pageData, try to get statistics from page's dynamic zone
-  // Otherwise fall back to global data
-  let statisticsSection = null;
-  if (pageData?.dynamicZone) {
-    statisticsSection = pageData.dynamicZone.find(
-      (item) => item.__component === 'dynamic-zone.statistics'
-    );
-  }
-  if (!statisticsSection) {
-    statisticsSection = getSectionData(globalData, 'statistics');
+  @media (max-width: 1024px) {
+    right: 100px;
   }
 
-  // Debug: Log to check if global data exists
-  if (globalData && !globalLoading) {
-    console.log('AboutSection: globalData loaded', {
-      hasDynamicZone: !!globalData.dynamicZone,
-      dynamicZoneLength: globalData.dynamicZone?.length,
-      aboutSection: !!aboutSection,
-      statisticsSection: !!statisticsSection,
-      aboutSectionData: aboutSection
-        ? {
-            heading: aboutSection.heading,
-            subHeading: aboutSection.subHeading,
-            hasImage: !!aboutSection.image,
-            hasVideo: !!aboutSection.video || !!aboutSection.video_url,
-            hasContent: !!aboutSection.content,
-          }
-        : null,
-    });
+  @media (max-width: 768px) {
+    position: absolute;
+    top: auto;
+    bottom: 60px;
+    right: 50%;
+    transform: translateX(50%);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
   }
 
-  // Extract statistics: prioritize values stored on the about section itself, then fall back to dedicated statistics component
-  const aboutStats =
-    Array.isArray(aboutSection?.statistic) && aboutSection.statistic.length > 0
-      ? aboutSection.statistic
-      : Array.isArray(aboutSection?.Statistics) &&
-        aboutSection.Statistics.length > 0
-      ? aboutSection.Statistics
-      : Array.isArray(aboutSection?.statistics) &&
-        aboutSection.statistics.length > 0
-      ? aboutSection.statistics
-      : [];
+  @media (max-width: 480px) {
+    bottom: 40px;
+    right: 50%;
+    transform: translateX(50%);
+  }
+`;
 
-  const statisticsStats =
-    Array.isArray(statisticsSection?.Statistics) &&
-    statisticsSection.Statistics.length > 0
-      ? statisticsSection.Statistics
-      : Array.isArray(statisticsSection?.statistic) &&
-        statisticsSection.statistic.length > 0
-      ? statisticsSection.statistic
-      : Array.isArray(statisticsSection?.statistics) &&
-        statisticsSection.statistics.length > 0
-      ? statisticsSection.statistics
-      : [];
+const PlayButton = styled.button`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: white;
+  border: 2px dashed rgba(255, 255, 255, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 
-  const globalStats = aboutStats.length > 0 ? aboutStats : statisticsStats;
+  &::before {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 2px dashed rgba(255, 255, 255, 1);
+    border-radius: 50%;
+    animation: rotate 20s linear infinite;
+  }
 
-  // Default statistics - don't show while loading
-  const defaultStatistics = hideFallbacks
-    ? []
-    : [
-        {
-          number: '10,000k+',
-          label: 'Patients guided globally',
-          isLarge: true,
-          labelSize: 'large',
-        },
-        {
-          number: '98%',
-          label: 'Patient Satisfaction Rate',
-          isLarge: false,
-          labelSize: 'small',
-        },
-        {
-          number: '250+',
-          label: 'Clinical Trials Accessed',
-          isLarge: false,
-          labelSize: 'small',
-        },
-        {
-          number: '100+',
-          label: 'Partner Hospitals Globally',
-          isLarge: false,
-          labelSize: 'small',
-        },
-      ];
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
 
-  // Format global statistics or use defaults - render ALL items dynamically
-  const statistics =
-    globalStats.length > 0
-      ? globalStats
-          .map((stat, index) => {
-            const statData = stat?.attributes || stat;
-            return {
-              number:
-                statData?.number ||
-                statData?.value ||
-                defaultStatistics[index]?.number ||
-                '',
-              label:
-                statData?.label ||
-                statData?.title ||
-                defaultStatistics[index]?.label ||
-                '',
-              isLarge:
-                statData?.isLarge !== undefined
-                  ? statData.isLarge
-                  : defaultStatistics[index]?.isLarge || false,
-              labelSize:
-                statData?.labelSize ||
-                defaultStatistics[index]?.labelSize ||
-                'small',
-            };
-          })
-          .filter((stat) => stat.number) // Filter out empty stats
-      : defaultStatistics;
-  const shouldHideStatistics = hideFallbacks && statistics.length === 0;
+  &:active {
+    transform: scale(0.98);
+  }
 
-  const resolveMediaUrl = (media) => {
-    if (!media) return null;
-    if (typeof media === 'string') return getMediaUrl(media);
-    if (Array.isArray(media)) {
-      const firstItem = media.find(Boolean);
-      return firstItem ? resolveMediaUrl(firstItem) : null;
+  @media (max-width: 1024px) {
+    width: 80px;
+    height: 80px;
+
+    &::before {
+      width: 130px;
+      height: 130px;
     }
-    return (
-      getMediaUrl(media?.url) ||
-      getMediaUrl(media?.data?.attributes?.url) ||
-      getMediaUrl(media?.attributes?.url) ||
-      getMediaUrl(media?.file?.url) ||
-      getMediaUrl(media?.video?.url) ||
-      null
-    );
-  };
-
-  // Get video and image from Strapi data or fallback
-  // Prioritize video so that it replaces the static image when available
-  const videoUrl =
-    resolveMediaUrl(aboutSection?.video) ||
-    resolveMediaUrl(aboutSection?.featuredVideo) ||
-    resolveMediaUrl(aboutSection?.videoFile) ||
-    resolveMediaUrl(aboutSection?.video_url) ||
-    resolveMediaUrl(aboutSection?.videoUrl);
-
-  const imageUrl =
-    resolveMediaUrl(aboutSection?.image) ||
-    resolveMediaUrl(content?.image) ||
-    (hideFallbacks
-      ? null
-      : 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800');
-  const shouldHideMedia = hideFallbacks && !imageUrl && !videoUrl;
-
-  // Map API fields: heading -> label, subHeading -> title, content -> description
-  // Extract button text from content (might be in content string or separate field)
-  const contentText =
-    formatRichText(aboutSection?.content) || aboutSection?.content || '';
-  const buttonMatch = contentText.match(/Know more about Cancerfax/i);
-  const descriptionText = contentText
-    .replace(/Know more about Cancerfax/i, '')
-    .trim();
-
-  // Use Strapi data if section exists, only use fallback if section doesn't exist at all
-  // Strapi provides: heading, subHeading, content, image, image_position, cta
-  const sectionLabel = hideFallbacks
-    ? aboutSection?.heading
-    : aboutSection?.heading || 'ABOUT CANCERFAX';
-  const sectionTitle = hideFallbacks
-    ? aboutSection?.subHeading
-    : aboutSection?.subHeading ||
-      'Global Reach. Personal Care. Proven Results.';
-  const sectionDescription = hideFallbacks
-    ? descriptionText || aboutSection?.description
-    : aboutSection
-    ? descriptionText ||
-      aboutSection.description ||
-      "At CancerFax, we're transforming the way patients discover and receive life-saving therapies, simplifying global care with science, technology, and trust."
-    : "At CancerFax, we're transforming the way patients discover and receive life-saving therapies, simplifying global care with science, technology, and trust.";
-  const buttonText = hideFallbacks
-    ? aboutSection?.cta?.text ||
-      (buttonMatch ? 'Know more about Cancerfax' : aboutSection?.button?.text)
-    : aboutSection
-    ? aboutSection.cta?.text ||
-      (buttonMatch
-        ? 'Know more about Cancerfax'
-        : aboutSection.button?.text || 'Know more about Cancerfax')
-    : 'Know more about Cancerfax';
-  const shouldHideContent = hideFallbacks && (!sectionLabel || !sectionTitle);
-
-  if (
-    shouldHideMissingAbout ||
-    shouldHideStatistics ||
-    shouldHideMedia ||
-    shouldHideContent
-  ) {
-    return null;
   }
 
-  return (
-    <section id='about' className='about_sec py-120'>
-      <div className='containerWrapper'>
-        <div className='about_row'>
-          <LeftSection>
-            <ScrollAnimationComponent animationVariants={slideLeft}>
-              <div className='commContent_wrap about_left_content'>
-                <Label className='contentLabel'>{sectionLabel}</Label>
-                <Title className='title-3'>{sectionTitle}</Title>
-                <Description className='text-16'>
-                  {sectionDescription}
-                </Description>
-                <CTAButton className='btn btn-pink-solid'>
-                  {buttonText}
-                </CTAButton>
-              </div>
+  @media (max-width: 575px) {
+    width: 70px;
+    height: 70px;
+    border-width: 3px;
 
-              <ImageContainer>
-                {videoUrl ? (
-                  <video
-                    src={videoUrl}
-                    preload='none'
-                    autoplay=''
-                    loop=''
-                    muted=''
-                    playsinline=''
-                    poster={imageUrl}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                ) : (
-                  <img src={imageUrl} alt='CancerFax Care' />
-                )}
-              </ImageContainer>
-            </ScrollAnimationComponent>
-          </LeftSection>
+    &::before {
+      width: 100px;
+      height: 100px;
+    }
+  }
 
-          <RightSection>
-            <ScrollAnimationComponent animationVariants={slideRight}>
-              <StatisticsGrid>
-                {statistics.map((stat, index) => (
-                  <AnimatedStat
-                    key={index}
-                    number={stat.number}
-                    label={stat.label}
-                    isLarge={stat.isLarge}
-                    labelSize={stat.labelSize}
-                  />
-                ))}
-              </StatisticsGrid>
-            </ScrollAnimationComponent>
-          </RightSection>
-        </div>
-      </div>
-    </section>
-  );
-};
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+const PlayIcon = styled.svg`
+  width: 36px;
+  height: 36px;
+  margin-left: 4px;
+  fill: #ff1493;
+  display: block;
+  z-index: 1;
+  position: relative;
+
+  @media (max-width: 768px) {
+    width: 32px;
+    height: 32px;
+  }
+
+  @media (max-width: 480px) {
+    width: 28px;
+    height: 28px;
+  }
+
+  @media (max-width: 360px) {
+    width: 24px;
+    height: 24px;
+  }
+`;
+
+const VideoModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+`;
+
+const VideoModalContent = styled.div`
+  position: relative;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 90vh;
+  cursor: default;
+
+  @media (max-width: 768px) {
+    width: 95%;
+    max-height: 85vh;
+  }
+`;
+
+const VideoPlayer = styled.video`
+  width: 100%;
+  height: auto;
+  max-height: 90vh;
+  border-radius: 8px;
+  outline: none;
+
+  @media (max-width: 768px) {
+    max-height: 85vh;
+  }
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: -50px;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10000;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 768px) {
+    top: -45px;
+    width: 36px;
+    height: 36px;
+  }
+`;
+
+const CloseIcon = styled.svg`
+  width: 24px;
+  height: 24px;
+  stroke: white;
+
+  @media (max-width: 768px) {
+    width: 20px;
+    height: 20px;
+  }
+`;
 
 export default AboutSection;

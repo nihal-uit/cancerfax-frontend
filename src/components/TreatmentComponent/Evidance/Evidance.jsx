@@ -1,12 +1,14 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "styled-components";
 import "./Evidance.scss";
 import Card from "react-bootstrap/Card";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
-import { getMediaUrl } from "../../../services/api";
+import { formatMedia } from "../../../utils/strapiHelpers";
 
 const Evidance = ({ data, loading }) => {
-  if (loading) return null;
+  if (loading || !data?.isActive) {
+    return null;
+  }
 
   return (
     <section className="evidance_sec py-120 pb-0" id="evidance">
@@ -19,98 +21,140 @@ const Evidance = ({ data, loading }) => {
         </ScrollAnimationComponent>
         <div className="grid__list__holder">
           <div className="grid__list">
-            <div className="grid__item">
-              <div className="card__list">
-                <Card className="border-0 ">
-                  <div className="card__header">
-                    <div className="card__title">{data?.card_1?.value}</div>
-                    <div className="card__icon">
-                      <img
-                        src={getMediaUrl(data?.card_1?.backgroundImage)}
-                        alt="Check Icon"
-                        width={32}
-                        height={32}
-                      />
+            {data?.card_1 && (
+              <div className="grid__item">
+                <div className="card__list">
+                  <Card className="border-0 ">
+                    <div className="card__header">
+                      {data?.card_1?.value && (
+                        <div className="card__title">{data?.card_1?.value}</div>
+                      )}
+                      {
+                        data?.card_1?.checkIcon && (
+                          <div className="card__icon">
+                            <img
+                              src={data?.card_1?.icon ? formatMedia(data?.card_1?.icon) : '../images/check-icon.svg'}
+                              alt="Check Icon"
+                              width={32}
+                              height={32}
+                            />
+                          </div>
+                        )
+                      }
                     </div>
-                  </div>
-                  <div className="card__body">
-                    <p>{data?.card_1?.description_text}</p>
-                  </div>
-                </Card>
-                <Card className="border-0 p-0">
-                  <div className="ratio h-100">
-                    <img
-                      src={getMediaUrl(data?.card_2?.backgroundImage)}
-                      alt="Evidance Image"
-                      width={100}
-                      height={100}
-                    />
-                  </div>
-                </Card>
-              </div>
-            </div>
-            <div className="grid__item">
-              <div className="card__list">
-                <Card className="border-0 p-0">
-                  <div className="ratio h-100">
-                    <img
-                      src={getMediaUrl(data?.card_3?.backgroundImage)}
-                      alt="Evidance Image"
-                      width={100}
-                      height={100}
-                    />
-                  </div>
-                  <div className="card__overlay text-center text-white">
-                    <div className="card__overlay__content">
-                      <div className="card__header justify-content-center">
-                        <div className="card__title">
-                          {data?.card_3?.value}
-                        </div>
-                      </div>
+                    {data?.card_1?.description_text && (
                       <div className="card__body">
-                        <p>{data?.card_3?.description_text}</p>
+                        <p>{data?.card_1?.description_text}</p>
+                      </div>
+                    )}
+                  </Card>
+                  {data?.card_2?.backgroundImage && (
+                    <Card className="border-0 p-0">
+                      <div className="ratio h-100">
+                        <img
+                          src={formatMedia(data?.card_2?.backgroundImage)}
+                          alt={data?.card_2?.backgroundImage?.alternativeText || "Evidance Image"}
+                          width={100}
+                          height={100}
+                        />
+                      </div>
+                    </Card>
+                  )}
+                </div>
+              </div>
+            )}
+            {data?.card_3 && (
+              <div className="grid__item">
+                <div className="card__list">
+                  <Card className="border-0 p-0">
+                    {data?.card_3?.backgroundImage && (
+                      <div className="ratio h-100">
+                        <img
+                          src={formatMedia(data?.card_3?.backgroundImage)}
+                          alt={data?.card_3?.backgroundImage?.alternativeText || "Evidance Image"}
+                          width={100}
+                          height={100}
+                        />
+                      </div>
+                    )}
+                    <div className="card__overlay text-center text-white">
+                      <div className="card__overlay__content">
+                        <div className="card__header justify-content-center">
+                          {data?.card_3?.value && (
+                            <div className="card__title">
+                              {data?.card_3?.value}
+                            </div>
+                          )}
+                        </div>
+                        {data?.card_3?.description_text && (
+                          <div className="card__body">
+                            <p>{data?.card_3?.description_text}</p>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                </div>
               </div>
-            </div>
-            <div className="grid__item">
-              <div className="card__list">
-                <Card className="border-0 bg-white">
-                  <div className="card__header">
-                    <div className="card__title">{data?.card_4?.value}</div>
-                    <div className="card__icon">
-                      <img
-                        src={getMediaUrl(data?.card_4?.icon)}
-                        alt="Check Icon"
-                        width={32}
-                        height={32}
-                      />
-                    </div>
-                  </div>
-                  <div className="card__body">
-                    <p>{data?.card_4?.description_text}</p>
-                  </div>
-                </Card>
-                <Card className="border-0 ">
-                  <div className="card__header">
-                    <div className="card__title">{data?.card_5?.value}</div>
-                    <div className="card__icon">
-                      <img
-                        src={getMediaUrl(data?.card_5?.icon)}
-                        alt="Check Icon"
-                        width={32}
-                        height={32}
-                      />
-                    </div>
-                  </div>
-                  <div className="card__body">
-                    <p>{data?.card_5?.description_text}</p>
-                  </div>
-                </Card>
+            )}
+            {(data?.card_4 || data?.card_5) && (
+              <div className="grid__item">
+                <div className="card__list">
+                  {data?.card_4 && (
+                    <Card className="border-0 bg-white">
+                      <div className="card__header">
+                        {data?.card_4?.value && (
+                          <div className="card__title">{data?.card_4?.value}</div>
+                        )}
+                        {
+                          data?.card_4?.checkIcon && (
+                            <div className="card__icon">
+                              <img
+                                src={data?.card_4?.icon ? formatMedia(data?.card_4?.icon) : '../images/check-icon.svg'}
+                                alt="Check Icon"
+                                width={32}
+                                height={32}
+                              />
+                            </div>
+                          )
+                        }
+                      </div>
+                      {data?.card_4?.description_text && (
+                        <div className="card__body">
+                          <p>{data?.card_4?.description_text}</p>
+                        </div>
+                      )}
+                    </Card>
+                  )}
+                  {data?.card_5 && (
+                    <Card className="border-0 ">
+                      <div className="card__header">
+                        {data?.card_5?.value && (
+                          <div className="card__title">{data?.card_5?.value}</div>
+                        )}
+                        {
+                          data?.card_5?.checkIcon && (
+                            <div className="card__icon">
+                              <img
+                                src={data?.card_5?.icon ? formatMedia(data?.card_5?.icon) : '../images/check-icon.svg'}
+                                alt="Check Icon"
+                                width={32}
+                                height={32}
+                              />
+                            </div>
+                          )
+                        }
+                      </div>
+                      {data?.card_5?.description_text && (
+                        <div className="card__body">
+                          <p>{data?.card_5?.description_text}</p>
+                        </div>
+                      )}
+                    </Card>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

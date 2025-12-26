@@ -3,21 +3,36 @@ import { formatMedia } from "../../utils/strapiHelpers";
 import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAnimationComponent";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectFade } from "swiper/modules";
+import { Link } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/effect-fade";
 
-const DoctorsSlider = ({ data: doctorsSliderSection }) => {
-  const sliderContent = doctorsSliderSection?.doctors?.length > 0 ? doctorsSliderSection.doctors.map((slide) => ({
-    heading: `${slide.first_name} ${slide.last_name ? slide.last_name : ''}` || '',
-    description: slide.about || '',
-    backgroundImage: formatMedia(slide.profilePicture) || '',
-  })) : [];
+const DoctorsSlider = ({ componentData, data }) => {
+  const doctorsSliderSection = componentData || data;
 
+  if (!doctorsSliderSection || !doctorsSliderSection?.doctors || doctorsSliderSection.doctors.length === 0) {
+    return null;
+  }
+
+  const sliderContent = doctorsSliderSection.doctors
+    .map((slide) => ({
+      heading: `${slide?.first_name || ''} ${slide?.last_name || ''}`.trim() || '',
+      description: slide?.about || '',
+      backgroundImage: formatMedia(slide?.profilePicture),
+      buttonLink: slide?.slug ? `/doctors/${slide.slug}` : '#',
+    }))
+    .filter(slide => slide.heading); // Filter out slides without a heading
+
+
+  if (sliderContent.length === 0) {
+    return null;
+  }
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
+
   return (
     <section className="hospital_slider_sec">
       <div className="containerWrapper one_side_full_container ms-0 me-auto ps-0">
@@ -42,10 +57,12 @@ const DoctorsSlider = ({ data: doctorsSliderSection }) => {
                       <ScrollAnimationComponent animationVariants={fadeIn}>
                         <div className="commContent_wrap">
                           <h3>{slide.heading}</h3>
-                          <p>{slide.description}</p>
-                          <a href={slide.buttonLink} className="btn btn-pink-solid">
+                          {slide.description && <p>{slide.description}</p>}
+                          {slide.buttonLink !== '#' && (
+                            <Link to={slide.buttonLink} className="btn btn-pink-solid">
                             View Details
-                          </a>
+                            </Link>
+                          )}
                         </div>
                       </ScrollAnimationComponent>
                     </div>

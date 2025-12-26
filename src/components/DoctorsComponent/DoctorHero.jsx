@@ -5,14 +5,22 @@ import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponen
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 
-const DoctorHero = ({ data }) => {
+const DoctorHero = ({ componentData, data }) => {
+  const heroData = componentData || data;
+
+  if (!heroData) {
+    return null;
+  }
+
   return (
     <div className='others_hero_content comm_hero_pt'>
       <div className='containerWrapper py-88'>
         <div className='hero_content_row'>
           <div className='hero_content_left commContent_wrap'>
             <ScrollAnimationComponent animationVariants={slideLeft}>
-              <h1 className='title-1 text_theme_dark'>{data?.heading || ''}</h1>
+              <h1 className='title-1 text_theme_dark'>
+                {heroData?.heading || ''}
+              </h1>
             </ScrollAnimationComponent>
           </div>
 
@@ -20,15 +28,15 @@ const DoctorHero = ({ data }) => {
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className='commContent_wrap content-gap-40'>
                 <p className='text-16 text_theme_dark'>
-                  {data?.description_text || ''}
+                  {heroData?.description_text || ''}
                 </p>
-                {data?.CTAs?.length > 0 && (
+                {heroData?.cta?.text && (
                   <ExploreButton
                     className='btn btn-pink-solid'
-                    to={data?.CTAs?.URL || '#'}
-                    target={data?.CTAs?.target || '_blank'}
+                    to={heroData?.cta?.URL || '#'}
+                    target={heroData?.cta?.target || '_self'}
                   >
-                    {data?.CTAs?.text || ''}
+                    {heroData?.cta?.text}
                   </ExploreButton>
                 )}
               </div>

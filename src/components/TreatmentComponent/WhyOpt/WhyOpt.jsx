@@ -4,59 +4,17 @@ import ScrollAnimationComponent from '../../ScrollAnimation/ScrollAnimationCompo
 import { motion, AnimatePresence } from 'framer-motion';
 import './WhyOpt.scss';
 import { Link } from 'react-router-dom';
+import { formatMedia } from '../../../utils/strapiHelpers';
 
-const WhyOpt = ({ sectionClass, data, loading }) => {
-  const whyOptContent = [
-    {
-      id: 1,
-      title: 'Highly Targeted Treatment',
-      description:
-        'CAR T cells zero in on cancer antigens, sparing healthy cells.',
-      image: '../images/therapy-thumb-01.webp',
-      link: '#',
-      order: 1,
-    },
-    {
-      id: 2,
-      title: 'One-time Infusion Potential ',
-      description:
-        'CAR T cells zero in on cancer antigens, sparing healthy cells.',
-      image: '../images/therapy-thumb-01.webp',
-      link: '#',
-      order: 2,
-    },
-    {
-      id: 3,
-      title: 'Long-lasting Remissions',
-      description:
-        'CAR T cells zero in on cancer antigens, sparing healthy cells.',
-      image: '../images/therapy-thumb-01.webp',
-      link: '#',
-      order: 3,
-    },
-    {
-      id: 4,
-      title: 'Treatment for Relapsed / Refractory Disease',
-      description:
-        'CAR T cells zero in on cancer antigens, sparing healthy cells.',
-      image: '../images/therapy-thumb-01.webp',
-      link: '#',
-      order: 4,
-    },
-    {
-      id: 5,
-      title: 'Evolving Research',
-      description:
-        'CAR T cells zero in on cancer antigens, sparing healthy cells.',
-      image: '../images/therapy-thumb-01.webp',
-      link: '#',
-      order: 5,
-    },
-  ];
+const WhyOpt = ({ sectionClass, data }) => {
+  const cards = data?.cards || [];
+  const [activeCard, setActiveCard] = useState(cards?.[0]?.id);
 
-  const [activeCard, setActiveCard] = useState(whyOptContent?.[0]?.id);
-
-  if (loading) {
+  if (!data || !data?.isActive) {
+    return null;
+  }
+  
+  if (!cards || cards.length === 0) {
     return null;
   }
 
@@ -89,27 +47,28 @@ const WhyOpt = ({ sectionClass, data, loading }) => {
                 {data?.description_text || ''}
               </Description>
             </Header>
-            <ExploreButton
-              className='btn btn-pink-solid'
-              to={data?.CTAs?.URL}
-              target={data?.CTAs?.target}
-            >
-              {data?.cta?.text || ''}
-            </ExploreButton>
+            {data?.cta?.URL && (
+              <ExploreButton
+                className='btn btn-pink-solid'
+                to={data?.cta?.URL || ''}
+                target={data?.cta?.target || '_blank'}
+              >
+                {data?.cta?.text || ''}
+              </ExploreButton>
+            )}
           </HeaderWrapper>
         </ScrollAnimationComponent>
         <div className='card__list'>
-          {data?.cards?.length > 0 &&
-            data?.cards?.map((item, index) => (
+          {cards.map((item, index) => (
               <motion.div
-                key={item.id}
+                key={item?.id}
                 className={`card__item ${getCardClass(
-                  item.id,
+                  item?.id,
                   index,
                   activeCard,
-                  data?.cards
+                  cards
                 )}`}
-                onClick={() => toggleCard(item.id)}
+                onClick={() => toggleCard(item?.id)}
                 animate={{
                   flexGrow: activeCard === item?.id ? 2.5 : 1,
                 }}
@@ -117,7 +76,7 @@ const WhyOpt = ({ sectionClass, data, loading }) => {
               >
                 <div className='card '>
                   <AnimatePresence>
-                    {activeCard !== item.id && (
+                    {activeCard !== item?.id && (
                       <motion.div className='h-100'>
                         <div className='card__content'>
                           <div className='icon'>
@@ -134,28 +93,36 @@ const WhyOpt = ({ sectionClass, data, loading }) => {
                               />
                             </svg>
                           </div>
-                          <h4 className='card__content__title'>{item.title}</h4>
+                          {item?.heading && (
+                            <h4 className='card__content__title'>{item?.heading}</h4>
+                          )}
                         </div>
                       </motion.div>
                     )}
-                    {activeCard === item.id && (
+                    {activeCard === item?.id && (
                       <motion.div className='h-100'>
-                        <div className='ratio__holder position-relative'>
-                          <div className='ratio h-100'>
-                            <img
-                              src={item.image}
-                              alt={item.title}
-                              width={100}
-                              height={100}
-                            />
+                        {item?.image && (
+                          <div className='ratio__holder position-relative'>
+                            <div className='ratio h-100'>
+                              <img
+                                src={formatMedia(item?.image)}
+                                alt={item?.image?.alternativeText || item?.heading || ''}
+                                width={100}
+                                height={100}
+                              />
+                            </div>
                           </div>
-                        </div>
+                        )}
                         <div className='card__overlay'>
                           <div className='card__overlay__content'>
-                            <h4 className='card__title'>{item.title}</h4>
-                            <p className='card__description'>
-                              {item.description}
-                            </p>
+                            {item?.heading && (
+                              <h4 className='card__title'>{item?.heading}</h4>
+                            )}
+                            {(item?.details || item?.points?.[0]?.point) && (
+                              <p className='card__description'>
+                                {item?.details || item?.points?.[0]?.point || ''}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </motion.div>

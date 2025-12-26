@@ -29,6 +29,9 @@ import pageReducer from './slices/pageSlice';
 import doctorReducer from './slices/doctorSlice';
 import categoryReducer from './slices/categorySlice';
 import treatmentReducer from './slices/treatmentSlice';
+import drugReducer from './slices/drugSlice';
+import diseaseReducer from './slices/diseaseSlice';
+import resourceCategoryReducer from './slices/resourcesCategorySlice';
 
 const store = configureStore({
   reducer: {
@@ -62,6 +65,9 @@ const store = configureStore({
     doctor: doctorReducer,
     categories: categoryReducer,
     treatment: treatmentReducer,
+    drug: drugReducer,
+    disease: diseaseReducer,
+    resourceCategory: resourceCategoryReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

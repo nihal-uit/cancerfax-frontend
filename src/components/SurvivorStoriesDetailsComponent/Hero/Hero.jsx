@@ -1,70 +1,117 @@
-import React, { useEffect, useState } from "react";
-import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
-import styled from "styled-components";
+import React from 'react';
+import ScrollAnimationComponent from '../../ScrollAnimation/ScrollAnimationComponent';
+import styled from 'styled-components';
+import { formatMedia } from '../../../utils/strapiHelpers';
+import { Link } from 'react-router-dom';
 
-const Hero = ({
-  StoriesName = "Chen Yan’s Breakthrough: Cured of Beta-Thalassemia Using CRISPR Gene Therapy",
-  StoriesVideo = "../videos/survivor-stories-details-video.mp4",
-  StoriesbtnLink = "Submit reports & check eligibility",
-  StoriesDescription = "Read the remarkable story of Chen Yan, who achieved transfusion-independence after treatment with CRISPR gene therapy for beta-thalassemia. A journey of hope and resiliency.",
-  onSubmitReports,
-}) => {
-
+const Hero = ({ data }) => {
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
 
+  const videoUrl = formatMedia(data?.featuredVideo);
+  const imageUrl = formatMedia(data?.featuredImage);
+
+  if (!data) return null;
+
   return (
     <section className='homeHero_sec'>
-
       <div className='home-hero-banner hospital_details_hero'>
         <div className='ratio'>
-          <BackgroundVideo className="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/survivor-stories-details-video.jpg">
-          <source src={StoriesVideo} type="video/mp4" />
-          {/* <source src="../videos/doctors-video.mov" type="video/mov" />
-          <source src="../videos/doctors-video.webm" type="video/webm" />
-          <source src="../videos/doctors-video.ogv" type="video/ogv" /> */}
-        </BackgroundVideo>
+          {videoUrl ? (
+            <BackgroundVideo
+              className='video'
+              preload='none'
+              autoPlay
+              loop
+              muted
+              playsInline
+              poster={imageUrl || undefined}
+            >
+              <source src={videoUrl} type='video/mp4' />
+            </BackgroundVideo>
+          ) : (
+            imageUrl && (
+              <BackgroundImage
+                src={imageUrl}
+                alt={
+                  data?.featuredImage?.alternativeText ||
+                  data?.story_title ||
+                  'story hero'
+                }
+                loading='lazy'
+              />
+            )
+          )}
         </div>
       </div>
       <div className='heroContent_wrap'>
         <div className='containerWrapper'>
           <div className='commContent_wrap'>
             <ScrollAnimationComponent animationVariants={fadeIn}>
-            <HeroContentGrid>
-              <TopRow>
-                <StoriesTitle className='title-1'>{StoriesName}</StoriesTitle>
-                <ActionButtonsGroup>
-                  <a href="#" className="play-btn-pulse">
-                      <span>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 28 30" fill="none">
-                              <path d="M5.6717 1.1394C3.05718 -0.360326 0.9375 0.868266 0.9375 3.88134V26.1165C0.9375 29.1326 3.05718 30.3596 5.6717 28.8613L25.1063 17.7156C27.7217 16.2154 27.7217 13.7848 25.1063 12.2849L5.6717 1.1394Z" fill="#727B81"></path>
-                          </svg>
+              <HeroContentGrid>
+                <TopRow>
+                  {data?.story_title && (
+                    <StoriesTitle className='title-1'>
+                      {data?.story_title}
+                    </StoriesTitle>
+                  )}
+                  {data?.featuredVideo && (
+                    <ActionButtonsGroup>
+                      <span className='play-btn-pulse' aria-hidden='true'>
+                        <svg
+                          xmlns='http://www.w3.org/2000/svg'
+                          width='16'
+                          height='18'
+                          viewBox='0 0 28 30'
+                          fill='none'
+                        >
+                          <path
+                            d='M5.6717 1.1394C3.05718 -0.360326 0.9375 0.868266 0.9375 3.88134V26.1165C0.9375 29.1326 3.05718 30.3596 5.6717 28.8613L25.1063 17.7156C27.7217 16.2154 27.7217 13.7848 25.1063 12.2849L5.6717 1.1394Z'
+                            fill='#727B81'
+                          ></path>
+                        </svg>
                       </span>
-                  </a>
-                </ActionButtonsGroup>            
-              </TopRow>
-              
-              <BottomRow>
-                <SubmitButton className='btn btn-md btn-pink-solid' onClick={onSubmitReports}>
-                  {StoriesbtnLink}
-                </SubmitButton>
-                <Description className='text-16 line-2-text'>
-                  {StoriesDescription}
-                </Description>
-              </BottomRow>
-            </HeroContentGrid>
-            </ScrollAnimationComponent>       
-         </div>
+                    </ActionButtonsGroup>
+                  )}
+                </TopRow>
+
+                <BottomRow>
+                  {data?.cta?.text && (
+                    <Link
+                      className='btn btn-md btn-pink-solid'
+                      to={data?.cta?.URL || '#'}
+                      target={data?.cta?.target || '_self'}
+                    >
+                      {data?.cta?.text}
+                    </Link>
+                  )}
+                  {data?.story_description && (
+                    <Description className='text-16 line-2-text'>
+                      {data?.story_description}
+                    </Description>
+                  )}
+                </BottomRow>
+              </HeroContentGrid>
+            </ScrollAnimationComponent>
+          </div>
         </div>
       </div>
     </section>
   );
 };
 
-
 const BackgroundVideo = styled.video`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+`;
+
+const BackgroundImage = styled.img`
   position: absolute;
   inset: 0;
   width: 100%;
@@ -92,12 +139,10 @@ const TopRow = styled.div`
   }
 `;
 
-
 const StoriesTitle = styled.h1`
-  color: ${props => props.theme.colors.white};
+  color: ${(props) => props.theme.colors.white};
   max-width: 750px;
 `;
-
 
 const BottomRow = styled.div`
   display: flex;
@@ -118,11 +163,8 @@ const BottomRow = styled.div`
   }
 `;
 
-const SubmitButton = styled.button`
-`;
-
 const Description = styled.p`
-  color: ${props => props.theme.colors.white};
+  color: ${(props) => props.theme.colors.white};
 `;
 
 const ActionButtonsGroup = styled.div`
@@ -130,7 +172,7 @@ const ActionButtonsGroup = styled.div`
   align-items: center;
   gap: 12px;
   min-width: 90px;
-  
+
   @media (max-width: 768px) {
     min-width: 100%;
   }

@@ -1,219 +1,74 @@
-import React, { useState } from 'react';
-import { Nav, Tab, Row, Col, Card } from 'react-bootstrap';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Nav, Tab, Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
 
-const DoctorsDetailsProceduresPerformedTabsComponent = () => {
+const DoctorsDetailsProceduresPerformedTabsComponent = ({ data, loading }) => {
+  const [key, setKey] = useState(null);
 
-  const [key, setKey] = useState('1');  // Default active tab
-
-  const FacilitiesData = [
-    {
-      id: 1,
-      facilities_icon: '../images/facilities_icon_1.svg',
-      facilities_title: '200+ patient beds',
-      order: 1
-    },
-    {
-      id: 2,
-      facilities_icon: '../images/facilities_icon_2.svg',
-      facilities_title: '10+ modular operation theatres',
-      order: 2
-    },
-    {
-      id: 3,
-      facilities_icon: '../images/facilities_icon_3.svg',
-      facilities_title: '24×7 emergency and trauma care',
-      order: 3
-    },
-    {
-      id: 4,
-      facilities_icon: '../images/facilities_icon_4.svg',
-      facilities_title: 'Advanced imaging (CT, MRI, X-ray)',
-      order: 4
-    },
-    {
-      id: 5,
-      facilities_icon: '../images/facilities_icon_5.svg',
-      facilities_title: 'Fully equipped laboratory & blood bank',
-      order: 5
-    },
-    {
-      id: 6,
-      facilities_icon: '../images/facilities_icon_6.svg',
-      facilities_title: 'Private, semi-private & deluxe rooms',
-      order: 6
-    },
-    {
-      id: 7,
-      facilities_icon: '../images/facilities_icon_7.svg',
-      facilities_title: 'Telemedicine services',
-      order: 7
-    },
-    {
-      id: 8,
-      facilities_icon: '../images/facilities_icon_8.svg',
-      facilities_title: 'Day care & recovery units',
-      order: 8
-    },
-    {
-      id: 9,
-      facilities_icon: '../images/facilities_icon_9.svg',
-      facilities_title: 'Physiotherapy & rehab center',
-      order: 9
-    },
-    {
-      id: 10,
-      facilities_icon: '../images/facilities_icon_10.svg',
-      facilities_title: 'Ambulance service',
-      order: 10
+  const proceduresCards = useMemo(() => {
+    if (!data?.procedures_cards || !Array.isArray(data?.procedures_cards) || data?.procedures_cards?.length === 0) {
+      return [];
     }
-  ];
+    return data.procedures_cards;
+  }, [data?.procedures_cards]);
+
+  // Set default active tab to first card
+  useEffect(() => {
+    if (proceduresCards.length > 0 && !key) {
+      setKey(String(proceduresCards[0]?.id || '1'));
+    }
+  }, [proceduresCards, key]);
+
+  if (loading || !data || proceduresCards.length === 0) {
+    return null;
+  }
 
   return (
-    <Tab.Container id="left-tabs-example" activeKey={key} onSelect={(k) => setKey(k)}>
+    <Tab.Container id="procedures-tabs" activeKey={key} onSelect={(k) => setKey(k)}>
       <Row className='g-4'>
         <Col sm={12}>
           <Nav variant="pills" className="procedures_performed_nav">
-            <Nav.Item>
-              <Nav.Link eventKey="1">Systemic Cancer Therapies</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="2">Clinical Trials & Novel Therapeutics</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="3">Precision Medicine & Molecular Profiling</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="4">Supportive & Palliative Care</Nav.Link>
-            </Nav.Item>
+            {proceduresCards?.map((card, index) => (
+              <Nav.Item key={card?.id || index}>
+                <Nav.Link eventKey={String(card?.id || index + 1)}>
+                  {card?.title || ''}
+                </Nav.Link>
+              </Nav.Item>
+            ))}
           </Nav>
         </Col>
         <Col sm={12}>
           <Tab.Content>
-            <Tab.Pane eventKey="1">
-                <ProceduresGrid>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Targeted Therapies</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Immunotherapies</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Chemotherapy & Adjuvant Therapy</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>                
-                </ProceduresGrid>
-            </Tab.Pane>
-            <Tab.Pane eventKey="2">
-                <ProceduresGrid>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Targeted Therapies</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Immunotherapies</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Chemotherapy & Adjuvant Therapy</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>                
-                </ProceduresGrid>            
-              </Tab.Pane>
-            <Tab.Pane eventKey="3">
-                <ProceduresGrid>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Targeted Therapies</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Immunotherapies</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Chemotherapy & Adjuvant Therapy</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>                
-                </ProceduresGrid>            
-              </Tab.Pane>
-            <Tab.Pane eventKey="4">
-                <ProceduresGrid>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Targeted Therapies</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Immunotherapies</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>
-                  <ProceduresCol>
-                    <ProceduresContent className='commContent_wrap content-gap-20'>
-                      <h5>Chemotherapy & Adjuvant Therapy</h5>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                      <p>- EGFR/ALK/ROS1 inhibitors (e.g., Osimertinib, Crizotinib) for lung cancer</p>
-                    </ProceduresContent>
-                  </ProceduresCol>                
-                </ProceduresGrid>
-            </Tab.Pane>
+            {proceduresCards?.map((card, cardIndex) => {
+              const procedures = card?.procedures || [];
+              const proceduresPerRow = 3;
+              const rows = [];
+              
+              for (let i = 0; i < procedures.length; i += proceduresPerRow) {
+                rows.push(procedures.slice(i, i + proceduresPerRow));
+              }
+
+              return (
+                <Tab.Pane key={card?.id || cardIndex} eventKey={String(card?.id || cardIndex + 1)}>
+                  <ProceduresGrid>
+                    {procedures?.map((procedure, procIndex) => (
+                      <ProceduresCol key={procedure?.id || procIndex}>
+                        <ProceduresContent className='commContent_wrap content-gap-20'>
+                          {procedure?.title && <h5>{procedure?.title || ''}</h5>}
+                          {procedure?.points && Array.isArray(procedure?.points) && procedure?.points?.length > 0 && (
+                            <>
+                              {procedure?.points?.map((point, pointIdx) => (
+                                <p key={point?.id || pointIdx}>{point?.point || ''}</p>
+                              ))}
+                            </>
+                          )}
+                        </ProceduresContent>
+                      </ProceduresCol>
+                    ))}
+                  </ProceduresGrid>
+                </Tab.Pane>
+              );
+            })}
           </Tab.Content>
         </Col>
       </Row>

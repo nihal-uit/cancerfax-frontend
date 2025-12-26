@@ -209,7 +209,8 @@
         padding-top: 0;
         padding-bottom: 0;
     }
-    .ourstory_image_wrap img {
+    .ourstory_image_wrap img,
+    .ourstory_image_wrap video {
         height: 100%;
         max-height: 434px;
     }

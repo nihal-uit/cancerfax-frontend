@@ -17,9 +17,9 @@ export const fetchResourcesSection = createAsyncThunk(
 
 export const fetchBlogs = createAsyncThunk(
   'resources/fetchBlogs',
-  async ({ limit = 3, start = 0, query = '' } = {}, { rejectWithValue }) => {
+  async ({ limit = 3, start = 0, query = '', categorySlug = '', subcategorySlug = '', sorting = '' } = {}, { rejectWithValue }) => {
     try {
-      const response = await resourcesAPI.getBlogs({ limit, start, query });
+      const response = await resourcesAPI.getBlogs({ limit, start, query, categorySlug, subcategorySlug, sorting });
       return {
         data: response.data,
         meta: response.meta,
@@ -145,6 +145,24 @@ const resourcesSlice = createSlice({
       })
       .addCase(fetchBlogById.rejected, (state, action) => {
         state.loadingSingleBlog = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchBlogBySlug.pending, (state) => {
+        state.loadingSingleBlog = true;
+        state.loading = true;
+        state.error = null;
+        state.singleBlog = null;
+      })
+      .addCase(fetchBlogBySlug.fulfilled, (state, action) => {
+        state.loadingSingleBlog = false;
+        state.loading = false;
+        // Handle array response from Strapi
+        const data = Array.isArray(action.payload) ? action.payload[0] : action.payload;
+        state.singleBlog = data;
+      })
+      .addCase(fetchBlogBySlug.rejected, (state, action) => {
+        state.loadingSingleBlog = false;
+        state.loading = false;
         state.error = action.payload;
       })
       .addCase(fetchRelatedBlogs.pending, (state) => {

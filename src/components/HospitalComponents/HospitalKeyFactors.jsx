@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { getMediaUrl } from '../../services/api';
+import { formatMedia } from '../../utils/strapiHelpers';
 
 const Header = styled.div`
   display: flex;
@@ -153,6 +153,16 @@ const IconWrapper = styled.div`
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+    display: block;
+  }
   
   svg {
     width: 28px;
@@ -164,6 +174,10 @@ const IconWrapper = styled.div`
   @media (max-width: 1024px) {
     width: 48px;
     height: 48px;
+
+    img {
+      padding: 6px;
+    }
     
     svg {
       width: 24px;
@@ -174,6 +188,10 @@ const IconWrapper = styled.div`
   @media (max-width: 480px) {
     width: 44px;
     height: 44px;
+
+    img {
+      padding: 5px;
+    }
     
     svg {
       width: 22px;
@@ -181,6 +199,41 @@ const IconWrapper = styled.div`
     }
   }
 `;
+
+// Default icon component (fallback when no icon from API)
+const DefaultIcon = () => (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    fill='none'
+    viewBox='0 0 24 24'
+    stroke='currentColor'
+  >
+    <path
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      strokeWidth={2}
+      d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+    />
+  </svg>
+);
+
+// Icon component with error handling
+const StepIcon = ({ iconUrl, alt }) => {
+  const [hasError, setHasError] = React.useState(false);
+
+  if (!iconUrl || hasError) {
+    return <DefaultIcon />;
+  }
+
+  return (
+    <img
+      src={iconUrl}
+      alt={alt || 'Step icon'}
+      onError={() => setHasError(true)}
+      loading='lazy'
+    />
+  );
+};
 
 const StepTitle = styled.h5`
     max-width: 330px;
@@ -197,111 +250,20 @@ const StepDescription = styled.p`
   overflow: hidden;
 `;
 
-const HospitalKeyFactors = ( { data: hospitalKeyFactorsSection, loading }) => {
-  if (loading) {
+const HospitalKeyFactors = ({ componentData, data }) => {
+  const keyFactorsData = componentData || data;
+
+  if (!keyFactorsData) {
     return null;
   }
   
-  const defaultContent = {
-    label: 'Lorem Ipsum',
-    title: 'Lorem ipsum dolor sit amet',
-    buttonText: 'Lorem ipsum',
-    factors: [
-      {
-        id: 1,
-        title: 'Lorem ipsum dolor sit amet',
-        description: '',
-        icon: 'certificate',
-      },
-      {
-        id: 2,
-        title: 'Lorem ipsum dolor sit amet',
-        description: '',
-        icon: 'brain',
-      },
-      {
-        id: 3,
-        title: 'Lorem ipsum dolor sit amet',
-        description: '',
-        icon: 'research',
-      },
-      {
-        id: 4,
-        title: 'Lorem ipsum dolor sit amet',
-        description: '',
-        icon: 'chart',
-      },
-      {
-        id: 5,
-        title: 'Lorem ipsum dolor sit amet',
-        description: '',
-        icon: 'team',
-      },
-    ],
-    featuredImage: {
-      url: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800',
-      alt: 'Healthcare partnership handshake',
-    },
-  };
+  const steps = keyFactorsData?.steps || [];
 
-  const getIcon = (iconType) => {
-    switch (iconType) {
-      case 'certificate':
-        return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-            <path d="M7 7h10M7 12h10M7 17h6" />
-            <circle cx="17" cy="17" r="3" />
-            <path d="M17 14v6" />
-          </svg>
-        );
-      case 'brain':
-        return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M12 2a3 3 0 0 0-3 3c0 1.657-1.343 3-3 3H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2c1.657 0 3 1.343 3 3a3 3 0 0 0 6 0c0-1.657 1.343-3 3-3h2a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2c-1.657 0-3-1.343-3-3a3 3 0 0 0-3-3z" />
-            <path d="M12 8v8M8 12h8" />
-          </svg>
-        );
-      case 'research':
-        return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M9 3v18M9 3a3 3 0 0 1 6 0M9 3a3 3 0 0 0-6 0v18a3 3 0 0 0 6 0M9 21a3 3 0 0 0 6 0M9 21a3 3 0 0 1-6 0M15 3a3 3 0 0 1 6 0v18a3 3 0 0 1-6 0" />
-            <path d="M3 9h18M3 15h18" />
-          </svg>
-        );
-      case 'chart':
-        return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M3 3v18h18" />
-            <path d="M18 17V9M13 17v-6M8 17v-4" />
-            <circle cx="18" cy="7" r="2" />
-            <path d="M18 9l-5 4-3-3-4 4" />
-          </svg>
-        );
-      case 'team':
-        return (
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-        );
-      default:
+  if (steps.length === 0) {
         return null;
     }
-  };
 
-  const content = hospitalKeyFactorsSection ? {
-    label: hospitalKeyFactorsSection.heading || defaultContent.label,
-    title: hospitalKeyFactorsSection.subHeading || defaultContent.title,
-    featuredImage: hospitalKeyFactorsSection.featuredImage || defaultContent.featuredImage,
-    factors: hospitalKeyFactorsSection.steps || defaultContent.factors,
-  } : defaultContent;
-  
-  const factorsList = Array.isArray(content.factors) && content.factors.length > 0 ? content.factors : defaultContent.factors;
-
-  const imageUrl = content.featuredImage ? getMediaUrl(content.featuredImage) : defaultContent.featuredImage.url;
-  const imageAlt = content.featuredImage.alt || defaultContent.featuredImage.alt;
+  const featuredImageUrl = formatMedia(keyFactorsData?.featuredImage);
 
   const getStepPositioning = (index, total) => {
     const row = Math.floor(index / 3) + 1;
@@ -336,28 +298,44 @@ const HospitalKeyFactors = ( { data: hospitalKeyFactorsSection, loading }) => {
     <section className='keyFactors_sec py-120 pb-5'>
       <div className='containerWrapper'>
         <Header className='commContent_wrap'>
-          <Label className='contentLabel'>{content.label || defaultContent.label}</Label>
+          <Label className='contentLabel'>
+            {keyFactorsData?.heading || ''}
+          </Label>
           <TopHeader>
-            <Title className='title-3'>{content.title || defaultContent.title}</Title>
-            <a href='#' className='btn btn-pink-solid' onClick={() => console.log('Connect with experts')}>
-              {content.buttonText || defaultContent.buttonText}
+            <Title className='title-3'>
+              {keyFactorsData?.subHeading || ''}
+            </Title>
+            {keyFactorsData?.cta?.text && (
+              <a
+                href={keyFactorsData?.cta?.URL || '#'}
+                target={keyFactorsData?.cta?.target || '_self'}
+                className='btn btn-pink-solid'
+              >
+                {keyFactorsData?.cta?.text}
             </a>
+            )}
           </TopHeader>
         </Header>
 
         <ContentWrapper className='commContent_wrap'>
+          {featuredImageUrl && (
           <ImageSection>
-            <img src={imageUrl} alt={imageAlt} />
+              <img
+                src={featuredImageUrl}
+                alt={keyFactorsData?.featuredImage?.alternativeText || ''}
+              />
           </ImageSection>
+          )}
 
-          {factorsList.map((factor, index) => {
-            const posConfig = getStepPositioning(index, factorsList.length);
+          {steps.map((step, index) => {
+            const posConfig = getStepPositioning(index, steps.length);
+            const iconUrl = formatMedia(step?.icon);
 
             return (
               <StepCard
-                key={factor.id || index}
-                gridRow={posConfig.gridRow}
-                gridColumn={posConfig.gridColumn}
+                key={step?.id || index}
+                $gridRow={posConfig.gridRow}
+                $gridColumn={posConfig.gridColumn}
                 $showLeftBorder={posConfig.showLeftBorder}
                 $showRightBorder={posConfig.showRightBorder}
                 $showBottomBorder={posConfig.showBottomBorder}
@@ -365,9 +343,24 @@ const HospitalKeyFactors = ( { data: hospitalKeyFactorsSection, loading }) => {
                 $bottomLeftCorner={posConfig.bottomLeftCorner}
                 $bottomRightCorner={posConfig.bottomRightCorner}
               >
-                <IconWrapper>{getIcon(defaultContent.factors[index].icon)}</IconWrapper>
-                <StepTitle className='title-5 text_theme_dark'>{factor.title}</StepTitle>
-                {factor.description && <StepDescription className='text-16 text_theme_dark'>{factor.description}</StepDescription>}
+                <IconWrapper>
+                  <StepIcon
+                    iconUrl={iconUrl}
+                    alt={
+                      step?.icon?.alternativeText ||
+                      step?.title ||
+                      'Step icon'
+                    }
+                  />
+                </IconWrapper>
+                <StepTitle className='title-5 text_theme_dark'>
+                  {step?.title || ''}
+                </StepTitle>
+                {step?.description_text && (
+                  <StepDescription className='text-16 text_theme_dark'>
+                    {step?.description_text}
+                  </StepDescription>
+                )}
               </StepCard>
             );
           })}

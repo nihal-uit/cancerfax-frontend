@@ -20,7 +20,9 @@ import { fetchGlobalData } from '../store/slices/globalSlice';
 const CountryTreatment = () => {
   const { slug } = useParams();
   const dispatch = useDispatch();
-  const { countryTreatment, loading: countryTreatmentLoading } = useSelector((state) => state.treatment);
+  const { countryTreatment, loading: countryTreatmentLoading } = useSelector(
+    (state) => state.treatment
+  );
   const { data: globalData, loading: globalLoading } = useSelector(
     (state) => state.global
   );
@@ -36,27 +38,44 @@ const CountryTreatment = () => {
   }, [globalData, globalLoading, dispatch]);
 
   useEffect(() => {
-    dispatch(fetchCountryTreatmentBySlug(slug));
+    if (slug) {
+      dispatch(fetchCountryTreatmentBySlug(slug));
+    }
   }, [dispatch, slug]);
 
-  if(countryTreatmentLoading || globalLoading) {
+  if (countryTreatmentLoading || globalLoading) {
     return <LoadingSpinner />;
   }
 
-  console.log("countryTreatment ->", countryTreatment);
-
   return (
     <PageContainer>
-      <Header/>
-      <CancerTreatmentHero data={countryTreatment}/>
-      <BuiltExperience data={countryTreatment}/>
-      <CancerFaxServices data={countryTreatment}/>
-      <TherapyInfo data={countryTreatment}/>
-      <WhyCancerTreatmentUSA data={countryTreatment}/>
-      <CancerTreatmentTopOncologists data={countryTreatment}/>
-      <CancerCenterBanner data={countryTreatment}/>
-      <CostOfCancerTreatment data={countryTreatment}/>
-      <Resources data={countryTreatment}/>
+      <Header />
+      {/* Hero */}
+      <CancerTreatmentHero data={countryTreatment?.hero} />
+
+      {/* About + Content Section 1 */}
+      <BuiltExperience data={countryTreatment} />
+
+      {/* CancerFax services */}
+      <CancerFaxServices data={countryTreatment?.cancerfax_services} />
+
+      {/* Process / Therapy Info style section */}
+      <TherapyInfo data={countryTreatment?.process} />
+
+      {/* Why cancer treatment in this country */}
+      <WhyCancerTreatmentUSA data={countryTreatment?.why_treatment} />
+
+      {/* Top oncologists */}
+      <CancerTreatmentTopOncologists data={countryTreatment?.top_doctors} />
+
+      {/* Featured cancer centre(s) */}
+      <CancerCenterBanner data={countryTreatment?.featured_hospital} />
+
+      {/* Content Section 2 – Cost of treatment, etc. */}
+      <CostOfCancerTreatment data={countryTreatment?.content_section2} />
+
+      {/* Resources specific to this country treatment page */}
+      <Resources data={countryTreatment?.resources} />
       <Footer />
     </PageContainer>
   );
@@ -68,4 +87,3 @@ const PageContainer = styled.div`
 `;
 
 export default CountryTreatment;
-

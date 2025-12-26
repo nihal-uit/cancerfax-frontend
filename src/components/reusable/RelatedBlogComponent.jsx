@@ -59,7 +59,16 @@ const RelatedBlogComponent = ({ data }) => {
       >
         {relatedBlogs?.related_posts?.related_posts && relatedBlogs?.related_posts?.related_posts?.map((blog) => (
           <SwiperSlide key={blog.id}>
-              <BlogCard as="div" key={blog.id} onClick={() => navigate(`/resources/${blog.documentId}`)}>
+              <BlogCard as="div" key={blog.id} onClick={() => {
+                // Generate proper URL with category/subcategory if available
+                const categorySlug = blog?.resource_category?.slug || '';
+                const slug = blog?.slug || blog?.documentId || '';
+                if (categorySlug) {
+                  navigate(`/resource/${categorySlug}/${slug}`);
+                } else {
+                  navigate(`/resource/${slug}`);
+                }
+              }}>
                 <BlogImage>
                   <img 
                     src={getMediaUrl(blog.featuredImage) ?? 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800'} 

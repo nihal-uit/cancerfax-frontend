@@ -1,146 +1,60 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchInnovationInsightsSection, fetchInnovationImages, fetchStaticImages } from '../../store/slices/innovationInsightsSlice';
-import { getMediaUrl } from '../../services/api';
+import React from "react";
 import styled from 'styled-components';
 import Marquee from "react-fast-marquee";
+import { formatMedia } from '@/utils/strapiHelpers';
 
-const HospitalDetailsMediaComponent = () => {
-  const dispatch = useDispatch();
-  const { sectionContent, images, staticImages, loading, error } = useSelector((state) => state.innovationInsights);
+const HospitalDetailsMediaComponent = ({ data, loading }) => {
+  if (loading || !data) {
+    return null;
+  }
 
-  useEffect(() => {
-    dispatch(fetchInnovationInsightsSection());
-    dispatch(fetchInnovationImages());
-    dispatch(fetchStaticImages());
-  }, [dispatch]);
-
-  // Fallback content
-  const defaultContent = {
-    label: 'INNOVATION & INSIGHTS',
-    title: 'Why Our Hospital Network Matters',
-    description: 'At CancerFax, our strength lies not just in what we recommend, but with whom we partner. We carefully vet and collaborate with leading cancer hospitals and research institutions around the globe, ensuring your care is built on credibility, safety, and excellence.',
-    images: [
-      {
-        id: 1,
-        url: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800',
-        alt: 'Patient consultation',
-        shape: 'rounded-left',
-      },
-      {
-        id: 2,
-        url: 'https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800',
-        alt: 'Medical team',
-        shape: 'rounded-center',
-      },
-      {
-        id: 3,
-        url: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800',
-        alt: 'Doctor with patient',
-        shape: 'rounded-right',
-      },
-    ],
-    staticImages: [
-      {
-        id: 4,
-        url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800',
-        alt: 'Healthcare professionals',
-        shape: 'rounded-left',
-      },
-      {
-        id: 5,
-        url: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?w=800',
-        alt: 'Patient care',
-        shape: 'rounded-center',
-      },
-      {
-        id: 6,
-        url: 'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800',
-        alt: 'Medical consultation',
-        shape: 'rounded-right',
-      },
-    ],
-  };
-
-  // Use Strapi data or fallback
-  const content = sectionContent || defaultContent;
-  const imagesList = Array.isArray(images) && images.length > 0 ? images : defaultContent.images;
-  const staticImagesList = Array.isArray(staticImages) && staticImages.length > 0 ? staticImages : defaultContent.staticImages || [];
-
-  const getImageUrl = (image) => {
-    if (!image) return null;
-    // Check if image is nested in an 'image' property (common Strapi pattern)
-    if (image?.image) return getMediaUrl(image.image);
-    // Otherwise pass directly to getMediaUrl which handles all cases
-    return getMediaUrl(image);
-  };
+  const mediaGallery = data?.media_galary || [];
+  
+  if (mediaGallery.length === 0) {
+    return null;
+  }
 
   // Duplicate images for infinite scroll effect
-  const duplicatedImages = [...imagesList, ...imagesList];
+  const duplicatedImages = [...mediaGallery, ...mediaGallery];
+  
+  const shapeClasses = ['rounded-left', 'rounded-center', 'rounded-right'];
 
   return (
     <div className="commContent_wrap content-gap-24">
+      {data?.heading && <h3 className="title-3">{data.heading}</h3>}
 
-      <h3 className="title-3">Media</h3>
+      {data?.description_text && (
+        <div className="text-14">
+          <p>{data.description_text}</p>
+        </div>
+      )}
 
-      <div className="text-14">
-        <p>The Cancer Hospital of the Chinese Academy of Medical Sciences (CAMS), comprising its Beijing main campus and Langfang (Hedian) branch, boasts state-of-the-art infrastructure designed to support advanced cancer treatment, research, and patient care.</p>
-      </div>
-
-      <div className='marquee_wrap'>
-        <Marquee
-          pauseOnHover={true}
-          speed={60}
-          gradient={true}
-          autoFill={true}
-          direction={'right'}
-          gradientColor={'#F8F8F8'}
-        >
-          <ImagesGrid>
-            {duplicatedImages.map((image, index) => {
-              const imageUrl = getImageUrl(image);
-              const shapeClass = image.shape || 'rounded-center';
-              return (
-                <ImageCard key={`${image.id}-${index}`} className={shapeClass}>
-                  {imageUrl ? (
-                    <Image src={imageUrl} alt={image.alt || 'Hospital network'} />
-                  ) : (
-                    <ImagePlaceholder>Image Placeholder</ImagePlaceholder>
-                  )}
-                </ImageCard>
-              );
-            })}
-          </ImagesGrid>
-        </Marquee>
-
-        {staticImagesList.length > 0 && (
-        <Marquee
-          pauseOnHover={true}
-          speed={60}
-          gradient={true}
-          autoFill={true}
-          direction={'left'}
-          gradientColor={'#F8F8F8'}
-        >
-          <ImagesGrid>
-            {staticImagesList.map((image) => {
-              const imageUrl = getImageUrl(image);
-              const shapeClass = image.shape || 'rounded-center';
-              return (
-                <StaticCard key={image.id} className={shapeClass}>
-                  {imageUrl ? (
-                    <Image src={imageUrl} alt={image.alt || 'Hospital network'} />
-                  ) : (
-                    <ImagePlaceholder>Image Placeholder</ImagePlaceholder>
-                  )}
-                </StaticCard>
-              );
-            })}
-          </ImagesGrid>
-        </Marquee>
-        )}
-      </div>  
-
+      {duplicatedImages.length > 0 && (
+        <div className='marquee_wrap'>
+          <Marquee
+            pauseOnHover={true}
+            speed={60}
+            gradient={true}
+            autoFill={true}
+            direction={'right'}
+            gradientColor={'#F8F8F8'}
+          >
+            <ImagesGrid>
+              {duplicatedImages.map((image, index) => {
+                const imageUrl = formatMedia(image);
+                const shapeClass = shapeClasses[index % 3] || 'rounded-center';
+                return (
+                  <ImageCard key={`${image?.id || image?.documentId || index}-${index}`} className={shapeClass}>
+                    {imageUrl ? (
+                      <Image src={imageUrl} alt={image?.alternativeText || 'Hospital media'} />
+                    ) : null}
+                  </ImageCard>
+                );
+              })}
+            </ImagesGrid>
+          </Marquee>
+        </div>
+      )}
     </div> 
   );
 };

@@ -9,7 +9,13 @@ const TreatmentCost = ({ data, loading }) => {
     visible: { opacity: 1, y: 0 },
   };
   
-  if(loading) return null;
+  if(loading || !data?.isActive) return null;
+
+  const countries = data?.countries || [];
+  
+  if (countries.length === 0) {
+    return null;
+  }
 
   return (
     <section className="riskSectionTwo_sec py-120" id="risk-section-two">
@@ -18,33 +24,43 @@ const TreatmentCost = ({ data, loading }) => {
           <div className="col-lg-7 mx-auto">
             <ScrollAnimationComponent animationVariants={fadeIn}>
               <div className="commContent_wrap commContent_new text-center">
-                <p className="contentLabel">{data?.heading || ''}</p>
-                <h3 className="title-3">
-                  {data?.subHeading || ''}
-                </h3>
+                {data?.heading && (
+                  <p className="contentLabel">{data?.heading}</p>
+                )}
+                {data?.subHeading && (
+                  <h3 className="title-3">
+                    {data?.subHeading}
+                  </h3>
+                )}
               </div>
             </ScrollAnimationComponent>
           </div>
         </div>
         <div className="card__list__holder">
           <div className="card__list">
-            {data?.countries?.map((item, index) => (
-              <div key={index} className="card__item">
+            {countries.map((item, index) => (
+              <div key={item?.id || index} className="card__item">
                 <ScrollAnimationComponent animationVariants={fadeIn}>
                   <div className="card">
-                    <div className="card__img">
-                      <div className="ratio">
-                        <img
-                          src={`${getMediaUrl(item?.flag)}`}
-                          alt="icon"
-                          width={190}
-                          height={127}
-                        />
+                    {item?.flag && (
+                      <div className="card__img">
+                        <div className="ratio">
+                          <img
+                            src={getMediaUrl(item?.flag)}
+                            alt={item?.flag?.alternativeText || item?.country || 'flag'}
+                            width={190}
+                            height={127}
+                          />
+                        </div>
                       </div>
-                    </div>
+                    )}
                     <div className="card__content">
-                      <h5 className="card__title">{item?.country}</h5>
-                      <p>{item?.cost}</p>
+                      {item?.country && (
+                        <h5 className="card__title">{item?.country}</h5>
+                      )}
+                      {item?.cost && (
+                        <p>{item?.cost}</p>
+                      )}
                     </div>
                   </div>
                 </ScrollAnimationComponent>

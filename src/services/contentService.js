@@ -111,13 +111,49 @@ export const resourcesAPI = {
     return formatStrapiResponse(response.data.data);
   },
 
-  getBlogs: async ({ limit = 3, start = 0, query = '' } = {}) => {
-    let response;
+  getBlogs: async ({ limit = 3, start = 0, query = '', categorySlug = '', subcategorySlug = '', sorting = '' } = {}) => {
+    let filters = 'filters[isActive][$eq]=true';
+    
     if (query) {
-      response = await api.get(`/resources?filters[isActive][$eq]=true&filters[title][$containsi]=${query}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=publishedDate:desc`);
-    } else{
-      response = await api.get(`/resources?filters[isActive][$eq]=true&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=publishedDate:desc`);
+      filters += `&filters[title][$containsi]=${query}`;
     }
+    
+    // Add category filter if provided
+    if (categorySlug) {
+      filters += `&filters[resource_category][slug][$eq]=${categorySlug}`;
+    }
+    
+    // Add subcategory filter if provided
+    if (subcategorySlug) {
+      filters += `&filters[resource_subcategory][slug][$eq]=${subcategorySlug}`;
+    }
+    
+    // Convert sorting option to Strapi sort format
+    let sortParam = 'sort=publishedDate:desc'; // default
+    if (sorting) {
+      switch (sorting) {
+        case 'a-z':
+          sortParam = 'sort=title:asc';
+          break;
+        case 'z-a':
+          sortParam = 'sort=title:desc';
+          break;
+        case 'published-date-newest':
+          sortParam = 'sort=publishedDate:desc';
+          break;
+        case 'published-date-oldest':
+          sortParam = 'sort=publishedDate:asc';
+          break;
+        default:
+          sortParam = 'sort=publishedDate:desc';
+      }
+    }
+    
+    // Use populate=* for resources endpoint (works fine, as confirmed by API response)
+    // The error was only when trying to populate subcategories on resource_category directly
+    const response = await api.get(
+      `/resources?${filters}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`
+    );
     return response.data;
   },
 
@@ -132,10 +168,116 @@ export const resourcesAPI = {
   },
 
   getBlogBySlug: async (slug) => {
-    const response = await api.get(`/resources?filters[slug][$eq]=${slug}&populate=*`);
+    // Use populate=* for resources endpoint (works fine)
+    // The error was only when trying to populate subcategories on resource_category directly
+    const response = await api.get(
+      `/resources?filters[slug][$eq]=${slug}&populate=*`
+    );
     return response.data.data;
   },
 
+};
+
+// Resource Categories API
+export const resourceCategoriesAPI = {
+  getCategories: async () => {
+    const response = await api.get(
+      '/resource-categories?filters[isActive][$eq]=true&fields[0]=slug&fields[1]=name'
+    );
+    const categories = response.data.data || [];
+    // Normalize structure to handle both Strapi v4 (with attributes) and flattened responses
+    return categories.map((category) => {
+      // If already flattened (has slug directly), return as is
+      if (category.slug) {
+        return {
+          id: category.id,
+          documentId: category.documentId,
+          slug: category.slug,
+          name: category.name,
+        };
+      }
+      // If has attributes, flatten it
+      if (category.attributes) {
+        return {
+          id: category.id,
+          documentId: category.documentId,
+          slug: category.attributes.slug,
+          name: category.attributes.name,
+        };
+      }
+      return category;
+    });
+  },
+
+  getCategoryBySlug: async (slug) => {
+    // Fetch category without populating subcategories (they're a separate content type)
+    // Subcategories should be fetched separately using getSubCategories() or filtered by category
+    const response = await api.get(
+      `/resource-categories?filters[slug][$eq]=${slug}&fields[0]=id&fields[1]=slug&fields[2]=name`
+    );
+    return response.data.data?.[0] || null;
+  },
+
+  // Get subcategories filtered by category slug
+  getSubCategoriesByCategorySlug: async (categorySlug) => {
+    // Fetch subcategories that belong to a specific category
+    // Assuming subcategories have a relation to categories
+    const response = await api.get(
+      `/resource-subcategories?filters[isActive][$eq]=true&filters[resource_category][slug][$eq]=${categorySlug}&fields[0]=slug&fields[1]=name`
+    );
+    const subcategories = response.data.data || [];
+    // Normalize structure to handle both Strapi v4 (with attributes) and flattened responses
+    return subcategories.map((subcategory) => {
+      // If already flattened (has slug directly), return as is
+      if (subcategory.slug) {
+        return {
+          id: subcategory.id,
+          documentId: subcategory.documentId,
+          slug: subcategory.slug,
+          name: subcategory.name,
+        };
+      }
+      // If has attributes, flatten it
+      if (subcategory.attributes) {
+        return {
+          id: subcategory.id,
+          documentId: subcategory.documentId,
+          slug: subcategory.attributes.slug,
+          name: subcategory.attributes.name,
+        };
+      }
+      return subcategory;
+    });
+  },
+
+  getSubCategories: async () => {
+    const response = await api.get(
+      '/resource-subcategories?filters[isActive][$eq]=true&fields[0]=slug&fields[1]=name'
+    );
+    const subcategories = response.data.data || [];
+    // Normalize structure to handle both Strapi v4 (with attributes) and flattened responses
+    return subcategories.map((subcategory) => {
+      // If already flattened (has slug directly), return as is
+      if (subcategory.slug) {
+        return {
+          id: subcategory.id,
+          documentId: subcategory.documentId,
+          slug: subcategory.slug,
+          name: subcategory.name,
+        };
+      }
+      // If has attributes, flatten it
+      if (subcategory.attributes) {
+        return {
+          id: subcategory.id,
+          documentId: subcategory.documentId,
+          slug: subcategory.attributes.slug,
+          name: subcategory.attributes.name,
+        };
+      }
+      return subcategory;
+    });
+  },
 };
 
 // Clinical Trials Showcase API
@@ -245,13 +387,36 @@ export const hospitalNetworkAPI = {
     return formatStrapiResponse(response.data.data);
   },
 
-  getHospitals: async ({ limit = 3, start = 0, query = '' } = {}) => {
-    let response;
+  getHospitals: async ({ limit = 3, start = 0, query = '', sorting = '' } = {}) => {
+    let filters = '';
+    
     if (query) {
-      response = await api.get(`/hospitals?populate=*&filters[name][$containsi]=${query}&pagination[start]=${start}&pagination[limit]=${limit}&sort=order:asc`);
-    } else{
-      response = await api.get(`/hospitals?populate=*&pagination[start]=${start}&pagination[limit]=${limit}&sort=order:asc`);
+      filters = `filters[name][$containsi]=${query}`;
     }
+    
+    // Convert sorting option to Strapi sort format
+    let sortParam = 'sort=name:asc'; // default
+    if (sorting) {
+      switch (sorting) {
+        case 'a-z':
+          sortParam = 'sort=name:asc';
+          break;
+        case 'z-a':
+          sortParam = 'sort=name:desc';
+          break;
+        case 'published-date-newest':
+          sortParam = 'sort=publishedAt:desc';
+          break;
+        case 'published-date-oldest':
+          sortParam = 'sort=publishedAt:asc';
+          break;
+        default:
+          sortParam = 'sort=name:asc';
+      }
+    }
+    
+    const queryString = filters ? `${filters}&` : '';
+    const response = await api.get(`/hospitals?${queryString}populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
     return response.data.data;
   },
 
@@ -322,13 +487,35 @@ export const keyFactorsAPI = {
 // Doctor API
 export const doctorAPI = {
 
-  getDoctors: async ({ limit = 3, start = 0, query = '' } = {}) => {
-    let response
+  getDoctors: async ({ limit = 3, start = 0, query = '', sorting = '' } = {}) => {
+    let filters = 'filters[isActive][$eq]=true';
+    
     if (query) {
-      response = await api.get(`/doctors?[isActive][$eq]=true&filters[first_name][$containsi]=${query}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}`);
-    } else{
-      response = await api.get(`/doctors?[isActive][$eq]=true&populate=*&pagination[start]=${start}&pagination[limit]=${limit}`);
+      filters += `&filters[first_name][$containsi]=${query}`;
     }
+    
+    // Convert sorting option to Strapi sort format
+    let sortParam = 'sort=first_name:asc'; // default
+    if (sorting) {
+      switch (sorting) {
+        case 'a-z':
+          sortParam = 'sort=first_name:asc';
+          break;
+        case 'z-a':
+          sortParam = 'sort=first_name:desc';
+          break;
+        case 'published-date-newest':
+          sortParam = 'sort=publishedAt:desc';
+          break;
+        case 'published-date-oldest':
+          sortParam = 'sort=publishedAt:asc';
+          break;
+        default:
+          sortParam = 'sort=first_name:asc';
+      }
+    }
+    
+    const response = await api.get(`/doctors?${filters}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
     return response.data;
   },
 
@@ -366,7 +553,82 @@ export const treatmentAPI = {
 // Country Treatment API
 export const countryTreatmentAPI = {
   getCountryTreatmentBySlug: async (slug) => {
-    const response = await api.get(`/country-treatments?filters[slug][$eq]=${slug}&populate=*`);
+    // This content type returns flattened data (no attributes wrapper),
+    // so we deliberately avoid formatStrapiResponse here and work with
+    // the raw Strapi response.
+
+    // Try slug-based lookup first
+    try {
+      const bySlugResponse = await api.get(
+        `/country-treatments?filters[slug][$eq]=${slug}&populate=*`
+      );
+      const data = bySlugResponse.data?.data;
+
+      if (Array.isArray(data) && data.length > 0) {
+        return data[0];
+      }
+
+      if (data && !Array.isArray(data)) {
+        return data;
+      }
+    } catch (error) {
+      // Ignore and try by ID below
+    }
+
+    // Fallback: treat slug as Strapi document ID
+    const byIdResponse = await api.get(
+      `/country-treatments/${slug}?populate=*`
+    );
+    const byIdData = byIdResponse.data?.data;
+    return byIdData || null;
+  },
+};
+
+// Drug API
+export const drugAPI = {
+  getDrugs: async ({ limit = 3, start = 0, query = '', sorting = '' } = {}) => {
+    let filters = 'filters[isActive][$eq]=true';
+    
+    if (query) {
+      filters += `&filters[name][$containsi]=${query}`;
+    }
+    
+    // Convert sorting option to Strapi sort format
+    let sortParam = 'sort=name:asc'; // default
+    if (sorting) {
+      switch (sorting) {
+        case 'a-z':
+          sortParam = 'sort=name:asc';
+          break;
+        case 'z-a':
+          sortParam = 'sort=name:desc';
+          break;
+        case 'published-date-newest':
+          sortParam = 'sort=publishedAt:desc';
+          break;
+        case 'published-date-oldest':
+          sortParam = 'sort=publishedAt:asc';
+          break;
+        default:
+          sortParam = 'sort=name:asc';
+      }
+    }
+    
+    const response = await api.get(`/drugs?${filters}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
+    return response.data;
+  },
+
+  getDrugBySlug: async (slug) => {
+    const response = await api.get(`/drugs?filters[slug][$eq]=${slug}&populate=*`);
     return response.data.data;
+  },
+};
+
+// Disease API
+export const diseaseAPI = {
+  getDiseaseBySlug: async (slug) => {
+    const response = await api.get(`/diseases?filters[slug][$eq]=${slug}&populate=*`);
+    const data = response.data.data;
+    return Array.isArray(data) && data.length > 0 ? data[0] : null;
   },
 };

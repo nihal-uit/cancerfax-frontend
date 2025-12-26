@@ -4,7 +4,6 @@ import { formatMedia } from "@/utils/strapiHelpers";
 import ScrollAnimationComponent from "@/components/ScrollAnimation/ScrollAnimationComponent";
 
 const AboutCerticication = ({ data }) => {
-    console.log(data);
   return (
     <section className="hospital_slider_sec ourCertifications_sec ourCertifications_body">
       <div className="containerWrapper z-2 position-relative py-120">

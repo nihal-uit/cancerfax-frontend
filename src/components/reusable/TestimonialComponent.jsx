@@ -1,8 +1,5 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAnimationComponent";
-import { getSectionData } from "../../utils/strapiHelpers";
+import styled from 'styled-components';
+import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 
 const Content = styled.div`
   display: flex;
@@ -72,7 +69,7 @@ const Author = styled.p`
 `;
 
 const ReadButton = styled.a`
-  max-width: 176px;
+  max-width: 300px;
   @media (max-width: 575px) {
     max-width: 100%;
   }
@@ -83,46 +80,40 @@ const slideLeft = {
   visible: { x: 0, opacity: 1 },
 };
 
-const TestimonialsComponent = ({ componentData, loading }) => {  
-  const globalData = useSelector((state) => state.global?.data);
-  const globalLoading = useSelector(state => state.global?.loading);
-
-  if (globalLoading) {
+const TestimonialsComponent = ({ data }) => {
+  if (!data) {
     return null;
   }
 
-  const fallbackSection = {
-    heading: 'Lorem Ipsum',
-    subHeading: 'Lorem Ipsum dolor sit amet',
-    author: 'Lorem Ipsum',
-  };
-
-  const testimonialsSection = componentData || getSectionData(globalData, 'testimonials');
-
-  const section = testimonialsSection ? {
-    heading: testimonialsSection.heading || fallbackSection.heading,
-    subHeading: testimonialsSection.subHeading || fallbackSection.subHeading,
-    image: testimonialsSection.image || fallbackSection.image,
-    author: testimonialsSection.author || fallbackSection.author,
-  } : fallbackSection;
+  const survivorStory = data?.survivor_story;
+  const storyContent = survivorStory?.story_content;
+  const quote =
+    survivorStory?.short_quote ||
+    storyContent?.quote ||
+    storyContent?.content?.[0]?.children?.[0]?.text ||
+    '';
+  const author = survivorStory?.patient_name || survivorStory?.first_name || '';
+  const ctaUrl = survivorStory?.slug
+    ? `/survivor-stories/${survivorStory?.slug}`
+    : data?.cta?.URL || '#';
 
   return (
     <ScrollAnimationComponent animationVariants={slideLeft}>
       <Content>
-        <Label className="contentLabel">{section.heading}</Label>
+        <Label className='contentLabel'>{data?.heading || ''}</Label>
         <TestimonialsBox>
-          <QuoteIcon src="../images/format_quote.svg" alt="quote icon" />
+          <QuoteIcon src='../images/format_quote.svg' alt='quote icon' />
           <TestimonialContent>
-            <Quote className="title-4">
-              {section.subHeading}
-            </Quote>
-            <Author>- {section.author}</Author>
+            <Quote className='title-4'>{quote || ''}</Quote>
+            {author && <Author>- {author}</Author>}
           </TestimonialContent>
         </TestimonialsBox>
 
-        <ReadButton className="btn btn-pink-solid" href={"#"}>
-          Read Full Story
-        </ReadButton>
+        {ctaUrl && ctaUrl !== '#' && (
+          <ReadButton className='btn btn-pink-solid' href={ctaUrl}>
+            {data?.cta?.text || survivorStory?.hero?.cta?.text || 'Read Full Story'}
+          </ReadButton>
+        )}
       </Content>
     </ScrollAnimationComponent>
   );

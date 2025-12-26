@@ -21,19 +21,6 @@ import { fetchPageBySlug } from "../store/slices/pageSlice";
 import DynamicComponents from "./DynamicComponents";
 
 const ClinicalListPage = () => {
-  const fadeIn = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0 },
-  };
-  const sideLeft = {
-    hidden: { opacity: 0, x: -50 },
-    visible: { opacity: 1, x: 0 },
-  };
-  const sideRight = {
-    hidden: { opacity: 0, x: 50 },
-    visible: { opacity: 1, x: 0 },
-  };
-
   const dispatch = useDispatch();
   const { pageData, pageLoading } = useSelector(state => state.page);
 

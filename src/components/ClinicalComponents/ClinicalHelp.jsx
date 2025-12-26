@@ -2,62 +2,39 @@ import React from "react";
 import { Col, Image, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
-const helpList = [
-  {
-    id: 1,
-    title: "Collect and verify complete medical documentation.",
-    img: "./images/clinical-help-01.svg",
-  },
-  {
-    id: 2,
-    title: "Translate prescriptions into generic equivalents.",
-    img: "./images/clinical-help-02.svg",
-  },
-  {
-    id: 3,
-    title: "Coordinate directly with hospitals to pre-validate submissions.",
-    img: "./images/clinical-help-03.svg",
-  },
-  {
-    id: 4,
-    title: "Confirm hospital receipt and acceptance of each document.",
-    img: "./images/clinical-help-04.svg",
-  },
-  {
-    id: 5,
-    title: "Resolve rejections or missing document issues immediately.",
-    img: "./images/clinical-help-05.svg",
-  },
-  {
-    id: 6,
-    title: "Set up hospital appointments and treatment schedules.",
-    img: "./images/clinical-help-06.svg",
-  },
-];
-const ClinicalHelp = () => {
+import { formatMedia } from "../../utils/strapiHelpers";
+
+const ClinicalHelp = ({ componentData, data }) => {
+  const benefitsData = componentData || data;
+
+  if (!benefitsData) {
+    return null;
+  }
+
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
+
+  const benefits = benefitsData?.benefits || [];
+
+  if (benefits.length === 0) {
+    return null;
+  }
+
   return (
-    <>
       <section className="clinical__help__sec py-120">
         <div className="containerWrapper z-2 position-relative">
           <Row>
             <Col lg={10} xl={9} className="mx-auto">
               <ScrollAnimationComponent animationVariants={fadeIn}>
                 <div className="commContent_wrap commContent_new text-center">
-                  <p className="contentLabel">How We Help</p>
+                <p className="contentLabel">{benefitsData?.heading || ''}</p>
                   <h3 className="title-3">
-                    The Benefits of Choosing CancerFax Services
+                  {benefitsData?.subHeading || ''}
                   </h3>
                   <div className="content__des text_theme_dark">
-                    <p>
-                      CancerFax simplifies and manages the entire process of
-                      enrolling in cancer clinical trials, from documentation to
-                      hospital coordination, ensuring accuracy, acceptance, and
-                      efficiency.
-                    </p>
+                  <p>{benefitsData?.description_text || ''}</p>
                   </div>
                 </div>
               </ScrollAnimationComponent>
@@ -67,40 +44,50 @@ const ClinicalHelp = () => {
         <div className="containerWrapper z-2 position-relative">
           <div className="list__holder bg-white">
             <div className="list">
-              {helpList.map((item) => (
+            {benefits.map((benefit) => {
+              const iconUrl = formatMedia(benefit?.icon);
+              return (
                 <ScrollAnimationComponent
-                  key={item?.id}
+                  key={benefit?.id}
                   animationVariants={fadeIn}
                 >
-                  <div key={item?.id} className="list__item">
+                  <div className="list__item">
                     <div className="list__card h-100">
+                      {iconUrl && (
                       <div className="list__card__icon">
                         <Image
-                          src={item?.img}
-                          alt={item?.title}
+                            src={iconUrl}
+                            alt={benefit?.icon?.alternativeText || benefit?.description_text || "Benefit icon"}
                           width={28}
                           height={28}
                         />
                       </div>
+                      )}
                       <div className="list__card__content">
-                        <h5 className="list__card__title">{item?.title}</h5>
+                        <h5 className="list__card__title">{benefit?.description_text || ''}</h5>
                       </div>
                     </div>
                   </div>
                 </ScrollAnimationComponent>
-              ))}
-            </div>
+              );
+            })}
           </div>
+        </div>
+        {benefitsData?.cta?.text && (
           <ScrollAnimationComponent animationVariants={fadeIn}>
             <div className="btn__holder text-center">
-              <Link to="#" className="btn btn-pink-solid">
-                submit reports for expert review
+              <Link 
+                to={benefitsData?.cta?.URL || '#'} 
+                target={benefitsData?.cta?.target || '_self'}
+                className="btn btn-pink-solid"
+              >
+                {benefitsData.cta.text}
               </Link>
             </div>
           </ScrollAnimationComponent>
+        )}
         </div>
       </section>
-    </>
   );
 };
 

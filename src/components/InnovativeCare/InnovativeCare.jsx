@@ -1,10 +1,10 @@
 import InnovativeCareComponent from '../reusable/InnovativeCareComponent';
 
-const InnovativeCare = () => {
+const InnovativeCare = ({ componentData, data }) => {
   return (
     <section className='innovativeCare_sec with_border py-120' id='treatments'>
       <div className='containerWrapper'>
-        <InnovativeCareComponent />
+        <InnovativeCareComponent componentData={componentData} data={data} />
       </div>
     </section>
   );

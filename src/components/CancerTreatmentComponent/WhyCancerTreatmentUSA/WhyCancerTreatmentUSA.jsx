@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import { motion, AnimatePresence } from "framer-motion";
 import "./WhyCancerTreatmentUSA.scss";
+import { formatMedia } from "@/utils/strapiHelpers";
 
 const Section = styled.section`
   overflow: hidden;
@@ -47,52 +48,29 @@ const Description = styled.p`
   color: ${(props) => props.theme.colors.primary};
 `;
 
-const WhyCancerTreatmentUSA = ({ sectionClass }) => {
-  const content = {
-    title: "Why cancer treatment in the USA?",
-    description: "At CancerFax, we’re transforming the way patients discover and receive life-saving therapies, simplifying global care with science, technology, and trust.",
-  };
-
-  const whyOptContent = [
-    {
-      id: 1,
-      title: "Advanced medical technologies and treatment",
-      description: "The United States is renowned for its advanced cancer treatment technology and strong medical infrastructure. Patients now have access to cutting-edge therapies that can increase outcomes and survival rates, such as targeted therapies, immunotherapies, and precision medicine. Patients in the USA can take advantage of the most recent advancements in cancer treatment thanks to the availability of cutting-edge medical technologies and clinical trials. Drugs in the USA are launched 4-5 years earlier than any country in Asia or Africa.",
-      image: "../images/therapy-thumb-01.webp",
-      link: "#",
-      order: 1,
-    },
-    {
-      id: 2,
-      title: "Highly skilled medical professionals",
-      description: "The United States is renowned for its advanced cancer treatment technology and strong medical infrastructure. Patients now have access to cutting-edge therapies that can increase outcomes and survival rates, such as targeted therapies, immunotherapies, and precision medicine. Patients in the USA can take advantage of the most recent advancements in cancer treatment thanks to the availability of cutting-edge medical technologies and clinical trials.",
-      image: "../images/therapy-thumb-01.webp",
-      link: "#",
-      order: 2,
-    },
-    {
-      id: 3,
-      title: "Comprehensive cancer research and innovation",
-      description: "The United States is renowned for its advanced cancer treatment technology and strong medical infrastructure. Patients now have access to cutting-edge therapies that can increase outcomes and survival rates, such as targeted therapies, immunotherapies, and precision medicine. Patients in the USA can take advantage of the most recent advancements in cancer treatment thanks to the availability of cutting-edge medical technologies and clinical trials.",
-      image: "../images/therapy-thumb-01.webp",
-      link: "#",
-      order: 3,
-    },
-    {
-      id: 4,
-      title: "Multidisciplinary approach to cancer treatment",
-      description: "The United States is renowned for its advanced cancer treatment technology and strong medical infrastructure. Patients now have access to cutting-edge therapies that can increase outcomes and survival rates, such as targeted therapies, immunotherapies, and precision medicine. Patients in the USA can take advantage of the most recent advancements in cancer treatment thanks to the availability of cutting-edge medical technologies and clinical trials.",
-      image: "../images/therapy-thumb-01.webp",
-      link: "#",
-      order: 4,
-    },
-  ];
+const WhyCancerTreatmentUSA = ({ sectionClass = "", data }) => {
+  const section = data;
+  const benefits = useMemo(
+    () =>
+      Array.isArray(section?.benefits) && section?.isActive
+        ? section.benefits
+        : [],
+    [section]
+  );
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
-  const [activeCard, setActiveCard] = useState(whyOptContent?.[0]?.id);
+  const [activeCard, setActiveCard] = useState(
+    benefits?.[0]?.id || null
+  );
+
+  useEffect(() => {
+    if (benefits[0]?.id) {
+      setActiveCard(benefits[0].id);
+    }
+  }, [benefits]);
 
   const toggleCard = (id) => {
     setActiveCard((prev) => (prev === id ? null : id));
@@ -111,6 +89,10 @@ const WhyCancerTreatmentUSA = ({ sectionClass }) => {
     return "card__next";
   };
 
+  if (!section?.isActive || (!section?.heading && !section?.description_text && !benefits.length)) {
+    return null;
+  }
+
   return (
     <Section className={`theraphy__sec py-120 ${sectionClass}`} id="trials">
       <Container className="containerWrapper">
@@ -118,24 +100,32 @@ const WhyCancerTreatmentUSA = ({ sectionClass }) => {
           <HeaderWrapper>
             <Header className="commContent_wrap">
               <Title className="title-3">
-                {content.title || "Why Opt for CAR T-Cell Therapy"}
+                {section?.heading || ""}
               </Title>
-              <Description className="text-16">
-                {content.description ||
-                  `CAR T-Cell Therapy offers personalized, targeted treatment, delivering powerful, long-lasting results for patients with certain blood cancers.`}
-              </Description>
+              {section?.description_text && (
+                <Description className="text-16">
+                  {section.description_text}
+                </Description>
+              )}
             </Header>
           </HeaderWrapper>
         </ScrollAnimationComponent>
         <div className="card__list">
-          {whyOptContent.map((item, index) => (
+          {benefits.map((item, index) => {
+            const title = item?.title;
+            const description = item?.details;
+            const imageUrl = formatMedia(item?.image);
+
+            if (!title && !description && !imageUrl) return null;
+
+            return (
             <motion.div
               key={item.id}
               className={`card__item ${getCardClass(
                 item.id,
                 index,
                 activeCard,
-                whyOptContent
+                benefits
               )}`}
               onClick={() => toggleCard(item.id)}
               animate={{
@@ -162,28 +152,38 @@ const WhyCancerTreatmentUSA = ({ sectionClass }) => {
                             />
                           </svg>
                         </div>
-                        <h4 className="card__content__title">{item.title}</h4>
+                        {title && (
+                          <h4 className="card__content__title">
+                            {title}
+                          </h4>
+                        )}
                       </div>
                     </motion.div>
                   )}
                   {activeCard === item.id && (
                     <motion.div className="h-100">
-                      <div className="ratio__holder position-relative">
-                        <div className="ratio h-100">
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            width={100}
-                            height={100}
-                          />
+                      {imageUrl && (
+                        <div className="ratio__holder position-relative">
+                          <div className="ratio h-100">
+                            <img
+                              src={imageUrl}
+                              alt={title || "benefit image"}
+                              width={100}
+                              height={100}
+                            />
+                          </div>
                         </div>
-                      </div>
+                      )}
                       <div className="card__overlay">
                         <div className="card__overlay__content">
-                          <h4 className="card__title">{item.title}</h4>
-                          <p className="card__description">
-                            {item.description}
-                          </p>
+                          {title && (
+                            <h4 className="card__title">{title}</h4>
+                          )}
+                          {description && (
+                            <p className="card__description">
+                              {description}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -191,7 +191,7 @@ const WhyCancerTreatmentUSA = ({ sectionClass }) => {
                 </AnimatePresence>
               </div>
             </motion.div>
-          ))}
+          )})}
         </div>
       </Container>
     </Section>

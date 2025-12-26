@@ -1,79 +1,99 @@
-import React, { useRef, useEffect } from "react";
-import styled from "styled-components";
-import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
+import React from 'react';
+import styled from 'styled-components';
+import ScrollAnimationComponent from '../../ScrollAnimation/ScrollAnimationComponent';
+import { formatMedia } from '../../../utils/strapiHelpers';
 
-const AboutDisease = () => {
-
+const AboutDisease = ({ data }) => {
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
 
+  const diseaseInfo = data?.disease_info;
+  if (!diseaseInfo) return null;
+
+  const cards = [
+    diseaseInfo?.condition && {
+      key: 'condition',
+      title: diseaseInfo?.condition?.title,
+      description: diseaseInfo?.condition?.description_text,
+      icon: formatMedia(diseaseInfo?.condition?.icon),
+    },
+    diseaseInfo?.treatment && {
+      key: 'treatment',
+      title: diseaseInfo?.treatment?.title,
+      description: diseaseInfo?.treatment?.description_text,
+      icon: formatMedia(diseaseInfo?.treatment?.icon),
+    },
+    diseaseInfo?.country && {
+      key: 'country',
+      title: diseaseInfo?.country?.title,
+      description: diseaseInfo?.country?.description_text,
+      icon: formatMedia(diseaseInfo?.country?.icon),
+    },
+    diseaseInfo?.current_status && {
+      key: 'current_status',
+      title: diseaseInfo?.current_status?.title,
+      description: diseaseInfo?.current_status?.description_text,
+      icon: formatMedia(diseaseInfo?.current_status?.icon),
+    },
+    diseaseInfo?.significance && {
+      key: 'significance',
+      title: diseaseInfo?.significance?.title,
+      description: diseaseInfo?.significance?.description_text,
+      icon: formatMedia(diseaseInfo?.significance?.icon),
+    },
+  ].filter(Boolean);
+
+  if (cards.length === 0) return null;
+
   return (
-      <section className='aboutDisease_sec py-120'>
-        <div className='containerWrapper'>
-          <ScrollAnimationComponent animationVariants={fadeIn}>
+    <section className='aboutDisease_sec py-120'>
+      <div className='containerWrapper'>
+        <ScrollAnimationComponent animationVariants={fadeIn}>
           <TopSection>
             <LeftContent className='commContent_wrap'>
-              <Label className='contentLabel text_theme_dark'>Deep diving</Label>
-              <Title className='title-3 text_theme_dark'>About the disease</Title>
+              {diseaseInfo?.heading && (
+                <Label className='contentLabel text_theme_dark'>
+                  {diseaseInfo?.heading}
+                </Label>
+              )}
+              {diseaseInfo?.subHeading && (
+                <Title className='title-3 text_theme_dark'>
+                  {diseaseInfo?.subHeading}
+                </Title>
+              )}
             </LeftContent>
-            
-            <RightContent className='commContent_wrap'>
-              <Description className='text-16'>Read the remarkable story of Chen Yan, who achieved transfusion-independence after treatment with CRISPR gene therapy for beta-thalassemia. A journey of hope and resiliency.</Description>
-            </RightContent>
+
+            {diseaseInfo?.description_text && (
+              <RightContent className='commContent_wrap'>
+                <Description className='text-16'>
+                  {diseaseInfo?.description_text}
+                </Description>
+              </RightContent>
+            )}
           </TopSection>
 
           <GridWrapper>
-            <StepCard>
-              <IconWrapper>
-                <img src="../images/aboutDisease_icon-1.svg" alt="" />
-              </IconWrapper>
-              <StepContent>
-                <StepTitle>Condition</StepTitle>
-                <StepDescription>Severe beta-thalassemia (diagnosed at 8 months old)</StepDescription>
-              </StepContent>
-            </StepCard>
-            <StepCard>
-              <IconWrapper>
-                <img src="../images/aboutDisease_icon-2.svg" alt="" />
-              </IconWrapper>
-              <StepContent>
-                <StepTitle>Treatment received</StepTitle>
-                <StepDescription>CRISPR/Cas9 gene therapy via ModiHSC® platform</StepDescription>
-              </StepContent>
-            </StepCard>
-            <StepCard>
-              <IconWrapper>
-                <img src="../images/aboutDisease_icon-3.svg" alt="" />
-              </IconWrapper>
-              <StepContent>
-                <StepTitle>Country</StepTitle>
-                <StepDescription>China (Guilin)</StepDescription>
-              </StepContent>
-            </StepCard>
-            <StepCard>
-              <IconWrapper>
-                <img src="../images/aboutDisease_icon-4.svg" alt="" />
-              </IconWrapper>
-              <StepContent>
-                <StepTitle>Current status</StepTitle>
-                <StepDescription>Transfusion-independent as of February 17, 2023</StepDescription>
-              </StepContent>
-            </StepCard>
-            <StepCard>
-              <IconWrapper>
-                <img src="../images/aboutDisease_icon-5.svg" alt="" />
-              </IconWrapper>
-              <StepContent>
-                <StepTitle>Significance</StepTitle>
-                <StepDescription>First adult in this trial; groundbreaking outcome</StepDescription>
-              </StepContent>
-            </StepCard>
+            {cards.map((card) => (
+              <StepCard key={card.key}>
+                {card.icon && (
+                  <IconWrapper>
+                    <img src={card.icon} alt={card.title || 'disease detail'} />
+                  </IconWrapper>
+                )}
+                <StepContent>
+                  {card.title && <StepTitle>{card.title}</StepTitle>}
+                  {card.description && (
+                    <StepDescription>{card.description}</StepDescription>
+                  )}
+                </StepContent>
+              </StepCard>
+            ))}
           </GridWrapper>
-          </ScrollAnimationComponent>
-        </div>
-      </section>
+        </ScrollAnimationComponent>
+      </div>
+    </section>
   );
 };
 
@@ -83,14 +103,14 @@ const TopSection = styled.div`
   align-items: flex-end;
   gap: 60px;
   margin-bottom: 60px;
-  
+
   @media (max-width: 1024px) {
     flex-direction: column;
     align-items: flex-start;
     gap: 40px;
     margin-bottom: 50px;
   }
-  
+
   @media (max-width: 768px) {
     gap: 32px;
     margin-bottom: 40px;
@@ -104,15 +124,14 @@ const LeftContent = styled.div`
   gap: 30px;
   flex: 0 0 500px;
   @media (max-width: 1024px) {
-  flex: 1 1 auto;
+    flex: 1 1 auto;
   }
   @media (max-width: 768px) {
     gap: 24px;
   }
 `;
 
-const Label = styled.div`
-`;
+const Label = styled.div``;
 
 const Title = styled.h3`
   max-width: 500px;
@@ -124,8 +143,7 @@ const RightContent = styled.div`
   align-items: center;
 `;
 
-const Description = styled.p`
-`;
+const Description = styled.p``;
 
 const GridWrapper = styled.div`
   display: grid;
@@ -133,7 +151,7 @@ const GridWrapper = styled.div`
   gap: 0;
   margin-bottom: 20px;
   width: 100%;
-  border: 1px solid #E9E9E9;
+  border: 1px solid #e9e9e9;
   border-radius: 18px;
   overflow: hidden;
   background-color: #fff;
@@ -157,7 +175,7 @@ const StepCard = styled.div`
   gap: 30px;
   align-items: flex-start;
   justify-content: flex-start;
-  border: 1px solid #E9E9E9;
+  border: 1px solid #e9e9e9;
   min-height: 200px;
   height: 100%;
 `;
@@ -170,7 +188,7 @@ const IconWrapper = styled.div`
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.3s ease;
-  
+
   img {
     width: 40px;
     height: 40px;
@@ -182,17 +200,17 @@ const StepContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  
+
   @media (max-width: 768px) {
     gap: 6px;
   }
 `;
 
 const StepTitle = styled.h6`
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   font-weight: 400;
   font-size: 18px;
-  color: #36454F;
+  color: #36454f;
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -200,16 +218,15 @@ const StepTitle = styled.h6`
 `;
 
 const StepDescription = styled.h6`
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   font-weight: 400;
   font-size: 14px;
   line-height: 22px;
-  color: #36454F;
+  color: #36454f;
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 `;
-
 
 export default AboutDisease;

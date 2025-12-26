@@ -12,23 +12,21 @@ import OurJourney from "../components/SurvivorStoriesDetailsComponent/OurJourney
 import LifeAfterTreatment from "../components/SurvivorStoriesDetailsComponent/LifeAfterTreatment/LifeAfterTreatment";
 import TherapyInfo from "../components/SurvivorStoriesDetailsComponent/TherapyInfo/TherapyInfo";
 import OurStory from "../components/SurvivorStoriesComponent/OurStory/OurStory";
+import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
+import { fetchSurvivorStoryBySlug } from "../store/slices/successStoriesSlice";
+import DynamicComponents from "./DynamicComponents";
+import { useParams } from "react-router-dom";
+
 
 const PageWrapper = styled.div`
   width: 100%;
 `;
 
-const FooterWrapper = styled.div`
-  order: 2;
-  width: 100%;
-  margin-top: auto;
-  position: relative;
-  z-index: 0;
-`;
-
 const SurvivorStoriesDetailsPage = () => {
   const dispatch = useDispatch();
-  const globalData = useSelector((state) => state.global?.data);
-  const globalLoading = useSelector((state) => state.global?.loading);
+  const { slug } = useParams();
+  const { data: globalData, loading: globalLoading } = useSelector((state) => state.global);
+  const { survivorStory, loading } = useSelector((state) => state.successStories);
 
   // Fetch global data for navbar and footer
   useEffect(() => {
@@ -40,32 +38,27 @@ const SurvivorStoriesDetailsPage = () => {
     }
   }, [dispatch]);
 
-  // Only render footer when data is ready
-  const shouldShowFooter = !globalLoading && globalData;
+  useEffect(() => {
+    dispatch(fetchSurvivorStoryBySlug(slug));
+  }, [slug, dispatch]);
+
+  if (globalLoading || loading || !survivorStory) {
+    return <LoadingSpinner />
+  }
 
   return (
     <PageWrapper>
       <Header />
-      <Hero sectionClass="survivorStories_sec" />
-
-      <AboutDisease />
-
-      <MyStory />
-
-      <OurJourney />
-
-      <LifeAfterTreatment />
-
-      <TherapyInfo />
-
-      <OurStory />
-
+      <Hero sectionClass="survivorStories_sec" data={survivorStory?.hero}/>
+      <AboutDisease data={survivorStory} />
+      <MyStory data={survivorStory} />
+      <OurJourney data={survivorStory} />
+      <LifeAfterTreatment data={survivorStory} />
+      <TherapyInfo data={survivorStory} />
+      <OurStory data={survivorStory} />
+      <DynamicComponents pageData={survivorStory} pageLoading={loading} showFooter={false} showHeader={false} />
       <Footer />
-      {/* {shouldShowFooter && (
-        <FooterWrapper>
-          <Footer />
-        </FooterWrapper>
-      )} */}
+      
     </PageWrapper>
   );
 };

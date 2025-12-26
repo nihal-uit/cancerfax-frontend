@@ -1718,12 +1718,14 @@ section {
   position: relative;
 }
 
-.ourstory_image_wrap img {
+.ourstory_image_wrap img,
+.ourstory_image_wrap video {
   border-radius: 24px;
   height: 484px;
   width: 100%;
   object-fit: cover;
   -o-object-fit: cover;
+  display: block;
 }
 
 .OurJourney_sec {

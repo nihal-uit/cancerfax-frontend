@@ -1,146 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Nav, Tab, Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
+import { formatMedia } from '@/utils/strapiHelpers';
 
-const HospitalDetailsFacilitiesTabsComponent = () => {
+const HospitalDetailsFacilitiesTabsComponent = ({ data, loading }) => {
+  const [key, setKey] = useState(null);
 
-  const [key, setKey] = useState('first');  // Default active tab
-
-  const FacilitiesData = [
-    {
-      id: 1,
-      facilities_icon: '../images/facilities_icon_1.svg',
-      facilities_title: '200+ patient beds',
-      order: 1
-    },
-    {
-      id: 2,
-      facilities_icon: '../images/facilities_icon_2.svg',
-      facilities_title: '10+ modular operation theatres',
-      order: 2
-    },
-    {
-      id: 3,
-      facilities_icon: '../images/facilities_icon_3.svg',
-      facilities_title: '24×7 emergency and trauma care',
-      order: 3
-    },
-    {
-      id: 4,
-      facilities_icon: '../images/facilities_icon_4.svg',
-      facilities_title: 'Advanced imaging (CT, MRI, X-ray)',
-      order: 4
-    },
-    {
-      id: 5,
-      facilities_icon: '../images/facilities_icon_5.svg',
-      facilities_title: 'Fully equipped laboratory & blood bank',
-      order: 5
-    },
-    {
-      id: 6,
-      facilities_icon: '../images/facilities_icon_6.svg',
-      facilities_title: 'Private, semi-private & deluxe rooms',
-      order: 6
-    },
-    {
-      id: 7,
-      facilities_icon: '../images/facilities_icon_7.svg',
-      facilities_title: 'Telemedicine services',
-      order: 7
-    },
-    {
-      id: 8,
-      facilities_icon: '../images/facilities_icon_8.svg',
-      facilities_title: 'Day care & recovery units',
-      order: 8
-    },
-    {
-      id: 9,
-      facilities_icon: '../images/facilities_icon_9.svg',
-      facilities_title: 'Physiotherapy & rehab center',
-      order: 9
-    },
-    {
-      id: 10,
-      facilities_icon: '../images/facilities_icon_10.svg',
-      facilities_title: 'Ambulance service',
-      order: 10
+  useEffect(() => {
+    if (data && Array.isArray(data) && data.length > 0 && !key) {
+      setKey(data[0]?.id?.toString() || '0');
     }
-  ];
+  }, [data, key]);
+
+  if (loading || !data || !Array.isArray(data) || data.length === 0) {
+    return null;
+  }
+
+  if (!key) {
+    return null;
+  }
 
   return (
     <Tab.Container id="left-tabs-example" activeKey={key} onSelect={(k) => setKey(k)}>
       <Row className='g-4'>
         <Col sm={12}>
           <Nav variant="pills" className="facilities-nav">
-            <Nav.Item>
-              <Nav.Link eventKey="first">General</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="second">Diagnostic Services</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="third">Special Services</Nav.Link>
-            </Nav.Item>
+            {data.map((category, index) => (
+              <Nav.Item key={category?.id || index}>
+                <Nav.Link eventKey={category?.id?.toString() || index.toString()}>
+                  {category?.category_name || `Category ${index + 1}`}
+                </Nav.Link>
+              </Nav.Item>
+            ))}
           </Nav>
         </Col>
         <Col sm={12}>
           <Tab.Content>
-            <Tab.Pane eventKey="first">
-                <GridWrapper>
-                  {FacilitiesData.map((Facilities, index) => {                   
-                    return (
-                      <StepCard 
-                        key={Facilities.id}
-                      >
-                        <IconWrapper>
-                          <img src={Facilities.facilities_icon} alt="" />
-                        </IconWrapper>
+            {data.map((category, categoryIndex) => {
+              const categoryKey = category?.id?.toString() || categoryIndex.toString();
+              const facilities = category?.facilities || [];
+              
+              return (
+                <Tab.Pane key={categoryKey} eventKey={categoryKey}>
+                  <GridWrapper>
+                    {facilities.map((facility, facilityIndex) => (
+                      <StepCard key={facility?.id || facilityIndex}>
+                        {facility?.icon && (
+                          <IconWrapper>
+                            <img src={formatMedia(facility.icon)} alt={facility?.icon?.alternativeText || facility?.details || ''} />
+                          </IconWrapper>
+                        )}
                         <StepContent>
-                          <StepDescription>{Facilities.facilities_title}</StepDescription>
+                          {facility?.details && <StepDescription>{facility.details}</StepDescription>}
                         </StepContent>
                       </StepCard>
-                    );
-                  })}
-                </GridWrapper>
-            </Tab.Pane>
-            <Tab.Pane eventKey="second">
-              <GridWrapper>
-                {FacilitiesData.map((Facilities, index) => {                   
-                  return (
-                    <StepCard 
-                      key={Facilities.id}
-                    >
-                      <IconWrapper>
-                        <img src={Facilities.facilities_icon} alt="" />
-                      </IconWrapper>
-                      <StepContent>
-                        <StepDescription>{Facilities.facilities_title}</StepDescription>
-                      </StepContent>
-                    </StepCard>
-                  );
-                })}
-              </GridWrapper>
-            </Tab.Pane>
-            <Tab.Pane eventKey="third">
-                <GridWrapper>
-                  {FacilitiesData.map((Facilities, index) => {                   
-                    return (
-                      <StepCard 
-                        key={Facilities.id}
-                      >
-                        <IconWrapper>
-                          <img src={Facilities.facilities_icon} alt="" />
-                        </IconWrapper>
-                        <StepContent>
-                          <StepDescription>{Facilities.facilities_title}</StepDescription>
-                        </StepContent>
-                      </StepCard>
-                    );
-                  })}
-                </GridWrapper>
-            </Tab.Pane>
+                    ))}
+                  </GridWrapper>
+                </Tab.Pane>
+              );
+            })}
           </Tab.Content>
         </Col>
       </Row>

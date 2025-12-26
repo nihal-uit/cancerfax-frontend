@@ -1,10 +1,8 @@
 import React from 'react';
-import { getMediaUrl } from '../../../services/api';
-import { formatRichText } from '../../../utils/strapiHelpers';
 import TestimonialsComponent from '../../reusable/TestimonialComponent';
 
 const Testimonials = ({ data, loading }) => {
-  if (loading) {
+  if (loading || !data?.isActive) {
     return null;
   }
 
@@ -16,7 +14,7 @@ const Testimonials = ({ data, loading }) => {
     >
       <div className='containerWrapper'>
         <div className='commContent_wrap z-2 position-relative'>
-          <TestimonialsComponent componentData={data} loading={loading} />
+          <TestimonialsComponent data={data} loading={loading} />
         </div>
       </div>
     </section>

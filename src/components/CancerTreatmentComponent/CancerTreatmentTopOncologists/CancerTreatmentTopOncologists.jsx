@@ -1,49 +1,32 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
+import { formatMedia } from "@/utils/strapiHelpers";
 
-const CancerTreatmentTopOncologists = () => {
-
-  const defaultData = [
-    {
-      id: 1,
-      name: 'Dr Bharat Patodiya',
-      image:
-        "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800",
-    },
-    {
-      id: 2,
-      name: 'Dr Bharat Patodiya',
-      image:
-        "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=800",
-    },
-    {
-      id: 3,
-      name: 'Dr Bharat Patodiya',
-      image:
-        "https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=800",
-    },
-    {
-      id: 4,
-      name: 'Dr Bharat Patodiya',
-      image:
-        "https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800",
-    },
-  ];
-
+const CancerTreatmentTopOncologists = ({ data }) => {
+  const section = data;
+  const doctors = Array.isArray(section?.doctors) ? section.doctors : [];
   const carouselRef = useRef(null);
+
+  if (!section?.isActive || doctors.length === 0) {
+    return null;
+  }
 
   return (
     <section className='topOncologists_sec pb-120'>
       <div className='containerWrapper' style={{overflow: 'hidden'}}>
         <HeaderSection className="commContent_wrap">
           <HeaderContent>
-            <Title className="title-3">Top oncologists in the USA for cancer treatment</Title>
-            <Description className='text-16'>
-              Cancer specialists from top cancer institutes like MD Anderson, Memoral Sloan Kettering, Dana Farber, Mayo Clinic, Boston Choldren’s Hospital etc.
-            </Description>
+            {section?.heading && (
+              <Title className="title-3">{section.heading}</Title>
+            )}
+            {(section?.subHeading || section?.description_text) && (
+              <Description className='text-16'>
+                {section.subHeading || section.description_text}
+              </Description>
+            )}
           </HeaderContent>
         </HeaderSection>        
         <div className="swiper__holder">
@@ -66,18 +49,26 @@ const CancerTreatmentTopOncologists = () => {
             style={{ overflow: "visible" }}
             className="commCircle_navigation"
           >
-            {defaultData.map((defaultdata) => {
-              // Get image URL from Strapi - handle multiple possible structures
+            {doctors.map((doctor) => {
+              const name = [doctor?.first_name, doctor?.last_name]
+                .filter(Boolean)
+                .join(" ");
+              const specialty =
+                doctor?.specialization || doctor?.hospital?.name || "";
+              const doctorImage =
+                formatMedia(doctor?.profilePicture) ||
+                formatMedia(doctor?.hospital?.hospitalImage);
+
+              if (!name && !doctorImage) return null;
+
               return (
-                <SwiperSlide
-                  key={defaultdata.id}
-                >
+                <SwiperSlide key={doctor.id || name}>
                   <TherapyCard>
-                    <CardImage image={defaultdata.image || "./images/theraties-01.png"}>
+                    <CardImage image={doctorImage}>
                       <CardContent>
                         <div className='doctors-text'>
-                          <HospitalName>{defaultdata.name}</HospitalName>
-                          <span>Doctor’s specialty</span>
+                          {name && <HospitalName>{name}</HospitalName>}
+                          {specialty && <span>{specialty}</span>}
                         </div>
                         <ArrowIcon>
                           <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

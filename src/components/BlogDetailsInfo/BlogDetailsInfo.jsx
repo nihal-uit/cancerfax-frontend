@@ -88,10 +88,11 @@ const BlogDetailsInfo = ({ data }) => {
             {data.featured_video ? (
               <div className="featuredMedia mb-4">
                 <video
-                  src={getMediaUrl(data.featured_video)}
                   controls
                   style={{ width: "100%", borderRadius: "8px" }}
-                />
+                >
+                  <source src={getMediaUrl(data.featured_video)} type="video/mp4" />
+                </video>
               </div>
             ) : data.featured_image ? (
               <div className="featuredMedia mb-4">
@@ -283,10 +284,11 @@ const BlogDetailsInfo = ({ data }) => {
                             section?.content?.featured_video
                               ? <div className="featuredMedia">
                                 <video
-                                  src={getMediaUrl(section?.content?.featured_video)}
                                   controls
                                   style={{ width: "100%", borderRadius: "8px" }}
-                                />
+                                >
+                                  <source src={getMediaUrl(section?.content?.featured_video)} type="video/mp4" />
+                                </video>
                               </div>
                             : null
                           }
@@ -358,10 +360,11 @@ const topMedia = (data) => {
     return (
       <div className="featuredMedia">
         <video
-          src={getMediaUrl(data.featured_video)}
           controls
           style={{ width: "100%", borderRadius: "8px" }}
-        />
+        >
+          <source src={getMediaUrl(data.featured_video)} type="video/mp4" />
+        </video>
       </div>
     );
   }

@@ -1,5 +1,6 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { formatMedia, formatRichText } from '@/utils/strapiHelpers';
 
 const BackgroundImage = styled.img`
   position: absolute;
@@ -45,7 +46,7 @@ const ActionButtonsGroup = styled.div`
   }
 `;
 
-const DirectionsButton = styled.button`
+const DirectionsButton = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,7 +74,7 @@ const DirectionsButton = styled.button`
   }
 `;
 
-const IconButton = styled.button`
+const IconButton = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,28 +120,23 @@ const BottomRow = styled.div`
   }
 `;
 
-const SubmitButton = styled.button`
-`;
-
 const Description = styled.p`
   color: ${props => props.theme.colors.white};
 `;
 
-const HospitalDetailsHero = ({ 
-  hospitalName = "Hospital name goes here",
-  backgroundImage = "../images/hospital-details-hero-img.webp",
-  onGetDirections,
-  onShare,
-  onSubmitReports
-}) => {
+const HospitalDetailsHero = ({ data, loading }) => {
+  if (loading || !data?.isActive) {
+    return null;
+  }
+
   return (
     <section className='homeHero_sec'>
 
       <div className='home-hero-banner hospital_details_hero'>
         <div className='ratio'>
           <BackgroundImage
-            src={backgroundImage}
-            alt={hospitalName}
+            src={formatMedia(data?.background_image)}
+            alt={data?.hospital_name || ''}
             loading="lazy"
           />
         </div>
@@ -148,38 +144,46 @@ const HospitalDetailsHero = ({
       <div className='heroContent_wrap'>
         <div className='containerWrapper'>
           <div className='commContent_wrap'>
-          <Tagline className='contentLabel'>Way to cure your curiosity</Tagline>
+          {data?.hospital_title && <Tagline className='contentLabel'>{data?.hospital_title}</Tagline>}
         
           <HeroContentGrid>
             <TopRow>
-              <HospitalName className='title-1'>{hospitalName}</HospitalName>
+              {data?.hospital_name && <HospitalName className='title-1'>{data?.hospital_name}</HospitalName>}
               
               <ActionButtonsGroup>
-                <DirectionsButton onClick={onGetDirections}>
-                  <Icon 
-                    src="../images/icon-location.svg"
-                    alt=""
-                  />
-                  Get Directions
-                </DirectionsButton>
+                {data?.get_directions_url && (
+                  <DirectionsButton to={data?.get_directions_url} target="_blank">
+                    <Icon 
+                      src="../images/icon-location.svg"
+                      alt=""
+                    />
+                    Get Directions
+                  </DirectionsButton>
+                )}
                 
-                <IconButton onClick={onShare}>
-                  <Icon 
-                    src="../images/icon-share.svg"
-                    alt=""
-                  />
-                </IconButton>
+                {data?.share_url && (
+                  <IconButton to={data?.share_url} target='_blank'>
+                    <Icon 
+                      src="../images/icon-share.svg"
+                      alt=""
+                    />
+                  </IconButton>
+                )}
               </ActionButtonsGroup>
             </TopRow>
             
             <BottomRow>
-              <SubmitButton className='btn btn-md btn-pink-solid' onClick={onSubmitReports}>
-                Submit reports & check eligibility
-              </SubmitButton>
+              {data?.cta?.URL && (
+                <Link className='btn btn-md btn-pink-solid' to={data?.cta?.URL} target={data?.cta?.target || '_self'}>
+                  {data?.cta?.text || 'Submit reports & check eligibility'}
+                </Link>
+              )}
               
-              <Description className='text-16'>
-                CancerFax helps patients find cutting-edge treatments and ongoing clinical trials across top medical centers. From report review to travel support, we guide you every step of the way.
-              </Description>
+              {data?.hospital_description && (
+                <Description className='text-16'>
+                  {formatRichText(data?.hospital_description)}
+                </Description>
+              )}
             </BottomRow>
           </HeroContentGrid>          
          </div>

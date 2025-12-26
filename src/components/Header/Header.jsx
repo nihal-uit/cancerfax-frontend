@@ -1,10 +1,1374 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { setCurrentLanguage } from '../../store/slices/navigationSlice';
 import { getMediaUrl } from '../../services/api';
 import { formatMedia } from '../../utils/strapiHelpers';
+import { fetchMenuData } from '../../store/slices/globalSlice';
+
+const Header = ({ darkText = false }) => {
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  // Generic dropdown state management using item IDs
+  const [openDropdowns, setOpenDropdowns] = useState({});
+  const [selectedTreatmentCategory, setSelectedTreatmentCategory] =
+    useState(null);
+  const [hoverTimeouts, setHoverTimeouts] = useState({});
+  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({
+    about: false,
+    hospitals: false,
+    treatments: false,
+    clinicalTrials: false,
+    resources: false,
+  });
+  const [mobileTreatmentCategory, setMobileTreatmentCategory] = useState(null);
+
+  const globalData = useSelector((state) => state.global?.data);
+  const globalLoading = useSelector((state) => state.global?.loading);
+  const { menuData, loading: menuLoading } = useSelector(
+    (state) => state.global
+  );
+
+  useEffect(() => {
+    if (!menuData && !menuLoading) {
+      dispatch(fetchMenuData());
+    }
+  }, [dispatch, menuData, menuLoading]);
+
+  const { currentLanguage } = useSelector((state) => state.navigation);
+
+  const headerMenuRaw = globalData?.headerMenu;
+  const headerMenu = headerMenuRaw?.data?.attributes || headerMenuRaw;
+
+  const globalCtaLabel = globalData?.ctaLabel;
+  const globalCtaUrl = globalData?.ctaUrl;
+
+  const navbarDataRaw = globalData?.navbar;
+  const navbarData = navbarDataRaw?.data?.attributes || navbarDataRaw || null;
+  const navbarMenu = navbarData?.menu;
+
+  const navbarCta = navbarData?.cta || null;
+
+  // Legacy navbar structure (fallback - check for menuItems directly)
+  const legacyMenuItems = navbarData?.menuItems || [];
+
+  const languages = navbarData?.languages || [];
+  const buttons = navbarData?.buttons || null;
+
+  // Transform Strapi menu structure to component format
+  const transformMenuItems = (menu) => {
+    if (!menu || !menu.items) return [];
+
+    // Get top-level items (no parent)
+    const topLevelItems = menu.items.filter(
+      (item) => !item.parent || !item.parent.id
+    );
+
+    // Sort by order
+    topLevelItems.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    // Transform to component format
+    return topLevelItems.map((item) => ({
+      id: item.id,
+      label: item.label || '',
+      link: item.external_url || item.internal_path || '#',
+      type: item.type || 'link',
+      isClickable: item.is_clickable !== false,
+      order: item.order || 0,
+      children: item.children
+        ? transformMenuItems({ items: item.children })
+        : null,
+      links: item.links || null, // For mega menu component links
+      icon: item.icon || null,
+    }));
+  };
+
+  // Extract menu items from new structure (headerMenu) or navbar.menu or legacy
+  const strapiMenuItems = headerMenu
+    ? transformMenuItems(headerMenu)
+    : navbarMenu
+    ? transformMenuItems(navbarMenu)
+    : [];
+  const menuItems =
+    strapiMenuItems.length > 0 ? strapiMenuItems : legacyMenuItems;
+
+  // CTA: prioritize new structure (globalCtaLabel/globalCtaUrl), then navbar.cta, then legacy buttons
+  // Actual API structure: navbar.cta has { text, URL, target, variant }
+  const actualCtaLabel = globalCtaLabel || navbarCta?.text || null;
+  const actualCtaUrl = globalCtaUrl || navbarCta?.URL || null;
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [isMenuOpen]);
+
+  // Close menus when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (languageMenuOpen && !event.target.closest('[data-language-menu]')) {
+        setLanguageMenuOpen(false);
+      }
+      // Generic dropdown close handler
+      Object.keys(openDropdowns).forEach((dropdownKey) => {
+        if (
+          openDropdowns[dropdownKey] &&
+          !event.target.closest(`[data-dropdown="${dropdownKey}"]`)
+        ) {
+          setOpenDropdowns((prev) => ({
+            ...prev,
+            [dropdownKey]: false,
+          }));
+        }
+      });
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [languageMenuOpen, openDropdowns]);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  const handleLanguageToggle = () => {
+    setLanguageMenuOpen(!languageMenuOpen);
+  };
+
+  const handleLanguageSelect = (language) => {
+    dispatch(setCurrentLanguage(language));
+    setLanguageMenuOpen(false);
+  };
+
+  // Generic dropdown handlers
+  const clearHoverTimeout = (key) => {
+    if (hoverTimeouts[key]) {
+      clearTimeout(hoverTimeouts[key]);
+      setHoverTimeouts((prev) => {
+        const newTimeouts = { ...prev };
+        delete newTimeouts[key];
+        return newTimeouts;
+      });
+    }
+  };
+
+  const setHoverTimeout = (key, callback, delay = 300) => {
+    clearHoverTimeout(key);
+    const timeout = setTimeout(callback, delay);
+    setHoverTimeouts((prev) => ({
+      ...prev,
+      [key]: timeout,
+    }));
+  };
+
+  // Generic dropdown toggle handler
+  const handleDropdownToggle = (dropdownKey) => (e) => {
+    e.preventDefault();
+    setOpenDropdowns((prev) => ({
+      ...prev,
+      [dropdownKey]: !prev[dropdownKey],
+    }));
+  };
+
+  // Generic dropdown mouse enter handler
+  const handleDropdownMouseEnter = (dropdownKey) => () => {
+    if (window.innerWidth > 768) {
+      // Close all other dropdowns
+      setOpenDropdowns((prev) => {
+        const newState = {};
+        Object.keys(prev).forEach((key) => {
+          newState[key] = false;
+        });
+        return newState;
+      });
+      // Clear all timeouts
+      Object.keys(hoverTimeouts).forEach((key) => clearHoverTimeout(key));
+      clearHoverTimeout(dropdownKey);
+      setOpenDropdowns((prev) => ({
+        ...prev,
+        [dropdownKey]: true,
+      }));
+    }
+  };
+
+  // Generic dropdown mouse leave handler
+  const handleDropdownMouseLeave = (dropdownKey) => (e) => {
+    if (window.innerWidth > 768) {
+      const relatedTarget = e.relatedTarget;
+      const wrapper = e.currentTarget;
+
+      // Check if mouse is moving to another nav item or its dropdown
+      if (relatedTarget && relatedTarget.closest) {
+        const isMovingToNavItem = relatedTarget.closest('[data-dropdown]');
+        if (isMovingToNavItem) {
+          return;
+        }
+        if (wrapper.contains(relatedTarget)) {
+          return;
+        }
+      }
+
+      setHoverTimeout(
+        dropdownKey,
+        () => {
+          setOpenDropdowns((prev) => ({
+            ...prev,
+            [dropdownKey]: false,
+          }));
+        },
+        250
+      );
+    }
+  };
+
+  // Generic dropdown close handler
+  const handleDropdownMenuClose = (dropdownKey) => () => {
+    setOpenDropdowns((prev) => ({
+      ...prev,
+      [dropdownKey]: false,
+    }));
+  };
+
+  const toggleMobileSubMenu = (menuKey) => {
+    setMobileSubMenuOpen((prev) => ({
+      ...prev,
+      [menuKey]: !prev[menuKey],
+    }));
+  };
+
+  const defaultLanguages = [
+    { id: 1, name: 'English', code: 'en', flag: '🇬🇧' },
+    { id: 2, name: 'Spanish', code: 'es', flag: '🇪🇸' },
+    { id: 3, name: 'French', code: 'fr', flag: '🇫🇷' },
+    { id: 4, name: 'German', code: 'de', flag: '🇩🇪' },
+    { id: 5, name: 'Chinese', code: 'zh', flag: '🇨🇳' },
+  ];
+
+  // Transform menu data coming from `/api/menu-items` (menuData in global slice)
+  // Sample structure reference: menu.json at project root
+  const transformMenuDataFromApi = (rawMenuData) => {
+    if (!rawMenuData || !Array.isArray(rawMenuData)) return [];
+
+    const normalizeItem = (item) => {
+      if (!item) return null;
+      // Handle Strapi shape: { id, attributes: { ...fields } }
+      if (item.attributes) {
+        return { id: item.id, ...item.attributes };
+      }
+      return item;
+    };
+
+    const mapItem = (rawItem) => {
+      const item = normalizeItem(rawItem);
+      if (!item) return null;
+
+      const children = Array.isArray(item.children)
+        ? item.children.map(mapItem).filter(Boolean)
+        : [];
+
+      return {
+        id: item.id,
+        label: (item.label || '').trim(),
+        slug: item.slug,
+        type: item.type || 'link',
+        isClickable: item.is_clickable !== false,
+        is_clickable: item.is_clickable,
+        order: item.order || 0,
+        internal_path: item.internal_path,
+        external_url: item.external_url,
+        link: item.external_url || item.internal_path || '#',
+        children,
+      };
+    };
+
+    // Top-level items are those without a parent
+    const normalized = rawMenuData.map(normalizeItem).filter(Boolean);
+    const topLevelItems = normalized.filter(
+      (item) => !item.parent || !item.parent.id
+    );
+
+    topLevelItems.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    return topLevelItems.map(mapItem).filter(Boolean);
+  };
+
+  const apiMenuItems =
+    menuData && Array.isArray(menuData)
+      ? transformMenuDataFromApi(menuData)
+      : [];
+
+  const navigationLinks =
+    apiMenuItems && apiMenuItems.length > 0
+      ? apiMenuItems
+      : menuItems && menuItems.length > 0
+      ? menuItems
+      : globalLoading || menuLoading
+      ? []
+      : [];
+
+  const extractLogoUrl = useCallback((media) => {
+    if (!media) return null;
+
+    if (typeof media === 'string') {
+      const trimmed = media.trim();
+      if (!trimmed) return null;
+      return getMediaUrl(trimmed);
+    }
+
+    // Handle Strapi v4 media structure: { id, name, hash, url, ... }
+    // When populated, logo has: { id, documentId, name, hash, url, ... }
+    if (media.url) {
+      const trimmed =
+        typeof media.url === 'string' ? media.url.trim() : media.url;
+      if (!trimmed) return null;
+      return getMediaUrl(trimmed);
+    }
+
+    // Handle nested data.attributes.url structure
+    if (media.data?.attributes?.url) {
+      const trimmed =
+        media.data.attributes.url?.trim?.() ?? media.data.attributes.url;
+      if (!trimmed) return null;
+      return getMediaUrl(trimmed);
+    }
+
+    if (media.attributes?.url) {
+      const trimmed = media.attributes.url?.trim?.() ?? media.attributes.url;
+      if (!trimmed) return null;
+      return getMediaUrl(trimmed);
+    }
+
+    // Some Strapi responses might nest the media object deeper
+    if (Array.isArray(media.data) && media.data.length > 0) {
+      const nestedAttributesUrl = media.data[0]?.attributes?.url;
+      if (nestedAttributesUrl) {
+        return getMediaUrl(nestedAttributesUrl);
+      }
+    }
+
+    // Handle hash-based URL construction (Strapi v4 pattern)
+    // If we have hash and name, construct URL: /uploads/{hash}_{name}
+    if (media.hash && media.name) {
+      const hash = media.hash.trim();
+      const name = media.name.trim();
+      return getMediaUrl(`/uploads/${hash}_${name}`);
+    }
+
+    if (media.logo && media.logo !== media) {
+      return extractLogoUrl(media.logo);
+    }
+
+    // As a last resort, check common fields
+    if (media.src) {
+      return getMediaUrl(media.src);
+    }
+
+    return null;
+  }, []);
+
+  // Languages handling
+  const availableLanguages =
+    languages && languages.length > 0 ? languages : defaultLanguages;
+  const selectedLanguage = currentLanguage || availableLanguages[0];
+
+  // Language flag/icon handling - check multiple possible fields
+  const languageIcon = selectedLanguage?.flagImage?.data?.attributes?.url
+    ? getMediaUrl(selectedLanguage.flagImage.data.attributes.url)
+    : selectedLanguage?.flag?.data?.attributes?.url
+    ? getMediaUrl(selectedLanguage.flag.data.attributes.url)
+    : null;
+
+  // Button handling - use actual API structure
+  // Priority: globalCtaLabel/globalCtaUrl > navbar.cta > legacy buttons > default
+  const connectButtonText =
+    actualCtaLabel ||
+    buttons?.connectButtonText ||
+    buttons?.connectButton?.text ||
+    'Connect With Us';
+  const connectButtonLink =
+    actualCtaUrl ||
+    buttons?.connectButtonLink ||
+    buttons?.connectButton?.link ||
+    '/contact';
+
+  const [isSticky, setIsSticky] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsSticky(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // run on mount in case page is already scrolled
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Helper function to check if a link is active
+  const isLinkActive = useCallback((link) => {
+    if (!link || link === '#') return false;
+    
+    // Remove leading/trailing slashes and normalize
+    const normalizePath = (path) => {
+      if (!path) return '';
+      // Remove protocol and domain if present
+      const cleanPath = path.replace(/^https?:\/\/[^/]+/, '');
+      return cleanPath.replace(/^\/+|\/+$/g, '').toLowerCase();
+    };
+
+    const currentPath = normalizePath(location.pathname);
+    const linkPath = normalizePath(link);
+
+    // Exact match
+    if (currentPath === linkPath) return true;
+
+    // For home page
+    if (linkPath === '' && currentPath === '') return true;
+
+    // Check if current path starts with link path (for nested routes)
+    // This allows parent paths to be highlighted when child pages are active
+    // e.g., /treatments should be active when on /treatments/car-t-cell
+    // Only match if linkPath is not empty and current path is a child of the link path
+    if (linkPath && linkPath !== currentPath) {
+      // Check if current path is a child route (starts with linkPath + '/')
+      if (currentPath.startsWith(linkPath + '/')) {
+        return true;
+      }
+    }
+
+    return false;
+  }, [location.pathname]);
+
+  return (
+    <NavContainer
+      $darkText={darkText}
+      className={`header ${isSticky ? 'header-fixed' : ''} ${
+        darkText ? '' : 'header-overlay'
+      }`}
+    >
+      <NavContent>
+        <Logo href='/'>
+          {darkText ? (
+            <img src={'/images/logo-dark.svg'} alt='CancerFax' />
+          ) : (
+            <img src={formatMedia(globalData?.navbarLogoUrl)} alt='CancerFax' />
+          )}
+        </Logo>
+
+        <NavMenu $darkText={darkText}>
+          {navigationLinks.map((item, index) => {
+            const label = (item.label || '').trim();
+            const itemType = item.type || 'link';
+            const children = Array.isArray(item.children) ? item.children : [];
+            const hasChildren = children.length > 0;
+            const dropdownKey = item.id || item.slug || `menu-${index}`;
+
+            // Get the link URL - prioritize internal_path, then external_url, then item.link
+            const itemLink =
+              item.internal_path ||
+              item.external_url ||
+              item.link ||
+              `#${label.toLowerCase().replace(/\s+/g, '-')}`;
+            
+            // Check if this item or any of its children is active
+            const checkItemActive = (menuItem) => {
+              const menuItemLink =
+                menuItem.internal_path ||
+                menuItem.external_url ||
+                menuItem.link ||
+                '#';
+              if (isLinkActive(menuItemLink)) return true;
+              if (Array.isArray(menuItem.children)) {
+                return menuItem.children.some(checkItemActive);
+              }
+              return false;
+            };
+            const isItemActive = checkItemActive(item);
+
+            // Determine if item should be clickable based on type and children
+            // 1. Category without children -> clickable
+            // 2. Subcategory without children -> clickable
+            // 3. Link -> always clickable
+            const shouldBeClickable =
+              itemType === 'link' ||
+              (itemType === 'category' && !hasChildren) ||
+              (itemType === 'subcategory' && !hasChildren);
+
+            // Determine if this item should have a dropdown
+            // Only show dropdown if category has children
+            const shouldShowDropdown = hasChildren && itemType === 'category';
+
+            // Check if children are subcategories (for TreatmentsDropdown layout)
+            const hasSubcategories = children.some(
+              (child) => (child.type || '').toLowerCase() === 'subcategory'
+            );
+
+            // If no dropdown needed, render as simple clickable link
+            // This handles: categories without children, subcategories without children, and links
+            if (!shouldShowDropdown) {
+              // Use isItemActive which checks both the item itself and all its children
+              return (
+                <NavLink
+                  key={item.id || index}
+                  href={shouldBeClickable ? itemLink : '#'}
+                  $darkText={darkText}
+                  $isActive={isItemActive}
+                >
+                  {label}
+                </NavLink>
+              );
+            }
+
+            // If item has subcategories, check if any have children
+            if (hasSubcategories) {
+              // Separate subcategories: those with children (for selection) and those without (render as links)
+              const subcategoriesWithChildren = children.filter((child) => {
+                const isSubcategory =
+                  (child.type || '').toLowerCase() === 'subcategory';
+                const hasChildren =
+                  Array.isArray(child.children) && child.children.length > 0;
+                return isSubcategory && hasChildren;
+              });
+
+              const subcategoriesWithoutChildren = children.filter((child) => {
+                const isSubcategory =
+                  (child.type || '').toLowerCase() === 'subcategory';
+                const hasChildren =
+                  Array.isArray(child.children) && child.children.length > 0;
+                return isSubcategory && !hasChildren;
+              });
+
+              // Only show left column if there are subcategories with children
+              const hasSelectableSubcategories =
+                subcategoriesWithChildren.length > 0;
+
+              // If no subcategories have children, use standard AboutDropdown (narrow width)
+              if (
+                !hasSelectableSubcategories &&
+                subcategoriesWithoutChildren.length > 0
+              ) {
+                return (
+                  <NavLinkWrapper
+                    key={item.id || index}
+                    data-dropdown={dropdownKey}
+                    onMouseEnter={handleDropdownMouseEnter(dropdownKey)}
+                    onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
+                  >
+                    <NavLink
+                      href={itemLink}
+                      onClick={handleDropdownToggle(dropdownKey)}
+                      $darkText={darkText}
+                      $isActive={isItemActive}
+                    >
+                      {label}
+                    </NavLink>
+                    <AboutDropdown
+                      isOpen={openDropdowns[dropdownKey] || false}
+                      onMouseEnter={handleDropdownMouseEnter(dropdownKey)}
+                      onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
+                    >
+                      <DropdownHeader>
+                        <DropdownHeaderIcon hasIcon={children.length > 0}>
+                          {children.length > 0 && (
+                            <svg
+                              viewBox='0 0 24 24'
+                              fill='none'
+                              xmlns='http://www.w3.org/2000/svg'
+                            >
+                              <path
+                                d='M19 14C19 15.3261 18.4732 16.5979 17.5355 17.5355C16.5979 18.4732 15.3261 19 14 19C12.6739 19 11.4021 18.4732 10.4645 17.5355C9.52678 16.5979 9 15.3261 9 14C9 12.6739 9.52678 11.4021 10.4645 10.4645C11.4021 9.52678 12.6739 9 14 9C15.3261 9 16.5979 9.52678 17.5355 10.4645C18.4732 11.4021 19 12.6739 19 14Z'
+                                stroke='currentColor'
+                                strokeWidth='2'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                              />
+                              <path
+                                d='M12 6L8 10H11V18H17V10H20L16 6H12Z'
+                                stroke='currentColor'
+                                strokeWidth='2'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                              />
+                            </svg>
+                          )}
+                        </DropdownHeaderIcon>
+                        <DropdownHeaderText>{label}</DropdownHeaderText>
+                      </DropdownHeader>
+                      {subcategoriesWithoutChildren.map((subcategory) => {
+                        const subcategoryUrl =
+                          subcategory.internal_path ||
+                          subcategory.external_url ||
+                          subcategory.link ||
+                          '#';
+                        const isSubcategoryActive = isLinkActive(subcategoryUrl);
+                        return (
+                          <DropdownMenuItem
+                            key={subcategory.id}
+                            to={subcategoryUrl}
+                            onClick={handleDropdownMenuClose(dropdownKey)}
+                            $isActive={isSubcategoryActive}
+                          >
+                            <MenuItemIndicator />
+                            <MenuItemText>
+                              {(subcategory.label || '').trim()}
+                            </MenuItemText>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </AboutDropdown>
+                  </NavLinkWrapper>
+                );
+              }
+
+              // If there are subcategories with children, use TreatmentsDropdown (two-column layout)
+              const fallbackCategoryKey =
+                subcategoriesWithChildren[0]?.slug ||
+                subcategoriesWithChildren[0]?.id ||
+                null;
+              const effectiveSelectedCategory =
+                selectedTreatmentCategory || fallbackCategoryKey;
+
+              const activeCategory =
+                subcategoriesWithChildren.find(
+                  (cat) => (cat.slug || cat.id) === effectiveSelectedCategory
+                ) || subcategoriesWithChildren[0];
+
+              // Get links from active category (if it has children)
+              const activeLinks = Array.isArray(activeCategory?.children)
+                ? activeCategory.children.filter(
+                    (child) => (child.type || '').toLowerCase() === 'link'
+                  )
+                : [];
+
+              // Right column should show:
+              // 1. Links from selected subcategory (if it has links)
+              // 2. OR subcategories without children (if selected subcategory has no links)
+              const showActiveCategoryLinks = activeLinks.length > 0;
+              const showSubcategoriesAsLinks =
+                subcategoriesWithoutChildren.length > 0 &&
+                !showActiveCategoryLinks;
+
+              return (
+                <NavLinkWrapper
+                  key={item.id || index}
+                  data-dropdown={dropdownKey}
+                  onMouseEnter={handleDropdownMouseEnter(dropdownKey)}
+                  onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
+                >
+                  <NavLink
+                    href={itemLink}
+                    onClick={handleDropdownToggle(dropdownKey)}
+                    $darkText={darkText}
+                    $isActive={isItemActive}
+                  >
+                    {label}
+                  </NavLink>
+                  <TreatmentsDropdown
+                    isOpen={openDropdowns[dropdownKey] || false}
+                    onMouseEnter={handleDropdownMouseEnter(dropdownKey)}
+                    onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
+                  >
+                    <DropdownHeader>
+                      <DropdownHeaderIcon hasIcon={true}>
+                        <svg
+                          viewBox='0 0 24 24'
+                          fill='none'
+                          xmlns='http://www.w3.org/2000/svg'
+                        >
+                          <path
+                            d='M12 2L2 7L12 12L22 7L12 2Z'
+                            stroke='currentColor'
+                            strokeWidth='2'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                          />
+                          <path
+                            d='M2 17L12 22L22 17'
+                            stroke='currentColor'
+                            strokeWidth='2'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                          />
+                          <path
+                            d='M2 12L12 17L22 12'
+                            stroke='currentColor'
+                            strokeWidth='2'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                          />
+                        </svg>
+                      </DropdownHeaderIcon>
+                      <DropdownHeaderText>{label}</DropdownHeaderText>
+                    </DropdownHeader>
+                    <TreatmentsContent>
+                      <TreatmentsColumn>
+                        {subcategoriesWithChildren.map((category) => {
+                          const categoryKey = category.slug || category.id;
+                          const isActive =
+                            categoryKey === effectiveSelectedCategory;
+
+                          return (
+                            <TreatmentCategoryItem
+                              key={category.id}
+                              active={isActive}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedTreatmentCategory(categoryKey);
+                              }}
+                              onMouseEnter={(e) => {
+                                e.stopPropagation();
+                                if (window.innerWidth > 768) {
+                                  clearHoverTimeout(dropdownKey);
+                                }
+                              }}
+                            >
+                              {isActive ? null : <MenuItemIndicator />}
+                              <MenuItemText>
+                                {(category.label || '').trim()}
+                              </MenuItemText>
+                            </TreatmentCategoryItem>
+                          );
+                        })}
+                      </TreatmentsColumn>
+                      {(showActiveCategoryLinks ||
+                        showSubcategoriesAsLinks) && (
+                        <TreatmentsColumn>
+                          <TreatmentSubItems>
+                            {showActiveCategoryLinks &&
+                              activeLinks.map((link) => {
+                                const linkUrl =
+                                  link.internal_path ||
+                                  link.external_url ||
+                                  link.link ||
+                                  '#';
+                                const isLinkItemActive = isLinkActive(linkUrl);
+                                return (
+                                  <DropdownMenuItem
+                                    key={link.id}
+                                    to={linkUrl}
+                                    onClick={handleDropdownMenuClose(
+                                      dropdownKey
+                                    )}
+                                    $isActive={isLinkItemActive}
+                                  >
+                                    <MenuItemIndicator />
+                                    <MenuItemText>
+                                      {(link.label || '').trim()}
+                                    </MenuItemText>
+                                  </DropdownMenuItem>
+                                );
+                              })}
+                            {showSubcategoriesAsLinks &&
+                              subcategoriesWithoutChildren.map(
+                                (subcategory) => {
+                                  const subcategoryUrl =
+                                    subcategory.internal_path ||
+                                    subcategory.external_url ||
+                                    subcategory.link ||
+                                    '#';
+                                  const isSubcategoryActive = isLinkActive(subcategoryUrl);
+                                  return (
+                                    <DropdownMenuItem
+                                      key={subcategory.id}
+                                      to={subcategoryUrl}
+                                      onClick={handleDropdownMenuClose(
+                                        dropdownKey
+                                      )}
+                                      $isActive={isSubcategoryActive}
+                                    >
+                                      <MenuItemIndicator />
+                                      <MenuItemText>
+                                        {(subcategory.label || '').trim()}
+                                      </MenuItemText>
+                                    </DropdownMenuItem>
+                                  );
+                                }
+                              )}
+                          </TreatmentSubItems>
+                        </TreatmentsColumn>
+                      )}
+                    </TreatmentsContent>
+                  </TreatmentsDropdown>
+                </NavLinkWrapper>
+              );
+            }
+
+            // Otherwise, use standard AboutDropdown (single column)
+            return (
+              <NavLinkWrapper
+                key={item.id || index}
+                data-dropdown={dropdownKey}
+                onMouseEnter={handleDropdownMouseEnter(dropdownKey)}
+                onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
+              >
+                <NavLink
+                  href={itemLink}
+                  onClick={handleDropdownToggle(dropdownKey)}
+                  $darkText={darkText}
+                  $isActive={isItemActive}
+                >
+                  {label}
+                </NavLink>
+                {children.length > 0 && (
+                  <AboutDropdown
+                    isOpen={openDropdowns[dropdownKey] || false}
+                    onMouseEnter={handleDropdownMouseEnter(dropdownKey)}
+                    onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
+                  >
+                    <DropdownHeader>
+                      <DropdownHeaderIcon hasIcon={children.length > 0}>
+                        {children.length > 0 && (
+                          <svg
+                            viewBox='0 0 24 24'
+                            fill='none'
+                            xmlns='http://www.w3.org/2000/svg'
+                          >
+                            <path
+                              d='M19 14C19 15.3261 18.4732 16.5979 17.5355 17.5355C16.5979 18.4732 15.3261 19 14 19C12.6739 19 11.4021 18.4732 10.4645 17.5355C9.52678 16.5979 9 15.3261 9 14C9 12.6739 9.52678 11.4021 10.4645 10.4645C11.4021 9.52678 12.6739 9 14 9C15.3261 9 16.5979 9.52678 17.5355 10.4645C18.4732 11.4021 19 12.6739 19 14Z'
+                              stroke='currentColor'
+                              strokeWidth='2'
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                            />
+                            <path
+                              d='M12 6L8 10H11V18H17V10H20L16 6H12Z'
+                              stroke='currentColor'
+                              strokeWidth='2'
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                            />
+                          </svg>
+                        )}
+                      </DropdownHeaderIcon>
+                      <DropdownHeaderText>{label}</DropdownHeaderText>
+                    </DropdownHeader>
+                    {children.map((child) => {
+                      // Get child link - prioritize internal_path, then external_url, then link
+                      const childLink =
+                        child.internal_path ||
+                        child.external_url ||
+                        child.link ||
+                        '#';
+                      const childHasChildren =
+                        Array.isArray(child.children) &&
+                        child.children.length > 0;
+                      // Subcategory without children should be clickable
+                      const childIsClickable =
+                        child.type === 'link' ||
+                        (child.type === 'subcategory' &&
+                          !childHasChildren &&
+                          child.is_clickable !== false);
+                      const isChildActive = isLinkActive(childLink);
+
+                      return (
+                        <DropdownMenuItem
+                          key={child.id}
+                          to={childIsClickable ? childLink : '#'}
+                          onClick={handleDropdownMenuClose(dropdownKey)}
+                          $isActive={isChildActive}
+                        >
+                          <MenuItemIndicator />
+                          <MenuItemText>
+                            {(child.label || '').trim()}
+                          </MenuItemText>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </AboutDropdown>
+                )}
+              </NavLinkWrapper>
+            );
+          })}
+        </NavMenu>
+
+        <NavButtons>
+          <LanguageWrapper data-language-menu>
+            <LanguageButton
+              $darkText={darkText}
+              onClick={handleLanguageToggle}
+              aria-label='Change Language'
+            >
+              {languageIcon ? (
+                <img
+                  src={languageIcon}
+                  alt={selectedLanguage?.name || 'Language'}
+                />
+              ) : // Show flag emoji or default UK Flag SVG
+              selectedLanguage?.flag &&
+                typeof selectedLanguage.flag === 'string' ? (
+                <span style={{ fontSize: '22px', lineHeight: '16px' }}>
+                  {selectedLanguage.flag}
+                </span>
+              ) : (
+                <svg width='35' height='35' viewBox='0 0 35 35' fill='none'>
+                  <circle cx='17.5' cy='17.5' r='17.5' fill='#012169' />
+                  <path
+                    d='M3.5 6.5L17.5 17.5M31.5 28.5L17.5 17.5M17.5 17.5L31.5 6.5M17.5 17.5L3.5 28.5'
+                    stroke='white'
+                    strokeWidth='2'
+                  />
+                  <path
+                    d='M3.5 6.5L17.5 17.5M31.5 28.5L17.5 17.5M17.5 17.5L31.5 6.5M17.5 17.5L3.5 28.5'
+                    stroke='#C8102E'
+                    strokeWidth='1'
+                  />
+                  <path
+                    d='M0 17.5H35M17.5 0V35'
+                    stroke='white'
+                    strokeWidth='4'
+                  />
+                  <path
+                    d='M0 17.5H35M17.5 0V35'
+                    stroke='#C8102E'
+                    strokeWidth='2.5'
+                  />
+                </svg>
+              )}
+            </LanguageButton>
+            <LanguageDropdown isOpen={languageMenuOpen}>
+              {availableLanguages.map((lang) => (
+                <LanguageOption
+                  key={lang.id}
+                  isActive={selectedLanguage?.id === lang.id}
+                  onClick={() => handleLanguageSelect(lang)}
+                >
+                  <LanguageFlag>
+                    {lang.flagImage?.data?.attributes?.url ? (
+                      <img
+                        src={getMediaUrl(lang.flagImage.data.attributes.url)}
+                        alt={lang.name}
+                      />
+                    ) : lang.flag?.data?.attributes?.url ? (
+                      <img
+                        src={getMediaUrl(lang.flag.data.attributes.url)}
+                        alt={lang.name}
+                      />
+                    ) : typeof lang.flag === 'string' ? (
+                      <span className='flag-text'>{lang.flag}</span>
+                    ) : (
+                      <span className='flag-text'>🌐</span>
+                    )}
+                  </LanguageFlag>
+                  <LanguageLabel>{lang.name}</LanguageLabel>
+                </LanguageOption>
+              ))}
+            </LanguageDropdown>
+          </LanguageWrapper>
+          <ConnectButton to={connectButtonLink}>
+            {connectButtonText}
+          </ConnectButton>
+          <HamburgerButton
+            onClick={toggleMenu}
+            isOpen={isMenuOpen}
+            $darkText={darkText}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </HamburgerButton>
+        </NavButtons>
+      </NavContent>
+
+      <MobileMenu isOpen={isMenuOpen}>
+        {navigationLinks.map((item, index) => {
+          const itemLink =
+            item.internal_path ||
+            item.external_url ||
+            item.link ||
+            `#${(item.label || '').toLowerCase().replace(/\s+/g, '-')}`;
+          
+          // Check if this item or any of its children is active (recursive check)
+          const checkItemActive = (menuItem) => {
+            const menuItemLink =
+              menuItem.internal_path ||
+              menuItem.external_url ||
+              menuItem.link ||
+              '#';
+            if (isLinkActive(menuItemLink)) return true;
+            if (Array.isArray(menuItem.children)) {
+              return menuItem.children.some(checkItemActive);
+            }
+            return false;
+          };
+          const isItemActive = checkItemActive(item);
+          
+          if (item.label === 'About') {
+            return (
+              <MobileNavItem key={index}>
+                <MobileNavItemHeader
+                  onClick={() => toggleMobileSubMenu('about')}
+                  isOpen={mobileSubMenuOpen.about}
+                  $isActive={isItemActive}
+                >
+                  <span>{item.label}</span>
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      d='M6 9L12 15L18 9'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                </MobileNavItemHeader>
+                <MobileSubMenu isOpen={mobileSubMenuOpen.about}>
+                  <MobileSubMenuItem to='/about-us' onClick={closeMenu}>
+                    About Us
+                  </MobileSubMenuItem>
+                  <MobileSubMenuItem to='/specialisation' onClick={closeMenu}>
+                    Our Specialisation
+                  </MobileSubMenuItem>
+                </MobileSubMenu>
+              </MobileNavItem>
+            );
+          }
+
+          if (item.label === 'Hospitals & Doctors') {
+            return (
+              <MobileNavItem key={index}>
+                <MobileNavItemHeader
+                  onClick={() => toggleMobileSubMenu('hospitals')}
+                  isOpen={mobileSubMenuOpen.hospitals}
+                  $isActive={isItemActive}
+                >
+                  <span>{item.label}</span>
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      d='M6 9L12 15L18 9'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                </MobileNavItemHeader>
+                <MobileSubMenu isOpen={mobileSubMenuOpen.hospitals}>
+                  <MobileSubMenuItem to='/hospitals' onClick={closeMenu}>
+                    Hospitals
+                  </MobileSubMenuItem>
+                  <MobileSubMenuItem to='/doctors' onClick={closeMenu}>
+                    Doctors
+                  </MobileSubMenuItem>
+                </MobileSubMenu>
+              </MobileNavItem>
+            );
+          }
+
+          if (item.label === 'Treatments') {
+            return (
+              <MobileNavItem key={index}>
+                <MobileNavItemHeader
+                  onClick={() => toggleMobileSubMenu('treatments')}
+                  isOpen={mobileSubMenuOpen.treatments}
+                  $isActive={isItemActive}
+                >
+                  <span>{item.label}</span>
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      d='M6 9L12 15L18 9'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                </MobileNavItemHeader>
+                <MobileSubMenu isOpen={mobileSubMenuOpen.treatments}>
+                  <MobileTreatmentCategoryItem
+                    onClick={() =>
+                      setMobileTreatmentCategory(
+                        mobileTreatmentCategory === 'car-t-cell'
+                          ? null
+                          : 'car-t-cell'
+                      )
+                    }
+                    isOpen={mobileTreatmentCategory === 'car-t-cell'}
+                  >
+                    <span>CAR T-Cell therapy</span>
+                    <svg
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      xmlns='http://www.w3.org/2000/svg'
+                    >
+                      <path
+                        d='M6 9L12 15L18 9'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </svg>
+                  </MobileTreatmentCategoryItem>
+                  <MobileTreatmentSubMenu
+                    isOpen={mobileTreatmentCategory === 'car-t-cell'}
+                  >
+                    <MobileSubMenuItem
+                      to='/treatments/car-t-autoimmune'
+                      onClick={closeMenu}
+                    >
+                      CAR T Cell Therapy In Autoimmune Disorders
+                    </MobileSubMenuItem>
+                    <MobileSubMenuItem
+                      to='/treatments/car-t-cll'
+                      onClick={closeMenu}
+                    >
+                      CAR T-Cell Therapy For Chronic Lymphocytic Leukemia
+                    </MobileSubMenuItem>
+                    <MobileSubMenuItem
+                      to='/treatments/car-t-gastric'
+                      onClick={closeMenu}
+                    >
+                      CAR T Cell Therapy For Gastric Cancer
+                    </MobileSubMenuItem>
+                    <MobileSubMenuItem
+                      to='/treatments/car-t-glioblastoma'
+                      onClick={closeMenu}
+                    >
+                      CAR T-Cell Therapy For Glioblastoma
+                    </MobileSubMenuItem>
+                    <MobileSubMenuItem
+                      to='/treatments/car-t-myeloma'
+                      onClick={closeMenu}
+                    >
+                      CAR T Cell Therapy For Multiple Myeloma
+                    </MobileSubMenuItem>
+                    <MobileSubMenuItem
+                      to='/treatments/fucaso'
+                      onClick={closeMenu}
+                    >
+                      FUCASO: CAR T-Cell Therapy For Multiple Myeloma
+                    </MobileSubMenuItem>
+                    <MobileSubMenuItem
+                      to='/treatments/car-t-neuroblastoma'
+                      onClick={closeMenu}
+                    >
+                      CAR T-Cell Therapy For Neuroblastoma
+                    </MobileSubMenuItem>
+                    <MobileSubMenuItem
+                      to='/treatments/car-t-china'
+                      onClick={closeMenu}
+                    >
+                      CAR T-Cell Therapy In China
+                    </MobileSubMenuItem>
+                  </MobileTreatmentSubMenu>
+
+                  <MobileTreatmentCategoryItem
+                    onClick={() =>
+                      setMobileTreatmentCategory(
+                        mobileTreatmentCategory === 'gene-therapy'
+                          ? null
+                          : 'gene-therapy'
+                      )
+                    }
+                    isOpen={mobileTreatmentCategory === 'gene-therapy'}
+                  >
+                    <span>Gene Therapy</span>
+                    <svg
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      xmlns='http://www.w3.org/2000/svg'
+                    >
+                      <path
+                        d='M6 9L12 15L18 9'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </svg>
+                  </MobileTreatmentCategoryItem>
+                  <MobileTreatmentSubMenu
+                    isOpen={mobileTreatmentCategory === 'gene-therapy'}
+                  >
+                    <MobileSubMenuItem
+                      to='/treatments/crispr-china'
+                      onClick={closeMenu}
+                    >
+                      CRISPR/Cas9 Gene Therapy In China
+                    </MobileSubMenuItem>
+                    <MobileSubMenuItem
+                      to='/treatments/gene-metachromatic'
+                      onClick={closeMenu}
+                    >
+                      Gene Therapy For Metachromatic
+                    </MobileSubMenuItem>
+                    <MobileSubMenuItem
+                      to='/treatments/gene-sickle-cell'
+                      onClick={closeMenu}
+                    >
+                      Gene Therapy For Sickle Cell Anemia
+                    </MobileSubMenuItem>
+                    <MobileSubMenuItem
+                      to='/treatments/gene-thalassemia'
+                      onClick={closeMenu}
+                    >
+                      Gene Therapy for Thalassemia
+                    </MobileSubMenuItem>
+                  </MobileTreatmentSubMenu>
+
+                  <MobileTreatmentCategoryItem
+                    onClick={() =>
+                      setMobileTreatmentCategory(
+                        mobileTreatmentCategory === 'til-therapy'
+                          ? null
+                          : 'til-therapy'
+                      )
+                    }
+                    isOpen={mobileTreatmentCategory === 'til-therapy'}
+                  >
+                    <span>TIL therapy</span>
+                    <svg
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      xmlns='http://www.w3.org/2000/svg'
+                    >
+                      <path
+                        d='M6 9L12 15L18 9'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </svg>
+                  </MobileTreatmentCategoryItem>
+                  <MobileTreatmentSubMenu
+                    isOpen={mobileTreatmentCategory === 'til-therapy'}
+                  >
+                    <MobileSubMenuItem
+                      to='/treatments/gamma-delta'
+                      onClick={closeMenu}
+                    >
+                      Gamma Delta T-Cell Therapy
+                    </MobileSubMenuItem>
+                    <MobileSubMenuItem
+                      to='/treatments/til-china'
+                      onClick={closeMenu}
+                    >
+                      Tumor-Infiltrating Lymphocyte (TIL) Therapy In China
+                    </MobileSubMenuItem>
+                  </MobileTreatmentSubMenu>
+                </MobileSubMenu>
+              </MobileNavItem>
+            );
+          }
+
+          if (item.label === 'Clinical Trials') {
+            return (
+              <MobileNavItem key={index}>
+                <MobileNavItemHeader
+                  onClick={() => toggleMobileSubMenu('clinicalTrials')}
+                  isOpen={mobileSubMenuOpen.clinicalTrials}
+                  $isActive={isItemActive}
+                >
+                  <span>{item.label}</span>
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      d='M6 9L12 15L18 9'
+                      strokeWidth='2'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    />
+                  </svg>
+                </MobileNavItemHeader>
+                <MobileSubMenu isOpen={mobileSubMenuOpen.clinicalTrials}>
+                  <MobileSubMenuItem
+                    to='/clinical-trials/ongoing'
+                    onClick={closeMenu}
+                  >
+                    Ongoing Clinical Trials
+                  </MobileSubMenuItem>
+                  <MobileSubMenuItem
+                    to='/clinical-trials/car-t-cell'
+                    onClick={closeMenu}
+                  >
+                    CAR T Cell therapy clinical trials
+                  </MobileSubMenuItem>
+                  <MobileSubMenuItem
+                    to='/clinical-trials/ball-car-t'
+                    onClick={closeMenu}
+                  >
+                    Clinical trial for BALL CAR T-Cell therapy
+                  </MobileSubMenuItem>
+                  <MobileSubMenuItem
+                    to='/clinical-trials/car-t-myeloma'
+                    onClick={closeMenu}
+                  >
+                    CAR T Cell therapy trials for multiple myeloma
+                  </MobileSubMenuItem>
+                  <MobileSubMenuItem
+                    to='/clinical-trials/car-t-thrombocytopenia'
+                    onClick={closeMenu}
+                  >
+                    CAR T-Cell therapy clinical trials for Immune
+                    thrombocytopenia
+                  </MobileSubMenuItem>
+                </MobileSubMenu>
+              </MobileNavItem>
+            );
+          }
+
+          if (item.label === 'Resources') {
+            return (
+              <MobileNavLink
+                key={index}
+                href={item.link || '/resources'}
+                onClick={closeMenu}
+                $isActive={isItemActive}
+              >
+                {item.label}
+              </MobileNavLink>
+            );
+          }
+
+          return (
+            <MobileNavLink
+              key={index}
+              href={
+                item.link || `#${item.label.toLowerCase().replace(/\s+/g, '-')}`
+              }
+              onClick={closeMenu}
+              $isActive={isItemActive}
+            >
+              {item.label}
+            </MobileNavLink>
+          );
+        })}
+      </MobileMenu>
+    </NavContainer>
+  );
+};
 
 const NavContainer = styled.nav`
   position: fixed;
@@ -35,11 +1399,15 @@ const NavContainer = styled.nav`
       right: 0;
       width: 100%;
       height: 100%;
-      mask-image: linear-gradient(to bottom, rgba(54, 69, 79, 0.901) 50%, transparent 90%);
+      mask-image: linear-gradient(
+        to bottom,
+        rgba(54, 69, 79, 0.901) 50%,
+        transparent 90%
+      );
       backdrop-filter: blur(30px);
     }
-  }  
-  
+  }
+
   > * {
     pointer-events: auto;
   }
@@ -86,12 +1454,11 @@ const NavContent = styled.div`
     height: 44px;
     min-height: 44px;
   }
-  
+
   @media (max-width: 768px) {
     height: 40px;
     min-height: 40px;
   }
-
 `;
 
 const Logo = styled.a`
@@ -250,18 +1617,34 @@ const NavLink = styled.a`
   color: ${(props) => (props.$darkText ? '#36454F' : props.theme.colors.white)};
   font-family: ${(props) =>
     props.$darkText ? "'Be Vietnam Pro', sans-serif" : 'inherit'};
-  font-weight: 400;
+  font-weight: ${(props) => (props.$isActive ? '600' : '400')};
   font-style: normal;
   font-size: ${(props) => (props.$darkText ? '16px' : '16px')};
   line-height: ${(props) => (props.$darkText ? '100%' : 'normal')};
   letter-spacing: ${(props) => (props.$darkText ? '0px' : 'normal')};
   vertical-align: ${(props) => (props.$darkText ? 'middle' : 'baseline')};
-  transition: opacity 0.3s;
+  transition: opacity 0.3s, font-weight 0.3s;
   white-space: nowrap;
   position: relative;
   cursor: pointer;
   flex-shrink: 0;
   text-decoration: none;
+  
+  ${(props) =>
+    props.$isActive &&
+    `
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: ${props.$darkText ? props.theme.colors.pink : props.theme.colors.white};
+      border-radius: 1px;
+    }
+  `}
+  
   &:hover {
     opacity: 0.8;
   }
@@ -502,7 +1885,8 @@ const DropdownHeaderIcon = styled.div`
   flex-shrink: 0;
 
   &::after {
-    content: ${(props) => (props.hasIcon ? 'none' : `'${props.icon || 'i'}'`)};
+    content: ${(props) =>
+      props.hasIcon ? 'none' : `'${props.icon || 'i'}'`};
     font-family: 'Be Vietnam Pro', sans-serif;
     font-size: ${(props) => props.iconSize || '14px'};
     font-weight: 600;
@@ -534,8 +1918,8 @@ const DropdownMenuItem = styled(Link)`
   height: 52px;
   padding: 20px 16px 20px 16px;
   border-radius: 16px;
-  background: white;
-  border: none;
+  background: ${(props) => (props.$isActive ? '#FFF0F6' : 'white')};
+  border: ${(props) => (props.$isActive ? `1px solid ${props.theme.colors.pink}` : 'none')};
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
@@ -544,13 +1928,14 @@ const DropdownMenuItem = styled(Link)`
   transform: rotate(0deg);
   margin-bottom: 4px;
   box-sizing: border-box;
+  font-weight: ${(props) => (props.$isActive ? '600' : '400')};
 
   &:last-child {
     margin-bottom: 0;
   }
 
   &:hover {
-    background: #f8f8f8;
+    background: ${(props) => (props.$isActive ? '#FFF0F6' : '#f8f8f8')};
   }
 
   &:active {
@@ -637,7 +2022,8 @@ const LanguageButton = styled.button`
   transition: background 0.3s, transform 0.2s ease;
   padding: 0;
   flex-shrink: 0;
-  color: ${props => props.$darkText ? 'rgba(54, 69, 79, 1)' : 'rgba(255, 255, 255, 1)'};
+  color: ${(props) =>
+    props.$darkText ? 'rgba(54, 69, 79, 1)' : 'rgba(255, 255, 255, 1)'};
   text-shadow: 0 0 20px #36454f;
   &:active {
     transform: scale(0.95);
@@ -947,13 +2333,31 @@ const MobileMenu = styled.div`
 const MobileNavLink = styled.a`
   color: ${(props) => props.theme.colors.white};
   font-size: 16px;
-  font-weight: 500;
+  font-weight: ${(props) => (props.$isActive ? '600' : '500')};
   padding: 12px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  transition: opacity 0.3s;
+  transition: opacity 0.3s, font-weight 0.3s;
   text-decoration: none;
   display: block;
   height: 48px;
+  position: relative;
+
+  ${(props) =>
+    props.$isActive &&
+    `
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 20px;
+      background: ${props.theme.colors.pink};
+      border-radius: 2px;
+    }
+  `}
+
   &:hover {
     opacity: 0.8;
   }
@@ -974,14 +2378,31 @@ const MobileNavItemHeader = styled.button`
   align-items: center;
   color: ${(props) => props.theme.colors.white};
   font-size: 18px;
-  font-weight: 400;
+  font-weight: ${(props) => (props.$isActive ? '600' : '400')};
   padding: 12px 0;
   border: none;
   background: transparent;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  transition: opacity 0.3s;
+  transition: opacity 0.3s, font-weight 0.3s;
   cursor: pointer;
   text-align: left;
+  position: relative;
+
+  ${(props) =>
+    props.$isActive &&
+    `
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 20px;
+      background: ${props.theme.colors.pink};
+      border-radius: 2px;
+    }
+  `}
 
   &:hover {
     opacity: 0.8;
@@ -989,7 +2410,8 @@ const MobileNavItemHeader = styled.button`
 
   svg {
     transition: transform 0.3s ease;
-    transform: ${(props) => (props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)')};
+    transform: ${(props) =>
+      props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
     width: 16px;
     height: 16px;
     stroke: ${(props) => props.theme.colors.white};
@@ -1041,7 +2463,8 @@ const MobileTreatmentCategoryItem = styled.button`
 
   svg {
     transition: transform 0.3s ease;
-    transform: ${(props) => (props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)')};
+    transform: ${(props) =>
+      props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
     width: 14px;
     height: 14px;
     stroke: rgba(255, 255, 255, 0.9);
@@ -1091,1742 +2514,5 @@ const MobileSubMenuItem = styled(Link)`
     opacity: 0.6;
   }
 `;
-
-const Header = ({ darkText = false }) => {
-  const dispatch = useDispatch();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
-  const [aboutDropdownOpen, setAboutDropdownOpen] = useState(false);
-  const [hospitalsDropdownOpen, setHospitalsDropdownOpen] = useState(false);
-  const [treatmentsDropdownOpen, setTreatmentsDropdownOpen] = useState(false);
-  const [selectedTreatmentCategory, setSelectedTreatmentCategory] =
-    useState('car-t-cell');
-  const [clinicalTrialsDropdownOpen, setClinicalTrialsDropdownOpen] =
-    useState(false);
-  const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
-  const [hoverTimeouts, setHoverTimeouts] = useState({});
-  const [mobileSubMenuOpen, setMobileSubMenuOpen] = useState({
-    about: false,
-    hospitals: false,
-    treatments: false,
-    clinicalTrials: false,
-    resources: false,
-  });
-  const [mobileTreatmentCategory, setMobileTreatmentCategory] = useState(null);
-
-  // Get data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector((state) => state.global?.data);
-  const globalLoading = useSelector((state) => state.global?.loading);
-  // Legacy Redux state (kept for currentLanguage and fallbacks)
-  const { currentLanguage } = useSelector((state) => state.navigation);
-
-  // Extract data from global Strapi response (new structure from menu guide)
-  // Global has: logo, cta_label, cta_url, header_menu (relation to Menu)
-  // Menu has: items (relation to Menu Item[])
-  // Menu Item has: label, type (link/category/mega), is_clickable, order, internal_path, external_url, parent, children
-
-  // Use new structure first, fallback to legacy navbar structure
-  const headerMenuRaw = globalData?.headerMenu;
-  const headerMenu = headerMenuRaw?.data?.attributes || headerMenuRaw;
-  const globalLogo =
-    globalData?.logo?.data?.attributes || globalData?.logo || null;
-  const globalLogoUrlFromStore = globalData?.globalLogoUrl || null;
-  const globalCtaLabel = globalData?.ctaLabel;
-  const globalCtaUrl = globalData?.ctaUrl;
-
-  // Extract from actual API structure (from https://cancerfax.unifiedinfotechonline.com/api/global)
-  // Navbar has: logo, menu (relation), cta
-  const navbarDataRaw = globalData?.navbar;
-  const navbarData = navbarDataRaw?.data?.attributes || navbarDataRaw || null;
-  const navbarMenu = navbarData?.menu;
-  const navbarLogo =
-    navbarData?.logo?.data?.attributes || navbarData?.logo || null;
-  const navbarLogoUrlFromStore = globalData?.navbarLogoUrl || null;
-  const navbarCta = navbarData?.cta || null;
-
-  // Legacy navbar structure (fallback - check for menuItems directly)
-  const legacyMenuItems = navbarData?.menuItems || [];
-  const legacyLogo = navbarLogo;
-  const languages = navbarData?.languages || [];
-  const buttons = navbarData?.buttons || null;
-
-  // Transform Strapi menu structure to component format
-  const transformMenuItems = (menu) => {
-    if (!menu || !menu.items) return [];
-
-    // Get top-level items (no parent)
-    const topLevelItems = menu.items.filter(
-      (item) => !item.parent || !item.parent.id
-    );
-
-    // Sort by order
-    topLevelItems.sort((a, b) => (a.order || 0) - (b.order || 0));
-
-    // Transform to component format
-    return topLevelItems.map((item) => ({
-      id: item.id,
-      label: item.label || '',
-      link: item.external_url || item.internal_path || '#',
-      type: item.type || 'link',
-      isClickable: item.is_clickable !== false,
-      order: item.order || 0,
-      children: item.children
-        ? transformMenuItems({ items: item.children })
-        : null,
-      links: item.links || null, // For mega menu component links
-      icon: item.icon || null,
-    }));
-  };
-
-  // Extract menu items from new structure (headerMenu) or navbar.menu or legacy
-  const strapiMenuItems = headerMenu
-    ? transformMenuItems(headerMenu)
-    : navbarMenu
-    ? transformMenuItems(navbarMenu)
-    : [];
-  const menuItems =
-    strapiMenuItems.length > 0 ? strapiMenuItems : legacyMenuItems;
-
-  // Logo: prioritize new structure (global.logo), then navbar.logo, then legacy
-  // Actual API structure: navbar.logo is a direct Media object with url field
-  const logo = globalLogo || navbarLogo || legacyLogo;
-
-  // CTA: prioritize new structure (globalCtaLabel/globalCtaUrl), then navbar.cta, then legacy buttons
-  // Actual API structure: navbar.cta has { text, URL, target, variant }
-  const actualCtaLabel = globalCtaLabel || navbarCta?.text || null;
-  const actualCtaUrl = globalCtaUrl || navbarCta?.URL || null;
-
-  // Debug: Log to verify Strapi data usage
-  if (globalData) {
-    console.log('Navigation: Strapi data loaded', {
-      hasNavbar: !!navbarData,
-      hasLogo: !!logo,
-      logoUrl: logo?.url,
-      hasCta: !!navbarCta,
-      ctaText: actualCtaLabel,
-      ctaUrl: actualCtaUrl,
-      hasMenu: !!navbarMenu,
-      menuItemsCount: menuItems.length,
-    });
-  }
-
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-    } else {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-    };
-  }, [isMenuOpen]);
-
-  // Close menus when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (languageMenuOpen && !event.target.closest('[data-language-menu]')) {
-        setLanguageMenuOpen(false);
-      }
-      if (aboutDropdownOpen && !event.target.closest('[data-about-dropdown]')) {
-        setAboutDropdownOpen(false);
-      }
-      if (
-        hospitalsDropdownOpen &&
-        !event.target.closest('[data-hospitals-dropdown]')
-      ) {
-        setHospitalsDropdownOpen(false);
-      }
-      if (
-        treatmentsDropdownOpen &&
-        !event.target.closest('[data-treatments-dropdown]')
-      ) {
-        setTreatmentsDropdownOpen(false);
-      }
-      if (
-        clinicalTrialsDropdownOpen &&
-        !event.target.closest('[data-clinical-trials-dropdown]')
-      ) {
-        setClinicalTrialsDropdownOpen(false);
-      }
-      if (
-        resourcesDropdownOpen &&
-        !event.target.closest('[data-resources-dropdown]')
-      ) {
-        setResourcesDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [
-    languageMenuOpen,
-    aboutDropdownOpen,
-    hospitalsDropdownOpen,
-    treatmentsDropdownOpen,
-    clinicalTrialsDropdownOpen,
-    resourcesDropdownOpen,
-  ]);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
-
-  const handleLanguageToggle = () => {
-    setLanguageMenuOpen(!languageMenuOpen);
-  };
-
-  const handleLanguageSelect = (language) => {
-    dispatch(setCurrentLanguage(language));
-    setLanguageMenuOpen(false);
-  };
-
-  const handleAboutToggle = (e) => {
-    e.preventDefault();
-    setAboutDropdownOpen(!aboutDropdownOpen);
-  };
-
-  const clearHoverTimeout = (key) => {
-    if (hoverTimeouts[key]) {
-      clearTimeout(hoverTimeouts[key]);
-      setHoverTimeouts((prev) => {
-        const newTimeouts = { ...prev };
-        delete newTimeouts[key];
-        return newTimeouts;
-      });
-    }
-  };
-
-  const setHoverTimeout = (key, callback, delay = 300) => {
-    clearHoverTimeout(key);
-    const timeout = setTimeout(callback, delay);
-    setHoverTimeouts((prev) => ({
-      ...prev,
-      [key]: timeout,
-    }));
-  };
-
-  const handleAboutMouseEnter = () => {
-    if (window.innerWidth > 768) {
-      // Close all other dropdowns
-      setHospitalsDropdownOpen(false);
-      setTreatmentsDropdownOpen(false);
-      setClinicalTrialsDropdownOpen(false);
-      setResourcesDropdownOpen(false);
-      // Clear all timeouts
-      Object.keys(hoverTimeouts).forEach((key) => clearHoverTimeout(key));
-      clearHoverTimeout('about');
-      setAboutDropdownOpen(true);
-    }
-  };
-
-  const handleAboutMouseLeave = (e) => {
-    if (window.innerWidth > 768) {
-      const relatedTarget = e.relatedTarget;
-      const wrapper = e.currentTarget;
-
-      // Check if mouse is moving to another nav item or its dropdown
-      if (relatedTarget && relatedTarget.closest) {
-        const isMovingToNavItem =
-          relatedTarget.closest('[data-about-dropdown]') ||
-          relatedTarget.closest('[data-hospitals-dropdown]') ||
-          relatedTarget.closest('[data-treatments-dropdown]') ||
-          relatedTarget.closest('[data-clinical-trials-dropdown]') ||
-          relatedTarget.closest('[data-resources-dropdown]');
-        if (isMovingToNavItem) {
-          return;
-        }
-        if (wrapper.contains(relatedTarget)) {
-          return;
-        }
-      }
-
-      setHoverTimeout(
-        'about',
-        () => {
-          setAboutDropdownOpen(false);
-        },
-        250
-      );
-    }
-  };
-
-  const handleAboutMenuClose = () => {
-    setAboutDropdownOpen(false);
-  };
-
-  const handleHospitalsToggle = (e) => {
-    e.preventDefault();
-    setHospitalsDropdownOpen(!hospitalsDropdownOpen);
-  };
-
-  const handleHospitalsMouseEnter = () => {
-    if (window.innerWidth > 768) {
-      // Close all other dropdowns
-      setAboutDropdownOpen(false);
-      setTreatmentsDropdownOpen(false);
-      setClinicalTrialsDropdownOpen(false);
-      setResourcesDropdownOpen(false);
-      // Clear all timeouts
-      Object.keys(hoverTimeouts).forEach((key) => clearHoverTimeout(key));
-      clearHoverTimeout('hospitals');
-      setHospitalsDropdownOpen(true);
-    }
-  };
-
-  const handleHospitalsMouseLeave = (e) => {
-    if (window.innerWidth > 768) {
-      const relatedTarget = e.relatedTarget;
-      const wrapper = e.currentTarget;
-
-      // Check if mouse is moving to another nav item or its dropdown
-      if (relatedTarget && relatedTarget.closest) {
-        const isMovingToNavItem =
-          relatedTarget.closest('[data-about-dropdown]') ||
-          relatedTarget.closest('[data-hospitals-dropdown]') ||
-          relatedTarget.closest('[data-treatments-dropdown]') ||
-          relatedTarget.closest('[data-clinical-trials-dropdown]') ||
-          relatedTarget.closest('[data-resources-dropdown]');
-        if (isMovingToNavItem) {
-          return;
-        }
-        if (wrapper.contains(relatedTarget)) {
-          return;
-        }
-      }
-
-      setHoverTimeout(
-        'hospitals',
-        () => {
-          setHospitalsDropdownOpen(false);
-        },
-        250
-      );
-    }
-  };
-
-  const handleHospitalsMenuClose = () => {
-    setHospitalsDropdownOpen(false);
-  };
-
-  const handleTreatmentsToggle = (e) => {
-    e.preventDefault();
-    setTreatmentsDropdownOpen(!treatmentsDropdownOpen);
-  };
-
-  const handleTreatmentsMouseEnter = () => {
-    if (window.innerWidth > 768) {
-      // Close all other dropdowns
-      setAboutDropdownOpen(false);
-      setHospitalsDropdownOpen(false);
-      setClinicalTrialsDropdownOpen(false);
-      setResourcesDropdownOpen(false);
-      // Clear all timeouts
-      Object.keys(hoverTimeouts).forEach((key) => clearHoverTimeout(key));
-      clearHoverTimeout('treatments');
-      setTreatmentsDropdownOpen(true);
-    }
-  };
-
-  const handleTreatmentsMouseLeave = (e) => {
-    if (window.innerWidth > 768) {
-      const relatedTarget = e.relatedTarget;
-      const wrapper = e.currentTarget;
-
-      // Check if mouse is moving to another nav item or its dropdown
-      if (relatedTarget && relatedTarget.closest) {
-        const isMovingToNavItem =
-          relatedTarget.closest('[data-about-dropdown]') ||
-          relatedTarget.closest('[data-hospitals-dropdown]') ||
-          relatedTarget.closest('[data-treatments-dropdown]') ||
-          relatedTarget.closest('[data-clinical-trials-dropdown]') ||
-          relatedTarget.closest('[data-resources-dropdown]');
-        if (isMovingToNavItem) {
-          return;
-        }
-        if (wrapper.contains(relatedTarget)) {
-          return;
-        }
-      }
-
-      setHoverTimeout(
-        'treatments',
-        () => {
-          setTreatmentsDropdownOpen(false);
-        },
-        250
-      );
-    }
-  };
-
-  const handleTreatmentsMenuClose = () => {
-    setTreatmentsDropdownOpen(false);
-  };
-
-  const handleClinicalTrialsToggle = (e) => {
-    e.preventDefault();
-    setClinicalTrialsDropdownOpen(!clinicalTrialsDropdownOpen);
-  };
-
-  const handleClinicalTrialsMouseEnter = () => {
-    if (window.innerWidth > 768) {
-      // Close all other dropdowns
-      setAboutDropdownOpen(false);
-      setHospitalsDropdownOpen(false);
-      setTreatmentsDropdownOpen(false);
-      setResourcesDropdownOpen(false);
-      // Clear all timeouts
-      Object.keys(hoverTimeouts).forEach((key) => clearHoverTimeout(key));
-      clearHoverTimeout('clinicalTrials');
-      setClinicalTrialsDropdownOpen(true);
-    }
-  };
-
-  const handleClinicalTrialsMouseLeave = (e) => {
-    if (window.innerWidth > 768) {
-      const relatedTarget = e.relatedTarget;
-      const wrapper = e.currentTarget;
-
-      // Check if mouse is moving to another nav item or its dropdown
-      if (relatedTarget && relatedTarget.closest) {
-        const isMovingToNavItem =
-          relatedTarget.closest('[data-about-dropdown]') ||
-          relatedTarget.closest('[data-hospitals-dropdown]') ||
-          relatedTarget.closest('[data-treatments-dropdown]') ||
-          relatedTarget.closest('[data-clinical-trials-dropdown]') ||
-          relatedTarget.closest('[data-resources-dropdown]');
-        if (isMovingToNavItem) {
-          return;
-        }
-        if (wrapper.contains(relatedTarget)) {
-          return;
-        }
-      }
-
-      setHoverTimeout(
-        'clinicalTrials',
-        () => {
-          setClinicalTrialsDropdownOpen(false);
-        },
-        250
-      );
-    }
-  };
-
-  const handleClinicalTrialsMenuClose = () => {
-    setClinicalTrialsDropdownOpen(false);
-  };
-
-  const handleResourcesToggle = (e) => {
-    e.preventDefault();
-    setResourcesDropdownOpen(!resourcesDropdownOpen);
-  };
-
-  const handleResourcesMouseEnter = () => {
-    if (window.innerWidth > 768) {
-      // Close all other dropdowns
-      setAboutDropdownOpen(false);
-      setHospitalsDropdownOpen(false);
-      setTreatmentsDropdownOpen(false);
-      setClinicalTrialsDropdownOpen(false);
-      // Clear all timeouts
-      Object.keys(hoverTimeouts).forEach((key) => clearHoverTimeout(key));
-      clearHoverTimeout('resources');
-      setResourcesDropdownOpen(true);
-    }
-  };
-
-  const handleResourcesMouseLeave = (e) => {
-    if (window.innerWidth > 768) {
-      const relatedTarget = e.relatedTarget;
-      const wrapper = e.currentTarget;
-
-      // Check if mouse is moving to another nav item or its dropdown
-      if (relatedTarget && relatedTarget.closest) {
-        const isMovingToNavItem =
-          relatedTarget.closest('[data-about-dropdown]') ||
-          relatedTarget.closest('[data-hospitals-dropdown]') ||
-          relatedTarget.closest('[data-treatments-dropdown]') ||
-          relatedTarget.closest('[data-clinical-trials-dropdown]') ||
-          relatedTarget.closest('[data-resources-dropdown]');
-        if (isMovingToNavItem) {
-          return;
-        }
-        if (wrapper.contains(relatedTarget)) {
-          return;
-        }
-      }
-
-      setHoverTimeout(
-        'resources',
-        () => {
-          setResourcesDropdownOpen(false);
-        },
-        250
-      );
-    }
-  };
-
-  const handleResourcesMenuClose = () => {
-    setResourcesDropdownOpen(false);
-  };
-
-  const toggleMobileSubMenu = (menuKey) => {
-    setMobileSubMenuOpen((prev) => ({
-      ...prev,
-      [menuKey]: !prev[menuKey],
-    }));
-  };
-
-  // Fallback data
-  const defaultMenuItems = [
-    { label: 'About', link: '/about-us' },
-    { label: 'Hospitals & Doctors', link: '/hospitals' },
-    { label: 'Treatments', link: '/treatments' },
-    { label: 'Clinical Trials', link: '/clinical-trials' },
-    { label: 'Survivor Stories', link: '/survivor-stories' },
-    { label: 'Resources', link: '/resources' },
-  ];
-
-  const defaultLanguages = [
-    { id: 1, name: 'English', code: 'en', flag: '🇬🇧' },
-    { id: 2, name: 'Spanish', code: 'es', flag: '🇪🇸' },
-    { id: 3, name: 'French', code: 'fr', flag: '🇫🇷' },
-    { id: 4, name: 'German', code: 'de', flag: '🇩🇪' },
-    { id: 5, name: 'Chinese', code: 'zh', flag: '🇨🇳' },
-  ];
-
-  const navigationLinks =
-    menuItems && menuItems.length > 0
-      ? menuItems
-      : globalLoading
-      ? []
-      : defaultMenuItems;
-
-  // Logo handling - resolve from Strapi first, fallback to local asset only if Strapi data missing
-  const footerDataRaw = globalData?.footer;
-  const footerData = footerDataRaw?.data?.attributes || footerDataRaw || null;
-  const footerLogo =
-    footerData?.logo?.data?.attributes || footerData?.logo || null;
-  const footerLogoUrlFromStore = globalData?.footerLogoUrl || null;
-
-  const extractLogoUrl = useCallback((media) => {
-    if (!media) return null;
-
-    if (typeof media === 'string') {
-      const trimmed = media.trim();
-      if (!trimmed) return null;
-      return getMediaUrl(trimmed);
-    }
-
-    // Handle Strapi v4 media structure: { id, name, hash, url, ... }
-    // When populated, logo has: { id, documentId, name, hash, url, ... }
-    if (media.url) {
-      const trimmed =
-        typeof media.url === 'string' ? media.url.trim() : media.url;
-      if (!trimmed) return null;
-      return getMediaUrl(trimmed);
-    }
-
-    // Handle nested data.attributes.url structure
-    if (media.data?.attributes?.url) {
-      const trimmed =
-        media.data.attributes.url?.trim?.() ?? media.data.attributes.url;
-      if (!trimmed) return null;
-      return getMediaUrl(trimmed);
-    }
-
-    if (media.attributes?.url) {
-      const trimmed = media.attributes.url?.trim?.() ?? media.attributes.url;
-      if (!trimmed) return null;
-      return getMediaUrl(trimmed);
-    }
-
-    // Some Strapi responses might nest the media object deeper
-    if (Array.isArray(media.data) && media.data.length > 0) {
-      const nestedAttributesUrl = media.data[0]?.attributes?.url;
-      if (nestedAttributesUrl) {
-        return getMediaUrl(nestedAttributesUrl);
-      }
-    }
-
-    // Handle hash-based URL construction (Strapi v4 pattern)
-    // If we have hash and name, construct URL: /uploads/{hash}_{name}
-    if (media.hash && media.name) {
-      const hash = media.hash.trim();
-      const name = media.name.trim();
-      return getMediaUrl(`/uploads/${hash}_${name}`);
-    }
-
-    if (media.logo && media.logo !== media) {
-      return extractLogoUrl(media.logo);
-    }
-
-    // As a last resort, check common fields
-    if (media.src) {
-      return getMediaUrl(media.src);
-    }
-
-    return null;
-  }, []);
-
-  const strapiNavbarLogoUrl = formatMedia(navbarData?.logo);
-  const strapiGlobalLogoUrl = formatMedia(globalData?.logo);
-  const strapiFooterLogoUrl = formatMedia(footerData?.logo);
-
-  const logoUrlRaw =
-    navbarLogoUrlFromStore ||
-    extractLogoUrl(navbarLogo) ||
-    strapiNavbarLogoUrl ||
-    globalLogoUrlFromStore ||
-    extractLogoUrl(globalLogo) ||
-    strapiGlobalLogoUrl ||
-    footerLogoUrlFromStore ||
-    extractLogoUrl(footerLogo) ||
-    strapiFooterLogoUrl ||
-    '';
-
-  const logoUrl = logoUrlRaw ? logoUrlRaw.trim() : '';
-  useEffect(() => {
-    console.log('🔍 Navigation logo debug - Full Resolution Chain:', {
-      // Raw logo objects
-      navbarLogo,
-      globalLogo,
-      footerLogo,
-      // Resolved URLs from store
-      navbarLogoUrlFromStore,
-      globalLogoUrlFromStore,
-      footerLogoUrlFromStore,
-      // Extracted URLs
-      extractedNavbarUrl: extractLogoUrl(navbarLogo),
-      extractedGlobalUrl: extractLogoUrl(globalLogo),
-      extractedFooterUrl: extractLogoUrl(footerLogo),
-      // FormatMedia results
-      strapiNavbarLogoUrl,
-      strapiGlobalLogoUrl,
-      strapiFooterLogoUrl,
-      // Final result
-      logoUrlRaw,
-      computedLogoUrl: logoUrl,
-      // Debug: Check logo object structure
-      navbarLogoStructure: navbarLogo
-        ? {
-            hasUrl: !!navbarLogo.url,
-            hasHash: !!navbarLogo.hash,
-            hasName: !!navbarLogo.name,
-            hasData: !!navbarLogo.data,
-            keys: Object.keys(navbarLogo),
-          }
-        : null,
-    });
-  }, [
-    navbarLogo,
-    navbarLogoUrlFromStore,
-    logoUrl,
-    globalLogoUrlFromStore,
-    footerLogoUrlFromStore,
-    globalLogo,
-    footerLogo,
-    strapiNavbarLogoUrl,
-    strapiGlobalLogoUrl,
-    strapiFooterLogoUrl,
-    logoUrlRaw,
-    extractLogoUrl,
-  ]);
-  useEffect(() => {
-    console.log('Navigation: logo sources', {
-      globalLogo,
-      navbarLogo,
-      footerLogo,
-      legacyLogo,
-      resolvedUrl: logoUrl,
-    });
-  }, [globalLogo, navbarLogo, footerLogo, legacyLogo, logoUrl]);
-  const derivedLogoText =
-    navbarData?.brandName ||
-    globalData?.brandName ||
-    globalData?.siteTitle ||
-    globalData?.site_name ||
-    (typeof logo?.name === 'string' && logo.name.toLowerCase() !== 'logo.png'
-      ? logo.name.replace(/\.[^/.]+$/, '')
-      : '') ||
-    '';
-
-  const logoText = derivedLogoText || 'CancerFax';
-
-  useEffect(() => {
-    console.log('Navigation: logo resolution', {
-      globalLogo,
-      navbarLogo,
-      footerLogo,
-      computedLogo: logo,
-      logoUrl,
-    });
-  }, [globalLogo, navbarLogo, footerLogo, logo, logoUrl]);
-
-  // Languages handling
-  const availableLanguages =
-    languages && languages.length > 0 ? languages : defaultLanguages;
-  const selectedLanguage = currentLanguage || availableLanguages[0];
-
-  // Language flag/icon handling - check multiple possible fields
-  const languageIcon = selectedLanguage?.flagImage?.data?.attributes?.url
-    ? getMediaUrl(selectedLanguage.flagImage.data.attributes.url)
-    : selectedLanguage?.flag?.data?.attributes?.url
-    ? getMediaUrl(selectedLanguage.flag.data.attributes.url)
-    : null;
-
-  // Button handling - use actual API structure
-  // Priority: globalCtaLabel/globalCtaUrl > navbar.cta > legacy buttons > default
-  const connectButtonText =
-    actualCtaLabel ||
-    buttons?.connectButtonText ||
-    buttons?.connectButton?.text ||
-    'Connect With Us';
-  const connectButtonLink =
-    actualCtaUrl ||
-    buttons?.connectButtonLink ||
-    buttons?.connectButton?.link ||
-    '/contact';
-
-  const [isSticky, setIsSticky] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      // change 80 to whatever scroll offset you want
-      setIsSticky(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // run on mount in case page is already scrolled
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return (
-    <NavContainer $darkText={darkText}  className={`header ${isSticky ? "header-fixed" : ""} ${darkText ? '' : 'header-overlay'}`}>
-      <NavContent>
-        <Logo href='/'>
-          {darkText ? (
-            <img src={'/images/logo-dark.svg'} alt={logoText} />
-          ) : (
-            <img src={logoUrl} alt={logoText} />
-          )}
-        </Logo>
-
-        <NavMenu $darkText={darkText}>
-          {navigationLinks.map((item, index) => {
-            if (item.label === 'About') {
-              return (
-                <NavLinkWrapper
-                  key={index}
-                  data-about-dropdown
-                  onMouseEnter={handleAboutMouseEnter}
-                  onMouseLeave={handleAboutMouseLeave}
-                >
-                  <NavLink
-                    href={item.link || '#about'}
-                    onClick={handleAboutToggle}
-                    $darkText={darkText}
-                  >
-                    {item.label}
-                  </NavLink>
-                  <AboutDropdown
-                    isOpen={aboutDropdownOpen}
-                    onMouseEnter={handleAboutMouseEnter}
-                    onMouseLeave={handleAboutMouseLeave}
-                  >
-                    <DropdownHeader>
-                      <DropdownHeaderIcon hasIcon={false} />
-                      <DropdownHeaderText>About</DropdownHeaderText>
-                    </DropdownHeader>
-                    <DropdownMenuItem
-                      to='/about-us'
-                      onClick={handleAboutMenuClose}
-                    >
-                      <MenuItemIndicator />
-                      <MenuItemText>About Us</MenuItemText>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      to='/specialisation'
-                      onClick={handleAboutMenuClose}
-                    >
-                      <MenuItemIndicator />
-                      <MenuItemText>Our Specialisation</MenuItemText>
-                    </DropdownMenuItem>
-                  </AboutDropdown>
-                </NavLinkWrapper>
-              );
-            }
-            if (item.label === 'Hospitals & Doctors') {
-              return (
-                <NavLinkWrapper
-                  key={index}
-                  data-hospitals-dropdown
-                  onMouseEnter={handleHospitalsMouseEnter}
-                  onMouseLeave={handleHospitalsMouseLeave}
-                >
-                  <NavLink
-                    href={item.link || '/hospitals'}
-                    onClick={handleHospitalsToggle}
-                    $darkText={darkText}
-                  >
-                    {item.label}
-                  </NavLink>
-                  <AboutDropdown
-                    isOpen={hospitalsDropdownOpen}
-                    onMouseEnter={handleHospitalsMouseEnter}
-                    onMouseLeave={handleHospitalsMouseLeave}
-                  >
-                    <DropdownHeader>
-                      <DropdownHeaderIcon hasIcon={true}>
-                        <svg
-                          viewBox='0 0 24 24'
-                          fill='none'
-                          xmlns='http://www.w3.org/2000/svg'
-                        >
-                          <path
-                            d='M19 14C19 15.3261 18.4732 16.5979 17.5355 17.5355C16.5979 18.4732 15.3261 19 14 19C12.6739 19 11.4021 18.4732 10.4645 17.5355C9.52678 16.5979 9 15.3261 9 14C9 12.6739 9.52678 11.4021 10.4645 10.4645C11.4021 9.52678 12.6739 9 14 9C15.3261 9 16.5979 9.52678 17.5355 10.4645C18.4732 11.4021 19 12.6739 19 14Z'
-                            stroke='currentColor'
-                            strokeWidth='2'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                          />
-                          <path
-                            d='M12 6L8 10H11V18H17V10H20L16 6H12Z'
-                            stroke='currentColor'
-                            strokeWidth='2'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                          />
-                        </svg>
-                      </DropdownHeaderIcon>
-                      <DropdownHeaderText>
-                        Hospitals & Doctors
-                      </DropdownHeaderText>
-                    </DropdownHeader>
-                    <DropdownMenuItem
-                      to='/hospitals'
-                      onClick={handleHospitalsMenuClose}
-                    >
-                      <MenuItemIndicator />
-                      <MenuItemText>Hospitals</MenuItemText>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      to='/doctors'
-                      onClick={handleHospitalsMenuClose}
-                    >
-                      <MenuItemIndicator />
-                      <MenuItemText>Doctors</MenuItemText>
-                    </DropdownMenuItem>
-                  </AboutDropdown>
-                </NavLinkWrapper>
-              );
-            }
-            if (item.label === 'Treatments') {
-              return (
-                <NavLinkWrapper
-                  key={index}
-                  data-treatments-dropdown
-                  onMouseEnter={handleTreatmentsMouseEnter}
-                  onMouseLeave={handleTreatmentsMouseLeave}
-                >
-                  <NavLink
-                    href={item.link || '#treatments'}
-                    onClick={handleTreatmentsToggle}
-                    $darkText={darkText}
-                  >
-                    {item.label}
-                  </NavLink>
-                  <TreatmentsDropdown
-                    isOpen={treatmentsDropdownOpen}
-                    onMouseEnter={handleTreatmentsMouseEnter}
-                    onMouseLeave={handleTreatmentsMouseLeave}
-                  >
-                    <DropdownHeader>
-                      <DropdownHeaderIcon hasIcon={true}>
-                        <svg
-                          viewBox='0 0 24 24'
-                          fill='none'
-                          xmlns='http://www.w3.org/2000/svg'
-                        >
-                          <path
-                            d='M12 2L2 7L12 12L22 7L12 2Z'
-                            stroke='currentColor'
-                            strokeWidth='2'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                          />
-                          <path
-                            d='M2 17L12 22L22 17'
-                            stroke='currentColor'
-                            strokeWidth='2'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                          />
-                          <path
-                            d='M2 12L12 17L22 12'
-                            stroke='currentColor'
-                            strokeWidth='2'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                          />
-                        </svg>
-                      </DropdownHeaderIcon>
-                      <DropdownHeaderText>Treatments</DropdownHeaderText>
-                    </DropdownHeader>
-                    <TreatmentsContent>
-                      <TreatmentsColumn>
-                        <TreatmentCategoryItem
-                          active={selectedTreatmentCategory === 'car-t-cell'}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedTreatmentCategory('car-t-cell');
-                          }}
-                          onMouseEnter={(e) => {
-                            e.stopPropagation();
-                            if (window.innerWidth > 768) {
-                              clearHoverTimeout('treatments');
-                            }
-                          }}
-                        >
-                          {selectedTreatmentCategory === 'car-t-cell' ? null : (
-                            <MenuItemIndicator />
-                          )}
-                          <MenuItemText>CAR T-Cell therapy</MenuItemText>
-                        </TreatmentCategoryItem>
-                        <TreatmentCategoryItem
-                          active={selectedTreatmentCategory === 'gene-therapy'}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedTreatmentCategory('gene-therapy');
-                          }}
-                          onMouseEnter={(e) => {
-                            e.stopPropagation();
-                            if (window.innerWidth > 768) {
-                              clearHoverTimeout('treatments');
-                            }
-                          }}
-                        >
-                          {selectedTreatmentCategory ===
-                          'gene-therapy' ? null : (
-                            <MenuItemIndicator />
-                          )}
-                          <MenuItemText>Gene Therapy</MenuItemText>
-                        </TreatmentCategoryItem>
-                        <TreatmentCategoryItem
-                          active={selectedTreatmentCategory === 'til-therapy'}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedTreatmentCategory('til-therapy');
-                          }}
-                          onMouseEnter={(e) => {
-                            e.stopPropagation();
-                            if (window.innerWidth > 768) {
-                              clearHoverTimeout('treatments');
-                            }
-                          }}
-                        >
-                          {selectedTreatmentCategory ===
-                          'til-therapy' ? null : (
-                            <MenuItemIndicator />
-                          )}
-                          <MenuItemText>TIL therapy</MenuItemText>
-                        </TreatmentCategoryItem>
-                      </TreatmentsColumn>
-                      <TreatmentsColumn>
-                        <TreatmentSubItems>
-                          {selectedTreatmentCategory === 'car-t-cell' && (
-                            <>
-                              <DropdownMenuItem
-                                to='/treatments/car-t-autoimmune'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  CAR T Cell Therapy In Autoimmune Disorders
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                to='/treatments/car-t-cll'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  CAR T-Cell Therapy For Chronic Lymphocytic
-                                  Leukemia
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                to='/treatments/car-t-gastric'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  CAR T Cell Therapy For Gastric Cancer
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                to='/treatments/car-t-glioblastoma'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  CAR T-Cell Therapy For Glioblastoma
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                to='/treatments/car-t-myeloma'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  CAR T Cell Therapy For Multiple Myeloma
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                to='/treatments/fucaso'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  FUCASO: CAR T-Cell Therapy For Multiple
-                                  Myeloma
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                to='/treatments/car-t-neuroblastoma'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  CAR T-Cell Therapy For Neuroblastoma
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                to='/treatments/car-t-china'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  CAR T-Cell Therapy In China
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          {selectedTreatmentCategory === 'gene-therapy' && (
-                            <>
-                              <DropdownMenuItem
-                                to='/treatments/crispr-china'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  CRISPR/Cas9 Gene Therapy In China
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                to='/treatments/gene-metachromatic'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  Gene Therapy For Metachromatic
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                to='/treatments/gene-sickle-cell'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  Gene Therapy For Sickle Cell Anemia
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                to='/treatments/gene-thalassemia'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  Gene Therapy for Thalassemia
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          {selectedTreatmentCategory === 'til-therapy' && (
-                            <>
-                              <DropdownMenuItem
-                                to='/treatments/gamma-delta'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  Gamma Delta T-Cell Therapy
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                to='/treatments/til-china'
-                                onClick={handleTreatmentsMenuClose}
-                              >
-                                <MenuItemIndicator />
-                                <MenuItemText>
-                                  Tumor-Infiltrating Lymphocyte (TIL) Therapy In
-                                  China
-                                </MenuItemText>
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </TreatmentSubItems>
-                      </TreatmentsColumn>
-                    </TreatmentsContent>
-                  </TreatmentsDropdown>
-                </NavLinkWrapper>
-              );
-            }
-            if (item.label === 'Clinical Trials') {
-              return (
-                <NavLinkWrapper
-                  key={index}
-                  data-clinical-trials-dropdown
-                  onMouseEnter={handleClinicalTrialsMouseEnter}
-                  onMouseLeave={handleClinicalTrialsMouseLeave}
-                >
-                  <NavLink
-                    href={item.link || '#trials'}
-                    onClick={handleClinicalTrialsToggle}
-                    $darkText={darkText}
-                  >
-                    {item.label}
-                  </NavLink>
-                  <AboutDropdown
-                    isOpen={clinicalTrialsDropdownOpen}
-                    onMouseEnter={handleClinicalTrialsMouseEnter}
-                    onMouseLeave={handleClinicalTrialsMouseLeave}
-                  >
-                    <DropdownHeader>
-                      <DropdownHeaderIcon hasIcon={true}>
-                        <svg
-                          viewBox='0 0 24 24'
-                          fill='none'
-                          xmlns='http://www.w3.org/2000/svg'
-                        >
-                          <path
-                            d='M12 2L2 7L12 12L22 7L12 2Z'
-                            stroke='currentColor'
-                            strokeWidth='2'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                          />
-                          <path
-                            d='M2 17L12 22L22 17'
-                            stroke='currentColor'
-                            strokeWidth='2'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                          />
-                          <path
-                            d='M2 12L12 17L22 12'
-                            stroke='currentColor'
-                            strokeWidth='2'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                          />
-                        </svg>
-                      </DropdownHeaderIcon>
-                      <DropdownHeaderText>Clinical Trials</DropdownHeaderText>
-                    </DropdownHeader>
-                    <DropdownMenuItem
-                      to='/clinical-trials/ongoing'
-                      onClick={handleClinicalTrialsMenuClose}
-                    >
-                      <MenuItemIndicator />
-                      <MenuItemText>Ongoing Clinical Trials</MenuItemText>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      to='/clinical-trials/car-t-cell'
-                      onClick={handleClinicalTrialsMenuClose}
-                    >
-                      <MenuItemIndicator />
-                      <MenuItemText>
-                        CAR T Cell therapy clinical trials
-                      </MenuItemText>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      to='/clinical-trials/ball-car-t'
-                      onClick={handleClinicalTrialsMenuClose}
-                    >
-                      <MenuItemIndicator />
-                      <MenuItemText>
-                        Clinical trial for BALL CAR T-Cell therapy
-                      </MenuItemText>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      to='/clinical-trials/car-t-myeloma'
-                      onClick={handleClinicalTrialsMenuClose}
-                    >
-                      <MenuItemIndicator />
-                      <MenuItemText>
-                        CAR T Cell therapy trials for multiple myeloma
-                      </MenuItemText>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      to='/clinical-trials/car-t-thrombocytopenia'
-                      onClick={handleClinicalTrialsMenuClose}
-                    >
-                      <MenuItemIndicator />
-                      <MenuItemText>
-                        CAR T-Cell therapy clinical trials for Immune
-                        thrombocytopenia
-                      </MenuItemText>
-                    </DropdownMenuItem>
-                  </AboutDropdown>
-                </NavLinkWrapper>
-              );
-            }
-            if (item.label === 'Resources') {
-              return (
-                <NavLinkWrapper
-                  key={index}
-                  data-resources-dropdown
-                  onMouseEnter={handleResourcesMouseEnter}
-                  onMouseLeave={handleResourcesMouseLeave}
-                >
-                  <NavLink
-                    href={item.link || '#resources'}
-                    onClick={handleResourcesToggle}
-                    $darkText={darkText}
-                  >
-                    {item.label}
-                  </NavLink>
-                  <AboutDropdown
-                    isOpen={resourcesDropdownOpen}
-                    onMouseEnter={handleResourcesMouseEnter}
-                    onMouseLeave={handleResourcesMouseLeave}
-                  >
-                    <DropdownHeader>
-                      <DropdownHeaderIcon hasIcon={true}>
-                        <svg
-                          viewBox='0 0 24 24'
-                          fill='none'
-                          xmlns='http://www.w3.org/2000/svg'
-                        >
-                          <path
-                            d='M3 7V5C3 3.89543 3.89543 3 5 3H9C10.1046 3 11 3.89543 11 5V7M3 7V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V7M3 7H21M7 3V7M15 3V7'
-                            stroke='currentColor'
-                            strokeWidth='2'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                          />
-                        </svg>
-                      </DropdownHeaderIcon>
-                      <DropdownHeaderText>Resources</DropdownHeaderText>
-                    </DropdownHeader>
-                    <DropdownMenuItem
-                      to='/resources'
-                      onClick={handleResourcesMenuClose}
-                    >
-                      <MenuItemIndicator />
-                      <MenuItemText>Resource Listing</MenuItemText>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      to='/faqs'
-                      onClick={handleResourcesMenuClose}
-                    >
-                      <MenuItemIndicator />
-                      <MenuItemText>FAQs</MenuItemText>
-                    </DropdownMenuItem>
-                  </AboutDropdown>
-                </NavLinkWrapper>
-              );
-            }
-            return (
-              <NavLink
-                key={index}
-                href={
-                  item.link ||
-                  `#${item.label.toLowerCase().replace(/\s+/g, '-')}`
-                }
-                $darkText={darkText}
-              >
-                {item.label}
-              </NavLink>
-            );
-          })}
-        </NavMenu>
-
-        <NavButtons>
-          <LanguageWrapper data-language-menu>
-            <LanguageButton
-              $darkText={darkText}
-              onClick={handleLanguageToggle}
-              aria-label='Change Language'
-            >
-              {languageIcon ? (
-                <img
-                  src={languageIcon}
-                  alt={selectedLanguage?.name || 'Language'}
-                />
-              ) : // Show flag emoji or default UK Flag SVG
-              selectedLanguage?.flag &&
-                typeof selectedLanguage.flag === 'string' ? (
-                <span style={{ fontSize: '22px', lineHeight: '16px' }}>
-                  {selectedLanguage.flag}
-                </span>
-              ) : (
-                <svg width='35' height='35' viewBox='0 0 35 35' fill='none'>
-                  <circle cx='17.5' cy='17.5' r='17.5' fill='#012169' />
-                  <path
-                    d='M3.5 6.5L17.5 17.5M31.5 28.5L17.5 17.5M17.5 17.5L31.5 6.5M17.5 17.5L3.5 28.5'
-                    stroke='white'
-                    strokeWidth='2'
-                  />
-                  <path
-                    d='M3.5 6.5L17.5 17.5M31.5 28.5L17.5 17.5M17.5 17.5L31.5 6.5M17.5 17.5L3.5 28.5'
-                    stroke='#C8102E'
-                    strokeWidth='1'
-                  />
-                  <path
-                    d='M0 17.5H35M17.5 0V35'
-                    stroke='white'
-                    strokeWidth='4'
-                  />
-                  <path
-                    d='M0 17.5H35M17.5 0V35'
-                    stroke='#C8102E'
-                    strokeWidth='2.5'
-                  />
-                </svg>
-              )}
-            </LanguageButton>
-            <LanguageDropdown isOpen={languageMenuOpen}>
-              {availableLanguages.map((lang) => (
-                <LanguageOption
-                  key={lang.id}
-                  isActive={selectedLanguage?.id === lang.id}
-                  onClick={() => handleLanguageSelect(lang)}
-                >
-                  <LanguageFlag>
-                    {lang.flagImage?.data?.attributes?.url ? (
-                      <img
-                        src={getMediaUrl(lang.flagImage.data.attributes.url)}
-                        alt={lang.name}
-                      />
-                    ) : lang.flag?.data?.attributes?.url ? (
-                      <img
-                        src={getMediaUrl(lang.flag.data.attributes.url)}
-                        alt={lang.name}
-                      />
-                    ) : typeof lang.flag === 'string' ? (
-                      <span className='flag-text'>{lang.flag}</span>
-                    ) : (
-                      <span className='flag-text'>🌐</span>
-                    )}
-                  </LanguageFlag>
-                  <LanguageLabel>{lang.name}</LanguageLabel>
-                </LanguageOption>
-              ))}
-            </LanguageDropdown>
-          </LanguageWrapper>
-          <ConnectButton to={connectButtonLink}>
-            {connectButtonText}
-          </ConnectButton>
-          <HamburgerButton
-            onClick={toggleMenu}
-            isOpen={isMenuOpen}
-            $darkText={darkText}
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </HamburgerButton>
-        </NavButtons>
-      </NavContent>
-
-      <MobileMenu isOpen={isMenuOpen}>
-        {navigationLinks.map((item, index) => {
-          if (item.label === 'About') {
-            return (
-              <MobileNavItem key={index}>
-                <MobileNavItemHeader
-                  onClick={() => toggleMobileSubMenu('about')}
-                  isOpen={mobileSubMenuOpen.about}
-                >
-                  <span>{item.label}</span>
-                  <svg
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    xmlns='http://www.w3.org/2000/svg'
-                  >
-                    <path
-                      d='M6 9L12 15L18 9'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                  </svg>
-                </MobileNavItemHeader>
-                <MobileSubMenu isOpen={mobileSubMenuOpen.about}>
-                  <MobileSubMenuItem to='/about-us' onClick={closeMenu}>
-                    About Us
-                  </MobileSubMenuItem>
-                  <MobileSubMenuItem to='/specialisation' onClick={closeMenu}>
-                    Our Specialisation
-                  </MobileSubMenuItem>
-                </MobileSubMenu>
-              </MobileNavItem>
-            );
-          }
-
-          if (item.label === 'Hospitals & Doctors') {
-            return (
-              <MobileNavItem key={index}>
-                <MobileNavItemHeader
-                  onClick={() => toggleMobileSubMenu('hospitals')}
-                  isOpen={mobileSubMenuOpen.hospitals}
-                >
-                  <span>{item.label}</span>
-                  <svg
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    xmlns='http://www.w3.org/2000/svg'
-                  >
-                    <path
-                      d='M6 9L12 15L18 9'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                  </svg>
-                </MobileNavItemHeader>
-                <MobileSubMenu isOpen={mobileSubMenuOpen.hospitals}>
-                  <MobileSubMenuItem to='/hospitals' onClick={closeMenu}>
-                    Hospitals
-                  </MobileSubMenuItem>
-                  <MobileSubMenuItem to='/doctors' onClick={closeMenu}>
-                    Doctors
-                  </MobileSubMenuItem>
-                </MobileSubMenu>
-              </MobileNavItem>
-            );
-          }
-
-          if (item.label === 'Treatments') {
-            return (
-              <MobileNavItem key={index}>
-                <MobileNavItemHeader
-                  onClick={() => toggleMobileSubMenu('treatments')}
-                  isOpen={mobileSubMenuOpen.treatments}
-                >
-                  <span>{item.label}</span>
-                  <svg
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    xmlns='http://www.w3.org/2000/svg'
-                  >
-                    <path
-                      d='M6 9L12 15L18 9'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                  </svg>
-                </MobileNavItemHeader>
-                <MobileSubMenu isOpen={mobileSubMenuOpen.treatments}>
-                  <MobileTreatmentCategoryItem
-                    onClick={() =>
-                      setMobileTreatmentCategory(
-                        mobileTreatmentCategory === 'car-t-cell'
-                          ? null
-                          : 'car-t-cell'
-                      )
-                    }
-                    isOpen={mobileTreatmentCategory === 'car-t-cell'}
-                  >
-                    <span>CAR T-Cell therapy</span>
-                    <svg
-                      viewBox='0 0 24 24'
-                      fill='none'
-                      xmlns='http://www.w3.org/2000/svg'
-                    >
-                      <path
-                        d='M6 9L12 15L18 9'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                      />
-                    </svg>
-                  </MobileTreatmentCategoryItem>
-                  <MobileTreatmentSubMenu
-                    isOpen={mobileTreatmentCategory === 'car-t-cell'}
-                  >
-                    <MobileSubMenuItem
-                      to='/treatments/car-t-autoimmune'
-                      onClick={closeMenu}
-                    >
-                      CAR T Cell Therapy In Autoimmune Disorders
-                    </MobileSubMenuItem>
-                    <MobileSubMenuItem
-                      to='/treatments/car-t-cll'
-                      onClick={closeMenu}
-                    >
-                      CAR T-Cell Therapy For Chronic Lymphocytic Leukemia
-                    </MobileSubMenuItem>
-                    <MobileSubMenuItem
-                      to='/treatments/car-t-gastric'
-                      onClick={closeMenu}
-                    >
-                      CAR T Cell Therapy For Gastric Cancer
-                    </MobileSubMenuItem>
-                    <MobileSubMenuItem
-                      to='/treatments/car-t-glioblastoma'
-                      onClick={closeMenu}
-                    >
-                      CAR T-Cell Therapy For Glioblastoma
-                    </MobileSubMenuItem>
-                    <MobileSubMenuItem
-                      to='/treatments/car-t-myeloma'
-                      onClick={closeMenu}
-                    >
-                      CAR T Cell Therapy For Multiple Myeloma
-                    </MobileSubMenuItem>
-                    <MobileSubMenuItem
-                      to='/treatments/fucaso'
-                      onClick={closeMenu}
-                    >
-                      FUCASO: CAR T-Cell Therapy For Multiple Myeloma
-                    </MobileSubMenuItem>
-                    <MobileSubMenuItem
-                      to='/treatments/car-t-neuroblastoma'
-                      onClick={closeMenu}
-                    >
-                      CAR T-Cell Therapy For Neuroblastoma
-                    </MobileSubMenuItem>
-                    <MobileSubMenuItem
-                      to='/treatments/car-t-china'
-                      onClick={closeMenu}
-                    >
-                      CAR T-Cell Therapy In China
-                    </MobileSubMenuItem>
-                  </MobileTreatmentSubMenu>
-
-                  <MobileTreatmentCategoryItem
-                    onClick={() =>
-                      setMobileTreatmentCategory(
-                        mobileTreatmentCategory === 'gene-therapy'
-                          ? null
-                          : 'gene-therapy'
-                      )
-                    }
-                    isOpen={mobileTreatmentCategory === 'gene-therapy'}
-                  >
-                    <span>Gene Therapy</span>
-                    <svg
-                      viewBox='0 0 24 24'
-                      fill='none'
-                      xmlns='http://www.w3.org/2000/svg'
-                    >
-                      <path
-                        d='M6 9L12 15L18 9'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                      />
-                    </svg>
-                  </MobileTreatmentCategoryItem>
-                  <MobileTreatmentSubMenu
-                    isOpen={mobileTreatmentCategory === 'gene-therapy'}
-                  >
-                    <MobileSubMenuItem
-                      to='/treatments/crispr-china'
-                      onClick={closeMenu}
-                    >
-                      CRISPR/Cas9 Gene Therapy In China
-                    </MobileSubMenuItem>
-                    <MobileSubMenuItem
-                      to='/treatments/gene-metachromatic'
-                      onClick={closeMenu}
-                    >
-                      Gene Therapy For Metachromatic
-                    </MobileSubMenuItem>
-                    <MobileSubMenuItem
-                      to='/treatments/gene-sickle-cell'
-                      onClick={closeMenu}
-                    >
-                      Gene Therapy For Sickle Cell Anemia
-                    </MobileSubMenuItem>
-                    <MobileSubMenuItem
-                      to='/treatments/gene-thalassemia'
-                      onClick={closeMenu}
-                    >
-                      Gene Therapy for Thalassemia
-                    </MobileSubMenuItem>
-                  </MobileTreatmentSubMenu>
-
-                  <MobileTreatmentCategoryItem
-                    onClick={() =>
-                      setMobileTreatmentCategory(
-                        mobileTreatmentCategory === 'til-therapy'
-                          ? null
-                          : 'til-therapy'
-                      )
-                    }
-                    isOpen={mobileTreatmentCategory === 'til-therapy'}
-                  >
-                    <span>TIL therapy</span>
-                    <svg
-                      viewBox='0 0 24 24'
-                      fill='none'
-                      xmlns='http://www.w3.org/2000/svg'
-                    >
-                      <path
-                        d='M6 9L12 15L18 9'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                      />
-                    </svg>
-                  </MobileTreatmentCategoryItem>
-                  <MobileTreatmentSubMenu
-                    isOpen={mobileTreatmentCategory === 'til-therapy'}
-                  >
-                    <MobileSubMenuItem
-                      to='/treatments/gamma-delta'
-                      onClick={closeMenu}
-                    >
-                      Gamma Delta T-Cell Therapy
-                    </MobileSubMenuItem>
-                    <MobileSubMenuItem
-                      to='/treatments/til-china'
-                      onClick={closeMenu}
-                    >
-                      Tumor-Infiltrating Lymphocyte (TIL) Therapy In China
-                    </MobileSubMenuItem>
-                  </MobileTreatmentSubMenu>
-                </MobileSubMenu>
-              </MobileNavItem>
-            );
-          }
-
-          if (item.label === 'Clinical Trials') {
-            return (
-              <MobileNavItem key={index}>
-                <MobileNavItemHeader
-                  onClick={() => toggleMobileSubMenu('clinicalTrials')}
-                  isOpen={mobileSubMenuOpen.clinicalTrials}
-                >
-                  <span>{item.label}</span>
-                  <svg
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    xmlns='http://www.w3.org/2000/svg'
-                  >
-                    <path
-                      d='M6 9L12 15L18 9'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                  </svg>
-                </MobileNavItemHeader>
-                <MobileSubMenu isOpen={mobileSubMenuOpen.clinicalTrials}>
-                  <MobileSubMenuItem
-                    to='/clinical-trials/ongoing'
-                    onClick={closeMenu}
-                  >
-                    Ongoing Clinical Trials
-                  </MobileSubMenuItem>
-                  <MobileSubMenuItem
-                    to='/clinical-trials/car-t-cell'
-                    onClick={closeMenu}
-                  >
-                    CAR T Cell therapy clinical trials
-                  </MobileSubMenuItem>
-                  <MobileSubMenuItem
-                    to='/clinical-trials/ball-car-t'
-                    onClick={closeMenu}
-                  >
-                    Clinical trial for BALL CAR T-Cell therapy
-                  </MobileSubMenuItem>
-                  <MobileSubMenuItem
-                    to='/clinical-trials/car-t-myeloma'
-                    onClick={closeMenu}
-                  >
-                    CAR T Cell therapy trials for multiple myeloma
-                  </MobileSubMenuItem>
-                  <MobileSubMenuItem
-                    to='/clinical-trials/car-t-thrombocytopenia'
-                    onClick={closeMenu}
-                  >
-                    CAR T-Cell therapy clinical trials for Immune
-                    thrombocytopenia
-                  </MobileSubMenuItem>
-                </MobileSubMenu>
-              </MobileNavItem>
-            );
-          }
-
-          if (item.label === 'Resources') {
-            return (
-              <MobileNavItem key={index}>
-                <MobileNavItemHeader
-                  onClick={() => toggleMobileSubMenu('resources')}
-                  isOpen={mobileSubMenuOpen.resources}
-                >
-                  <span>{item.label}</span>
-                  <svg
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    xmlns='http://www.w3.org/2000/svg'
-                  >
-                    <path
-                      d='M6 9L12 15L18 9'
-                      strokeWidth='2'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                    />
-                  </svg>
-                </MobileNavItemHeader>
-                <MobileSubMenu isOpen={mobileSubMenuOpen.resources}>
-                  <MobileSubMenuItem to='/resources' onClick={closeMenu}>
-                    Resource Listing
-                  </MobileSubMenuItem>
-                  <MobileSubMenuItem to='/faqs' onClick={closeMenu}>
-                    FAQs
-                  </MobileSubMenuItem>
-                </MobileSubMenu>
-              </MobileNavItem>
-            );
-          }
-
-          return (
-            <MobileNavLink
-              key={index}
-              href={
-                item.link || `#${item.label.toLowerCase().replace(/\s+/g, '-')}`
-              }
-              onClick={closeMenu}
-            >
-              {item.label}
-            </MobileNavLink>
-          );
-        })}
-      </MobileMenu>
-    </NavContainer>
-  );
-};
 
 export default Header;

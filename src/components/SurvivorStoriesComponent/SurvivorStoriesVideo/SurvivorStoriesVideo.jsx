@@ -1,20 +1,36 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { formatMedia } from '../../../utils/strapiHelpers';
 
-const SurvivorStoriesVideo = ({ 
-  story,
-  StoriesName = "Featured Survivor of the Month: Aisha",
-  StoriesVideo = "../videos/stories-video.mp4",
-  StoriesbtnLink = "Read Aisha’s Full Story",
-  StoriesDescription = "“Cancer taught me how strong I truly am.” – Aisha, Lung Cancer Survivor. When Aisha was diagnosed with stage III lung cancer, her world turned upside down. Determined to fight, she explored advanced treatment options...",
-  onSubmitReports
-}) => {
+const SurvivorStoriesVideo = ({ story }) => {
+  if (!story) {
+    return null;
+  }
+
+  const videoUrl = formatMedia(story?.hero?.featuredVideo);
+  const storyTitle = story?.hero?.story_title || story?.patient_name || '';
+  const shortQuote = story?.short_quote || '';
+  const cta = story?.hero?.cta;
+  const storySlug = story?.slug;
+
+  if (!videoUrl) {
+    return null;
+  }
+
   return (
     <div className='storiesVideo_wrap'>
       <div className='stories_video'>
         <div className='ratio'>
-          <BackgroundVideo className="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/stories-video-poster.jpg">
-          <source src={StoriesVideo} type="video/mp4" />
+          <BackgroundVideo 
+            className="video" 
+            preload="none" 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+          >
+            <source src={videoUrl} type="video/mp4" />
         </BackgroundVideo>
         </div>
       </div>
@@ -22,7 +38,7 @@ const SurvivorStoriesVideo = ({
           <div className='commContent_wrap'>      
           <HeroContentGrid>
             <TopRow>
-              <HospitalName className='title-3'>{StoriesName}</HospitalName>
+              <HospitalName className='title-3'>{storyTitle}</HospitalName>
               
               <ActionButtonsGroup>
                 <a href="#" className="play-btn-pulse">
@@ -36,12 +52,20 @@ const SurvivorStoriesVideo = ({
             </TopRow>
             
             <BottomRow>
-              <SubmitButton className='btn btn-md btn-pink-solid' onClick={onSubmitReports}>
-                {StoriesbtnLink}
-              </SubmitButton>
+              {(cta?.text || storySlug) && (
+                <CTAButton 
+                  className='btn btn-md btn-pink-solid'
+                  to={cta?.URL || (storySlug ? `/survivor-stories/${storySlug}` : '#')}
+                  target={cta?.target || '_self'}
+                >
+                  {cta?.text || 'Read Full Story'}
+                </CTAButton>
+              )}
+              {shortQuote && (
               <Description className='text-16 line-2-text'>
-                {StoriesDescription}
+                  {shortQuote}
               </Description>
+              )}
             </BottomRow>
           </HeroContentGrid>          
           </div>
@@ -111,7 +135,7 @@ const BottomRow = styled.div`
   }
 `;
 
-const SubmitButton = styled.button`
+const CTAButton = styled(Link)`
 `;
 
 const Description = styled.p`

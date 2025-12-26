@@ -1,32 +1,19 @@
-import React, { useState, useEffect, memo, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
-import { 
-  fetchContactFormSection, 
-  fetchTestimonials, 
-  fetchInquiryTypes, 
+import {
   submitContactForm,
-  resetSubmissionStatus
+  resetSubmissionStatus,
 } from '../../../store/slices/contactFormSlice';
+import { useNavigate } from 'react-router-dom';
+import { formatMedia } from '@/utils/strapiHelpers';
 
-const CancerTreatmentHero = ({ 
-  DiseaseName = "Our Global Network of Leading Cancer Specialists",
-  DiseaseText = "CancerFax provides expert access to CAR T-Cell treatments across top global centers, helping you navigate eligibility, logistics, and care coordination. Discover how this next-generation therapy could become your path forward.",
-  heroBannner = "../images/cancer-treatment-usa-hero.jpg",
-}) => {
-
-  const fadeIn = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0 },
-  };
-
-
+const CancerTreatmentHero = ({ data }) => {
   const dispatch = useDispatch();
-  const { 
-    sectionData,
-    submissionStatus,
-  } = useSelector((state) => state.contactForm);
+  const navigate = useNavigate();
+
+  const { submissionStatus } = useSelector((state) => state.contactForm);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -37,14 +24,7 @@ const CancerTreatmentHero = ({
   });
 
   useEffect(() => {
-    dispatch(fetchContactFormSection());
-    dispatch(fetchTestimonials());
-    dispatch(fetchInquiryTypes());
-  }, [dispatch]);
-
-  useEffect(() => {
     if (submissionStatus === 'succeeded') {
-      // Reset form after successful submission
       setFormData({
         fullName: '',
         email: '',
@@ -52,7 +32,6 @@ const CancerTreatmentHero = ({
         message: '',
       });
       
-      // Show success message and reset after 3 seconds
       setTimeout(() => {
         dispatch(resetSubmissionStatus());
       }, 3000);
@@ -73,7 +52,7 @@ const CancerTreatmentHero = ({
     dispatch(submitContactForm(formData));
   };
 
-    const defaultFormFields = {
+  const defaultFormFields = {
     fullNameLabel: 'Full Name*',
     fullNamePlaceholder: 'Enter full name',
     emailLabel: 'Email Address*',
@@ -85,20 +64,26 @@ const CancerTreatmentHero = ({
     buttonText: 'Send Message'
   };
 
+  // Use local default labels for the form fields (no GET config needed)
+  const formFields = defaultFormFields;
 
-  // Get data from Strapi or use defaults
-  const formFields = sectionData?.attributes || defaultFormFields;
+  const backgroundImageUrl = formatMedia(data?.backgroundImage);
 
+  if (!data?.isActive) {
+    return null;
+  }
 
   return (
     <section className='homeHero_sec cancer_hero_sec'>
       <div className='home-hero-banner hospital_details_hero'>
         <div className='ratio'>
-          <BackgroundImage
-            src={heroBannner}
-            alt={DiseaseName}
-            loading="lazy"
-          />
+          {backgroundImageUrl && (
+            <BackgroundImage
+              src={backgroundImageUrl}
+              alt={data?.heading || ''}
+              loading="lazy"
+            />
+          )}
         </div>
       </div>
       <div className='heroContent_wrap'>
@@ -108,15 +93,24 @@ const CancerTreatmentHero = ({
             <HeaderRow>
               <HeaderLeft>
                 <div>
-                  <DiseaseTitle className='title-1 mb-3'>{DiseaseName}</DiseaseTitle>
-                  <Description className='text-16'>{DiseaseText}</Description>
+                  {data?.heading && (
+                    <DiseaseTitle className='title-1 mb-3'>
+                      {data.heading}
+                    </DiseaseTitle>
+                  )}
+                  {(data?.subHeading || data?.description_text) && (
+                    <Description className='text-16'>
+                      {data.subHeading || data.description_text}
+                    </Description>
+                  )}
                 </div>
               </HeaderLeft>
               <HeaderRight>
                 <RightBox>
                   <FormContainer onSubmit={handleSubmit}>
                     {submissionStatus === 'succeeded' && (
-                      <SuccessMessage>Thank you! Your message has been sent successfully.</SuccessMessage>
+                      // <SuccessMessage>Thank you! Your message has been sent successfully.</SuccessMessage>
+                      navigate('/thank-you')
                     )}
                     {submissionStatus === 'failed' && (
                       <ErrorMessage>Sorry, there was an error sending your message. Please try again.</ErrorMessage>
@@ -184,9 +178,6 @@ const CancerTreatmentHero = ({
                       {submissionStatus === 'loading' ? 'Sending...' : (formFields.buttonText || 'Send Message')}
                     </SubmitButton>
                   </FormContainer>
-                    {/* <SubmitButton className='btn btn-md btn-pink-solid' onClick={onSubmitReports}>
-                      Know more about liver cancer
-                    </SubmitButton> */}
                 </RightBox>
               </HeaderRight>
             </HeaderRow>
@@ -196,6 +187,11 @@ const CancerTreatmentHero = ({
       </div>    
     </section>
   );
+};
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0 },
 };
 
 

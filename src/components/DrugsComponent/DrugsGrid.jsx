@@ -1,109 +1,72 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import styled from 'styled-components';
-import { fetchHospitals } from '../../store/slices/hospitalNetworkSlice';
 import { getMediaUrl } from '../../services/api';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
+import { useLoadMore } from '@/utils/useLoadMore';
+import SkeletonBlogCard from '../reusable/SkeletonBlogCard';
+import { useNavigate } from 'react-router-dom';
 
 const DrugsGrid = ( { drugs, loading }) => {
+
+  const navigate = useNavigate();
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
+ 
+  const medicines = drugs?.length > 0 ? drugs.map((drug) => ({
+    id: drug?.id,
+    name: drug?.name,
+    medicine_quantity: drug?.medicine_quantity,
+    image: getMediaUrl(drug?.hero?.featuredImage),
+    slug: drug?.slug,
+  })) : [];
 
-  const dispatch = useDispatch();
-  const { hospitals: strapiHospitals } = useSelector((state) => state.hospitalNetwork);
+  const { visibleItems, loadMore, hasMore, isLoadingMore } = useLoadMore(
+    medicines,
+    6,
+    3
+  );
 
-  useEffect(() => {
-    dispatch(fetchHospitals());
-  }, [dispatch]);
+  if (loading) {
+    return (
+      <Grid>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <SkeletonBlogCard key={i} />
+        ))}
+      </Grid>
+    );
+  }
 
-  // Fallback hospital data for demonstration
-  const defaultDrugs = [
-    {
-      id: 1,
-      name: 'Medicine name goes here',
-      medicine_quantity: 'Box of 250 ml medicine',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800' } } },
-    },
-    {
-      id: 2,
-      name: 'Medicine name goes here',
-      medicine_quantity: 'Box of 250 ml medicine',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?w=800' } } },
-    },
-    {
-      id: 3,
-      name: 'Medicine name goes here',
-      medicine_quantity: 'Box of 250 ml medicine',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800' } } },
-    },
-    {
-      id: 4,
-      name: 'Medicine name goes here',
-      medicine_quantity: 'Box of 250 ml medicine',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=800' } } },
-    },
-    {
-      id: 5,
-      name: 'Medicine name goes here',
-      medicine_quantity: 'Box of 250 ml medicine',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1512678080530-7760d81faba6?w=800' } } },
-    },
-    {
-      id: 6,
-      name: 'Medicine name goes here',
-      medicine_quantity: 'Box of 250 ml medicine',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1519167758481-83f29da8c9d0?w=800' } } },
-    },
-    {
-      id: 7,
-      name: 'Medicine name goes here',
-      medicine_quantity: 'Box of 250 ml medicine',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1596541223130-5d31a73fb6c6?w=800' } } },
-    },
-    {
-      id: 8,
-      name: 'Medicine name goes here',
-      medicine_quantity: 'Box of 250 ml medicine',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=800' } } },
-    },
-    {
-      id: 9,
-      name: 'Medicine name goes here',
-      medicine_quantity: 'Box of 250 ml medicine',
-      image: { data: { attributes: { url: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800' } } },
-    },
-  ];
+  if(medicines?.length === 0) {
+    return (
+      <Grid>
+        <EmptyState>No drugs found</EmptyState>
+      </Grid>
+    );
+  }
 
-  // const medicines = Array.isArray(strapiHospitals) && strapiHospitals.length > 0 
-  //   ? strapiHospitals 
-  //   : defaultDrugs;
-    
-  const medicines = drugs?.length > 1 ? drugs.map((drug,index) => ({
-    id: drug.id || defaultDrugs[index % 9].id,
-    name: drug.name || defaultDrugs[index % 9].name,
-    medicine_quantity: drug.medicine_quantity || defaultDrugs[index % 9].medicine_quantity,
-    image: getMediaUrl(drug.image) || defaultDrugs[index % 9].image,
-  })) : defaultDrugs;
+  const handleCardClick = (medicine) => {
+    navigate(`/drugs/${medicine?.slug}`);
+  };
 
   return (
     <>
         <Grid>
-          {medicines.map((medicine) => {
-            const hospitalImage = medicine?.image?.data?.attributes?.url 
+          {visibleItems.map((medicine) => {
+            const drugImage = medicine?.image?.data?.attributes?.url 
               ? getMediaUrl(medicine.image.data.attributes.url) 
               : medicine?.image;
-            const medicineName = medicine?.name || 'Medicine name goes here';
-            const medicineQuantity = medicine?.medicine_quantity || 'Box of 250 ml medicine';
+            const medicineName = medicine?.name;
+            const medicineQuantity = `Box of ${medicine?.medicine_quantity || ''} ml medicine`;
             return (
               <ScrollAnimationComponent animationVariants={fadeIn}>
-              <Card key={medicine.id}>
-                <CardImage bgImage={hospitalImage} />
+              <Card key={medicine.id} onClick={() => handleCardClick(medicine)}>
+                <CardImage bgImage={drugImage} />
                 <CardContent>
                   <div className='doctors-text'>
-                    <HospitalName>{medicineName}</HospitalName>
+                    <DrugName>{medicineName}</DrugName>
                     <span>{medicineQuantity}</span>
                   </div>
                   <ArrowIcon>
@@ -117,6 +80,18 @@ const DrugsGrid = ( { drugs, loading }) => {
             );
           })}
         </Grid>
+
+        {hasMore && (
+        <LoadMoreWrapper>
+          <button
+            className="load-more-btn"
+            onClick={loadMore}
+            disabled={isLoadingMore}
+          >
+            {isLoadingMore ? "Loading..." : "Load More"}
+          </button>
+        </LoadMoreWrapper>
+      )}
     </>
   );
 };
@@ -205,7 +180,7 @@ const CardContent = styled.div`
   }
 `;
 
-const HospitalName = styled.h5`
+const DrugName = styled.h5`
   font-family: "Be Vietnam Pro", sans-serif;
   font-size: 18px;
   font-weight: 500;
@@ -241,6 +216,45 @@ const ArrowIcon = styled.div`
     stroke: #36454F;
     transition: all 0.3s ease;
   }
+`;
+
+const LoadMoreWrapper = styled.div`
+  text-align: center;
+  margin-top: 40px;
+
+  .load-more-btn {
+    background: #36454f;
+    color: #fff;
+    padding: 14px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: 0.25s ease;
+
+    &:hover {
+      background: #000;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+`;
+
+const EmptyState = styled.div`
+  grid-column: 1 / -1;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #36454f;
+  font-size: 18px;
+  background: #f7f9fa;
+  border-radius: 16px;
+  padding: 40px 20px;
 `;
 
 export default DrugsGrid;

@@ -2,19 +2,29 @@ import React from "react";
 import styled from 'styled-components';
 import DoctorsInnovativeGalleryMarque from './DoctorsInnovativeGalleryMarque';
 
-const DoctorsInnovationInsights = ({ data }) => {
+const DoctorsInnovationInsights = ({ componentData, data }) => {
+  const insightsData = componentData || data;
+
+  if (!insightsData) {
+    return null;
+  }
+
   return (
     <section className='innovationInsight_sec py-120'>
       <div className='containerWrapper'>
         <Header className='commContent_wrap content-gap-40'>
-          <Label className='contentLabel text_theme_dark'>{data?.heading || ''}</Label>
-          <Title className='title-3 text_theme_dark'>{data?.subHeading || ''}</Title>
+          <Label className='contentLabel text_theme_dark'>
+            {insightsData?.heading || ''}
+          </Label>
+          <Title className='title-3 text_theme_dark'>
+            {insightsData?.subHeading || ''}
+          </Title>
           <Description className='text-16 text_theme_dark'>
-            {data?.description_text || ''}
+            {insightsData?.description_text || ''}
           </Description>
         </Header>
       </div>
-      <DoctorsInnovativeGalleryMarque images={data?.media_galary || []} /> 
+      <DoctorsInnovativeGalleryMarque images={insightsData?.media_galary || []} /> 
     </section>
   );
 };

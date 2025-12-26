@@ -1,124 +1,41 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import { fetchQuickFindsSection } from "../../store/slices/quickFindsSlice";
-import HospitalGrid from "../../components/HospitalGrid/HospitalGrid";
-import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAnimationComponent";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { fetchQuickFindsSection } from '../../store/slices/quickFindsSlice';
+import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 
-const ClinicalFeature = () => {
+const ClinicalFeature = ({ componentData, data }) => {
   const dispatch = useDispatch();
-  const { sectionContent, countries, specialties, treatments } = useSelector(
+  const listingData = componentData || data;
+  const { countries, specialties, treatments } = useSelector(
     (state) => state.quickFinds
   );
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedSpecialty, setSelectedSpecialty] = useState("");
-  const [selectedTreatment, setSelectedTreatment] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedSpecialty, setSelectedSpecialty] = useState('');
+  const [selectedTreatment, setSelectedTreatment] = useState('');
 
   useEffect(() => {
     dispatch(fetchQuickFindsSection());
   }, [dispatch]);
 
-  // Fallback content
-  const defaultList = [
-    {
-      id: 1,
-      sl: "NCT06971094",
-      title: "GC101 Gene Therapy for Type 2 Spinal Muscular Atrophy (SMA)",
-      button: "Explore",
-    },
-    {
-      id: 2,
-      sl: "NCT06971094",
-      title:
-        "GC101 Gene Therapy for Spinal Muscular Atrophy Type 2 – Phase I/II Clinical Trial",
-      button: "Explore",
-    },
-    {
-      id: 3,
-      sl: "NCT06971094",
-      title:
-        "Phase III Trial: GC101 Gene Therapy for Type 2 Spinal Muscular Atrophy (SMA)",
-      button: "Explore",
-    },
-    {
-      id: 4,
-      sl: "NCT06971094",
-      title: "GC101 Gene Therapy for Type 2 Spinal Muscular Atrophy (SMA)",
-      button: "Explore",
-    },
-    {
-      id: 5,
-      sl: "NCT06971094",
-      title:
-        "GC101 Gene Therapy for Spinal Muscular Atrophy Type 2 – Phase I/II Clinical Trial",
-      button: "Explore",
-    },
-    {
-      id: 6,
-      sl: "NCT06971094",
-      title:
-        "Phase III Trial: GC101 Gene Therapy for Type 2 Spinal Muscular Atrophy (SMA)",
-      button: "Explore",
-    },
-  ];
-  const defaultContent = {
-    label: "Global Breakthroughs",
-    title: "Featured & Recently Added Trials",
-    description:
-      "Explore the latest global cancer clinical trials curated by our experts, highlighting breakthrough therapies, new research programs, and emerging opportunities for eligible patients.",
-    searchPlaceholder: "Search with keywords",
-  };
+  if (!listingData) {
+    return null;
+  }
 
-  const defaultCountries = [
-    { id: 1, name: "United States", value: "us" },
-    { id: 2, name: "United Kingdom", value: "uk" },
-    { id: 3, name: "Canada", value: "ca" },
-    { id: 4, name: "Germany", value: "de" },
-    { id: 5, name: "France", value: "fr" },
-  ];
-
-  const defaultSpecialties = [
-    { id: 1, name: "Oncology", value: "oncology" },
-    { id: 2, name: "Cardiology", value: "cardiology" },
-    { id: 3, name: "Neurology", value: "neurology" },
-    { id: 4, name: "Immunotherapy", value: "immunotherapy" },
-  ];
-
-  const defaultTreatments = [
-    { id: 1, name: "Chemotherapy", value: "chemotherapy" },
-    { id: 2, name: "Radiation Therapy", value: "radiation" },
-    { id: 3, name: "Immunotherapy", value: "immunotherapy" },
-    { id: 4, name: "Surgery", value: "surgery" },
-  ];
-
-  const content = sectionContent || defaultContent;
   const countryOptions =
-    Array.isArray(countries) && countries.length > 0
-      ? countries
-      : defaultCountries;
+    Array.isArray(countries) && countries.length > 0 ? countries : [];
   const specialtyOptions =
-    Array.isArray(specialties) && specialties.length > 0
-      ? specialties
-      : defaultSpecialties;
+    Array.isArray(specialties) && specialties.length > 0 ? specialties : [];
   const treatmentOptions =
-    Array.isArray(treatments) && treatments.length > 0
-      ? treatments
-      : defaultTreatments;
+    Array.isArray(treatments) && treatments.length > 0 ? treatments : [];
 
   const handleSearch = () => {
     // Implement search functionality
-    console.log("Search:", {
-      searchTerm,
-      country: selectedCountry,
-      specialty: selectedSpecialty,
-      treatment: selectedTreatment,
-    });
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSearch();
     }
   };
@@ -129,15 +46,15 @@ const ClinicalFeature = () => {
   };
 
   return (
-    <section className="quickFinds_sec py-120">
-      <div className="containerWrapper">
+    <section className='quickFinds_sec py-120'>
+      <div className='containerWrapper'>
         <ScrollAnimationComponent animationVariants={fadeIn}>
           <TopSection>
-            <div className="commContent_wrap commContent_new ">
-              <p className="contentLabel">{content.label}</p>
-              <h3 className="title-3">{content.title}</h3>
-              <div className="content__des text_theme_dark">
-                <p className="text-16">{content.description}</p>
+            <div className='commContent_wrap commContent_new '>
+              <p className='contentLabel'>{listingData?.heading || ''}</p>
+              <h3 className='title-3'>{listingData?.subHeading || ''}</h3>
+              <div className='content__des text_theme_dark'>
+                <p className='text-16'>{listingData?.description_text || ''}</p>
               </div>
             </div>
           </TopSection>
@@ -145,147 +62,139 @@ const ClinicalFeature = () => {
           <FiltersContainer>
             <SearchInput>
               <Input
-                type="text"
-                placeholder={content.searchPlaceholder}
+                type='text'
+                placeholder='Search with keywords'
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={handleKeyPress}
               />
               <SearchIcon onClick={handleSearch}>
                 <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='currentColor'
+                  strokeWidth='2'
                 >
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.35-4.35" />
+                  <circle cx='11' cy='11' r='8' />
+                  <path d='m21 21-4.35-4.35' />
                 </svg>
               </SearchIcon>
             </SearchInput>
 
-            <SelectWrapper>
-              <Select
-                value={selectedCountry}
-                onChange={(e) => setSelectedCountry(e.target.value)}
-              >
-                <option value="">Select country</option>
-                {countryOptions.map((country) => (
-                  <option key={country.id} value={country.value}>
-                    {country.name}
-                  </option>
-                ))}
-              </Select>
-              <SelectDisplay className={!selectedCountry ? "placeholder" : ""}>
-                {selectedCountry
-                  ? countryOptions.find((c) => c.value === selectedCountry)
-                      ?.name || "Select country"
-                  : "Select country"}
-              </SelectDisplay>
-              <DropdownIcon>
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
+            {countryOptions.length > 0 && (
+              <SelectWrapper>
+                <Select
+                  value={selectedCountry}
+                  onChange={(e) => setSelectedCountry(e.target.value)}
                 >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </DropdownIcon>
-            </SelectWrapper>
+                  <option value=''>Select country</option>
+                  {countryOptions.map((country) => (
+                    <option
+                      key={country?.id || country?.value}
+                      value={country?.value || ''}
+                    >
+                      {country?.name || ''}
+                    </option>
+                  ))}
+                </Select>
+                <SelectDisplay
+                  className={!selectedCountry ? 'placeholder' : ''}
+                >
+                  {selectedCountry
+                    ? countryOptions.find((c) => c.value === selectedCountry)
+                        ?.name || 'Select country'
+                    : 'Select country'}
+                </SelectDisplay>
+                <DropdownIcon>
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                  >
+                    <polyline points='6 9 12 15 18 9' />
+                  </svg>
+                </DropdownIcon>
+              </SelectWrapper>
+            )}
 
-            <SelectWrapper>
-              <Select
-                value={selectedSpecialty}
-                onChange={(e) => setSelectedSpecialty(e.target.value)}
-              >
-                <option value="">Select specialty</option>
-                {specialtyOptions.map((specialty) => (
-                  <option key={specialty.id} value={specialty.value}>
-                    {specialty.name}
-                  </option>
-                ))}
-              </Select>
-              <SelectDisplay
-                className={!selectedSpecialty ? "placeholder" : ""}
-              >
-                {selectedSpecialty
-                  ? specialtyOptions.find((s) => s.value === selectedSpecialty)
-                      ?.name || "Select specialty"
-                  : "Select specialty"}
-              </SelectDisplay>
-              <DropdownIcon>
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
+            {specialtyOptions.length > 0 && (
+              <SelectWrapper>
+                <Select
+                  value={selectedSpecialty}
+                  onChange={(e) => setSelectedSpecialty(e.target.value)}
                 >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </DropdownIcon>
-            </SelectWrapper>
+                  <option value=''>Select specialty</option>
+                  {specialtyOptions.map((specialty) => (
+                    <option
+                      key={specialty?.id || specialty?.value}
+                      value={specialty?.value || ''}
+                    >
+                      {specialty?.name || ''}
+                    </option>
+                  ))}
+                </Select>
+                <SelectDisplay
+                  className={!selectedSpecialty ? 'placeholder' : ''}
+                >
+                  {selectedSpecialty
+                    ? specialtyOptions.find(
+                        (s) => s.value === selectedSpecialty
+                      )?.name || 'Select specialty'
+                    : 'Select specialty'}
+                </SelectDisplay>
+                <DropdownIcon>
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                  >
+                    <polyline points='6 9 12 15 18 9' />
+                  </svg>
+                </DropdownIcon>
+              </SelectWrapper>
+            )}
 
-            <SelectWrapper>
-              <Select
-                value={selectedTreatment}
-                onChange={(e) => setSelectedTreatment(e.target.value)}
-              >
-                <option value="">Select treatment</option>
-                {treatmentOptions.map((treatment) => (
-                  <option key={treatment.id} value={treatment.value}>
-                    {treatment.name}
-                  </option>
-                ))}
-              </Select>
-              <SelectDisplay
-                className={!selectedTreatment ? "placeholder" : ""}
-              >
-                {selectedTreatment
-                  ? treatmentOptions.find((t) => t.value === selectedTreatment)
-                      ?.name || "Select treatment"
-                  : "Select treatment"}
-              </SelectDisplay>
-              <DropdownIcon>
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
+            {treatmentOptions.length > 0 && (
+              <SelectWrapper>
+                <Select
+                  value={selectedTreatment}
+                  onChange={(e) => setSelectedTreatment(e.target.value)}
                 >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </DropdownIcon>
-            </SelectWrapper>
+                  <option value=''>Select treatment</option>
+                  {treatmentOptions.map((treatment) => (
+                    <option
+                      key={treatment?.id || treatment?.value}
+                      value={treatment?.value || ''}
+                    >
+                      {treatment?.name || ''}
+                    </option>
+                  ))}
+                </Select>
+                <SelectDisplay
+                  className={!selectedTreatment ? 'placeholder' : ''}
+                >
+                  {selectedTreatment
+                    ? treatmentOptions.find(
+                        (t) => t.value === selectedTreatment
+                      )?.name || 'Select treatment'
+                    : 'Select treatment'}
+                </SelectDisplay>
+                <DropdownIcon>
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                  >
+                    <polyline points='6 9 12 15 18 9' />
+                  </svg>
+                </DropdownIcon>
+              </SelectWrapper>
+            )}
           </FiltersContainer>
         </ScrollAnimationComponent>
-
-        <CardListHolder>
-          <CardList>
-            {defaultList.map((card) => (
-              <ScrollAnimationComponent animationVariants={fadeIn}>
-                <Card key={card.id}>
-                  <CardContent>
-                    <CardSl>{card.sl}</CardSl>
-                    <CardTitle>{card.title}</CardTitle>
-                    <CardButton>
-                      <Link to="#" className="btn btn-pink-solid">
-                        {card.button}
-                      </Link>
-                    </CardButton>
-                  </CardContent>
-                </Card>
-              </ScrollAnimationComponent>
-            ))}
-          </CardList>
-          <ScrollAnimationComponent animationVariants={fadeIn}>
-            <ButtonHolder>
-              <Link to="#" className="btn btn-dark-solid">
-                Load More Trials
-              </Link>
-            </ButtonHolder>
-          </ScrollAnimationComponent>
-        </CardListHolder>
       </div>
     </section>
   );
@@ -356,17 +265,17 @@ const Input = styled.input`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: #36454F;
+  color: #36454f;
   background: transparent;
-  
+
   &::placeholder {
-    color: rgba(54, 69, 79, 0.5)
+    color: rgba(54, 69, 79, 0.5);
   }
 
   &.placeholder {
-    color: rgba(54, 69, 79, 0.5)
+    color: rgba(54, 69, 79, 0.5);
     background-color: transparent;
-  }  
+  }
 `;
 
 const SearchIcon = styled.div`
@@ -416,7 +325,7 @@ const Select = styled.select`
   height: 100%;
   border: none;
   outline: none;
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
   color: rgba(54, 69, 79, 0.5);
@@ -430,7 +339,7 @@ const Select = styled.select`
   z-index: 2;
 
   option {
-    font-family: "Be Vietnam Pro", sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
     padding: 12px;
     background: white;
     color: #36454f;
@@ -443,7 +352,7 @@ const Select = styled.select`
 
 const SelectDisplay = styled.div`
   flex: 1;
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
   color: #36454f;

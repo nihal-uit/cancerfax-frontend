@@ -4,12 +4,18 @@ import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationCompo
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import "./Chronic.scss";
+import { formatMedia } from "../../../utils/strapiHelpers";
 
-const Chronic = () => {
+const Chronic = ({data}) => {
+  if (!data || !data?.isActive) {
+    return null;
+  }
+  
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
-  };
+  };  
+
   return (
     <>
       <section className="chronic__sec py-120">
@@ -22,20 +28,17 @@ const Chronic = () => {
               >
                 <RatioHolder>
                   <div className="commContent_wrap commContent_new">
-                    <p className="contentLabel">Understanding CCL</p>
-                    <h3 className="title-3">
-                      Navigating Treatment Options for Chronic Lymphocytic
-                      Leukemia
-                    </h3>
+                    <p className="contentLabel">{data?.heading}</p>
+                    <h3 className="title-3">{data?.subHeading}</h3>
                   </div>
                   <div className="ratio__holder">
                     <Ratio aspectRatio={"16x9"}>
-                      <Image src="./images/chronic-thumb.png" />
+                      <Image src={formatMedia(data?.featuredImage)} />
                     </Ratio>
                     <div className="ratio__overlay">
                       <div className="ratio__overlay__content">
-                        <Link href="#" className="btn btn-pink-solid">
-                          Connect with Experts Now
+                        <Link to={data?.cta?.URL} target={data?.cta?.target} className="btn btn-pink-solid">
+                          {data?.cta?.text}
                         </Link>
                       </div>
                     </div>
@@ -47,30 +50,7 @@ const Chronic = () => {
               <ScrollAnimationComponent animationVariants={fadeIn}>
                 <Description>
                   <p>
-                    <strong>Chronic lymphocytic leukemia (CLL)</strong> is a
-                    type of cancer that originates in the bone marrow and
-                    manifests in the blood and lymphatic system. It is
-                    characterized by the accumulation of{" "}
-                    <strong>malignant B lymphocytes</strong>. CLL is the most
-                    prevalent form of leukemia in Western countries, with an
-                    incidence rate of{" "}
-                    <strong>4.7 per 100,000 individuals</strong>
-                    annually. However, the incidence significantly increases in
-                    individuals aged 85 years and older, reaching over{" "}
-                    <strong>35 per 100,000 individuals</strong>.
-                  </p>
-                  <p>
-                    The clinical therapy of chronic lymphocytic leukemia (CLL)
-                    presents challenges and is contingent upon factors such as
-                    the patient’s age, presence of other medical conditions, and
-                    specific characteristics of CLL cells, including
-                    immunoglobulin heavy chain gene mutation, 17p deletion, TP53
-                    mutation, and, as new studies have indicated, the quantity
-                    and specific kind of CLL tumor clones in the patient. The
-                    treatment options for asymptomatic early-stage CLL range
-                    from a watch-and-wait approach to chemo-immunotherapy and
-                    novel targeted treatments, such as Bruton’s tyrosine kinase
-                    inhibitors
+                    {data?.description_text}
                   </p>
                 </Description>
               </ScrollAnimationComponent>

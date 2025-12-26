@@ -35,19 +35,25 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
     );
   }
 
+  // Filter components where isActive is true
+  const activeComponents = pageData?.dynamicZone?.filter((block) => {
+    // Handle both boolean true and string "True"/"true" for compatibility
+    return block.isActive === true || block.isActive === "True" || block.isActive === "true";
+  }) || [];
+
   return (
     <PageWrapper>
       {showHeader && <Header darkText={darkText} />}
       <SEO />
       <Suspense fallback={<LoadingSpinner />}>
-        {pageData?.dynamicZone?.map((block, idx) => {
+        {activeComponents.map((block, idx) => {
           const key = block.__component;
           const Component = componentMap[key];
           if (!Component) {
             console.warn("No component mapped for →", key);
             return null;
           }
-          return <Component key={`${key}-${idx}`} data={block} />;
+          return <Component key={`${key}-${idx}`} componentData={block} data={block} />;
         })}
       </Suspense>
       {showFooter && <Footer />}

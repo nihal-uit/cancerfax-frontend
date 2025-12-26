@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 import { formatDate, formatMedia } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import NameAvatar from './NameAvatar';
 
 // ---- Blog Small Card ---- //
-const BlogSmallCard = ({ blog, getMediaUrl }) => {
+const BlogSmallCard = ({ blog, getMediaUrl, onNavigate }) => {
   return (
     <ScrollAnimationComponent animationVariants={fadeIn}>
-      <SmallCard key={blog.id}>
+      <SmallCard key={blog.id} onClick={onNavigate}>
         <SmallImage>
           <img src={getMediaUrl} alt={blog.title} />
           {
@@ -42,9 +42,9 @@ const BlogSmallCard = ({ blog, getMediaUrl }) => {
 };
 
 // ---- Featured Blog Card ---- //
-const FeaturedBlogCard = ({ blog, getMediaUrl }) => {
+const FeaturedBlogCard = ({ blog, getMediaUrl, onNavigate }) => {
   return (
-    <FeaturedCard>
+    <FeaturedCard onClick={onNavigate}>
       <FeaturedImage>
         <img src={getMediaUrl} alt='blog image' />
         {
@@ -76,11 +76,24 @@ const FeaturedBlogCard = ({ blog, getMediaUrl }) => {
   );
 };
 
-const ResourcesComponent = ({ data, loading }) => {
-  if(loading) return null;
+const ResourcesComponent = ({ data }) => {
+  const navigate = useNavigate();
+    
   const resources = data?.resources || [];
   const featuredBlog = resources[0] || null;
   const smallBlogs = resources.slice(1) || [];
+
+  const handleNavigate = (blog) => {
+    if (!blog || !blog.slug) return;
+    // Generate proper URL with category/subcategory if available
+    const categorySlug = blog?.resource_category?.slug || blog?.resource_category?.attributes?.slug || '';
+    const slug = blog.slug;
+    if (categorySlug) {
+      navigate(`/resource/${categorySlug}/${slug}`);
+    } else {
+      navigate(`/resource/${slug}`);
+    }
+  };
 
   return (
     <ScrollAnimationComponent animationVariants={fadeIn}>
@@ -107,7 +120,11 @@ const ResourcesComponent = ({ data, loading }) => {
       <BlogsGrid>
         {/* Featured Large Card */}
         {featuredBlog && (
-          <FeaturedBlogCard blog={featuredBlog} getMediaUrl={formatMedia(featuredBlog?.featuredImage)} />
+          <FeaturedBlogCard
+            blog={featuredBlog}
+            getMediaUrl={formatMedia(featuredBlog?.featuredImage)}
+            onNavigate={() => handleNavigate(featuredBlog)}
+          />
         )}
 
         {/* Small Cards */}
@@ -115,9 +132,10 @@ const ResourcesComponent = ({ data, loading }) => {
           {smallBlogs.length > 0
             ? smallBlogs.map((blog) => (
                 <BlogSmallCard
-                  key={blog?.id || blog.title}
+                  key={blog?.id || blog.slug || blog.title}
                   blog={blog}
                   getMediaUrl={formatMedia(blog?.featuredImage)}
+                  onNavigate={() => handleNavigate(blog)}
                 />
               ))
             : null}

@@ -3,6 +3,8 @@ import { Col, Image, Ratio, Row } from "react-bootstrap";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
 import { Link } from "react-router-dom";
+import { formatMedia } from "@/utils/strapiHelpers";
+
 const fadeIn = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0 },
@@ -13,7 +15,7 @@ const sideRight = {
   visible: { opacity: 1, x: 0 },
 };
 
-const ClinicalGuidance = () => {
+const ClinicalGuidance = ({data}) => {
   return (
     <>
       <section className="clinical__guidance__sec py-120 bg-white">
@@ -24,21 +26,19 @@ const ClinicalGuidance = () => {
                 <ScrollAnimationComponent animationVariants={fadeIn}>
                   <div className="commContent_wrap commContent_new">
                     <p className="contentLabel">
-                      Supporting life, syncing happiness
+                      {data?.heading}
                     </p>
                     <h3 className="title-3">
-                      When Every Decision Matters, Start with the Right Guidance
+                      {data?.subHeading}
                     </h3>
                     <div className="content__des text_theme_dark">
                       <p>
-                        Our experts review your case, connect you to
-                        breakthrough therapies, and support you at every stage
-                        of your treatment journey.
+                        {data?.description_text}
                       </p>
                     </div>
                     <div className="btn__holder">
-                      <Link to="#" className="btn btn-pink-solid">
-                        Connect with our experts
+                      <Link to={data?.cta?.URL} target={data?.cta?.target} className="btn btn-pink-solid">
+                        {data?.cta?.text}
                       </Link>
                     </div>
                   </div>
@@ -49,7 +49,7 @@ const ClinicalGuidance = () => {
               <FigureHolder>
                 <ScrollAnimationComponent animationVariants={sideRight}>
                   <Ratio aspectRatio={"16x9"}>
-                    <Image src="./images/guidance-pic.png" alt="guidance" />
+                    <Image src={formatMedia(data?.featuredImage)} alt="guidance" />
                   </Ratio>
                 </ScrollAnimationComponent>
               </FigureHolder>

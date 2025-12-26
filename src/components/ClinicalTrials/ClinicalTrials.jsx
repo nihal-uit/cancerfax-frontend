@@ -7,6 +7,7 @@ import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAni
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
+import { Link } from "react-router-dom";
 
 const Section = styled.section`
   background: ${(props) => props.theme.colors.background};
@@ -129,33 +130,17 @@ const TrialTitle = styled.h5`
   }
 `;
 
-const ExploreButton = styled.button`
+const ExploreButton = styled(Link)`
   background: ${(props) => props.theme.colors.pink};
   color: ${(props) => props.theme.colors.white};
   align-self: flex-start;
 `;
 
-const ClinicalTrials = ({ componentData, pageData }) => {
-  // Get data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector((state) => state.global?.data);
-  // Legacy Redux state (kept for fallback, but not actively used)
-  const { sectionContent, trialTypes } = useSelector(
-    (state) => state.clinicalTrials
-  );
+const ClinicalTrials = ({ componentData, data }) => {
   const carouselRef = useRef(null);
   const swiperContainerRef = useRef(null);
+  const trialsData = componentData || data;
 
-  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
-  const trialsSection =
-    componentData || getSectionData(globalData, "clinicalTrials");
-
-  // Extract trial types from Strapi (trialTypes array in trials-section component)
-  const strapiTrialTypes = trialsSection?.trialTypes || [];
-
-  // Debug: Log to check if global data exists
-  const globalLoading = useSelector((state) => state.global?.loading);
-
-  // Enable vertical page scrolling when hovering over Swiper.
   useEffect(() => {
     const swiperElement = swiperContainerRef.current;
     if (!swiperElement) return;
@@ -173,88 +158,28 @@ const ClinicalTrials = ({ componentData, pageData }) => {
     };
   }, []);
 
-  if (globalLoading) {
+  if (!trialsData) {
     return null;
   }
 
-  if (globalData && !globalLoading) {
-    console.log("ClinicalTrials: globalData loaded", {
-      hasDynamicZone: !!globalData.dynamicZone,
-      trialsSection: !!trialsSection,
-      strapiTrialTypesCount: strapiTrialTypes.length,
-    });
-  }
-
-  // Fallback content for when Strapi data is not yet available
-  const defaultSectionContent = {
-    label: "GLOBAL BREAKTHROUGHS",
-    title: "Join advanced clinical trials from leading research centers",
-    description:
-      "Access cutting-edge clinical trials from top research centers worldwide.",
-  };
-
-  const defaultTrialTypes = [
-    { id: 1, title: "CAR T Cell therapy clinical trials", link: "#", order: 1 },
-    {
-      id: 2,
-      title: "Clinical trial for BALL CAR T-Cell therapy",
-      link: "#",
-      order: 2,
-    },
-    {
-      id: 3,
-      title: "CAR T Cell therapy trials for multiple myeloma",
-      link: "#",
-      order: 3,
-    },
-    {
-      id: 4,
-      title: "CAR T-Cell therapy clinical trials for Immune thrombocytopenia",
-      link: "#",
-      order: 4,
-    },
-  ];
-
-  // Map Strapi data: heading -> label, subHeading -> title
-  const content = trialsSection
-    ? {
-        label: trialsSection.heading || defaultSectionContent.label,
-        title: trialsSection.subHeading || defaultSectionContent.title,
-        description:
-          formatRichText(trialsSection.description) ||
-          trialsSection.description ||
-          defaultSectionContent.description,
-      }
-    : sectionContent || defaultSectionContent;
-
-  // Extract and format trial types from Strapi - render ALL items dynamically
   const formattedStrapiTrials =
-    strapiTrialTypes.length > 0
-      ? strapiTrialTypes
-          .map((trialType, index) => {
-            const trialData = trialType?.attributes || trialType;
-            return {
-              id: trialType?.id || index + 1,
-              title: trialData?.title || trialData?.name || "",
-              link: trialData?.link || trialData?.url || "#",
-              order: trialData?.order || index + 1,
-            };
-          })
-          .filter((trial) => trial.title) // Filter out empty items
+  trialsData?.clinical_trials?.length > 0
+      ? trialsData?.clinical_trials?.map((trial, index) => ({
+        id: trial?.id || trial?.documentId || index + 1,
+        title: trial?.name || "",
+        link: trial?.slug ? `/clinical-trials/${trial?.slug}` : "#",
+        order: trial?.order || index + 1,
+        target: "_self",
+      }))
       : [];
 
-  // Use Strapi data or fallback - render ALL items from Strapi
-  const trials =
-    formattedStrapiTrials.length > 0
-      ? formattedStrapiTrials
-      : trialTypes && trialTypes.length > 0
-      ? trialTypes
-      : defaultTrialTypes;
-
-  // Sort trials by order if available
-  const sortedTrials = [...trials].sort(
+  const sortedTrials = [...formattedStrapiTrials].sort(
     (a, b) => (a.order || 0) - (b.order || 0)
   );
+
+  if (sortedTrials.length === 0) {
+    return null;
+  }
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
@@ -269,11 +194,10 @@ const ClinicalTrials = ({ componentData, pageData }) => {
             <CommContent className="commContent_wrap">
               <Header>
                 <Label className="contentLabel">
-                  {content.label || "GLOBAL BREAKTHROUGHS"}
+                  {trialsData?.heading || ''}
                 </Label>
                 <Title className="title-3">
-                  {content.title ||
-                    "Join advanced clinical trials from leading research centers"}
+                  {trialsData?.subHeading || ''}
                 </Title>
               </Header>
             </CommContent>
@@ -300,13 +224,13 @@ const ClinicalTrials = ({ componentData, pageData }) => {
             className="commCircle_navigation"
           >
             {sortedTrials.map((trial, index) => (
-              <SwiperSlide key={trial.id || index}>
+              <SwiperSlide key={trial?.id || index}>
                 <TrialCard>
-                  <TrialTitle>{trial.title}</TrialTitle>
+                  <TrialTitle>{trial?.title || ''}</TrialTitle>
                   <ExploreButton
                     className="btn btn-pink-solid"
-                    as={trial.link ? "a" : "button"}
-                    href={trial.link || undefined}
+                    to={trial?.link || '#'}
+                    target={trial?.target || '_self'}
                   >
                     Explore
                   </ExploreButton>

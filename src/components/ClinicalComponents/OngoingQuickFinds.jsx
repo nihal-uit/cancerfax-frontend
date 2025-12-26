@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import DoctorsGrid from './DoctorsGrid';
+import DoctorsGrid from '../DoctorsComponent/DoctorsGrid';
 import { fetchDoctors } from '../../store/slices/doctorSlice';
-import { formatRichText } from '../../utils/strapiHelpers';
 
 const DOCTORS_PAGE_SIZE = 6;
 
-const DoctorsQuickFinds = ({ componentData, data }) => {
+const OngoingQuickFinds = ({ data }) => {
   const dispatch = useDispatch();
-  const quickFindsData = componentData || data;
   const { countries, specialties, treatments } = useSelector((state) => state.quickFinds);
   const { doctors, doctorsLoading, doctorsHasMore } = useSelector(state => state.doctor);
   
@@ -17,34 +15,39 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [selectedTreatment, setSelectedTreatment] = useState('');
-  const [selectedSorting, setSelectedSorting] = useState('');
 
   useEffect(() => {
-    dispatch(fetchDoctors({ limit: DOCTORS_PAGE_SIZE, start: 0, sorting: selectedSorting || '' }));
-  }, [dispatch, selectedSorting]);
+    dispatch(fetchDoctors({ limit: DOCTORS_PAGE_SIZE, start: 0 }));
+  }, [dispatch]);
 
-  if (!quickFindsData) {
-    return null;
-  }
-
-  const countryOptions = Array.isArray(countries) && countries.length > 0 ? countries : [];
-  const specialtyOptions = Array.isArray(specialties) && specialties.length > 0 ? specialties : [];
-  const treatmentOptions = Array.isArray(treatments) && treatments.length > 0 ? treatments : [];
-
-  const sortingOptions = [
-    { id: 1, name: 'Name A-Z', value: 'a-z' },
-    { id: 2, name: 'Name Z-A', value: 'z-a' },
-    { id: 3, name: 'Published Date Newest', value: 'published-date-newest' },
-    { id: 4, name: 'Published Date Oldest', value: 'published-date-oldest' },
+  const defaultCountries = [
+    { id: 1, name: 'United States', value: 'us' },
+    { id: 2, name: 'United Kingdom', value: 'uk' },
+    { id: 3, name: 'Canada', value: 'ca' },
+    { id: 4, name: 'Germany', value: 'de' },
+    { id: 5, name: 'France', value: 'fr' },
   ];
 
+  const defaultSpecialties = [
+    { id: 1, name: 'Oncology', value: 'oncology' },
+    { id: 2, name: 'Cardiology', value: 'cardiology' },
+    { id: 3, name: 'Neurology', value: 'neurology' },
+    { id: 4, name: 'Immunotherapy', value: 'immunotherapy' },
+  ];
+
+  const defaultTreatments = [
+    { id: 1, name: 'Chemotherapy', value: 'chemotherapy' },
+    { id: 2, name: 'Radiation Therapy', value: 'radiation' },
+    { id: 3, name: 'Immunotherapy', value: 'immunotherapy' },
+    { id: 4, name: 'Surgery', value: 'surgery' },
+  ];
+
+  const countryOptions = Array.isArray(countries) && countries.length > 0 ? countries : defaultCountries;
+  const specialtyOptions = Array.isArray(specialties) && specialties.length > 0 ? specialties : defaultSpecialties;
+  const treatmentOptions = Array.isArray(treatments) && treatments.length > 0 ? treatments : defaultTreatments;
+
   const handleSearch = () => {
-    dispatch(fetchDoctors({ 
-      limit: DOCTORS_PAGE_SIZE, 
-      start: 0, 
-      query: searchTerm,
-      sorting: selectedSorting || ''
-    }));
+    dispatch(fetchDoctors({ limit: DOCTORS_PAGE_SIZE, start: 0, query: searchTerm }));
   };
 
   const handleKeyPress = (e) => {
@@ -53,34 +56,17 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
     }
   };
 
-  const handleSortingChange = (e) => {
-    const newSorting = e.target.value;
-    setSelectedSorting(newSorting);
-    dispatch(fetchDoctors({ 
-      limit: DOCTORS_PAGE_SIZE, 
-      start: 0, 
-      query: searchTerm,
-      sorting: newSorting || ''
-    }));
-  };
-
   return (
     <section className='quickFinds_sec py-120'>
       <div className='containerWrapper'>
         <TopSection>
           <LeftContent className='commContent_wrap'>
-            <Label className='contentLabel text_theme_dark'>
-              {quickFindsData?.heading || ''}
-            </Label>
-            <Title className='title-3 text_theme_dark'>
-              {quickFindsData?.subHeading || ''}
-            </Title>
+            <Label className='contentLabel text_theme_dark'>{data?.heading || ''}</Label>
+            <Title className='title-3 text_theme_dark'>{data?.subHeading || ''}</Title>
           </LeftContent>
           
           <RightContent className='commContent_wrap'>
-            <Description className='text-16'>
-              {formatRichText(quickFindsData?.description_text) || ''}
-            </Description>
+            <Description className='text-16'>{data?.description_block || ''}</Description>
           </RightContent>
         </TopSection>
 
@@ -101,7 +87,6 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
             </SearchIcon>
           </SearchInput>
 
-          {countryOptions.length > 0 && (
           <SelectWrapper>
             <Select
               value={selectedCountry}
@@ -109,8 +94,8 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
             >
               <option value="">Select country</option>
               {countryOptions.map((country) => (
-                  <option key={country?.id || country?.value} value={country?.value || ''}>
-                    {country?.name || ''}
+                <option key={country.id} value={country.value}>
+                  {country.name}
                 </option>
               ))}
             </Select>
@@ -125,9 +110,7 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
               </svg>
             </DropdownIcon>
           </SelectWrapper>
-          )}
 
-          {specialtyOptions.length > 0 && (
           <SelectWrapper>
             <Select
               value={selectedSpecialty}
@@ -135,8 +118,8 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
             >
               <option value="">Select specialty</option>
               {specialtyOptions.map((specialty) => (
-                  <option key={specialty?.id || specialty?.value} value={specialty?.value || ''}>
-                    {specialty?.name || ''}
+                <option key={specialty.id} value={specialty.value}>
+                  {specialty.name}
                 </option>
               ))}
             </Select>
@@ -151,9 +134,7 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
               </svg>
             </DropdownIcon>
           </SelectWrapper>
-          )}
 
-          {treatmentOptions.length > 0 && (
           <SelectWrapper>
             <Select
               value={selectedTreatment}
@@ -161,8 +142,8 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
             >
               <option value="">Select treatment</option>
               {treatmentOptions.map((treatment) => (
-                  <option key={treatment?.id || treatment?.value} value={treatment?.value || ''}>
-                    {treatment?.name || ''}
+                <option key={treatment.id} value={treatment.value}>
+                  {treatment.name}
                 </option>
               ))}
             </Select>
@@ -177,31 +158,6 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
               </svg>
             </DropdownIcon>
           </SelectWrapper>
-          )}
-
-          <SortSelectWrapper>
-            <Select
-              value={selectedSorting}
-              onChange={handleSortingChange}
-            >
-              <option value="">Sort by</option>
-              {sortingOptions.map((sorting) => (
-                <option key={sorting.id} value={sorting.value}>
-                  {sorting.name}
-                </option>
-              ))}
-            </Select>
-            <SelectDisplay className={!selectedSorting ? 'placeholder' : ''}>
-              {selectedSorting
-                ? sortingOptions.find((s) => s.value === selectedSorting)?.name || 'Sort by'
-                : 'Sort by'}
-            </SelectDisplay>
-            <DropdownIcon>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </DropdownIcon>
-          </SortSelectWrapper>
         </FiltersContainer>
 
         <DoctorsGrid doctors={doctors || []} loading={doctorsLoading} />
@@ -212,12 +168,7 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
               type='button'
               onClick={() =>
                 dispatch(
-                  fetchDoctors({ 
-                    limit: DOCTORS_PAGE_SIZE, 
-                    start: doctors.length,
-                    query: searchTerm,
-                    sorting: selectedSorting || ''
-                  })
+                  fetchDoctors({ limit: DOCTORS_PAGE_SIZE, start: doctors.length })
                 )
               }
               disabled={doctorsLoading}
@@ -284,7 +235,7 @@ const Description = styled.p`
 
 const FiltersContainer = styled.div`
   display: grid;
-  grid-template-columns: 400px repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 400px 1fr 1fr 1fr;
   gap: 24px;
   margin-bottom: 30px;
   @media (max-width: 1200px) {
@@ -385,14 +336,6 @@ const SelectWrapper = styled.div`
   }
 `;
 
-const SortSelectWrapper = styled(SelectWrapper)`
-  max-width: 220px;
-  
-  @media (max-width: 1024px) {
-    max-width: 100%;
-  }
-`;
-
 const Select = styled.select`
   position: absolute;
   top: 0;
@@ -487,4 +430,4 @@ const LoadMoreButton = styled.button`
   }
 `;
 
-export default DoctorsQuickFinds;
+export default OngoingQuickFinds;

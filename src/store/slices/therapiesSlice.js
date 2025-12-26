@@ -41,7 +41,7 @@ const therapiesSlice = createSlice({
   name: 'therapies',
   initialState: {
     sectionContent: null,
-    therapies: [],
+    therapies: null,
     loading: false,
     error: null,
   },
@@ -60,9 +60,18 @@ const therapiesSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(fetchTherapies.fulfilled, (state, action) => {
+      .addCase(fetchTherapiesBySlug.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTherapiesBySlug.fulfilled, (state, action) => {
+        state.loading = false;
         state.therapies = action.payload;
-      });
+      })
+      .addCase(fetchTherapiesBySlug.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      }); 
   },
 });
 

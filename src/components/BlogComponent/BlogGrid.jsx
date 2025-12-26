@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
 import { formatDate } from "../../utils/strapiHelpers";
@@ -10,27 +10,80 @@ import { getMediaUrl } from "../../services/api";
 
 const BlogGrid = ({ data, loading }) => {
   const navigate = useNavigate();
+  const { category: urlCategory, subcategory: urlSubcategory } = useParams();
+  const location = useLocation();
+
+  // Helper function to generate resource URL
+  const getResourceUrl = (blog) => {
+    // Extract slug - handle both Strapi v4 structure and flattened structure
+    const slug = blog?.slug || blog?.attributes?.slug || '';
+    
+    if (!slug) {
+      console.warn('Blog missing slug:', blog);
+      return '/resources';
+    }
+    
+    // Handle different Strapi data structures for category
+    const category = blog?.resource_category?.data?.attributes || 
+                     blog?.resource_category?.data ||
+                     blog?.resource_category?.attributes || 
+                     blog?.resource_category;
+    
+    // Handle different Strapi data structures for subcategory
+    const subcategory = blog?.resource_subcategory?.data?.attributes || 
+                        blog?.resource_subcategory?.data ||
+                        blog?.resource_subcategory?.attributes || 
+                        blog?.resource_subcategory;
+
+    // Extract category/subcategory slugs from blog data
+    const categorySlug = category?.slug || category?.attributes?.slug || '';
+    const subcategorySlug = subcategory?.slug || subcategory?.attributes?.slug || '';
+
+    // Use category from blog data, or fallback to URL params (when on dynamic page like /resources/approvals)
+    // URL params take precedence when blog data doesn't have category info
+    const finalCategorySlug = categorySlug || urlCategory || '';
+    const finalSubcategorySlug = subcategorySlug || urlSubcategory || '';
+
+    // Has both category and subcategory
+    if (finalCategorySlug && finalSubcategorySlug) {
+      return `/resource/${finalCategorySlug}/${finalSubcategorySlug}/${slug}`;
+    }
+
+    // Only category (no subcategory)
+    if (finalCategorySlug) {
+      return `/resource/${finalCategorySlug}/${slug}`;
+    }
+
+    // No category (uncategorized)
+    return `/resource/${slug}`;
+  };
 
   const blogContent = useMemo(() => {
     return data?.length > 0
-      ? data.map((blog) => ({
-          id: blog?.documentId,
-          slug: blog?.slug || '',
-          title: blog?.title || '',
-          description: blog?.description || '',
-          author: {
-            name: `${blog?.author?.firstName} ${
-              blog?.author?.lastName || ""
-            }`.trim(),
-            avatar: getMediaUrl(blog?.author?.profilePicture) || null,
-          },
-          publishedDate: formatDate(blog?.publishedDate),
-          readTime: blog?.readTime,
-          category: blog?.resource_category?.name || '',
-          image: blog?.featuredImage || '',
-        }))
+      ? data.map((blog) => {
+          // Handle both Strapi v4 structure and flattened structure
+          const blogData = blog?.attributes || blog;
+          
+          return {
+            id: blog?.documentId || blog?.id,
+            slug: blogData?.slug || blog?.slug || '',
+            title: blogData?.title || blog?.title || '',
+            description: blogData?.description || blog?.description || '',
+            author: {
+              name: `${blogData?.author?.firstName || blog?.author?.firstName || ''} ${
+                blogData?.author?.lastName || blog?.author?.lastName || ""
+              }`.trim(),
+              avatar: getMediaUrl(blogData?.author?.profilePicture || blog?.author?.profilePicture) || null,
+            },
+            publishedDate: formatDate(blogData?.publishedDate || blog?.publishedDate),
+            readTime: blogData?.readTime || blog?.readTime,
+            category: blogData?.resource_category?.name || blog?.resource_category?.name || '',
+            image: blogData?.featuredImage || blog?.featuredImage || '',
+            url: getResourceUrl(blog),
+          };
+        })
       : [];
-  }, [data]);
+  }, [data, urlCategory, urlSubcategory]);
 
   const { visibleItems, loadMore, hasMore, isLoadingMore } = useLoadMore(
     blogContent,
@@ -73,7 +126,7 @@ const BlogGrid = ({ data, loading }) => {
       <Grid>
         {visibleItems.map((blog) => (
           <ScrollAnimationComponent key={blog.id} animationVariants={fadeIn}>
-            <BlogCard as="div" onClick={() => navigate(`/resources/${blog.slug}`)}>
+            <BlogCard as="div" onClick={() => navigate(blog.url || `/resource/${blog.slug}`)}>
               <BlogImage>
                 <img src={blog.image} alt={blog.title} />
                 {blog.category && (

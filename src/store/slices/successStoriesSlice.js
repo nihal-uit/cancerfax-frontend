@@ -29,11 +29,23 @@ export const fetchSuccessStories = createAsyncThunk(
   }
 );
 
+export const fetchSurvivorStoryBySlug = createAsyncThunk(
+  'successStories/fetchSurvivorStoryBySlug',
+  async (slug) => {
+    const response = await axios.get(
+      `${API_URL}/api/survivor-stories?filters[slug][$eq]=${slug}&populate=*`
+    );
+    const items = response.data?.data || [];
+    return Array.isArray(items) ? items[0] || null : items || null;
+  }
+);
+
 const successStoriesSlice = createSlice({
   name: 'successStories',
   initialState: {
     sectionData: null,
     stories: [],
+    survivorStory: null,
     loading: false,
     error: null,
   },
@@ -50,6 +62,18 @@ const successStoriesSlice = createSlice({
         state.stories = action.payload.stories;
       })
       .addCase(fetchSuccessStories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(fetchSurvivorStoryBySlug.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSurvivorStoryBySlug.fulfilled, (state, action) => {
+        state.loading = false;
+        state.survivorStory = action.payload;
+      })
+      .addCase(fetchSurvivorStoryBySlug.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

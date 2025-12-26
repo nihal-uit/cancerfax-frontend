@@ -4,8 +4,7 @@ import styled from 'styled-components';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { setSelectedHospital } from '../../store/slices/locationNetworkSlice';
-import { getSectionData, formatRichText } from '../../utils/strapiHelpers';
-import { hideFallbacks } from '../../utils/config';
+import { Link } from 'react-router-dom';
 
 // Import marker images
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -213,10 +212,6 @@ const ButtonsWrapper = styled.div`
   }
 `;
 
-const PrimaryButton = styled.button``;
-
-const SecondaryButton = styled.button``;
-
 // Component to handle map animations with smooth transitions
 function MapController({ center, zoom }) {
   const map = useMap();
@@ -235,77 +230,12 @@ function MapController({ center, zoom }) {
   return null;
 }
 
-const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
+const LocationNetwork = ({ showButtons = true, componentData, data }) => {
   const dispatch = useDispatch();
-  // Get data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector((state) => state.global?.data);
-  const globalLoading = useSelector((state) => state.global?.loading);
-  // Legacy Redux state (kept for fallback, but not actively used)
-  const { sectionContent, hospitals, selectedHospitalId } = useSelector(
-    (state) => state.locationNetwork
-  );
+  const { selectedHospitalId } = useSelector((state) => state.locationNetwork);
+  const locationData = componentData || data;
 
-  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
-  const locationSection =
-    componentData || getSectionData(globalData, 'location');
-  const hasSectionFallback =
-    sectionContent && Object.keys(sectionContent || {}).length;
-  const shouldHideMissingSection =
-    hideFallbacks && !locationSection && !hasSectionFallback;
-
-  // Extract hospitals from Strapi (hospitals array in location component)
-  const strapiHospitals = Array.isArray(locationSection?.hospitals)
-    ? locationSection.hospitals
-    : [];
-
-  // IMPORTANT: All hooks must be called before any early returns
-  // Compute hospitalsList early so we can use it in useEffect
-  const defaultHospitals = hideFallbacks
-    ? []
-    : [
-        {
-          id: 1,
-          name: 'Cancer Hospital, Chinese Academy of Medical Sciences, Beijing',
-          latitude: 39.9042,
-          longitude: 116.4074,
-          order: 1,
-        },
-        {
-          id: 2,
-          name: "Children's Hospital of Nanjing Medical University (DPNJMU)",
-          latitude: 32.0603,
-          longitude: 118.7969,
-          order: 2,
-        },
-        {
-          id: 3,
-          name: 'Hong Kong University Shenzhen Hospital',
-          latitude: 22.5431,
-          longitude: 114.0579,
-          order: 3,
-        },
-        {
-          id: 4,
-          name: 'Beijing Tiantan Hospital',
-          latitude: 39.8817,
-          longitude: 116.4134,
-          order: 4,
-        },
-        {
-          id: 5,
-          name: 'The First Affiliated Hospital, Zhejiang University School of Medicine, Hangzhou',
-          latitude: 30.2741,
-          longitude: 120.1551,
-          order: 5,
-        },
-        {
-          id: 6,
-          name: 'Anhui provincial hospital',
-          latitude: 31.8206,
-          longitude: 117.2272,
-          order: 6,
-        },
-      ];
+  const strapiHospitals = locationData?.hospitals || [];
 
   const parseCoordinate = (value) => {
     if (value === null || value === undefined || value === '') return null;
@@ -317,44 +247,37 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
     strapiHospitals.length > 0
       ? strapiHospitals
           .map((hospital, index) => {
-            const hospitalData = hospital?.attributes || hospital;
-            const fallbackHospital =
-              defaultHospitals[index] || defaultHospitals[0] || {};
-            const latitude =
-              parseCoordinate(hospitalData?.latitude) ??
-              fallbackHospital.latitude ??
-              35.0;
-            const longitude =
-              parseCoordinate(hospitalData?.longitude) ??
-              fallbackHospital.longitude ??
-              115.0;
+            const hospitalData = hospital?.address?.address;
+            const latitude = parseCoordinate(hospitalData?.latitude);
+            const longitude = parseCoordinate(hospitalData?.longitude);
 
             return {
               id: hospital?.id || hospitalData?.id || index + 1,
-              name:
-                hospitalData?.name ||
-                hospitalData?.title ||
-                fallbackHospital.name ||
-                '',
+              name: hospitalData?.name || '',
               latitude,
               longitude,
               order: hospitalData?.order || index + 1,
-              address: hospitalData?.address || fallbackHospital.address || '',
-              phone: hospitalData?.phone || fallbackHospital.phone || '',
+              address: hospitalData?.address?.address || '',
+              phone: hospitalData?.contact_details || '',
             };
           })
           .filter((hospital) => hospital.name)
       : [];
 
-  const hospitalsList =
-    formattedStrapiHospitals.length > 0
-      ? formattedStrapiHospitals
-      : hospitals && hospitals.length > 0
-      ? hospitals
-      : defaultHospitals;
+  const hospitalsList = formattedStrapiHospitals.length > 0 ? formattedStrapiHospitals : [];
 
-  // Set first hospital as selected by default if no hospital is selected or selected hospital doesn't exist in list
-  // This hook MUST be called before any early returns
+  // useEffect to handle hospital selection when clicked
+  useEffect(() => {
+    if (selectedHospitalId && hospitalsList.length > 0) {
+      // Ensure the selected hospital ID exists in the hospitals list
+      const hospitalExists = hospitalsList.some((h) => h.id === selectedHospitalId);
+      if (!hospitalExists && hospitalsList.length > 0) {
+        // If selected hospital doesn't exist, select the first one
+        dispatch(setSelectedHospital(hospitalsList[0].id));
+      }
+    }
+  }, [selectedHospitalId, hospitalsList, dispatch]);
+
   useEffect(() => {
     if (hospitalsList.length > 0) {
       const firstHospital = hospitalsList[0];
@@ -372,60 +295,17 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
     }
   }, [hospitalsList, selectedHospitalId, dispatch]);
 
-  // Debug: Log to check if global data exists
-  if (globalData && !globalLoading) {
-    console.log('LocationNetwork: globalData loaded', {
-      hasDynamicZone: !!globalData.dynamicZone,
-      locationSection: !!locationSection,
-      strapiHospitalsCount: strapiHospitals.length,
-    });
-  }
-
-  // Fallback data for when Strapi data is not yet available
-  const defaultSectionContent = hideFallbacks
-    ? null
-    : {
-        label: 'LOCATION',
-        title: 'Global Network of Leading Doctors & Partner Hospitals',
-        description:
-          "CancerFax collaborates with globally acclaimed oncologists and accredited medical institutions to ensure every patient receives scientifically guided, world-class treatment. From consultation to recovery, you're supported by the best minds in modern cancer care.",
-        mapBackground: null,
-      };
-
-  // Map Strapi data: heading -> label, subHeading -> title
-  const content = locationSection
-    ? {
-        label: locationSection.heading || defaultSectionContent?.label,
-        title: locationSection.subHeading || defaultSectionContent?.title,
-        description:
-          formatRichText(locationSection.description) ||
-          locationSection.description ||
-          defaultSectionContent?.description,
-      }
-    : sectionContent || defaultSectionContent;
-  const shouldHideSection =
-    hideFallbacks && (!content?.label || !content?.title);
-
-  if (hideFallbacks && (!content?.label || !content?.title)) {
+  if (!locationData) {
     return null;
   }
 
-  const shouldHideHospitals =
-    hideFallbacks && (!hospitalsList || hospitalsList.length === 0);
 
-  // Find selected hospital - default to first hospital if none selected or selected doesn't exist in list
   const currentSelectedId =
     selectedHospitalId && hospitalsList.some((h) => h.id === selectedHospitalId)
       ? selectedHospitalId
       : hospitalsList[0]?.id || null;
-  const selectedHospital =
-    hospitalsList.find((h) => h.id === currentSelectedId) || hospitalsList[0];
 
-  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
-  // This check must come after all hooks
-  if (globalLoading) {
-    return null;
-  }
+  const selectedHospital = hospitalsList.find((h) => h.id === currentSelectedId) || hospitalsList[0];
 
   // Get map center and zoom
   const mapCenter = [
@@ -438,22 +318,16 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
     dispatch(setSelectedHospital(hospitalId));
   };
 
-  if (shouldHideMissingSection || shouldHideSection || shouldHideHospitals) {
-    return null;
-  }
-
   return (
     <section className='location_sec py-120' id='location-network'>
       <div className='containerWrapper'>
         <Header className='commContent_wrap'>
-          <Label className='contentLabel'>{content.label || 'LOCATION'}</Label>
+          <Label className='contentLabel'>{locationData?.heading || ''}</Label>
           <Title className='title-3'>
-            {content.title ||
-              'Global Network of Leading Doctors & Partner Hospitals'}
+            {locationData?.subHeading || ''}
           </Title>
           <Description className='text-16'>
-            {content.description ||
-              "CancerFax collaborates with globally acclaimed oncologists and accredited medical institutions to ensure every patient receives scientifically guided, world-class treatment. From consultation to recovery, you're supported by the best minds in modern cancer care."}
+            {locationData?.description_text || ''}
           </Description>
         </Header>
 
@@ -512,15 +386,15 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
               <MapController center={mapCenter} zoom={mapZoom} />
 
               {/* Markers for all hospitals with animations */}
-              {hospitalsList.map((hospital) => (
+              {strapiHospitals?.map((hospital) => (
                 <Marker
-                  key={hospital.id}
+                  key={hospital?.id || hospital?.documentId}
                   position={[
-                    hospital.latitude || 35.0,
-                    hospital.longitude || 115.0,
+                    hospital?.address?.address?.latitude || 0,
+                    hospital?.address?.address?.longitude || 0,
                   ]}
                   icon={
-                    hospital.id === selectedHospital.id
+                    hospital?.id === selectedHospital?.id
                       ? pinkIcon
                       : new L.Icon.Default()
                   }
@@ -542,9 +416,9 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
                           marginBottom: '8px',
                         }}
                       >
-                        {hospital.name}
+                        {hospital?.name || ''}
                       </strong>
-                      {hospital.address && (
+                      {hospital?.address?.address?.address && (
                         <p
                           style={{
                             fontSize: '14px',
@@ -552,10 +426,10 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
                             margin: '4px 0',
                           }}
                         >
-                          📍 {hospital.address}
+                          📍 {hospital?.address?.address?.address}
                         </p>
                       )}
-                      {hospital.phone && (
+                      {hospital?.contact_details && (
                         <p
                           style={{
                             fontSize: '14px',
@@ -563,7 +437,7 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
                             margin: '4px 0',
                           }}
                         >
-                          📞 {hospital.phone}
+                          📞 {hospital?.contact_details}
                         </p>
                       )}
                     </div>
@@ -574,14 +448,14 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
           </MapWrapper>
 
           <HospitalsList>
-            {hospitalsList.map((hospital, index) => (
+            {strapiHospitals?.map((hospital) => (
               <HospitalCard
-                className={hospital.id === currentSelectedId ? 'active' : ''}
-                key={hospital.id}
-                $isSelected={hospital.id === currentSelectedId}
-                onClick={() => handleHospitalClick(hospital.id)}
+                className={hospital?.id === currentSelectedId ? 'active' : ''}
+                key={hospital?.id || hospital?.documentId}
+                $isSelected={hospital?.id === currentSelectedId}
+                onClick={() => handleHospitalClick(hospital?.id)}
               >
-                {hospital.name}
+                {hospital?.name || ''}
               </HospitalCard>
             ))}
           </HospitalsList>
@@ -589,18 +463,24 @@ const LocationNetwork = ({ showButtons = true, componentData, pageData }) => {
 
         {showButtons && (
           <ButtonsWrapper>
-            <PrimaryButton
+            {locationData?.cta1?.text && (
+            <Link
               className='btn btn-pink-solid'
-              onClick={() => (window.location.href = '/hospitals')}
+                to={locationData?.cta1?.URL || '#'}
+                target={locationData?.cta1?.target || '_self'}
             >
-              Explore Our Partner Hospitals
-            </PrimaryButton>
-            <SecondaryButton
+                {locationData?.cta1?.text}
+            </Link>
+            )}
+            {locationData?.cta2?.text && (
+            <Link
               className='btn btn-dark-solid'
-              onClick={() => (window.location.href = '/hospitals')}
+                to={locationData?.cta2?.URL || '#'}
+                target={locationData?.cta2?.target || '_self'}
             >
-              Find the Right Doctors
-            </SecondaryButton>
+                {locationData?.cta2?.text}
+            </Link>
+            )}
           </ButtonsWrapper>
         )}
       </div>

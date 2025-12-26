@@ -1,19 +1,19 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getSectionData, formatRichText, formatMedia } from '../../utils/strapiHelpers';
+import { formatMedia } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { Link } from 'react-router-dom';
 
 const Header = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
   margin-bottom: 60px;
-  
+
   @media (max-width: 1024px) {
     margin-bottom: 50px;
   }
-  
+
   @media (max-width: 768px) {
     margin-bottom: 40px;
   }
@@ -24,7 +24,7 @@ const TopHeader = styled.div`
   justify-content: space-between;
   align-items: flex-end;
   gap: 40px;
-  
+
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
@@ -33,11 +33,11 @@ const TopHeader = styled.div`
 `;
 
 const Label = styled.p`
-  color: #36454F;
+  color: #36454f;
 `;
 
 const Title = styled.h3`
-  color: #36454F;
+  color: #36454f;
   max-width: 680px;
 `;
 
@@ -46,7 +46,7 @@ const ContentWrapper = styled.div`
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: 254px;
   gap: 0;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   border-bottom: 0;
   border-radius: 24px 24px 0 0;
   overflow: hidden;
@@ -55,7 +55,7 @@ const ContentWrapper = styled.div`
   @media (max-width: 1200px) {
     grid-template-rows: auto;
   }
-  
+
   @media (max-width: 1024px) {
     grid-template-columns: repeat(1, 1fr);
     grid-template-rows: auto;
@@ -73,14 +73,14 @@ const ImageSection = styled.div`
     object-fit: cover;
     display: block;
   }
-  
+
   @media (max-width: 767px) {
     height: auto;
     width: 100%;
     min-height: 300px;
     border-radius: 24px 24px 0 0;
   }
-  
+
   @media (max-width: 480px) {
     min-height: 250px;
   }
@@ -99,45 +99,51 @@ const StepCard = styled.div`
   
   /* Row 1 cards (Steps 1, 2): 222px */
   /* Row 2 cards (Steps 3, 4, 5): 212px */
-  height: ${props => props.$gridRow === '1' ? '254px' : '254px'};
-  
-  ${props => props.$gridRow && `grid-row: ${props.$gridRow};`}
-  ${props => props.$gridColumn && `grid-column: ${props.$gridColumn};`}
+  height: ${(props) => (props.$gridRow === '1' ? '254px' : '254px')};
+
+  ${(props) => props.$gridRow && `grid-row: ${props.$gridRow};`}
+  ${(props) => props.$gridColumn && `grid-column: ${props.$gridColumn};`}
   
   /* Top-right corner for Step 2 */
-  ${props => props.$topRightCorner && `
+  ${(props) =>
+    props.$topRightCorner &&
+    `
     border-radius: 0 24px 0 0;
   `}
   
   /* Bottom-left corner for Step 3 */
-  ${props => props.$bottomLeftCorner && `
+  ${(props) =>
+    props.$bottomLeftCorner &&
+    `
     border-radius: 0 0 0 24px;
     border-left: none;
   `}
   
   /* Bottom-right corner for Step 5 */
-  ${props => props.$bottomRightCorner && `
+  ${(props) =>
+    props.$bottomRightCorner &&
+    `
     border-radius: 0 0 24px 0;
   `}
 
   @media (max-width: 1024px) {
     padding: 24px 24px;
   }
-   
+
   @media (max-width: 1024px) {
     border-left: none;
     border-right: none;
-    border-bottom: 1px solid #E5E7EB;
+    border-bottom: 1px solid #e5e7eb;
     padding: 32px 24px;
     height: auto;
     grid-row: auto;
     grid-column: 1;
-    
+
     &:last-child {
       border-bottom: none;
     }
   }
-  
+
   @media (max-width: 480px) {
     padding: 28px 20px;
     gap: 16px;
@@ -148,34 +154,52 @@ const IconWrapper = styled.div`
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: #4B5563;
+  background: #4b5563;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.3s ease;
-  
+  overflow: hidden;
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+    display: block;
+  }
+
   svg {
     width: 28px;
     height: 28px;
     color: white;
     stroke-width: 2;
   }
-  
+
   @media (max-width: 1024px) {
     width: 48px;
     height: 48px;
-    
+
+    img {
+      padding: 6px;
+    }
+
     svg {
       width: 24px;
       height: 24px;
     }
   }
-   
+
   @media (max-width: 480px) {
     width: 44px;
     height: 44px;
-    
+
+    img {
+      padding: 5px;
+    }
+
     svg {
       width: 22px;
       height: 22px;
@@ -187,176 +211,75 @@ const StepContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  
+
   @media (max-width: 768px) {
     gap: 6px;
   }
 `;
 
 const StepTitle = styled.h5`
-  color: #36454F;
+  color: #36454f;
 `;
 
 const StepDescription = styled.p`
   font-weight: 400;
-  color: #727B81;
+  color: #727b81;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 `;
 
-// Icon components
-const DocumentIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+// Default icon component (fallback when no icon from API)
+const DefaultIcon = () => (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    fill='none'
+    viewBox='0 0 24 24'
+    stroke='currentColor'
+  >
+    <path
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      strokeWidth={2}
+      d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+    />
   </svg>
 );
 
-const UserCheckIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 11l3 3L22 4" />
-  </svg>
-);
+// Icon component with error handling
+const StepIcon = ({ iconUrl, alt }) => {
+  const [hasError, setHasError] = React.useState(false);
 
-const HospitalIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-  </svg>
-);
+  if (!iconUrl || hasError) {
+    return <DefaultIcon />;
+  }
 
-const CoordinationIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-  </svg>
-);
+  return (
+    <img
+      src={iconUrl}
+      alt={alt || 'Step icon'}
+      onError={() => setHasError(true)}
+      loading='lazy'
+    />
+  );
+};
 
-const SupportIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-  </svg>
-);
+const HowItWorks = ({ componentData, data }) => {
+  const howItWorksData = componentData || data;
 
-const HowItWorks = ({ componentData, pageData }) => {
+  if (!howItWorksData) {
+    return null;
+  }
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
 
-  // Get data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector(state => state.global?.data);
-  const globalLoading = useSelector(state => state.global?.loading);
-  // Legacy Redux state (kept for fallback, but not actively used)
-  const { sectionContent, steps: strapiSteps } = useSelector((state) => state.howItWorks);
-  
-  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
-  if (globalLoading) {
-    return null;
-  }
-  
-  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
-  const howItWorksSection = componentData || getSectionData(globalData, 'howItWorks');
-  
-  // Debug: Log to check if global data exists
-  if (globalData && !globalLoading) {
-    console.log('HowItWorks: globalData loaded', {
-      hasDynamicZone: !!globalData.dynamicZone,
-      howItWorksSection: !!howItWorksSection,
-      sectionData: howItWorksSection ? {
-        heading: howItWorksSection.heading,
-        subHeading: howItWorksSection.subHeading
-      } : null
-    });
-  }
-
-  // Icon mapping for dynamic icon rendering
-  const iconMap = {
-    document: <DocumentIcon />,
-    userCheck: <UserCheckIcon />,
-    hospital: <HospitalIcon />,
-    coordination: <CoordinationIcon />,
-    support: <SupportIcon />
-  };
-
-  // Fallback data
-  const fallbackSection = {
-    label: 'HOW IT WORKS',
-    title: 'Your Journey to Better Cancer Care, Simplified',
-    buttonText: 'Connect with our Experts',
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=640',
-    imageAlt: 'Doctor consultation'
-  };
-
-  const fallbackSteps = [
-    {
-      id: 1,
-      title: '1. Share Your Medical Reports',
-      description: 'Upload your medical reports for quick evaluation.',
-      iconType: 'document',
-      order: 1
-    },
-    {
-      id: 2,
-      title: '2. Receive Expert Evaluation',
-      description: 'Get expert analysis to guide your treatment decisions.',
-      iconType: 'userCheck',
-      order: 2
-    },
-    {
-      id: 3,
-      title: '3. Choose the Right Hospital or Trial',
-      description: 'Select the best hospitals or trials that suit your needs.',
-      iconType: 'hospital',
-      order: 3
-    },
-    {
-      id: 4,
-      title: '4. Seamless Coordination',
-      description: 'Enjoy smooth coordination with the healthcare providers globally.',
-      iconType: 'coordination',
-      order: 4
-    },
-    {
-      id: 5,
-      title: '5. Continuous Support',
-      description: 'Receive continuous support throughout your treatment journey.',
-      iconType: 'support',
-      order: 5
-    }
-  ];
-
-  // Map Strapi data: heading -> label, subHeading -> title
-  const section = howItWorksSection ? {
-    label: howItWorksSection.heading || fallbackSection.label,
-    title: howItWorksSection.subHeading || fallbackSection.title,
-    buttonText: howItWorksSection.cta?.text || fallbackSection.buttonText,
-    image: formatMedia(howItWorksSection.featuredImage) || formatMedia(howItWorksSection.image) || fallbackSection.image,
-    imageAlt: fallbackSection.imageAlt,
-  } : (sectionContent || fallbackSection);
-  
-  // Extract steps from Strapi (steps array in how-it-works component)
-  const strapiStepsArray = howItWorksSection?.steps || [];
-  const steps = strapiStepsArray.length > 0 
-    ? strapiStepsArray.map((step, index) => {
-        const stepData = step?.attributes || step;
-        return {
-          id: step?.id || index + 1,
-          title: stepData?.title || fallbackSteps[index]?.title || '',
-          description: formatRichText(stepData?.description) || stepData?.description || fallbackSteps[index]?.description || '',
-          iconType: stepData?.iconType || fallbackSteps[index]?.iconType || 'document',
-          order: stepData?.order || stepData?.order || index + 1,
-        };
-      }).filter(step => step.title)
-    : ((strapiSteps && strapiSteps.length > 0) ? strapiSteps : fallbackSteps);
-
-  // Calculate grid positioning for each step dynamically
   const getStepPositioning = (index, total) => {
-    // For 2x3 grid layout (image in row 1, col 1)
     let gridRow, gridColumn;
-    
+
     if (index === 0 || index === 1) {
       // First row cards (positions 1,2)
       gridRow = '1';
@@ -364,68 +287,101 @@ const HowItWorks = ({ componentData, pageData }) => {
     } else {
       // Second row cards (positions 3,4,5)
       gridRow = '2';
-      gridColumn = ((index - 2) + 1).toString(); // columns 1, 2, 3
+      gridColumn = (index - 2 + 1).toString(); // columns 1, 2, 3
     }
 
     return {
       gridRow,
       gridColumn,
-      showLeftBorder: gridColumn === '2' || (gridRow === '2' && gridColumn === '1'),
+      showLeftBorder:
+        gridColumn === '2' || (gridRow === '2' && gridColumn === '1'),
       showRightBorder: gridColumn === '2',
       showBottomBorder: gridRow === '1',
       topRightCorner: index === 1, // Step 2
       bottomLeftCorner: index === 2, // Step 3
-      bottomRightCorner: index === total - 1 && gridRow === '2' && gridColumn === '3' // Last step in row 2, col 3
+      bottomRightCorner:
+        index === total - 1 && gridRow === '2' && gridColumn === '3', // Last step in row 2, col 3
     };
   };
 
+  const steps = howItWorksData?.steps || [];
+
+  if (steps.length === 0) {
+    return null;
+  }
+
   return (
-    <section className='howItWork_sec py-120' id="how-it-works">
+    <section className='howItWork_sec py-120' id='how-it-works'>
       <div className='containerWrapper commContent_wrap'>
         <ScrollAnimationComponent animationVariants={fadeIn}>
-        <Header>
-          <Label className='contentLabel'>{section.label}</Label>
-          <TopHeader>
-            <Title className='title-3'>{section.title}</Title>
-            <a href="/contact" className='btn btn-pink-solid'>{section.buttonText}</a>
-          </TopHeader>
-        </Header>
-        
-        <ContentWrapper>
-          <ImageSection>
-            <img 
-              src={section.image} 
-              alt={section.imageAlt || 'Doctor consultation'} 
-            />
-          </ImageSection>
-          
-          {steps.map((step, index) => {
-            const positioning = getStepPositioning(index, steps.length);
-            const icon = iconMap[step.iconType] || iconMap.document;
-            
-            return (
-              <StepCard 
-                key={step.id}
-                $gridRow={positioning.gridRow}
-                $gridColumn={positioning.gridColumn}
-                $showLeftBorder={positioning.showLeftBorder}
-                $showRightBorder={positioning.showRightBorder}
-                $showBottomBorder={positioning.showBottomBorder}
-                $topRightCorner={positioning.topRightCorner}
-                $bottomLeftCorner={positioning.bottomLeftCorner}
-                $bottomRightCorner={positioning.bottomRightCorner}
-              >
-                <IconWrapper>
-                  {icon}
-                </IconWrapper>
-                <StepContent>
-                  <StepTitle className='title-5'>{step.title}</StepTitle>
-                  <StepDescription className='text-16'>{step.description}</StepDescription>
-                </StepContent>
-              </StepCard>
-            );
-          })}
-        </ContentWrapper>
+          <Header>
+            <Label className='contentLabel'>
+              {howItWorksData?.heading || ''}
+            </Label>
+            <TopHeader>
+              <Title className='title-3'>
+                {howItWorksData?.subHeading || ''}
+              </Title>
+              {howItWorksData?.cta?.text && (
+                <Link
+                  to={howItWorksData?.cta?.URL || '#'}
+                  target={howItWorksData?.cta?.target || '_self'}
+                  className='btn btn-pink-solid'
+                >
+                  {howItWorksData?.cta?.text}
+                </Link>
+              )}
+            </TopHeader>
+          </Header>
+
+          <ContentWrapper>
+            {howItWorksData?.featuredImage && (
+              <ImageSection>
+                <img
+                  src={formatMedia(howItWorksData?.featuredImage)}
+                  alt={howItWorksData?.featuredImage?.alternativeText || ''}
+                />
+              </ImageSection>
+            )}
+
+            {steps.map((step, index) => {
+              const positioning = getStepPositioning(index, steps.length);
+              const iconUrl = formatMedia(step?.icon);
+
+              return (
+                <StepCard
+                  key={step?.id || index}
+                  $gridRow={positioning.gridRow}
+                  $gridColumn={positioning.gridColumn}
+                  $showLeftBorder={positioning.showLeftBorder}
+                  $showRightBorder={positioning.showRightBorder}
+                  $showBottomBorder={positioning.showBottomBorder}
+                  $topRightCorner={positioning.topRightCorner}
+                  $bottomLeftCorner={positioning.bottomLeftCorner}
+                  $bottomRightCorner={positioning.bottomRightCorner}
+                >
+                  <IconWrapper>
+                    <StepIcon
+                      iconUrl={iconUrl}
+                      alt={
+                        step?.icon?.alternativeText ||
+                        step?.title ||
+                        'Step icon'
+                      }
+                    />
+                  </IconWrapper>
+                  <StepContent>
+                    <StepTitle className='title-5'>
+                      {index + 1 + '. ' + step?.title || ''}
+                    </StepTitle>
+                    <StepDescription className='text-16'>
+                      {step?.description_text || ''}
+                    </StepDescription>
+                  </StepContent>
+                </StepCard>
+              );
+            })}
+          </ContentWrapper>
         </ScrollAnimationComponent>
       </div>
     </section>
@@ -433,4 +389,3 @@ const HowItWorks = ({ componentData, pageData }) => {
 };
 
 export default HowItWorks;
-

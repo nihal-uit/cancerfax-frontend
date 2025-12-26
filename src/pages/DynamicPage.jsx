@@ -90,7 +90,7 @@ const ErrorMessage = styled.p`
 
 const BackButton = styled.button`
   max-width: 221px;
-  background-color: #36454F;
+  background-color: #36454f;
   color: #fff;
   font-size: 16px;
   width: 100%;
@@ -99,7 +99,7 @@ const BackButton = styled.button`
     max-width: 100%;
   }
   &:hover {
-    background-color: #FF69B4;
+    background-color: #ff69b4;
     color: #fff;
   }
 
@@ -125,7 +125,7 @@ const SubText = styled.p`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 16px;
   line-height: 24px;
-  color: #4B5563;
+  color: #4b5563;
   max-width: 520px;
   margin: 0 0 32px;
 
@@ -140,21 +140,44 @@ const SubText = styled.p`
 const RESERVED_ROUTES = ['home'];
 
 const DynamicPage = () => {
-
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
-  }; 
+  };
 
-  const { slug } = useParams();
+  const { slug, category, subcategory } = useParams();
   const dispatch = useDispatch();
   const pageData = useSelector((state) => state.page?.pageData);
   const pageLoading = useSelector((state) => state.page?.pageLoading);
   const pageError = useSelector((state) => state.page?.pageError);
 
+  // Pass category and subcategory to DynamicComponents so BlogKnowledgeChest can use them
+  const urlParams = { category, subcategory };
+
   // Also fetch global data for navbar/footer
   const globalData = useSelector((state) => state.global?.data);
   const globalLoading = useSelector((state) => state.global?.loading);
+
+  // Filter pageData to only include components where isActive is true
+  const filteredPageData = useMemo(() => {
+    if (!pageData || !pageData.dynamicZone) {
+      return pageData;
+    }
+
+    // Filter components where isActive is true (handle both boolean and string values)
+    const filteredDynamicZone = pageData.dynamicZone.filter((block) => {
+      return (
+        block.isActive === true ||
+        block.isActive === 'True' ||
+        block.isActive === 'true'
+      );
+    });
+
+    return {
+      ...pageData,
+      dynamicZone: filteredDynamicZone,
+    };
+  }, [pageData]);
 
   useEffect(() => {
     // Fetch global data if not already loaded (for navbar/footer)
@@ -172,7 +195,6 @@ const DynamicPage = () => {
       !RESERVED_ROUTES.includes(normalizedSlug.toLowerCase())
     ) {
       // Fetch page data by slug - this automatically works for ANY slug from Strapi
-      console.log('DynamicPage: Fetching page for slug:', normalizedSlug);
       dispatch(fetchPageBySlug(normalizedSlug));
 
       // Cleanup: clear page data when component unmounts or slug changes
@@ -186,40 +208,6 @@ const DynamicPage = () => {
       console.log('DynamicPage: Slug is reserved route:', normalizedSlug);
     }
   }, [slug, dispatch]);
-
-  // Component mapping: Supports ALL dynamic zone components from Strapi
-  // Users can create pages in Strapi using any combination of these components
-  const componentMap = useMemo(
-    () => ({
-      'dynamic-zone.hero': Hero,
-      'dynamic-zone.slider-section': ClinicalTrialsShowcase,
-      'dynamic-zone.about': AboutSection,
-      'dynamic-zone.therapy-section': InnovativeCare,
-      'dynamic-zone.testimonials': Testimonials,
-      'dynamic-zone.testimonial-slider': VideoTestimonials,
-      'dynamic-zone.trials-section': ClinicalTrials,
-      'dynamic-zone.get-in-touch': GetInTouch,
-      'dynamic-zone.location': LocationNetwork,
-      'dynamic-zone.how-it-works': HowItWorks,
-      'dynamic-zone.resources': Resources,
-      // Alternative naming conventions
-      'dynamic-zone.clinical-trials-showcase': ClinicalTrialsShowcase,
-      'dynamic-zone.innovative-care': InnovativeCare,
-      'dynamic-zone.video-testimonials': VideoTestimonials,
-      'dynamic-zone.statistics': AboutSection,
-      'dynamic-zone.testimony': Testimonials,
-      'dynamic-zone.get-in-touch-section': GetInTouch,
-      'dynamic-zone.location-section': LocationNetwork,
-      'dynamic-zone.how-it-works-section': HowItWorks,
-      'dynamic-zone.resources-section': Resources,
-      'dynamic-zone.hero-section': Hero,
-      'dynamic-zone.testimonials-section': Testimonials,
-      'dynamic-zone.about-section': AboutSection,
-      'dynamic-zone.form_next_to_section': null, // Add component if needed
-      'dynamic-zone.featured': null, // Add component if needed
-    }),
-    []
-  );
 
   // Redirect reserved routes
   if (slug && RESERVED_ROUTES.includes(slug)) {
@@ -268,119 +256,55 @@ const DynamicPage = () => {
     return (
       <PageWrapper>
         <Header darkText={true} />
-          <div className='others_hero_content comm_hero_pt'>
-            <div className='containerWrapper py-88'>
-              <div className='row'>
-                <div className='col-md-12'>
-                  <ScrollAnimationComponent animationVariants={fadeIn}>
-                    <div className='commContent_wrap content-gap-24 text-center'>
-                      <img className='error-404-img' src="../images/404-img.svg" alt="" />
-                      <h4 className='title-4 text_theme_dark'>
-                        Oops! Page not found.
-                      </h4>
-                      <p className='text-16 text_theme_dark'>
-                        Sorry, the page you're looking for doesn't exist or has been moved. Check the URL.
-                      </p>
-                      <BackButton className='btn' onClick={() => window.location.href = '/'}>
-                       Go to Home
-                      </BackButton>
-                      <span className='text-16'><a className='text-pink' href="#">Contact Support</a> if you need further assistance.</span>
-                    </div>
-                  </ScrollAnimationComponent>
-                </div>
+
+        <div className='others_hero_content comm_hero_pt'>
+          <div className='containerWrapper py-88'>
+            <div className='row'>
+              <div className='col-md-12'>
+                <ScrollAnimationComponent animationVariants={fadeIn}>
+                  <div className='commContent_wrap content-gap-24 text-center'>
+                    <img
+                      className='error-404-img'
+                      src='../images/404-img.svg'
+                      alt=''
+                    />
+                    <h4 className='title-4 text_theme_dark'>
+                      Oops! Page not found.
+                    </h4>
+                    <p className='text-16 text_theme_dark'>
+                      Sorry, the page you're looking for doesn't exist or has
+                      been moved. Check the URL.
+                    </p>
+                    <BackButton
+                      className='btn'
+                      onClick={() => (window.location.href = '/')}
+                    >
+                      Go to Home
+                    </BackButton>
+
+                    <span className='text-16'>
+                      <a className='text-pink' href='#'>
+                        Contact Support
+                      </a>{' '}
+                      if you need further assistance.
+                    </span>
+                  </div>
+                </ScrollAnimationComponent>
               </div>
             </div>
           </div>
+        </div>
         <Footer />
       </PageWrapper>
     );
   }
 
-  // Render components dynamically based on Strapi dynamic zone order
-  // This allows users to create pages in Strapi with any combination of components
-  const renderDynamicComponents = () => {
-    if (!pageData || !pageData.dynamicZone || pageLoading) {
-      return null;
-    }
-
-    // Filter out null components (unmapped component types)
-    const validComponents = pageData.dynamicZone.filter((item) => {
-      const Component = componentMap[item.__component];
-      if (!Component) {
-        console.warn(
-          `DynamicPage: Unknown component type "${item.__component}"`,
-          {
-            componentType: item.__component,
-            availableTypes: Object.keys(componentMap).filter(
-              (k) => componentMap[k] !== null
-            ),
-            slug: slug,
-          }
-        );
-        return false;
-      }
-      return true;
-    });
-
-    // Render components in the order they appear in Strapi dynamic zone
-    // Filter out Statistics section if needed (component type: 'dynamic-zone.statistics')
-    return (
-      validComponents
-        // Don't filter out Statistics - let it render if user adds it
-        // .filter((item) => {
-        //   // Skip Statistics section - remove if you want it back
-        //   if (item.__component === 'dynamic-zone.statistics') {
-        //     console.log('DynamicPage: Skipping Statistics section');
-        //     return false;
-        //   }
-        //   return true;
-        // })
-        .map((item, index) => {
-          const Component = componentMap[item.__component];
-
-          // Pass props based on component type
-          // IMPORTANT: Pass componentData so components use page-specific data instead of global/home page data
-          const props = {
-            componentData: item, // Pass the actual component data from this page's dynamic zone
-            pageData: pageData, // Pass full page data for context
-          };
-
-          // Debug: Log component data being passed
-          console.log(
-            `DynamicPage: Rendering ${item.__component} with componentData`,
-            {
-              componentType: item.__component,
-              hasComponentData: !!item,
-              componentDataKeys: item ? Object.keys(item).slice(0, 10) : [],
-              heading: item?.heading || item?.subHeading || 'N/A',
-            }
-          );
-
-          if (
-            item.__component === 'dynamic-zone.location' ||
-            item.__component === 'dynamic-zone.location-section'
-          ) {
-            props.showButtons = true;
-          }
-
-          return (
-            <Component
-              key={`${item.__component}-${index}-${item.id || index}`}
-              {...props}
-            />
-          );
-        })
-    );
-  };
-
   return (
-    // <PageWrapper>
-    //   <SEO />
-    //   <Header />
-    //   {renderDynamicComponents()}
-    //   <Footer />
-    // </PageWrapper>
-    <DynamicComponents pageData={pageData} pageLoading={pageLoading} darkText={!pageData?.dark_header}/>
+    <DynamicComponents
+      pageData={filteredPageData}
+      pageLoading={pageLoading}
+      darkText={!pageData?.dark_header}
+    />
   );
 };
 

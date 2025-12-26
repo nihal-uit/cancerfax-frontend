@@ -1,21 +1,27 @@
-import React, { useState } from 'react';
-import {  useSelector } from 'react-redux';
-import { formatRichText } from '../../utils/strapiHelpers';
+import React, { useState, useEffect } from 'react';
+import {  useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import DrugsGrid from './DrugsGrid';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
+import { fetchDrugs } from '@/store/slices/drugSlice';
 
-const DrugKnowledgeChest = ({ data: drugKnowledgeChestSection, loading }) => {
-  const { sectionContent, countries, specialties } = useSelector((state) => state.quickFinds);
+const DRUGS_PAGE_SIZE = 6;
+
+const DrugKnowledgeChest = ({ data }) => {
+  const dispatch = useDispatch();
+  const { drugs, drugsLoading, drugsHasMore } = useSelector(state => state.drug)
+  
+  const { countries, specialties } = useSelector((state) => state.quickFinds);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [selectedTreatment, setSelectedTreatment] = useState('');
+  const [selectedSorting, setSelectedSorting] = useState('');
 
-  const fadeIn = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0 },
-  };
+  useEffect(() => {
+    dispatch(fetchDrugs({ limit: DRUGS_PAGE_SIZE, start: 0, sorting: selectedSorting || '' }));
+  }, [dispatch, selectedSorting]);
+
 
   const defaultCountries = [
     { id: 1, name: 'United States', value: 'us' },
@@ -42,14 +48,20 @@ const DrugKnowledgeChest = ({ data: drugKnowledgeChestSection, loading }) => {
   const countryOptions = Array.isArray(countries) && countries.length > 0 ? countries : defaultCountries;
   const specialtyOptions = Array.isArray(specialties) && specialties.length > 0 ? specialties : defaultSpecialties;
 
+  const sortingOptions = [
+    { id: 1, name: 'Name A-Z', value: 'a-z' },
+    { id: 2, name: 'Name Z-A', value: 'z-a' },
+    { id: 3, name: 'Published Date Newest', value: 'published-date-newest' },
+    { id: 4, name: 'Published Date Oldest', value: 'published-date-oldest' },
+  ];
+
   const handleSearch = () => {
-    // Implement search functionality
-    console.log('Search:', {
-      searchTerm,
-      country: selectedCountry,
-      specialty: selectedSpecialty,
-      treatment: selectedTreatment,
-    });
+    dispatch(fetchDrugs({ 
+      limit: DRUGS_PAGE_SIZE, 
+      start: 0, 
+      query: searchTerm,
+      sorting: selectedSorting || ''
+    }));
   };
 
   const handleKeyPress = (e) => {
@@ -58,23 +70,16 @@ const DrugKnowledgeChest = ({ data: drugKnowledgeChestSection, loading }) => {
     }
   };
 
-  if (loading) {
-    return null;
-  }
-
-  const defaultContent = {
-    label: 'Lorem Ipsum',
-    title: 'Lorem ipsum dolor sit amet',
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a est velit. In ut eros dapibus, consectetur metus nec, dictum metus.",
-    resources: [],
+  const handleSortingChange = (e) => {
+    const newSorting = e.target.value;
+    setSelectedSorting(newSorting);
+    dispatch(fetchDrugs({ 
+      limit: DRUGS_PAGE_SIZE, 
+      start: 0, 
+      query: searchTerm,
+      sorting: newSorting || ''
+    }));
   };
-
-  const content = drugKnowledgeChestSection ? {
-    label: drugKnowledgeChestSection.heading || defaultContent.label,
-    title: drugKnowledgeChestSection.subHeading || defaultContent.title,
-    description: drugKnowledgeChestSection.description || defaultContent.description,
-    resources: drugKnowledgeChestSection.resources || defaultContent.resources,
-  } : defaultContent;
 
   return (
     <section className='quickFinds_sec py-120'>
@@ -82,12 +87,12 @@ const DrugKnowledgeChest = ({ data: drugKnowledgeChestSection, loading }) => {
         <ScrollAnimationComponent animationVariants={fadeIn}>
         <TopSection>
           <LeftContent className='commContent_wrap'>
-            <Label className='contentLabel text_theme_dark'>{content.label}</Label>
-            <Title className='title-3 text_theme_dark'>{content.title}</Title>
+            <Label className='contentLabel text_theme_dark'>{data?.heading}</Label>
+            <Title className='title-3 text_theme_dark'>{data?.subHeading}</Title>
           </LeftContent>
           
           <RightContent className='commContent_wrap'>
-            <Description className='text-16'>{content.description}</Description>
+            <Description className='text-16'>{data?.description_text}</Description>
           </RightContent>
         </TopSection>
 
@@ -132,21 +137,21 @@ const DrugKnowledgeChest = ({ data: drugKnowledgeChestSection, loading }) => {
             </DropdownIcon>
           </SelectWrapper>
 
-          <SelectWrapper>
+          <SortSelectWrapper>
             <Select
-              value={selectedSpecialty}
-              onChange={(e) => setSelectedSpecialty(e.target.value)}
+              value={selectedSorting}
+              onChange={handleSortingChange}
             >
               <option value="">Sort by</option>
-              {specialtyOptions.map((specialty) => (
-                <option key={specialty.id} value={specialty.value}>
-                  {specialty.name}
+              {sortingOptions.map((sorting) => (
+                <option key={sorting.id} value={sorting.value}>
+                  {sorting.name}
                 </option>
               ))}
             </Select>
-            <SelectDisplay className={!selectedSpecialty ? 'placeholder' : ''}>
-              {selectedSpecialty 
-                ? specialtyOptions.find(s => s.value === selectedSpecialty)?.name || 'Sort by'
+            <SelectDisplay className={!selectedSorting ? 'placeholder' : ''}>
+              {selectedSorting
+                ? sortingOptions.find((s) => s.value === selectedSorting)?.name || 'Sort by'
                 : 'Sort by'}
             </SelectDisplay>
             <DropdownIcon>
@@ -154,11 +159,31 @@ const DrugKnowledgeChest = ({ data: drugKnowledgeChestSection, loading }) => {
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             </DropdownIcon>
-          </SelectWrapper>
+          </SortSelectWrapper>
         </FiltersContainer>
         </ScrollAnimationComponent>
 
-        <DrugsGrid drugs={content.resources} loading={loading} />
+        <DrugsGrid drugs={drugs} loading={drugsLoading} />
+
+        {drugs?.length > 0 && drugsHasMore && (
+          <LoadMoreWrapper>
+            <LoadMoreButton
+              type='button'
+              onClick={() =>
+                dispatch(fetchDrugs({ 
+                  limit: DRUGS_PAGE_SIZE, 
+                  start: drugs.length,
+                  query: searchTerm,
+                  sorting: selectedSorting || ''
+                }))
+              }
+              disabled={drugsLoading}
+            >
+              {drugsLoading ? 'Loading...' : 'Load More'}
+            </LoadMoreButton>
+          </LoadMoreWrapper>
+        )}
+
       </div>
     </section>
   );
@@ -217,7 +242,7 @@ const Description = styled.p`
 
 const FiltersContainer = styled.div`
   display: grid;
-  grid-template-columns: 680px 1fr 1fr;
+  grid-template-columns: 680px repeat(auto-fit, minmax(200px, 1fr));
   gap: 12px;
   margin-bottom: 30px;
   @media (max-width: 1200px) {
@@ -318,6 +343,14 @@ const SelectWrapper = styled.div`
   }
 `;
 
+const SortSelectWrapper = styled(SelectWrapper)`
+  max-width: 220px;
+  
+  @media (max-width: 1024px) {
+    max-width: 100%;
+  }
+`;
+
 const Select = styled.select`
   position: absolute;
   top: 0;
@@ -382,5 +415,39 @@ const DropdownIcon = styled.div`
     height: 16px;
   }
 `;
+
+const LoadMoreWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+`;
+
+const LoadMoreButton = styled.button`
+  padding: 14px 36px;
+  border-radius: 999px;
+  border: 1px solid #36454f;
+  background: transparent;
+  color: #36454f;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    background: #36454f;
+    color: #fff;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0 },
+};
 
 export default DrugKnowledgeChest;

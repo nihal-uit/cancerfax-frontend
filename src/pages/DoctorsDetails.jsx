@@ -32,15 +32,15 @@ const DoctorsDetails = () => {
     dispatch(fetchDoctorBySlug(slug));
   }, [slug, dispatch]);
 
-  if (globalLoading || loading || !doctor) {
+  if (globalLoading || loading || !doctor || !doctor?.[0]) {
     return <LoadingSpinner />
   }
 
   return (
     <PageContainer>
       <Header/>
-      <DoctorsDetailsHero data={doctor}/>
-      <DoctorsDetailsInfo data={doctor}/>
+      <DoctorsDetailsHero data={doctor?.[0]?.hero} loading={loading} />
+      <DoctorsDetailsInfo data={doctor?.[0]} loading={loading} />
       <DynamicComponents pageData={doctor} pageLoading={loading} showHeader={false} showFooter={false} />
       <Footer />
     </PageContainer>

@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import { formatMedia } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 
-const Hero = ({ data }) => {
+const Hero = ({ componentData, data }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const heroData = componentData || data;
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -13,7 +14,11 @@ const Hero = ({ data }) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const backgroundImage = formatMedia(data?.image) || null;
+  const backgroundImage = formatMedia(heroData?.image) || null;
+
+  if (!heroData) {
+    return null;
+  }
 
   const backgroundStyle = {
     backgroundImage: `linear-gradient(90deg, rgba(54, 69, 79, 0.57) 40%, rgba(54, 69, 79, 0) 70%, transparent 100%), radial-gradient(circle at 59% 40%, rgba(54, 69, 79, 0.26) 0%, rgba(54, 69, 79, 0) 100%), url('${backgroundImage}')`,
@@ -39,19 +44,19 @@ const Hero = ({ data }) => {
           <div className='containerWrapper'>
             <div className='commContent_wrap'>
               <SurvivorLabel className='contentLabel'>
-                {data?.heading || 'Lorem Ipsum'}
+                {heroData?.heading || ''}
               </SurvivorLabel>
 
               <StoryTitle className='title-1'>
                 {(() => {
-                  const parts = data?.subHeading?.split(
+                  const parts = heroData?.subHeading?.split(
                     /(?<=[.!?]+)\s(?!.*[.!?]+\s)/
                   );
 
                   return (
                     <>
-                      <StoryTitleBold>{parts[0]}</StoryTitleBold>
-                      {parts[1] && (
+                      <StoryTitleBold>{parts?.[0] || ''}</StoryTitleBold>
+                      {parts?.[1] && (
                         <StoryTitleRegular>{parts[1]}</StoryTitleRegular>
                       )}
                     </>
@@ -63,13 +68,13 @@ const Hero = ({ data }) => {
                 <StoryButton
                   className='btn btn-pink-solid'
                   as='a'
-                  href={data?.CTAs?.URL || '#'}
-                  target={data?.CTAs?.target || '_blank'}
+                  href={heroData?.cta?.URL || '#'}
+                  target={heroData?.cta?.target || '_blank'}
                 >
-                  {data?.CTAs?.text || "Read Andrea's Story"}
+                  {heroData?.cta?.text || ''}
                 </StoryButton>
                 <StoryDescription className='text-16'>
-                  {data?.description_text || ''}
+                  {heroData?.description_text || ''}
                 </StoryDescription>
               </div>
             </div>

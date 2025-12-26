@@ -71,16 +71,32 @@ export const fetchGlobalData = createAsyncThunk(
   }
 );
 
+export const fetchMenuData = createAsyncThunk(
+  "global/fetchMenuData",
+  async (_, { rejectWithValue }) => {
+    try {
+      const url = `${API_URL}/api/menu-items?populate=*`;
+      const response = await axios.get(url);
+      return response.data.data;
+    }
+    catch (err) {
+      return rejectWithValue(err.response?.data || err.message || "Failed to fetch menu data");
+    }
+  }
+);
+
 const globalSlice = createSlice({
   name: "global",
   initialState: {
     data: null,
+    menuData: null,
     loading: false,
     error: null,
   },
   reducers: {
     clearGlobalData(state) {
       state.data = null;
+      state.menuData = null;
       state.error = null;
     },
   },
@@ -97,7 +113,19 @@ const globalSlice = createSlice({
       .addCase(fetchGlobalData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(fetchMenuData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMenuData.fulfilled, (state, action) => {
+        state.loading = false;
+        state.menuData = action.payload;
+      })
+      .addCase(fetchMenuData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
   },
 });
 

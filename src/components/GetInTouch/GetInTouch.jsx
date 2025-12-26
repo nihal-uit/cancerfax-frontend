@@ -1,75 +1,17 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import styled from "styled-components";
-import { getMediaUrl } from "../../services/api";
-import {
-  getSectionData,
-  formatRichText,
-  formatMedia,
-} from "../../utils/strapiHelpers";
-import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAnimationComponent";
+import styled from 'styled-components';
+import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { Link } from 'react-router-dom';
 
-const GetInTouch = ({ componentData, pageData, sectionClass }) => {
-  // Get data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector((state) => state.global?.data);
-  // Legacy Redux state (kept for fallback, but not actively used)
-  const { sectionContent } = useSelector((state) => state.getInTouch);
+const GetInTouch = ({ componentData, data, sectionClass }) => {
+  const getInTouchData = componentData || data;
 
-  const globalLoading = useSelector((state) => state.global?.loading);
-
-  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
-  if (globalLoading) {
+  if (!getInTouchData) {
     return null;
   }
 
-  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
-  const getInTouchSection =
-    componentData || getSectionData(globalData, "getInTouch");
-
-  // Debug: Log to check if global data exists
-
-  if (globalData && !globalLoading) {
-    console.log("GetInTouch: globalData loaded", {
-      hasDynamicZone: !!globalData.dynamicZone,
-      getInTouchSection: !!getInTouchSection,
-      sectionData: getInTouchSection
-        ? {
-            heading: getInTouchSection.heading,
-            subHeading: getInTouchSection.subHeading,
-          }
-        : null,
-    });
+  if (!data || !data?.isActive) {
+    return null;
   }
-
-  // Fallback content for when Strapi data is not yet available
-  const defaultContent = {
-    label: "GET IN TOUCH",
-    title: "When Every Decision Matters, Start with the Right Guidance",
-    description:
-      "Our experts review your case, connect you to breakthrough therapies, and support you at every stage of your treatment journey.",
-    buttonText: "Submit Reports For Expert Review",
-    buttonLink: "#submit-reports",
-  };
-
-  // Map Strapi data: heading -> label, subHeading -> title
-  const content = getInTouchSection
-    ? {
-        label: getInTouchSection.heading || defaultContent.label,
-        title: getInTouchSection.subHeading || defaultContent.title,
-        description:
-          formatRichText(getInTouchSection.description) ||
-          getInTouchSection.description ||
-          defaultContent.description,
-        buttonText: getInTouchSection.cta?.text || defaultContent.buttonText,
-        buttonLink: getInTouchSection.cta?.URL || defaultContent.buttonLink,
-        backgroundColor: getInTouchSection.backgroundColor,
-      }
-    : sectionContent || defaultContent;
-
-  // Extract background image from Strapi
-  const backgroundImage =
-    formatMedia(getInTouchSection?.backgroundImage) ||
-    formatMedia(getInTouchSection?.image);
 
   const slideLeft = {
     hidden: { x: -100, opacity: 0 },
@@ -83,20 +25,19 @@ const GetInTouch = ({ componentData, pageData, sectionClass }) => {
 
   return (
     <section
-      className={`getInTouch_sec py-120 ${sectionClass}`}
-      id="get-in-touch"
+      className={`getInTouch_sec py-120 ${sectionClass || ''}`}
+      id='get-in-touch'
     >
-      <div className="containerWrapper z-2 position-relative">
+      <div className='containerWrapper z-2 position-relative'>
         <ContentWrapper>
           <LeftContent>
             <ScrollAnimationComponent animationVariants={slideLeft}>
-              <CommContent className="commContent_wrap">
-                <Label className="contentLabel">
-                  {content.label || "GET IN TOUCH"}
+              <CommContent className='commContent_wrap'>
+                <Label className='contentLabel'>
+                  {getInTouchData?.heading || ''}
                 </Label>
-                <Title className="title-3">
-                  {content.title ||
-                    "When Every Decision Matters, Start with the Right Guidance"}
+                <Title className='title-3'>
+                  {getInTouchData?.subHeading || ''}
                 </Title>
               </CommContent>
             </ScrollAnimationComponent>
@@ -104,18 +45,19 @@ const GetInTouch = ({ componentData, pageData, sectionClass }) => {
 
           <RightContent>
             <ScrollAnimationComponent animationVariants={slideRight}>
-              <CommContentRight className="commContent_wrap">
-                <Description className="text-16">
-                  {content.description ||
-                    "Our experts review your case, connect you to breakthrough therapies, and support you at every stage of your treatment journey."}
+              <CommContentRight className='commContent_wrap'>
+                <Description className='text-16'>
+                  {getInTouchData?.description_text || ''}
                 </Description>
-                <CTAButton
-                  className="btn btn-pink-solid"
-                  as={content.buttonLink ? "a" : "button"}
-                  href={content.buttonLink || undefined}
-                >
-                  {content.buttonText || "Submit Reports For Expert Review"}
-                </CTAButton>
+                {getInTouchData?.cta?.text && (
+                  <CTAButton
+                    className='btn btn-pink-solid'
+                    to={getInTouchData?.cta?.URL || '#'}
+                    target={getInTouchData?.cta?.target || '_self'}
+                  >
+                    {getInTouchData?.cta?.text}
+                  </CTAButton>
+                )}
               </CommContentRight>
             </ScrollAnimationComponent>
           </RightContent>
@@ -208,7 +150,7 @@ const Description = styled.p`
   color: ${(props) => props.theme.colors.white};
 `;
 
-const CTAButton = styled.button`
+const CTAButton = styled(Link)`
   max-width: 324px;
   @media (max-width: 575px) {
     max-width: 100%;

@@ -1,11 +1,17 @@
-
 import styled from "styled-components";
 import Marquee from "react-fast-marquee";
-import { getMediaUrl } from "../../services/api";
+import { formatMedia } from "../../utils/strapiHelpers";
 
 const DoctorsInnovativeGalleryMarque = ({ images }) => {
+  const imagesList = Array.isArray(images) && images.length > 0 ? images : [];
+
+  if (imagesList.length === 0) {
+    return null;
+  }
+
+  const duplicatedImages = [...imagesList, ...imagesList];
+
   return (
-    <>
       <div className="gallery_marquee_wrap">
         <Marquee
           pauseOnHover={true}
@@ -16,32 +22,22 @@ const DoctorsInnovativeGalleryMarque = ({ images }) => {
           gradientColor={"#F8F8F8"}
         >
           <ImagesGrid>
-            <ImageCard style={{ width: 288, height: 441 }}>
-              <InnerCard>
-                <InnerCard1>
+          {duplicatedImages.map((image, index) => {
+            const imageUrl = formatMedia(image);
+            return (
+              <ImageCard key={`${image?.id || index}`} style={{ width: 288, height: 441 }}>
+                {imageUrl ? (
                   <Image
-                    src={getMediaUrl(images[0])}
-                    alt={"Hospital network"}
+                    src={imageUrl}
+                    alt={image?.alternativeText || "Doctor network"}
                   />
-                </InnerCard1>
-                <InnerCard2>
-                  <Image
-                    src={getMediaUrl(images[1])}
-                    alt={"Hospital network"}
-                  />
-                </InnerCard2>
-              </InnerCard>
+                ) : null}
             </ImageCard>
-            <ImageCard style={{ width: 480, height: 441 }}>
-              <Image src={getMediaUrl(images[2])} alt={"Hospital network"} />
-            </ImageCard>
-            <ImageCard style={{ width: 288, height: 441 }}>
-              <Image src={getMediaUrl(images[3])} alt={"Hospital network"} />
-            </ImageCard>
+            );
+          })}
           </ImagesGrid>
         </Marquee>
       </div>
-    </>
   );
 };
 

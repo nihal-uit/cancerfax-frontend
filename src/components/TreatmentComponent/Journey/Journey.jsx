@@ -5,7 +5,13 @@ import { Container } from "react-bootstrap";
 import { getMediaUrl } from "../../../services/api";
 
 const Journey = ({ data, loading }) => {
-  if (loading) {
+  if (loading || !data?.isActive) {
+    return null;
+  }
+
+  const steps = data?.steps || [];
+  
+  if (steps.length === 0) {
     return null;
   }
 
@@ -13,32 +19,42 @@ const Journey = ({ data, loading }) => {
     <div className="journey_sec py-120" id="journey">
       <Container className="containerWrapper z-2 position-relative">
         <Header className="commContent_wrap">
-          <Label className="contentLabel">{data?.heading}</Label>
-          <Title className="title-3">{data?.subHeading}</Title>
-          <Description>{data?.description_text}</Description>
+          {data?.heading && (
+            <Label className="contentLabel">{data?.heading}</Label>
+          )}
+          {data?.subHeading && (
+            <Title className="title-3">{data?.subHeading}</Title>
+          )}
+          {data?.description_text && (
+            <Description>{data?.description_text}</Description>
+          )}
         </Header>
         
         <div className="card__list__holder mx-auto">
           <div className="card__list">
-            {data?.steps?.map((step) => (
-            <div className="card" key={step.id}>
-              <p className="card__title">{step.title}</p>
+            {steps.map((step) => (
+            <div className="card" key={step?.id}>
+              {step?.title && (
+                <p className="card__title">{step?.title}</p>
+              )}
               <div className="ratio__holder position-relative">
                 <div className="ratio h-100">
-                  {step.image ? (
-                  <img
-                    src={getMediaUrl(step.image)}
-                    alt="Evidance Image"
+                  {step?.image && (
+                    <img
+                      src={getMediaUrl(step?.image)}
+                      alt={step?.image?.alternativeText || step?.title || "Journey Step"}
                       width={810}
                       height={238}
                     />
-                  ) : null}
+                  )}
                 </div>
-                <div className="card__overlay text-center text-white">
-                  <div className="card__overlay__content">
-                    <p>{step.heading}</p>
+                {step?.heading && (
+                  <div className="card__overlay text-center text-white">
+                    <div className="card__overlay__content">
+                      <p>{step?.heading}</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
             ))}

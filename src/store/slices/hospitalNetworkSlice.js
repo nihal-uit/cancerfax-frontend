@@ -17,9 +17,9 @@ export const fetchHospitalHeroSection = createAsyncThunk(
 // Fetch hospitals list
 export const fetchHospitals = createAsyncThunk(
   'hospitalNetwork/fetchHospitals',
-  async ({ limit = 3, start = 0, query = '' } = {}, { rejectWithValue }) => {
+  async ({ limit = 3, start = 0, query = '', sorting = '' } = {}, { rejectWithValue }) => {
     try {
-      const data = await hospitalNetworkAPI.getHospitals({ limit, start, query });
+      const data = await hospitalNetworkAPI.getHospitals({ limit, start, query, sorting });
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch hospitals');
@@ -44,6 +44,7 @@ const hospitalNetworkSlice = createSlice({
   initialState: {
     heroSection: null,
     hospitals: [],
+    hospital: null,
     loading: false,
     error: null,
   },
@@ -73,6 +74,20 @@ const hospitalNetworkSlice = createSlice({
         state.hospitals = action.payload;
       })
       .addCase(fetchHospitals.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Fetch Hospital by Slug
+      .addCase(fetchHospitalBySlug.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchHospitalBySlug.fulfilled, (state, action) => {
+        state.loading = false;
+        state.hospital = action.payload;
+      })
+      .addCase(fetchHospitalBySlug.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
 
-import styled from "styled-components";
-import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
+const ClinicalHero = ({ componentData, data, sectionClass }) => {
+  const heroData = componentData || data;
 
-const ClinicalHero = ({ sectionClass }) => {
+  if (!heroData) {
+    return null;
+  }
+
   const slideLeft = {
     hidden: { x: -100, opacity: 0 },
     visible: { x: 0, opacity: 1 },
@@ -14,45 +20,40 @@ const ClinicalHero = ({ sectionClass }) => {
     visible: { x: 0, opacity: 1 },
   };
 
-  const ExploreButton = styled.button`
+  const ExploreButton = styled(Link)`
     max-width: 276px;
     @media (max-width: 575px) {
       max-width: 100%;
     }
   `;
 
-  const defaultHeroContent = {
-    title: `Global Access to the Most Innovative Cancer Clinical Trials Today`,
-    description: `CancerFax connects you to leading oncology research programs worldwide, guiding your path to experimental therapies, breakthrough options, and hope beyond standard care.`,
-    buttonText: "find relevant clinical trials",
-    buttonLink: "#",
-  };
-
-  const heroContent = defaultHeroContent;
-
   return (
-    <div className={`others_hero_content comm_hero_pt ${sectionClass}`}>
-      <div className="containerWrapper py-88">
-        <div className="hero_content_row">
-          <div className="hero_content_left commContent_wrap">
+    <div className={`others_hero_content comm_hero_pt ${sectionClass || ''}`}>
+      <div className='containerWrapper py-88'>
+        <div className='hero_content_row'>
+          <div className='hero_content_left commContent_wrap'>
             <ScrollAnimationComponent animationVariants={slideLeft}>
-              <h1 className="title-1 text_theme_dark">{heroContent.title}</h1>
+              <h1 className='title-1 text_theme_dark'>
+                {heroData?.heading || ''}
+              </h1>
             </ScrollAnimationComponent>
           </div>
 
-          <div className="hero_content_right">
+          <div className='hero_content_right'>
             <ScrollAnimationComponent animationVariants={slideRight}>
-              <div className="commContent_wrap content-gap-40">
-                <p className="text-16 text_theme_dark">
-                  {heroContent.description}
+              <div className='commContent_wrap content-gap-40'>
+                <p className='text-16 text_theme_dark'>
+                  {heroData?.description_text || ''}
                 </p>
-                <ExploreButton
-                  className="btn btn-pink-solid"
-                  as={heroContent.buttonLink ? "a" : "button"}
-                  href={heroContent.buttonLink}
-                >
-                  {heroContent.buttonText}
-                </ExploreButton>
+                {heroData?.cta?.text && (
+                  <ExploreButton
+                    className='btn btn-pink-solid'
+                    to={heroData?.cta?.URL || '#'}
+                    target={heroData?.cta?.target || '_self'}
+                  >
+                    {heroData?.cta?.text}
+                  </ExploreButton>
+                )}
               </div>
             </ScrollAnimationComponent>
           </div>

@@ -1,10 +1,9 @@
 import React from "react";
 import styled from 'styled-components';
-
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
+import { formatMedia } from "../../../utils/strapiHelpers";
 
-const LifeAfterTreatment = () => {
-
+const LifeAfterTreatment = ({ data }) => {
   const slideLeft = {
     hidden: { x: -100, opacity: 0 },
     visible: { x: 0, opacity: 1 },
@@ -15,6 +14,12 @@ const LifeAfterTreatment = () => {
     visible: { opacity: 1, y: 0 },
   };
 
+  const postTreatment = data?.post_treatment;
+  if (!postTreatment) return null;
+
+  const imageUrl = formatMedia(postTreatment?.patient_image);
+  const iconUrl = formatMedia(postTreatment?.icon);
+
   return (
     <section className='ourValues_sec life_after_treatment_sec py-120'>
       <div className='containerWrapper'>
@@ -23,7 +28,9 @@ const LifeAfterTreatment = () => {
             <ScrollAnimationComponent animationVariants={slideLeft}>
               <div className="mission_image_wrap">
                 <div className='ratio'>
-                  <BackgroundVideo src="../images/life-after-treatment-img.jpg" alt="" />
+                  {imageUrl && (
+                    <BackgroundImage src={imageUrl} alt={postTreatment?.patient_image?.alternativeText || 'life after treatment'} />
+                  )}
                 </div>             
               </div>
             </ScrollAnimationComponent>
@@ -33,12 +40,16 @@ const LifeAfterTreatment = () => {
                 <ScrollAnimationComponent animationVariants={fadeIn}>
                 <div className="values_card with_border h-100">
                   <div className="values_card_content gap-24">
-                    <span className="mission_icon">
-                      <img src="../images/our-values-icon-2.svg" alt="" />
-                    </span>
-                    <h5>Life After Treatment: Beyond Survival: A New Beginning</h5>
-                    <p className="text_theme_dark">Now living without the burden of regular transfusions, Chen Yan is embracing new experiences: continuing his university studies, engaging in community awareness, and mentoring others living with haemoglobin disorders.
-His story is not just about survival, it’s about thriving.</p>
+                    {iconUrl && (
+                      <span className="mission_icon">
+                        <img src={iconUrl} alt={postTreatment?.icon?.alternativeText || 'post treatment icon'} />
+                      </span>
+                    )}
+                    {postTreatment?.expert_name && <h5>{postTreatment.expert_name}</h5>}
+                    {postTreatment?.expert_title && <p className="text_theme_dark">{postTreatment.expert_title}</p>}
+                    {postTreatment?.testimonial_text && (
+                      <p className="text_theme_dark">{postTreatment.testimonial_text}</p>
+                    )}
                   </div>
                 </div>
                 </ScrollAnimationComponent>
@@ -50,7 +61,7 @@ His story is not just about survival, it’s about thriving.</p>
   );
 };
 
-const BackgroundVideo = styled.img`
+const BackgroundImage = styled.img`
   position: absolute;
   inset: 0;
   width: 100%;

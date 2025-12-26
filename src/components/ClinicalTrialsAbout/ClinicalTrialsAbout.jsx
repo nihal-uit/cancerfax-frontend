@@ -1,8 +1,8 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getSectionData, formatRichText, formatMedia } from '../../utils/strapiHelpers';
+import { formatMedia } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { Link } from 'react-router-dom';
 
 const Label = styled.p`
   color: ${props => props.theme.colors.primary};
@@ -67,98 +67,58 @@ const Description = styled.p`
   color: ${props => props.theme.colors.primary};
 `;
 
-const ExploreButton = styled.a`
+const ExploreButton = styled(Link)`
     max-width: 259px;
     @media (max-width: 575px) {
      max-width: 100%;
     }
 `;
 
-const ClinicalTrialsAbout = ({ componentData, pageData }) => {
-  // Get data from global Strapi API (no need for separate fetches)
-  const globalData = useSelector(state => state.global?.data);
-  const globalLoading = useSelector(state => state.global?.loading);
-  // Legacy Redux state (kept for fallback, but not actively used)
-  const { sectionContent } = useSelector((state) => state.clinicalTrialsAbout);
+const ClinicalTrialsAbout = ({ componentData, data }) => {
+  const statsData = componentData || data;
 
-  // IMPORTANT: Return null immediately while loading to prevent showing fallback data first
-  if (globalLoading) {
+  if (!statsData) {
     return null;
   }
-
-  // Priority: Use componentData prop (for dynamic pages) > globalData (for home page)
-  // Extract data from global Strapi response
-  // ClinicalTrialsAbout might use statistics section or separate data
-  const statisticsSection = componentData || getSectionData(globalData, 'statistics');
-  
-  // Debug: Log to check if global data exists
-  if (globalData && !globalLoading) {
-    console.log('ClinicalTrialsAbout: globalData loaded', {
-      hasDynamicZone: !!globalData.dynamicZone,
-      statisticsSection: !!statisticsSection
-    });
-  }
-
-  // Fallback data
-  const fallbackContent = {
-    label: 'ABOUT CANCERFAX',
-    title: 'Connecting You to Global Trials',
-    description: 'Discover and join advanced clinical trials from leading research centers worldwide. We connect patients with breakthrough treatments and innovative therapies beyond borders. Wherever you are, hope is within reach.',
-    buttonText: 'Explore All Ongoing Trials',
-    buttonUrl: '/clinical-trials',
-    image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=800'
-  };
-
-  // Map Strapi data: heading -> label, subHeading -> title
-  const content = statisticsSection ? {
-    label: statisticsSection.heading || fallbackContent.label,
-    title: statisticsSection.subHeading || fallbackContent.title,
-    description: formatRichText(statisticsSection.description) || statisticsSection.description || fallbackContent.description,
-    buttonText: statisticsSection.cta?.text || fallbackContent.buttonText,
-    buttonUrl: statisticsSection.cta?.URL || fallbackContent.buttonUrl,
-    image: formatMedia(statisticsSection.image) || fallbackContent.image,
-    backgroundImage: formatMedia(statisticsSection.backgroundImage) || formatMedia(statisticsSection.image),
-    foregroundImage: formatMedia(statisticsSection.foregroundImage) || formatMedia(statisticsSection.image),
-  } : (sectionContent || fallbackContent);
-
-  // Get image URLs from Strapi or use fallbacks
-  const backgroundImageUrl = content.backgroundImage || formatMedia(statisticsSection?.backgroundImage) || '/images/background.png';
-  const foregroundImageUrl = content.foregroundImage || formatMedia(statisticsSection?.foregroundImage) || '/images/Attached_image.png';
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
-
+  
   return (
     <section className='aboutclinicalTrials_sec sec_bg_white py-120'>
       <div className='containerWrapper commContent_wrap'>
         <div className='clinical_row'>
           <div className='clinical_left'>
-            <Label className='contentLabel'>{content.label}</Label>
-            <Title className='title-3'>{content.title}</Title>
+            <Label className='contentLabel'>{statsData?.heading || ''}</Label>
+            <Title className='title-3'>{statsData?.subHeading || ''}</Title>
           </div>
           
           <div className='clinical_mid'>
             <BackgroundImageHolder>
-              {backgroundImageUrl && (
-                <img src={backgroundImageUrl} alt="Background" />
+              {statsData?.backgroundImage && (
+                <img src={formatMedia(statsData?.backgroundImage)} alt="Background" />
               )}
             </BackgroundImageHolder>
               <ForegroundImage>
                 <ScrollAnimationComponent animationVariants={fadeIn}>
-                <img src={foregroundImageUrl} alt={content.title} />
+                {statsData?.foregroundImage && (
+                  <img src={formatMedia(statsData?.foregroundImage)} alt={statsData?.subHeading || ''} />
+                )}
                 </ScrollAnimationComponent>
               </ForegroundImage>
           </div>
           
           <div className='clinical_right'>
             <Description className='text-16'>
-              {content.description}
+              {statsData?.description_text || ''}
             </Description>
-            <ExploreButton className='btn btn-pink-solid' href={content.buttonUrl || '#'}>
-              {content.buttonText}
+            {statsData?.cta?.text && (
+              <ExploreButton className='btn btn-pink-solid' to={statsData?.cta?.URL || '#'} target={statsData?.cta?.target || '_blank'}>
+                {statsData?.cta?.text}
             </ExploreButton>
+            )}
           </div>
         </div>
 

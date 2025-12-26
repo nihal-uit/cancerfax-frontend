@@ -15,25 +15,30 @@ const SupportingLifeComponent = ({ data }) => {
   };
 
   return (
+    <section className="supportingLife_sec py-120">
     <div className="containerWrapper">
       <TopSection>
         <LeftContent className="commContent_wrap">
           <ScrollAnimationComponent animationVariants={slideLeft}>
             <div className="content-gap-20">
               <div className="contentLabel text_theme_dark">
-                {data?.heading}
+                  {data?.heading }
               </div>
-              <Title className="title-3 text_theme_dark">{data?.subHeading}</Title>
+                <Title className="title-3 text_theme_dark">
+                  {data?.subHeading }
+                </Title>
               <p className="text-16">
-                {data?.description_text}
+                  {data?.description_text }
               </p>
+                {data?.cta?.text && (
               <CTAButton
                 className="btn btn-pink-solid"
-                to={data?.cta?.URL}
-                target={data?.cta?.target}
+                    to={data?.cta?.URL || '#'}
+                    target={data?.cta?.target || '_self'}
               >
-                {data?.cta?.text}
+                    {data?.cta?.text}
               </CTAButton>
+                )}
             </div>
           </ScrollAnimationComponent>
         </LeftContent>
@@ -41,12 +46,18 @@ const SupportingLifeComponent = ({ data }) => {
         <RightContent className="commContent_wrap">
           <ScrollAnimationComponent animationVariants={slideRight}>
             <div className="img-wrapper">
-              <img src={formatMedia(data?.featuredImage)} alt="" className="img-clip" />
+                  <img 
+                    src={formatMedia(data?.featuredImage || data?.media )} 
+                    alt={data?.featuredImage?.alternativeText || data?.media?.alternativeText } 
+                    className="img-clip" 
+                  />
             </div>
           </ScrollAnimationComponent>
         </RightContent>
+
       </TopSection>
     </div>
+    </section>
   );
 };
 

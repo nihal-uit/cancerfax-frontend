@@ -36,7 +36,6 @@ const partnersData = [
 ];
 
 const PartnerHospitals = ({ data }) => {
-  console.log(data);
   return (
     <SectionWrapper>
       <ContentWrapper className='containerWrapper'>

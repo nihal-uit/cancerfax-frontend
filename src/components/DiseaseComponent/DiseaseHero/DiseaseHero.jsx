@@ -1,42 +1,65 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { formatMedia } from '../../../utils/strapiHelpers';
 
-const DiseaseHero = ({ 
-  DiseaseName = "Liver cancer",
-  DiseaseText = "Associate Chief Physician & GCP center secretary , Experience: 25 Years",
-  DiseaseVideo = "../videos/disease-video.mp4",
-  onSubmitReports
-}) => {
+const DiseaseHero = ({ data }) => {  
+  if (!data || !data?.isActive) {
+    return null;
+  }
+
   return (
     <section className='homeHero_sec'>
       <div className='home-hero-banner hospital_details_hero'>
         <div className='ratio'>
-          <BackgroundVideo className="video" preload="none" autoplay="true" loop="true" muted="true" playsinline="true" poster="../videos/disease-video-poster.jpg">
-          <source src={DiseaseVideo} type="video/mp4" />
-          {/* <source src="../videos/disease-video.mov" type="video/mov" />
-          <source src="../videos/d.webm" type="video/webm" />
-          <source src="../videos/doctors-video.ogv" type="video/ogv" /> */}
-        </BackgroundVideo>
+          {data?.featuredVideo ? (
+            <BackgroundVideo 
+              className="video" 
+              preload="none" 
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+            >
+              <source src={formatMedia(data?.featuredVideo)} type="video/mp4" />
+            </BackgroundVideo>
+          ) : data?.featuredImage ? (
+            <BackgroundImage 
+              src={formatMedia(data?.featuredImage)}
+              alt={data?.name}
+            />
+          ) : null}
         </div>
       </div>
       <div className='heroContent_wrap'>
         <div className='containerWrapper'>
           <div className='commContent_wrap'>       
-          <HeroContentGrid>
-            <TopRow>
-              <div>
-                <DiseaseTitle className='title-1 mb-3'>{DiseaseName}</DiseaseTitle>
-                <Description className='text-16'>{DiseaseText}</Description>
-              </div>
-              
-              <SubmitButton className='btn btn-md btn-pink-solid' onClick={onSubmitReports}>
-                Know more about liver cancer
-              </SubmitButton>
-
-            </TopRow>
-            
-          </HeroContentGrid>          
-         </div>
+            <HeroContentGrid>
+              <TopRow>
+                <div>
+                  {data?.heading && (
+                    <DiseaseTitle className='title-1 mb-3'>{data?.heading}</DiseaseTitle>
+                  )}
+                  {data?.subHeading && (
+                    <Description className='text-16'>{data?.subHeading}</Description>
+                  )}
+                  {data?.description_text && (
+                    <Description className='text-16'>{data?.description_text}</Description>
+                  )}
+                </div>
+                
+                {data?.cta?.text && (
+                  <CTAButton 
+                    className='btn btn-md btn-pink-solid'
+                    to={data?.cta?.URL || '#'}
+                    target={data?.cta?.target || '_self'}
+                  >
+                    {data?.cta?.text}
+                  </CTAButton>
+                )}
+              </TopRow>
+            </HeroContentGrid>          
+          </div>
         </div>
       </div>    
     </section>
@@ -45,6 +68,15 @@ const DiseaseHero = ({
 
 
 const BackgroundVideo = styled.video`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+`;
+
+const BackgroundImage = styled.img`
   position: absolute;
   inset: 0;
   width: 100%;
@@ -69,7 +101,7 @@ const TopRow = styled.div`
   gap: 24px;
 `;
 
-const SubmitButton = styled.button`
+const CTAButton = styled(Link)`
 `;
 
 const DiseaseTitle = styled.h1`

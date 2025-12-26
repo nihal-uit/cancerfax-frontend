@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import "./HowItWorks.scss";
-import { getMediaUrl } from "../../../services/api";
+import { formatMedia } from "../../../utils/strapiHelpers";
 
 const CommContent = styled.div`
   display: flex;
@@ -38,43 +38,46 @@ const Description = styled.p`
 `;
 
 const HowItWorks = ({ data, loading }) => {
-  if (loading) {
+  if (loading || !data?.isActive) {
     return null;
   }
 
-  const content = {
-    label: data?.heading,
-    title: data?.subHeading,
-    description: data?.description_text,
-    image: getMediaUrl(data?.backgroundImage),
-  } ;
-
   return (
     <section className="treatment__howwork_sec py-120" id="how-it-works">
-      <div className="howItWork_bg">
-        <img src={content.image} alt='' />
-      </div>
+      {data?.backgroundImage && (
+        <div className="howItWork_bg">
+          <img src={formatMedia(data?.backgroundImage)} alt={data?.backgroundImage?.alternativeText || ''} />
+        </div>
+      )}
       <div className="containerWrapper z-2 position-relative">
         <ScrollAnimationComponent animationVariants={fadeIn}>
           <CommContent className="commContent_wrap">
-            <Label className="contentLabel">
-              {content.label}
-            </Label>
-            <Title className="title-3">
-              {content.title}
-            </Title>
-            <Description className="text-16">
-              {content.description}
-            </Description>
+            {data?.heading && (
+              <Label className="contentLabel">
+                {data?.heading}
+              </Label>
+            )}
+            {data?.subHeading && (
+              <Title className="title-3">
+                {data?.subHeading}
+              </Title>
+            )}
+            {data?.description_text && (
+              <Description className="text-16">
+                {data?.description_text}
+              </Description>
+            )}
           </CommContent>
         </ScrollAnimationComponent>
-        <ScrollAnimationComponent animationVariants={fadeIn}>
-          <div className="ratio__holder">
-            <div className="imageSection ratio">
-              <img src={content.image} alt={content.imageAlt} />
+        {data?.featuredImage && (
+          <ScrollAnimationComponent animationVariants={fadeIn}>
+            <div className="ratio__holder">
+              <div className="imageSection ratio">
+                <img src={formatMedia(data?.featuredImage)} alt={data?.featuredImage?.alternativeText || ''} />
+              </div>
             </div>
-          </div>
-        </ScrollAnimationComponent>
+          </ScrollAnimationComponent>
+        )}
       </div>
     </section>
   );

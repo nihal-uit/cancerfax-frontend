@@ -1,56 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Nav, Tab, Image } from 'react-bootstrap';
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
-import './OurJourney.css'
+import './OurJourney.css';
 import styled from 'styled-components';
+import { formatMedia } from '../../../utils/strapiHelpers';
 
+const OurJourney = ({ data }) => {
+  const journey = data?.journey_timeline;
+  const milestones = journey?.milestones || [];
 
-const OurJourney = () => {
+  const tabItems = useMemo(() => {
+    return milestones
+      .map((m, idx) => ({
+        key: m?.id?.toString() || `milestone-${idx}`,
+        title: m?.title || '',
+        description: m?.description_text || '',
+        image: formatMedia(m?.image),
+      }))
+      .filter((m) => m.title || m.description || m.image);
+  }, [milestones]);
 
-    // ############################
-    const [activeKey, setActiveKey] = useState('2022');
-  
-    const milestones = [
-      {
-        year: '2022',
-        title: 'December 8, 2022',
-        description: 'Infusion of gene-edited stem cells',
-        image: '../images/our-journey-img-2.jpg' // Replace with actual image path
-      },
-      {
-        year: '2023',
-        title: 'Months following',
-        description: 'Infusion of gene-edited stem cells',
-        image: '../images/mission-vision-img.jpg'
-      },
-      {
-        year: '2024',
-        title: 'February 17, 2023',
-        description: 'Infusion of gene-edited stem cells',
-        image: '../images/what-we-do-03.webp'
-      },
-      {
-        year: '2025',
-        title: 'Post-treatment',
-        description: 'Infusion of gene-edited stem cells',
-        image: '../images/what-we-do-04.webp'
-      },
-    ];
-  
-    const selectedMilestone = milestones.find(m => m.year === activeKey) || milestones[0];
+  const [activeKey, setActiveKey] = useState(
+    tabItems.length > 0 ? tabItems[0].key : null
+  );
+
+  const selectedMilestone =
+    tabItems.find((m) => m.key === activeKey) || tabItems[0];
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
 
+  if (!journey || tabItems.length === 0) return null;
+
   return (
     <section className='OurJourney_sec py-120'>
       <div className='containerWrapper'>
         <ScrollAnimationComponent animationVariants={fadeIn}>
           <div className="commContent_wrap content-gap-24 max-w-800">
-            <span className="contentLabel">MILESTONES</span>
-            <h3 className="title-3">The Breakthrough Treatment Journey</h3>
+            {journey?.heading && <span className="contentLabel">{journey.heading}</span>}
+            {journey?.subHeading && <h3 className="title-3">{journey.subHeading}</h3>}
           </div>
 
           <ContentWrapper className="milestones_grid">
@@ -58,11 +48,11 @@ const OurJourney = () => {
               <div className="milestones-timeline">
                 <Tab.Container activeKey={activeKey} onSelect={(k) => setActiveKey(k)}>
                   <Nav variant="pills" className="vertical-tabs">
-                    {milestones.map((milestone) => (
-                      <Nav.Item key={milestone.year} className="milestone-item">
+                    {tabItems.map((milestone) => (
+                      <Nav.Item key={milestone.key} className="milestone-item">
                         <Nav.Link 
-                          eventKey={milestone.year}
-                          className={`milestone-link ${activeKey === milestone.year ? 'active' : ''}`}
+                          eventKey={milestone.key}
+                          className={`milestone-link ${activeKey === milestone.key ? 'active' : ''}`}
                         >
                           <div className="milestone-content">                        
                             <span className="milestone-title">{milestone.title}</span>
@@ -75,25 +65,30 @@ const OurJourney = () => {
               </div>
             </ContentLeft>
             <ContentRight>
-              <div className="milestones-image-section">
-                <div className="image-wrapper">
-                  <div className="background-year">{selectedMilestone.year}</div>
-                  <div className="image-container h-398">
-                    <Image 
-                      src={selectedMilestone.image} 
-                      alt={`${selectedMilestone.year} - ${selectedMilestone.title}`}
-                      className="milestone-image"
-                      fluid
-                      onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/600x400/f0f0f0/999999?text=' + encodeURIComponent(selectedMilestone.year + ' - ' + selectedMilestone.title);
-                      }}
-                    />
+              {selectedMilestone && (
+                <div className="milestones-image-section">
+                  <div className="image-wrapper">
+                    <div className="image-container h-398">
+                      {selectedMilestone.image && (
+                        <Image 
+                          src={selectedMilestone.image} 
+                          alt={selectedMilestone.title || 'milestone image'}
+                          className="milestone-image"
+                          fluid
+                        />
+                      )}
+                    </div>
                   </div>
-                  <div className="image-caption">
-                    {selectedMilestone.description}
+                  <div className="content-gap-12">
+                    {selectedMilestone.title && (
+                      <h4 className="title-4">{selectedMilestone.title}</h4>
+                    )}
+                    {selectedMilestone.description && (
+                      <p className="text-16">{selectedMilestone.description}</p>
+                    )}
                   </div>
                 </div>
-              </div>
+              )}
             </ContentRight>
           </ContentWrapper>
         </ScrollAnimationComponent>

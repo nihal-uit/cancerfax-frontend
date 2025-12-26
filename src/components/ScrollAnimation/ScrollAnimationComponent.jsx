@@ -1,14 +1,18 @@
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { useEffect, useState } from "react";
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import { useEffect, useState } from 'react';
 
-const ScrollAnimationComponent = ({ children, animationVariants, delay = 0 }) => {
+const ScrollAnimationComponent = ({
+  children,
+  animationVariants,
+  delay = 0,
+}) => {
   const [isMounted, setIsMounted] = useState(false);
   const [ref, inView] = useInView({
     // triggerOnce: true, // uncomment if you want it only once
     threshold: 0.2, // 20% of the component is visible
     triggerOnce: false, // Allow re-triggering on scroll
-    rootMargin: "0px 0px -50px 0px", // Start animation slightly before element is fully visible
+    rootMargin: '0px 0px -50px 0px', // Start animation slightly before element is fully visible
   });
 
   // Ensure component is mounted on client side (fixes SSR issues)
@@ -26,25 +30,25 @@ const ScrollAnimationComponent = ({ children, animationVariants, delay = 0 }) =>
 
   // If not mounted yet, render without animation (SSR safe)
   if (!isMounted) {
-    return <div style={{ height: "100%" }}>{children}</div>;
+    return <div style={{ height: '100%' }}>{children}</div>;
   }
 
   return (
     <motion.div
       ref={ref}
-      initial="hidden"
-      animate={inView ? "visible" : "hidden"}
-      className={inView ? "isactive" : "hidden"}
+      initial='hidden'
+      animate={inView ? 'visible' : 'hidden'}
+      className={inView ? 'isActive' : 'hidden'}
       variants={variants}
-      transition={{ 
-        duration: 0.5, 
-        ease: "easeInOut", 
+      transition={{
+        duration: 0.5,
+        ease: 'easeInOut',
         delay,
-        type: "tween" // Use tween for better performance
+        type: 'tween', // Use tween for better performance
       }}
-      style={{ 
-        height: "100%",
-        willChange: "transform, opacity" // Optimize for animations
+      style={{
+        height: '100%',
+        willChange: 'transform, opacity', // Optimize for animations
       }}
     >
       {children}

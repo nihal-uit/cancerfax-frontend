@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Header from '../components/Header/Header';
@@ -13,9 +13,44 @@ import { fetchGlobalData } from '../store/slices/globalSlice';
 import { formatRichText, formatMedia } from '../utils/strapiHelpers';
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
 import DynamicComponents from './DynamicComponents';
+import NotFound from './NotFound';
+
+// Helper function to generate resource URL
+// Pattern: /resource/:category/:subcategory?/:slug
+function getResourceUrl(resource) {
+  if (!resource || !resource.attributes) return null;
+  
+  const slug = resource.attributes.slug;
+  const category = resource.attributes.resource_category?.data;
+  const subcategory = resource.attributes.resource_subcategory?.data;
+
+  // Has both category and subcategory
+  // Pattern: /resource/:category/:subcategory/:slug
+  if (category && subcategory) {
+    const categorySlug = category.attributes?.slug || category.slug;
+    const subcategorySlug = subcategory.attributes?.slug || subcategory.slug;
+    if (categorySlug && subcategorySlug) {
+      return `/resource/${categorySlug}/${subcategorySlug}/${slug}`;
+    }
+  }
+
+  // Only category (no subcategory)
+  // Pattern: /resource/:category/:slug
+  if (category) {
+    const categorySlug = category.attributes?.slug || category.slug;
+    if (categorySlug) {
+      return `/resource/${categorySlug}/${slug}`;
+    }
+  }
+
+  // No category (uncategorized)
+  // Pattern: /resource/:slug
+  return `/resource/${slug}`;
+}
 
 const BlogDetails = () => {
-  const { slug } = useParams();
+  const { category, subcategory, slug } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data: globalData, loading: globalLoading } = useSelector(
     (state) => state.global
@@ -33,35 +68,98 @@ const BlogDetails = () => {
   }, [globalData, globalLoading, dispatch]);
 
   useEffect(() => {
-    dispatch(fetchBlogBySlug(slug));
-    dispatch(fetchBlogs({ limit: 3, start: 0 }));
-  }, [slug, dispatch]);
+    // Always fetch resource when BlogDetails component mounts
+    // Routes are now separated: /resource/* for details, /resources/* for listings
+    fetchResource();
+  }, [category, subcategory, slug, dispatch]);
+
+  const fetchResource = async () => {
+    try {
+      // Determine actual resource slug from URL params
+      // URL patterns:
+      // /resource/:slug (uncategorized)
+      // /resource/:category/:slug (category only)
+      // /resource/:category/:subcategory/:slug (category + subcategory)
+      const resourceSlug = slug || subcategory || category;
+
+      if (!resourceSlug) {
+        navigate('/404');
+        return;
+      }
+      
+      // Fetch resource by slug
+      dispatch(fetchBlogBySlug(resourceSlug));
+      dispatch(fetchBlogs({ limit: 3, start: 0 }));
+    } catch (error) {
+      console.error('Error fetching resource:', error);
+      navigate('/404');
+    }
+  };
+
+  // Check if URL needs to be corrected after resource is loaded
+  useEffect(() => {
+    if (singleBlog) {
+      // Handle both array and object responses
+      const blog = Array.isArray(singleBlog) ? singleBlog[0] : singleBlog;
+      
+      if (!blog) {
+        navigate('/404');
+        return;
+      }
+
+      // Check if blog has attributes (Strapi structure)
+      const blogData = blog.attributes || blog;
+      const correctUrl = getResourceUrl({ attributes: blogData });
+      const currentUrl = window.location.pathname;
+
+      if (correctUrl && correctUrl !== currentUrl) {
+        navigate(correctUrl, { replace: true });
+        return;
+      }
+    }
+  }, [singleBlog, navigate]);
 
   if (globalLoading || loading || !singleBlog) {
     return <LoadingSpinner />
   }
 
-  const supportContent = singleBlog?.expert
+  // Handle both array and object responses
+  const blog = Array.isArray(singleBlog) ? singleBlog[0] : singleBlog;
+  
+  if (!blog) {
+    return (
+      <PageContainer>
+        <Header darkText={true} />
+        <NotFound />
+        <Footer />
+      </PageContainer>
+    );
+  }
+
+  // Get blog data (handle Strapi structure)
+  const blogData = blog.attributes || blog;
+
+  const supportContent = blogData?.expert
     ? {
-        label: singleBlog?.expert?.heading,
-        title: singleBlog?.expert?.subHeading,
-        description: formatRichText(singleBlog?.expert?.description_text),
-        buttonText: singleBlog?.expert?.cta?.text,
-        buttonLink: singleBlog?.expert?.cta?.URL,
-        buttonTarget: singleBlog?.expert?.cta?.target,
-        image: formatMedia(singleBlog?.expert?.media),
+        label: blogData?.expert?.heading,
+        title: blogData?.expert?.subHeading,
+        description: formatRichText(blogData?.expert?.description_text),
+        buttonText: blogData?.expert?.cta?.text,
+        buttonLink: blogData?.expert?.cta?.URL,
+        buttonTarget: blogData?.expert?.cta?.target,
+        image: formatMedia(blogData?.expert?.media),
       }
     : null;
 
   return (
     <PageContainer>
-      {/* <Header darkText={true}/> */}
-      <BlogDetailsHero data={singleBlog} loading={loading} />
-      <BlogDetailsInfo data={singleBlog} loading={loading} />
-      { singleBlog?.related_posts?.length > 0 &&
+      <Header darkText={true}/>
+      <BlogDetailsHero data={blogData} loading={loading} />
+      <BlogDetailsInfo data={blogData} loading={loading} />
+      { blogData?.related_posts?.length > 0 &&
         <section className='relatedBlog_sec bg_light_blue py-120'>
         <div className='containerWrapper' style={{overflow: 'hidden'}}>
-            <RelatedBlogComponent data={singleBlog?.related_posts} />
+            <RelatedBlogComponent data={blogData?.related_posts} />
         </div>
       </section>
       }
@@ -73,8 +171,8 @@ const BlogDetails = () => {
           />
         </div>
       </section>
-      <DynamicComponents pageData={singleBlog} pageLoading={loading} darkText={true} />
-      {/* <Footer /> */}
+      <DynamicComponents pageData={blogData} pageLoading={loading} showFooter={false} showHeader={false} />
+      <Footer />
     </PageContainer>
   );
 };

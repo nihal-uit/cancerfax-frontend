@@ -51,22 +51,28 @@ const RightContent = styled.div`
 const Description = styled.p`
 `;
 
-const HospitalDetailsTestimonials = () => {
+const HospitalDetailsTestimonials = ({data, loading}) => {
+  if (loading || !data?.testimonial?.testimonial_card) {
+    return null;
+  }
+  
+  const testimonial = data?.testimonial?.testimonial_card;
+  
   return (
     <section className='joyOffSuccess_sec'>
         <div className='containerWrapper'>
           <TopSection>
             <LeftContent className='commContent_wrap'>
-              <Label className='contentLabel text_theme_dark'>Joy of success</Label>
-              <Title className='title-3 text_theme_dark'>Stories of Strength and Healing</Title>
+              {testimonial?.heading && <Label className='contentLabel text_theme_dark'>{testimonial.heading}</Label>}
+              {testimonial?.subHeading && <Title className='title-3 text_theme_dark'>{testimonial.subHeading}</Title>}
             </LeftContent>
             
             <RightContent className='commContent_wrap'>
-              <Description className='text-16'>Discover the journeys of courage, resilience, and hope from patients and families whose lives have been touched by our care and innovative treatments</Description>
+              {testimonial?.description_text && <Description className='text-16'>{testimonial.description_text}</Description>}
             </RightContent>
           </TopSection>
 
-          <VideoTestimonialComponents/>
+          <VideoTestimonialComponents data={data?.testimonial} />
         </div>
       </section>
   );

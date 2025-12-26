@@ -1,13 +1,24 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 
-const TherapyInfo = () => {
-
+const TherapyInfo = ({ data }) => {
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
+
+  const therapy = data?.understanding_treatment;
+  if (!therapy) return null;
+
+  const cards = [
+    therapy?.card_1,
+    therapy?.card_2,
+    therapy?.card_3,
+    therapy?.card_4,
+  ].filter(Boolean);
+
+  if (cards.length === 0) return null;
 
   return (
       <section className='therapyInfo_sec py-120'>
@@ -15,54 +26,33 @@ const TherapyInfo = () => {
           <ScrollAnimationComponent animationVariants={fadeIn}>
           <TopSection>
             <LeftContent className='commContent_wrap'>
-              <h3 className='title-3 text_theme_dark'>Understanding CRISPR Gene Therapy for Beta-Thalassemia</h3>
+              {therapy?.heading && (
+                <h3 className='title-3 text_theme_dark'>{therapy.heading}</h3>
+              )}
             </LeftContent>
             
-            <RightContent className='commContent_wrap'>
-              <p className='text-16'>
-                Here’s a simplified explanation of what happened:
-              </p>
-            </RightContent>
+            {therapy?.subHeading && (
+              <RightContent className='commContent_wrap'>
+                <p className='text-16'>
+                  {therapy.subHeading}
+                </p>
+              </RightContent>
+            )}
           </TopSection>
 
           <div className="row g-4">
-            <div className="col-sm-6 col-md-6 col-lg-3">
-              <TherapyInfoCard>
-                <StepContent>
-                  <StepTitle>Targeting the Genetic Switch</StepTitle>
-                  <StepDescription>CRISPR precisely edits the BCL11A enhancer in blood stem cells — the key gene controlling fetal hemoglobin production.</StepDescription>
-                </StepContent>
-              </TherapyInfoCard>
-            </div>
-            <div className="col-sm-6 col-md-6 col-lg-3">
-              <TherapyInfoCard>
-                <StepContent>
-                  <StepTitle>Boosting Fetal Hemoglobin (HbF)</StepTitle>
-                  <StepDescription>
-                    Once edited, the body naturally produces more fetal hemoglobin, which carries oxygen efficiently and replaces faulty adult hemoglobin.
-                  </StepDescription>
-                </StepContent>
-              </TherapyInfoCard>
-            </div>
-            <div className="col-sm-6 col-md-6 col-lg-3">
-              <TherapyInfoCard>
-                <StepContent>
-                  <StepTitle>Ending Dependence on Transfusions</StepTitle>
-                  <StepDescription>
-                    Higher HbF levels mean patients can maintain healthy blood counts without regular transfusions — a life-changing milestone.
-                  </StepDescription>
-                </StepContent>
-              </TherapyInfoCard>
-            </div>
-            <div className="col-sm-6 col-md-6 col-lg-3">
-              <TherapyInfoCard>
-                <StepContent>
-                  <StepTitle>Ending Dependence on Transfusions</StepTitle>
-                  <StepDescription>
-                    This breakthrough offers a curative path for beta-thalassemia and sickle-cell patients, even without a matched stem cell donor.                  </StepDescription>
-                </StepContent>
-              </TherapyInfoCard>
-            </div>
+            {cards.map((card, idx) => (
+              <div className="col-sm-6 col-md-6 col-lg-3" key={card?.id || idx}>
+                <TherapyInfoCard>
+                  <StepContent>
+                    {card?.title && <StepTitle>{card.title}</StepTitle>}
+                    {card?.details && (
+                      <StepDescription>{card.details}</StepDescription>
+                    )}
+                  </StepContent>
+                </TherapyInfoCard>
+              </div>
+            ))}
           </div>
           </ScrollAnimationComponent>
         </div>

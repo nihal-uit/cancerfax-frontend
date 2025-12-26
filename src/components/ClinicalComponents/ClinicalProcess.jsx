@@ -1,12 +1,17 @@
 import React, { useRef } from "react";
 import { Col, Row } from "react-bootstrap";
 import styled from "styled-components";
-import { EffectFade, Navigation } from "swiper/modules";
+import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
+import { formatMedia } from "../../utils/strapiHelpers";
 
-const ClinicalProcess = () => {
+const ClinicalProcess = ({ componentData, data }) => {
+  const processData = componentData || data;
+
+  // Hooks must be called before any early returns
   const carouselRef = useRef(null);
+  
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
@@ -15,27 +20,44 @@ const ClinicalProcess = () => {
     hidden: { opacity: 0, x: -50 },
     visible: { opacity: 1, x: 0 },
   };
+
+  if (!processData) {
+    return null;
+  }
+
+  const imageUrl = formatMedia(processData?.featured_image);
+  const steps = processData?.steps || [];
+
+  if (steps.length === 0) {
+    return null;
+  }
+
   return (
-    <>
       <section className="clinical__process__sec py-120">
         <div className="containerWrapper z-2 clinical__process__inner">
           <Row className="align-items-center">
+          {imageUrl && (
             <Col lg={5} xl={5}>
               <div className="ratio__holder">
                 <ScrollAnimationComponent animationVariants={sideLeft}>
-                  <div className="ratio">
-                    <img src="./images/cprocess.jpg" alt="Clinical Process" />
+                  <div className="ratio object-fit-cover">
+                    <img 
+                      style={{ objectFit: 'cover' }}
+                      src={imageUrl} 
+                      alt={processData?.featured_image?.alternativeText || "Clinical Process"} 
+                    />
                   </div>
                 </ScrollAnimationComponent>
               </div>
             </Col>
+          )}
             <Col lg={7} xl={7}>
               <div className="content__right">
                 <ScrollAnimationComponent animationVariants={fadeIn}>
                   <div className="commContent_wrap commContent_new">
-                    <p className="contentLabel">Process</p>
+                  <p className="contentLabel">{processData?.heading || ''}</p>
                     <h3 className="title-3">
-                      What Happens When You Join a Clinical Trial
+                    {processData?.subHeading || ''}
                     </h3>
                   </div>
                 </ScrollAnimationComponent>
@@ -44,15 +66,10 @@ const ClinicalProcess = () => {
                     ref={carouselRef}
                     spaceBetween={24}
                     slidesPerView={1}
-                    // loop={true}
                     breakpoints={{
                       0: { slidesPerView: 1 },
-                      // 480: { slidesPerView: 1.2 },
                       767: { slidesPerView: 1.5 },
                       992: { slidesPerView: 2.3 },
-                      // 1200: { slidesPerView: 3 },
-                      // 1600: { slidesPerView: 1.8 },
-                      // 2080: { slidesPerView: 2.5 },
                     }}
                     modules={[Navigation]}
                     navigation={{
@@ -61,78 +78,21 @@ const ClinicalProcess = () => {
                     }}
                     style={{ overflow: "visible" }}
                   >
-                    <SwiperSlide>
+                  {steps.map((step, index) => (
+                    <SwiperSlide key={step?.id || index}>
                       <div className="card">
-                        <div className="card__number">01</div>
+                        <div className="card__number">
+                          {String(step?.step_number || index + 1).padStart(2, '0')}
+                        </div>
                         <div className="card__content">
-                          <h4 className="card__title">
-                            Diagnosis & Evaluation
-                          </h4>
+                          <h4 className="card__title">{step?.title || ''}</h4>
                           <div className="card__description">
-                            <p>
-                              Your case is evaluated based on diagnosis, stage,
-                              and medical history.
-                            </p>
+                            <p>{step?.description || ''}</p>
                           </div>
                         </div>
                       </div>
                     </SwiperSlide>
-                    <SwiperSlide>
-                      <div className="card">
-                        <div className="card__number">02</div>
-                        <div className="card__content">
-                          <h4 className="card__title">Informed Consent</h4>
-                          <div className="card__description">
-                            <p>
-                              You’re provided detailed information about the
-                              trial’s goals, duration, and risks.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <div className="card">
-                        <div className="card__number">03</div>
-                        <div className="card__content">
-                          <h4 className="card__title">
-                            Screening & Baseline Tests
-                          </h4>
-                          <div className="card__description">
-                            <p>
-                              Doctors perform initial assessments to set
-                              reference points for results.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <div className="card">
-                        <div className="card__number">04</div>
-                        <div className="card__content">
-                          <h4 className="card__title">
-                            Diagnosis & Evaluation
-                          </h4>
-                          <div className="card__description">
-                            <p>Medical assessment, lab tests, baseline scans</p>
-                          </div>
-                        </div>
-                      </div>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <div className="card">
-                        <div className="card__number">05</div>
-                        <div className="card__content">
-                          <h4 className="card__title">
-                            Diagnosis & Evaluation
-                          </h4>
-                          <div className="card__description">
-                            <p>Medical assessment, lab tests, baseline scans</p>
-                          </div>
-                        </div>
-                      </div>
-                    </SwiperSlide>
+                  ))}
                   </Swiper>
                 </div>
                 <NavigationContainer className="customNavigation">
@@ -170,7 +130,6 @@ const ClinicalProcess = () => {
           </Row>
         </div>
       </section>
-    </>
   );
 };
 

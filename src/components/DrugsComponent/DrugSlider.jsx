@@ -6,62 +6,13 @@ import { formatRichText, formatMedia } from "../../utils/strapiHelpers";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
 import "swiper/css";
 import "swiper/css/effect-fade";
+import { Link } from "react-router-dom";
 
-const DrugSlider = ({ data: drugSliderSection, loading }) => {
-  if (loading) {
-    return null;
-  }
-
-  const defaultSliderContent = [
-    {
-      id: 1,
-      title: "Lorem Ipsum",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a est velit. In ut eros dapibus, consectetur metus nec, dictum metus.",
-      buttonLink: "#",
-      buttonText: "Click Here",
-      buttonTarget: "_blank",
-      image:
-        "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1600",
-    },
-    {
-      id: 2,
-      title: "Lorem Ipsum 2",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed a est velit. In ut eros dapibus, consectetur metus nec, dictum metus.",
-      image:
-        "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1600",
-      buttonLink: "#",
-      buttonText: "Click Here",
-      buttonTarget: "_blank",
-    },
-  ];
-
-  const sliderContent =
-    drugSliderSection?.drugs?.length > 0
-      ? drugSliderSection.drugs.map((slide, index) => ({
-          id: slide.id || defaultSliderContent[index % 2].id,
-          title: slide.name || defaultSliderContent[index % 2].title,
-          description:
-            formatRichText(slide.description) ||
-            slide.description ||
-            defaultSliderContent[index % 2].description,
-          image:
-            formatMedia(slide.featuredImage) ||
-            defaultSliderContent[index % 2].image,
-          buttonLink:
-            slide.cta?.URL || defaultSliderContent[index % 2].buttonLink,
-          buttonText:
-            slide.cta?.text || defaultSliderContent[index % 2].buttonText,
-          buttonTarget:
-            slide.cta?.target || defaultSliderContent[index % 2].buttonTarget,
-        }))
-      : defaultSliderContent;
-
+const DrugSlider = ({ data }) => {
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
-  };
+  };  
 
   return (
     <section className="hospital_slider_sec">
@@ -78,23 +29,27 @@ const DrugSlider = ({ data: drugSliderSection, loading }) => {
               prevEl: ".customPrev",
             }}
           >
-            {sliderContent.map((slide) => (
-              <SwiperSlide key={slide.id}>
+            {data?.drugs?.map((slide) => (
+              <SwiperSlide key={slide?.id}>
                 <div className="hospital_info_slider">
-                  <img src={slide.image} alt={slide.title} />
+                  <img src={formatMedia(slide?.hero?.featuredImage)} alt={slide?.hero?.name} />
                   <div className="hospital_info_slider_content">
                     <div className="inner_container">
                       <ScrollAnimationComponent animationVariants={fadeIn}>
                         <div className="commContent_wrap">
-                          <h3>{slide.title}</h3>
-                          <p>{slide.description}</p>
-                          <a
-                            href={slide.buttonLink}
-                            className="btn btn-pink-solid"
-                            target={slide.buttonTarget}
-                          >
-                            {slide.buttonText}
-                          </a>
+                          <h3>{slide?.hero?.heading}</h3>
+                          <p>{slide?.hero?.subHeading}</p>
+                          {
+                            slide?.hero?.cta && (
+                              <Link
+                                to={slide?.hero?.cta?.URL || '/drugs/' + slide?.slug}
+                                className="btn btn-pink-solid"
+                                target={slide?.hero?.cta?.target}
+                              >
+                                {slide?.hero?.cta?.text || 'View Details'}
+                              </Link>
+                            )
+                          }
                         </div>
                       </ScrollAnimationComponent>
                     </div>
@@ -132,7 +87,7 @@ const DrugSlider = ({ data: drugSliderSection, loading }) => {
                 </svg>
               </NavButton>
             </NavigationContainer>
-            </Swiper>
+          </Swiper>
         </div>
       </div>
     </section>
