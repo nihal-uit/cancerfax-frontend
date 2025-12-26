@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Header from '../components/Header/Header';
@@ -8,54 +8,32 @@ import BlogDetailsHero from '../components/BlogDetailsHero/BlogDetailsHero';
 import BlogDetailsInfo from '../components/BlogDetailsInfo/BlogDetailsInfo';
 import SupportingLifeComponent from '../components/reusable/SupportingLifeComponent';
 import RelatedBlogComponent from '../components/reusable/RelatedBlogComponent';
-import { fetchBlogBySlug, fetchBlogs } from '../store/slices/resourcesSlice';
+import {
+  fetchBlogById,
+  fetchBlogBySlug,
+  fetchBlogs,
+} from '../store/slices/resourcesSlice';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import { formatRichText, formatMedia } from '../utils/strapiHelpers';
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
 import DynamicComponents from './DynamicComponents';
 import NotFound from './NotFound';
 
-// Helper function to generate resource URL
-// Pattern: /resource/:category/:subcategory?/:slug
-function getResourceUrl(resource) {
-  if (!resource || !resource.attributes) return null;
-  
-  const slug = resource.attributes.slug;
-  const category = resource.attributes.resource_category?.data;
-  const subcategory = resource.attributes.resource_subcategory?.data;
-
-  // Has both category and subcategory
-  // Pattern: /resource/:category/:subcategory/:slug
-  if (category && subcategory) {
-    const categorySlug = category.attributes?.slug || category.slug;
-    const subcategorySlug = subcategory.attributes?.slug || subcategory.slug;
-    if (categorySlug && subcategorySlug) {
-      return `/resource/${categorySlug}/${subcategorySlug}/${slug}`;
-    }
-  }
-
-  // Only category (no subcategory)
-  // Pattern: /resource/:category/:slug
-  if (category) {
-    const categorySlug = category.attributes?.slug || category.slug;
-    if (categorySlug) {
-      return `/resource/${categorySlug}/${slug}`;
-    }
-  }
-
-  // No category (uncategorized)
-  // Pattern: /resource/:slug
-  return `/resource/${slug}`;
-}
-
 const BlogDetails = () => {
+  // category and subcategory are URL params for routing structure, but slug is the permanent identifier
+  // eslint-disable-next-line no-unused-vars
   const { category, subcategory, slug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const { data: globalData, loading: globalLoading } = useSelector(
     (state) => state.global
   );
-  const { singleBlog, loading } = useSelector((state) => state.resources);
+  const { singleBlog, loading, blogs, error } = useSelector(
+    (state) => state.resources
+  );
+  const hasFetchedRef = useRef(false);
+  const currentDocumentIdRef = useRef(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -68,64 +46,149 @@ const BlogDetails = () => {
   }, [globalData, globalLoading, dispatch]);
 
   useEffect(() => {
-    // Always fetch resource when BlogDetails component mounts
+    // Always fetch resource when BlogDetails component mounts or URL params change
     // Routes are now separated: /resource/* for details, /resources/* for listings
+    // slug is always the last parameter and is the permanent identifier for the resource
+    // category and subcategory are just for URL structure
+    const fetchResource = async () => {
+      try {
+        // slug is always the last parameter in the URL and is the permanent identifier
+        if (!slug) {
+          console.error('No slug found in URL params');
+          navigate('/404');
+          return;
+        }
+
+        // Get documentId from location state (passed when navigating from grid)
+        let documentId = location.state?.documentId;
+
+        // If documentId not in state, try to find it from blogs list using slug
+        if (!documentId && blogs && blogs.length > 0) {
+          const foundBlog = blogs.find((blog) => {
+            const blogSlug = blog?.attributes?.slug || blog?.slug;
+            return blogSlug === slug;
+          });
+          documentId = foundBlog?.documentId || foundBlog?.id;
+        }
+
+        // Check if we already have the correct blog loaded for this slug
+        if (singleBlog) {
+          const blog = Array.isArray(singleBlog) ? singleBlog[0] : singleBlog;
+          const blogData = blog?.attributes || blog;
+          const blogSlug = blogData?.slug;
+          const blogDocumentId = blog?.documentId || blog?.id;
+
+          if (blogSlug === slug) {
+            // We already have the correct blog loaded
+            // Update the ref to prevent re-fetching
+            const currentKey = `${slug}-${blogDocumentId || 'loaded'}`;
+            currentDocumentIdRef.current = currentKey;
+            hasFetchedRef.current = true;
+            return;
+          }
+        }
+
+        // If still no documentId, fetch by slug first to get documentId
+        // This happens when user directly accesses the URL or refreshes the page
+        if (!documentId) {
+          try {
+            // Fetch by slug - this already returns the full blog data
+            const slugResponse = await dispatch(fetchBlogBySlug(slug)).unwrap();
+
+            // Check if response is empty or not found
+            if (
+              !slugResponse ||
+              (Array.isArray(slugResponse) && slugResponse.length === 0)
+            ) {
+              console.error('Resource not found for slug:', slug);
+              navigate('/404');
+              return;
+            }
+
+            const blogFromSlug = Array.isArray(slugResponse)
+              ? slugResponse[0]
+              : slugResponse;
+            documentId = blogFromSlug?.documentId || blogFromSlug?.id;
+
+            if (!documentId) {
+              console.error('Could not find documentId after fetching by slug');
+              navigate('/404');
+              return;
+            }
+
+            // We already have the blog data from fetchBlogBySlug, so we don't need to fetch again
+            // Just mark as fetched and return
+            const currentKey = `${slug}-${documentId}`;
+            currentDocumentIdRef.current = currentKey;
+            hasFetchedRef.current = true;
+
+            // Only fetch related blogs if not already loaded
+            if (blogs.length === 0) {
+              dispatch(fetchBlogs({ limit: 3, start: 0 }));
+            }
+            return;
+          } catch (error) {
+            console.error('Error fetching by slug:', error);
+            navigate('/404');
+            return;
+          }
+        }
+
+        // Only fetch if documentId has changed or hasn't been fetched yet
+        const currentKey = `${slug}-${documentId}`;
+        if (
+          currentDocumentIdRef.current === currentKey &&
+          hasFetchedRef.current
+        ) {
+          return;
+        }
+
+        currentDocumentIdRef.current = currentKey;
+        hasFetchedRef.current = true;
+
+        // Fetch resource by documentId using the API: /api/resources/{documentId}?populate=*
+        dispatch(fetchBlogById(documentId));
+        // Only fetch related blogs if not already loaded (to avoid infinite loop)
+        if (blogs.length === 0) {
+          dispatch(fetchBlogs({ limit: 3, start: 0 }));
+        }
+      } catch (error) {
+        console.error('Error fetching resource:', error);
+        navigate('/404');
+      }
+    };
+
+    // Reset fetch flag only when slug actually changes (new resource)
+    const currentSlug = slug;
+    const previousKey = currentDocumentIdRef.current;
+    if (previousKey && !previousKey.startsWith(`${currentSlug}-`)) {
+      // Slug has changed, reset flags
+      hasFetchedRef.current = false;
+      currentDocumentIdRef.current = null;
+    }
+
     fetchResource();
-  }, [category, subcategory, slug, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, dispatch, location.state, navigate]);
 
-  const fetchResource = async () => {
-    try {
-      // Determine actual resource slug from URL params
-      // URL patterns:
-      // /resource/:slug (uncategorized)
-      // /resource/:category/:slug (category only)
-      // /resource/:category/:subcategory/:slug (category + subcategory)
-      const resourceSlug = slug || subcategory || category;
-
-      if (!resourceSlug) {
-        navigate('/404');
-        return;
-      }
-      
-      // Fetch resource by slug
-      dispatch(fetchBlogBySlug(resourceSlug));
-      dispatch(fetchBlogs({ limit: 3, start: 0 }));
-    } catch (error) {
-      console.error('Error fetching resource:', error);
-      navigate('/404');
-    }
-  };
-
-  // Check if URL needs to be corrected after resource is loaded
-  useEffect(() => {
-    if (singleBlog) {
-      // Handle both array and object responses
-      const blog = Array.isArray(singleBlog) ? singleBlog[0] : singleBlog;
-      
-      if (!blog) {
-        navigate('/404');
-        return;
-      }
-
-      // Check if blog has attributes (Strapi structure)
-      const blogData = blog.attributes || blog;
-      const correctUrl = getResourceUrl({ attributes: blogData });
-      const currentUrl = window.location.pathname;
-
-      if (correctUrl && correctUrl !== currentUrl) {
-        navigate(correctUrl, { replace: true });
-        return;
-      }
-    }
-  }, [singleBlog, navigate]);
+  // Show 404 if there's an error or if loading is complete but no blog found
+  if (error || (!loading && !singleBlog)) {
+    return (
+      <PageContainer>
+        <Header darkText={true} />
+        <NotFound />
+        <Footer />
+      </PageContainer>
+    );
+  }
 
   if (globalLoading || loading || !singleBlog) {
-    return <LoadingSpinner />
+    return <LoadingSpinner />;
   }
 
   // Handle both array and object responses
   const blog = Array.isArray(singleBlog) ? singleBlog[0] : singleBlog;
-  
+
   if (!blog) {
     return (
       <PageContainer>
@@ -148,21 +211,22 @@ const BlogDetails = () => {
         buttonLink: blogData?.expert?.cta?.URL,
         buttonTarget: blogData?.expert?.cta?.target,
         image: formatMedia(blogData?.expert?.media),
+        darkText: blogData?.gradient_shadow ? true : false,
       }
     : null;
 
   return (
     <PageContainer>
-      <Header darkText={true}/>
+      <Header darkText={blogData?.gradient_shadow} />
       <BlogDetailsHero data={blogData} loading={loading} />
       <BlogDetailsInfo data={blogData} loading={loading} />
-      { blogData?.related_posts?.length > 0 &&
+      {blogData?.related_posts?.length > 0 && (
         <section className='relatedBlog_sec bg_light_blue py-120'>
-        <div className='containerWrapper' style={{overflow: 'hidden'}}>
+          <div className='containerWrapper' style={{ overflow: 'hidden' }}>
             <RelatedBlogComponent data={blogData?.related_posts} />
-        </div>
-      </section>
-      }
+          </div>
+        </section>
+      )}
       <section className='supporting_life_sec py-120'>
         <div className='containerWrapper'>
           <SupportingLifeComponent
@@ -171,7 +235,12 @@ const BlogDetails = () => {
           />
         </div>
       </section>
-      <DynamicComponents pageData={blogData} pageLoading={loading} showFooter={false} showHeader={false} />
+      <DynamicComponents
+        pageData={blogData}
+        pageLoading={loading}
+        showFooter={false}
+        showHeader={false}
+      />
       <Footer />
     </PageContainer>
   );

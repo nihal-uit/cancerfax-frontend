@@ -1,62 +1,81 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useSearchParams, useLocation } from 'react-router-dom';
+import {
+  useParams,
+  useSearchParams,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import styled from 'styled-components';
 import BlogGrid from './BlogGrid';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
 import { fetchBlogs } from '../../store/slices/resourcesSlice';
-import { fetchResourceCategories, fetchResourceSubCategories } from '../../store/slices/resourcesCategorySlice';
+import {
+  fetchResourceCategories,
+  fetchResourceSubCategories,
+} from '../../store/slices/resourcesCategorySlice';
 
 const BLOGS_PAGE_SIZE = 6;
 
 const BlogKnowledgeChest = ({ data, loading }) => {
   const dispatch = useDispatch();
-  const { blogs, blogsLoading, blogsHasMore } = useSelector((state) => state.resources);
-  const { categories, subcategories: allSubcategories, loading: categoriesLoading } = useSelector((state) => state.resourceCategory);
+  const navigate = useNavigate();
+  const { blogs, blogsLoading, blogsHasMore } = useSelector(
+    (state) => state.resources
+  );
+  const { categories, subcategories: allSubcategories } = useSelector(
+    (state) => state.resourceCategory
+  );
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilterCategory, setSelectedFilterCategory] = useState('');
-  const [selectedFilterSubcategory, setSelectedFilterSubcategory] = useState('');
+  const [selectedFilterSubcategory, setSelectedFilterSubcategory] =
+    useState('');
   const [selectedSorting, setSelectedSorting] = useState('');
-  
+
   // Get category and subcategory from URL params (from DynamicPage route: /:slug/:category?/:subcategory?)
   // Also check query params for subcategory (backward compatibility)
-  const { category: categoryParam, subcategory: subcategoryParam } = useParams();
+  const { category: categoryParam, subcategory: subcategoryParam } =
+    useParams();
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const selectedSubcategory = subcategoryParam || searchParams.get('subcategory');
-  
+  const selectedSubcategory =
+    subcategoryParam || searchParams.get('subcategory');
+
   // Extract category slug from URL pathname (for legacy routes or when not using DynamicPage params)
   // Pattern: /resources/:category
   const extractCategoryFromPath = (pathname) => {
     if (!pathname.startsWith('/resources/')) return '';
     if (pathname === '/resources') return '';
-    
+
     // Check if it's a detail page (has 2+ segments after /resources/)
     const segments = pathname.split('/').filter(Boolean);
     if (segments.length >= 3 && segments[0] === 'resources') {
       return ''; // Detail page, not category page
     }
-    
+
     // Extract category from /resources/:category
     if (segments.length === 2 && segments[0] === 'resources') {
       return segments[1];
     }
-    
+
     return '';
   };
-  
+
   // Get category slug with priority:
   // 1. URL params from DynamicPage (/:slug/:category)
   // 2. Pathname extraction (legacy /resources/:category)
   // 3. Component data filter_category
   const categoryFromUrlParams = categoryParam || '';
   const categoryFromPathname = extractCategoryFromPath(location.pathname);
-  const categoryFromData = data?.filter_category?.data?.attributes?.slug || 
-                          data?.filter_category?.attributes?.slug || 
-                          data?.filter_category?.slug || '';
-  
+  const categoryFromData =
+    data?.filter_category?.data?.attributes?.slug ||
+    data?.filter_category?.attributes?.slug ||
+    data?.filter_category?.slug ||
+    '';
+
   // Use URL params first, then pathname, then component data
-  const categorySlug = categoryFromUrlParams || categoryFromPathname || categoryFromData;
+  const categorySlug =
+    categoryFromUrlParams || categoryFromPathname || categoryFromData;
 
   // Fetch categories and subcategories from Redux on component mount
   useEffect(() => {
@@ -64,20 +83,42 @@ const BlogKnowledgeChest = ({ data, loading }) => {
     dispatch(fetchResourceSubCategories());
   }, [dispatch]);
 
-  // Determine which category/subcategory to use (filter dropdown takes priority over URL params)
-  const activeCategorySlug = selectedFilterCategory || categorySlug || '';
-  const activeSubcategorySlug = selectedFilterSubcategory || selectedSubcategory || '';
+  // Sync filter state with URL params when URL changes (vice versa)
+  useEffect(() => {
+    // Update filter state from URL params
+    if (categorySlug && categorySlug !== selectedFilterCategory) {
+      setSelectedFilterCategory(categorySlug);
+    } else if (!categorySlug && selectedFilterCategory) {
+      setSelectedFilterCategory('');
+    }
+
+    if (
+      selectedSubcategory &&
+      selectedSubcategory !== selectedFilterSubcategory
+    ) {
+      setSelectedFilterSubcategory(selectedSubcategory);
+    } else if (!selectedSubcategory && selectedFilterSubcategory) {
+      setSelectedFilterSubcategory('');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categorySlug, selectedSubcategory]);
+
+  // Determine which category/subcategory to use (URL params take priority, then filter state)
+  const activeCategorySlug = categorySlug || selectedFilterCategory || '';
+  const activeSubcategorySlug =
+    selectedSubcategory || selectedFilterSubcategory || '';
 
   // Fetch blogs with category and subcategory filters
   useEffect(() => {
-    setSelectedFilterCategory(activeCategorySlug)
-    dispatch(fetchBlogs({ 
-      limit: BLOGS_PAGE_SIZE, 
-      start: 0,
-      categorySlug: activeCategorySlug,
-      subcategorySlug: activeSubcategorySlug,
-      sorting: selectedSorting || ''
-    }));
+    dispatch(
+      fetchBlogs({
+        limit: BLOGS_PAGE_SIZE,
+        start: 0,
+        categorySlug: activeCategorySlug,
+        subcategorySlug: activeSubcategorySlug,
+        sorting: selectedSorting || '',
+      })
+    );
   }, [dispatch, activeCategorySlug, activeSubcategorySlug, selectedSorting]);
 
   const sortingOptions = [
@@ -88,14 +129,16 @@ const BlogKnowledgeChest = ({ data, loading }) => {
   ];
 
   const handleSearch = () => {
-    dispatch(fetchBlogs({ 
-      limit: BLOGS_PAGE_SIZE, 
-      start: 0, 
-      query: searchTerm,
-      categorySlug: activeCategorySlug,
-      subcategorySlug: activeSubcategorySlug,
-      sorting: selectedSorting || ''
-    }));
+    dispatch(
+      fetchBlogs({
+        limit: BLOGS_PAGE_SIZE,
+        start: 0,
+        query: searchTerm,
+        categorySlug: activeCategorySlug,
+        subcategorySlug: activeSubcategorySlug,
+        sorting: selectedSorting || '',
+      })
+    );
   };
 
   const handleKeyPress = (e) => {
@@ -107,75 +150,106 @@ const BlogKnowledgeChest = ({ data, loading }) => {
   const handleSortingChange = (e) => {
     const newSorting = e.target.value;
     setSelectedSorting(newSorting);
-    dispatch(fetchBlogs({ 
-      limit: BLOGS_PAGE_SIZE, 
-      start: 0, 
-      query: searchTerm,
-      categorySlug: activeCategorySlug,
-      subcategorySlug: activeSubcategorySlug,
-      sorting: newSorting || ''
-    }));
+    dispatch(
+      fetchBlogs({
+        limit: BLOGS_PAGE_SIZE,
+        start: 0,
+        query: searchTerm,
+        categorySlug: activeCategorySlug,
+        subcategorySlug: activeSubcategorySlug,
+        sorting: newSorting || '',
+      })
+    );
   };
 
   const handleFilterChange = (e) => {
     const value = e.target.value;
-    
-    if (!value) {
-      // Cleared selection - clear both filters
-      setSelectedFilterCategory('');
-      setSelectedFilterSubcategory('');
-      dispatch(fetchBlogs({ 
-        limit: BLOGS_PAGE_SIZE, 
-        start: 0, 
-        query: searchTerm,
-        categorySlug: '',
-        subcategorySlug: '',
-        sorting: selectedSorting || ''
-      }));
-      return;
-    }
 
     // Check if it's a category or subcategory
-    const category = categories.find(c => c.slug === value);
-    const subcategory = allSubcategories.find(s => s.slug === value);
+    const category = categories.find((c) => c.slug === value);
+    const subcategory = allSubcategories.find((s) => s.slug === value);
 
-    if (category) {
-      // Selected a category - set category filter, keep subcategory if already selected
+    let newCategory = '';
+    let newSubcategory = '';
+
+    if (!value) {
+      // Cleared selection - navigate to base resources page
+      newCategory = '';
+      newSubcategory = '';
+      setSelectedFilterCategory('');
+      setSelectedFilterSubcategory('');
+    } else if (category) {
+      // Selected a category - set category, clear subcategory
+      newCategory = value;
+      newSubcategory = '';
       setSelectedFilterCategory(value);
-      dispatch(fetchBlogs({ 
-        limit: BLOGS_PAGE_SIZE, 
-        start: 0, 
-        query: searchTerm,
-        categorySlug: value,
-        subcategorySlug: selectedFilterSubcategory || '',
-        sorting: selectedSorting || ''
-      }));
+      setSelectedFilterSubcategory('');
     } else if (subcategory) {
-      // Selected a subcategory - set subcategory filter, keep category if already selected
+      // Selected a subcategory - keep current category or use the one from URL
+      newCategory = selectedFilterCategory || categorySlug || '';
+      newSubcategory = value;
+      if (!selectedFilterCategory && !categorySlug) {
+        // If no category selected, we need to find which category this subcategory belongs to
+        // For now, just set subcategory and let the user select category
+        setSelectedFilterSubcategory(value);
+        // Navigate with query param for subcategory if no category
+        navigate('/resources', { replace: true });
+        return;
+      }
+      setSelectedFilterCategory(newCategory);
       setSelectedFilterSubcategory(value);
-      dispatch(fetchBlogs({ 
-        limit: BLOGS_PAGE_SIZE, 
-        start: 0, 
-        query: searchTerm,
-        categorySlug: selectedFilterCategory || '',
-        subcategorySlug: value,
-        sorting: selectedSorting || ''
-      }));
+    }
+
+    // Update URL based on new filter values
+    // Check if we're on a resources page (slug === 'resources')
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const isResourcesPage = pathSegments[0] === 'resources';
+
+    if (isResourcesPage) {
+      // Build new URL path
+      let newPath = '/resources';
+      if (newCategory) {
+        newPath += `/${newCategory}`;
+        if (newSubcategory) {
+          newPath += `/${newSubcategory}`;
+        }
+      }
+      navigate(newPath, { replace: true });
+    } else {
+      // We're on a dynamic page, need to check the slug
+      const currentSlug = pathSegments[0] || 'resources';
+      let newPath = `/${currentSlug}`;
+      if (newCategory) {
+        newPath += `/${newCategory}`;
+        if (newSubcategory) {
+          newPath += `/${newSubcategory}`;
+        }
+      }
+      navigate(newPath, { replace: true });
     }
   };
 
   // Get display text for filter dropdown
   const getFilterDisplayText = () => {
     if (selectedFilterCategory && selectedFilterSubcategory) {
-      const categoryName = categories.find(c => c.slug === selectedFilterCategory)?.name || '';
-      const subcategoryName = allSubcategories.find(s => s.slug === selectedFilterSubcategory)?.name || '';
+      const categoryName =
+        categories.find((c) => c.slug === selectedFilterCategory)?.name || '';
+      const subcategoryName =
+        allSubcategories.find((s) => s.slug === selectedFilterSubcategory)
+          ?.name || '';
       return `${categoryName} + ${subcategoryName}`;
     }
     if (selectedFilterCategory) {
-      return categories.find(c => c.slug === selectedFilterCategory)?.name || 'FilterBy';
+      return (
+        categories.find((c) => c.slug === selectedFilterCategory)?.name ||
+        'FilterBy'
+      );
     }
     if (selectedFilterSubcategory) {
-      return allSubcategories.find(s => s.slug === selectedFilterSubcategory)?.name || 'FilterBy';
+      return (
+        allSubcategories.find((s) => s.slug === selectedFilterSubcategory)
+          ?.name || 'FilterBy'
+      );
     }
     return 'FilterBy';
   };
@@ -192,7 +266,6 @@ const BlogKnowledgeChest = ({ data, loading }) => {
     visible: { opacity: 1, y: 0 },
   };
 
-  
   const content = data
     ? {
         label: data?.heading || '',
@@ -248,15 +321,15 @@ const BlogKnowledgeChest = ({ data, loading }) => {
             </SearchInput>
 
             <SelectWrapper>
-              <Select
-                value={getFilterValue()}
-                onChange={handleFilterChange}
-              >
+              <Select value={getFilterValue()} onChange={handleFilterChange}>
                 <option value=''>FilterBy</option>
                 {categories.length > 0 && (
                   <optgroup label='Categories'>
                     {categories.map((category) => (
-                      <option key={`category-${category.id || category.documentId}`} value={category.slug}>
+                      <option
+                        key={`category-${category.id || category.documentId}`}
+                        value={category.slug}
+                      >
                         {category.name}
                       </option>
                     ))}
@@ -265,14 +338,25 @@ const BlogKnowledgeChest = ({ data, loading }) => {
                 {allSubcategories.length > 0 && (
                   <optgroup label='Subcategories'>
                     {allSubcategories.map((subcategory) => (
-                      <option key={`subcategory-${subcategory.id || subcategory.documentId}`} value={subcategory.slug}>
+                      <option
+                        key={`subcategory-${
+                          subcategory.id || subcategory.documentId
+                        }`}
+                        value={subcategory.slug}
+                      >
                         {subcategory.name}
                       </option>
                     ))}
                   </optgroup>
                 )}
               </Select>
-              <SelectDisplay className={!selectedFilterCategory && !selectedFilterSubcategory ? 'placeholder' : ''}>
+              <SelectDisplay
+                className={
+                  !selectedFilterCategory && !selectedFilterSubcategory
+                    ? 'placeholder'
+                    : ''
+                }
+              >
                 {getFilterDisplayText()}
               </SelectDisplay>
               <DropdownIcon>
@@ -292,10 +376,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
             </SelectWrapper>
 
             <SelectWrapper>
-              <Select
-                value={selectedSorting}
-                onChange={handleSortingChange}
-              >
+              <Select value={selectedSorting} onChange={handleSortingChange}>
                 <option value=''>Sort by</option>
                 {sortingOptions.map((sorting) => (
                   <option key={sorting.id} value={sorting.value}>
@@ -303,9 +384,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
                   </option>
                 ))}
               </Select>
-              <SelectDisplay
-                className={!selectedSorting ? 'placeholder' : ''}
-              >
+              <SelectDisplay className={!selectedSorting ? 'placeholder' : ''}>
                 {selectedSorting
                   ? sortingOptions.find((s) => s.value === selectedSorting)
                       ?.name || 'Sort by'
@@ -342,13 +421,13 @@ const BlogKnowledgeChest = ({ data, loading }) => {
               type='button'
               onClick={() =>
                 dispatch(
-                  fetchBlogs({ 
-                    limit: BLOGS_PAGE_SIZE, 
+                  fetchBlogs({
+                    limit: BLOGS_PAGE_SIZE,
                     start: blogs.length,
                     query: searchTerm,
                     categorySlug: activeCategorySlug,
                     subcategorySlug: activeSubcategorySlug,
-                    sorting: selectedSorting || ''
+                    sorting: selectedSorting || '',
                   })
                 )
               }
@@ -616,7 +695,7 @@ const NoResultsMessage = styled.div`
   font-size: 18px;
   font-weight: 500;
   color: #36454f;
-  
+
   @media (max-width: 768px) {
     padding: 40px 20px;
     font-size: 16px;

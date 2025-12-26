@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAnimationComponent";
-import { formatRichText, formatMedia } from "../../utils/strapiHelpers";
+import { formatMedia } from "../../utils/strapiHelpers";
+import api from "../../services/api";
 
 const BlogSupport = ({ data, loading }) => {
   const slideLeft = {
@@ -17,30 +18,15 @@ const BlogSupport = ({ data, loading }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (loading) {
     return null;
   }
 
-  const defaultContent = {
-    label: "Supporting life, syncing happiness",
-    title: "When Every Decision Matters, Start with the Right Guidance",
-    description:
-      "Our experts review your case, connect you to breakthrough therapies, and support you at every stage of your treatment journey.",
-    buttonText: "Connect with our experts",
-    image: "../images/supporting_life_img.png",
-  };
-
-  const content = data ? {
-    label: data?.heading || defaultContent.label,
-    title: data?.subHeading || defaultContent.title,
-    description: formatRichText(data?.description_block) || defaultContent.description,
-    image: formatMedia(data?.media) || defaultContent.image,
-  } : defaultContent;
-
   const validateEmail = (value) => /^\S+@\S+\.\S+$/.test(value);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -55,9 +41,29 @@ const BlogSupport = ({ data, loading }) => {
       return;
     }
 
-    setSuccess("Successfully subscribed!");
+    setIsSubmitting(true);
 
-    setEmail("");
+    try {
+      await api.post("/subscribers", {
+        data:{
+          email: email.trim(),
+          isActive: true,
+          subscribedAt: new Date(),
+          status: "active",
+        }
+      });
+
+      setSuccess("Successfully subscribed!");
+      setEmail("");
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.error?.message ||
+        err.response?.data?.message ||
+        "Failed to subscribe. Please try again later.";
+      setError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -68,12 +74,12 @@ const BlogSupport = ({ data, loading }) => {
             <ScrollAnimationComponent animationVariants={slideLeft}>
               <div className="content-gap-20">
                 <div className="contentLabel text_theme_dark">
-                  {content.label}
+                  {data?.heading}
                 </div>
                 <Title className="title-3 text_theme_dark">
-                  {content.title}
+                  {data?.subHeading}
                 </Title>
-                <div className="text-16">{content.description}</div>
+                <div className="text-16">{data?.description_text}</div>
                 <form className="w-100" onSubmit={handleSubmit}>
                   <div className="subscribe_wrap">
                     <input
@@ -82,10 +88,15 @@ const BlogSupport = ({ data, loading }) => {
                       placeholder="Subscribe"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      disabled={isSubmitting}
                     />
 
-                    <button className="btn-subscribe" type="submit">
-                      Subscribe
+                    <button
+                      className="btn-subscribe"
+                      type="submit"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Subscribing..." : "Subscribe"}
                     </button>
                   </div>
 
@@ -99,7 +110,7 @@ const BlogSupport = ({ data, loading }) => {
           <RightContent className="commContent_wrap">
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className="img-wrapper">
-                <img src={content.image} alt="" className="img-clip" />
+                <img src={formatMedia(data?.media)} alt="" className="img-clip" />
               </div>
             </ScrollAnimationComponent>
           </RightContent>

@@ -61,13 +61,28 @@ const RelatedBlogComponent = ({ data }) => {
           <SwiperSlide key={blog.id}>
               <BlogCard as="div" key={blog.id} onClick={() => {
                 // Generate proper URL with category/subcategory if available
-                const categorySlug = blog?.resource_category?.slug || '';
+                const category = blog?.resource_category?.data?.attributes || 
+                                 blog?.resource_category?.data ||
+                                 blog?.resource_category?.attributes || 
+                                 blog?.resource_category;
+                const subcategory = blog?.resource_subcategory?.data?.attributes || 
+                                    blog?.resource_subcategory?.data ||
+                                    blog?.resource_subcategory?.attributes || 
+                                    blog?.resource_subcategory;
+                const categorySlug = category?.slug || category?.attributes?.slug || '';
+                const subcategorySlug = subcategory?.slug || subcategory?.attributes?.slug || '';
                 const slug = blog?.slug || blog?.documentId || '';
-                if (categorySlug) {
-                  navigate(`/resource/${categorySlug}/${slug}`);
+                const documentId = blog?.documentId || blog?.id;
+                
+                let url;
+                if (categorySlug && subcategorySlug) {
+                  url = `/resource/${categorySlug}/${subcategorySlug}/${slug}`;
+                } else if (categorySlug) {
+                  url = `/resource/${categorySlug}/${slug}`;
                 } else {
-                  navigate(`/resource/${slug}`);
+                  url = `/resource/${slug}`;
                 }
+                navigate(url, { state: { documentId } });
               }}>
                 <BlogImage>
                   <img 
