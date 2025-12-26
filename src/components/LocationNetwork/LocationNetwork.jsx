@@ -1,0 +1,491 @@
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import { setSelectedHospital } from '../../store/slices/locationNetworkSlice';
+import { Link } from 'react-router-dom';
+
+// Import marker images
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// Fix for default marker icon
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
+// Custom pink marker icon with pulsing animation
+const pinkIcon = new L.Icon({
+  iconUrl:
+    'data:image/svg+xml;base64,' +
+    btoa(`
+    <svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <circle cx="25" cy="25" r="22" fill="rgba(255, 105, 180, 0.15)" stroke="white" stroke-width="2">
+        <animate attributeName="r" values="22;26;22" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="25" cy="25" r="10" fill="#FF69B4" filter="url(#glow)">
+        <animate attributeName="r" values="10;12;10" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+  `),
+  iconSize: [50, 50],
+  iconAnchor: [25, 25],
+  popupAnchor: [0, -25],
+});
+
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 70px;
+  text-align: center;
+  width: 100%;
+  max-width: 889px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    margin-bottom: 40px;
+    gap: 24px;
+    max-width: 100%;
+  }
+`;
+
+const Label = styled.p`
+  color: #36454f;
+`;
+
+const Title = styled.h3`
+  color: #36454f;
+`;
+
+const Description = styled.p`
+  color: #36454f;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    gap: 30px;
+  }
+`;
+
+const MapWrapper = styled.div`
+  position: sticky;
+  position: -webkit-sticky;
+  top: 150px;
+  flex: 0 0 713px;
+  height: 511px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  @media (max-width: 1024px) {
+    position: relative;
+    top: 0;
+    flex: 0 0 auto;
+  }
+  .leaflet-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 19px;
+    z-index: 1;
+    font-family: 'Be Vietnam Pro', sans-serif;
+  }
+
+  .leaflet-tile-container {
+    transition: opacity 0.3s ease;
+  }
+
+  .leaflet-control-zoom a {
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #ff69b4 !important;
+      color: white !important;
+    }
+  }
+
+  @media (max-width: 1200px) {
+    width: 100%;
+    flex: 0 0 600px;
+  }
+  
+  @media (max-width: 1024px) {
+    width: 100%;
+    height: 480px;
+    flex: 1 1 auto;
+    pointer-events: none;
+  }
+`;
+
+const HospitalsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  
+  @media (max-width: 1024px) {
+    width: 100%;
+    max-width: 100%;
+  }
+`;
+
+const HospitalCard = styled.button`
+  font-family: 'Montserrat', sans-serif;
+  padding: 38px;
+  height: 128px;
+  border-radius: 24px 24px 0 0;
+  text-align: left;
+  font-size: 20px;
+  font-weight: 500;
+  color: #36454f;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  border: 2px solid transparent;
+  border-bottom: 1px solid #c2cbd1;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: transparent;
+
+  &.active {
+    border-radius: 24px;
+    border: 2px solid #ff69b4;
+    background: #ffffff;
+    font-weight: 600;
+    margin-top: -1px;
+  }
+  @media (max-width: 1200px) {
+    height: 116px;
+    padding: 20px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 24px 20px;
+  }
+`;
+
+const ButtonsWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 60px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 40px;
+  }
+`;
+
+// Component to handle map animations with smooth transitions
+function MapController({ center, zoom }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (center) {
+      // Smooth animated flyTo with easing
+      map.flyTo(center, zoom, {
+        duration: 2, // 2 seconds for smooth animation
+        easeLinearity: 0.1, // More curved easing for natural feel
+        animate: true,
+      });
+    }
+  }, [center, zoom, map]);
+
+  return null;
+}
+
+const LocationNetwork = ({ showButtons = true, componentData, data }) => {
+  const dispatch = useDispatch();
+  const { selectedHospitalId } = useSelector((state) => state.locationNetwork);
+  const locationData = componentData || data;
+
+  const strapiHospitals = locationData?.hospitals || [];
+
+  const parseCoordinate = (value) => {
+    if (value === null || value === undefined || value === '') return null;
+    const numeric = typeof value === 'string' ? parseFloat(value) : value;
+    return Number.isFinite(numeric) ? numeric : null;
+  };
+
+  const formattedStrapiHospitals =
+    strapiHospitals.length > 0
+      ? strapiHospitals
+          .map((hospital, index) => {
+            const hospitalData = hospital?.address?.address;
+            const latitude = parseCoordinate(hospitalData?.latitude);
+            const longitude = parseCoordinate(hospitalData?.longitude);
+
+            return {
+              id: hospital?.id || hospitalData?.id || index + 1,
+              name: hospitalData?.name || '',
+              latitude,
+              longitude,
+              order: hospitalData?.order || index + 1,
+              address: hospitalData?.address?.address || '',
+              phone: hospitalData?.contact_details || '',
+            };
+          })
+          .filter((hospital) => hospital.name)
+      : [];
+
+  const hospitalsList = formattedStrapiHospitals.length > 0 ? formattedStrapiHospitals : [];
+
+  // useEffect to handle hospital selection when clicked
+  useEffect(() => {
+    if (selectedHospitalId && hospitalsList.length > 0) {
+      // Ensure the selected hospital ID exists in the hospitals list
+      const hospitalExists = hospitalsList.some((h) => h.id === selectedHospitalId);
+      if (!hospitalExists && hospitalsList.length > 0) {
+        // If selected hospital doesn't exist, select the first one
+        dispatch(setSelectedHospital(hospitalsList[0].id));
+      }
+    }
+  }, [selectedHospitalId, hospitalsList, dispatch]);
+
+  useEffect(() => {
+    if (hospitalsList.length > 0) {
+      const firstHospital = hospitalsList[0];
+      // Check if selectedHospitalId is invalid (null, undefined, 0) or if the selected hospital doesn't exist in the list
+      const selectedHospitalExists =
+        selectedHospitalId &&
+        hospitalsList.some((h) => h.id === selectedHospitalId);
+
+      if (firstHospital && firstHospital.id && !selectedHospitalExists) {
+        // Only dispatch if the current selectedHospitalId is different from the first hospital's ID
+        if (selectedHospitalId !== firstHospital.id) {
+          dispatch(setSelectedHospital(firstHospital.id));
+        }
+      }
+    }
+  }, [hospitalsList, selectedHospitalId, dispatch]);
+
+  if (!locationData) {
+    return null;
+  }
+
+
+  const currentSelectedId =
+    selectedHospitalId && hospitalsList.some((h) => h.id === selectedHospitalId)
+      ? selectedHospitalId
+      : hospitalsList[0]?.id || null;
+
+  const selectedHospital = hospitalsList.find((h) => h.id === currentSelectedId) || hospitalsList[0];
+
+  // Get map center and zoom
+  const mapCenter = [
+    selectedHospital?.latitude || 35.0,
+    selectedHospital?.longitude || 115.0,
+  ];
+  const mapZoom = 10;
+
+  const handleHospitalClick = (hospitalId) => {
+    dispatch(setSelectedHospital(hospitalId));
+  };
+
+  return (
+    <section className='location_sec py-120' id='location-network'>
+      <div className='containerWrapper'>
+        <Header className='commContent_wrap'>
+          <Label className='contentLabel'>{locationData?.heading || ''}</Label>
+          <Title className='title-3'>
+            {locationData?.subHeading || ''}
+          </Title>
+          <Description className='text-16'>
+            {locationData?.description_text || ''}
+          </Description>
+        </Header>
+
+        <ContentWrapper>
+          <MapWrapper>
+            <MapContainer
+              center={[35.0, 110.0]}
+              zoom={5}
+              scrollWheelZoom={true}
+              zoomControl={true}
+              attributionControl={false}
+              style={{ height: '100%', width: '100%' }}
+              zoomAnimation={true}
+              fadeAnimation={true}
+              markerZoomAnimation={true}
+            >
+              {/* 
+                TILE LAYER OPTIONS (Uncomment preferred option):
+                
+                Option 1: Esri WorldStreetMap (Current - Best for English labels)
+              */}
+              <TileLayer
+                attribution=''
+                url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'
+                maxZoom={19}
+              />
+
+              {/* Option 2: CartoDB Positron Light (Clean, minimal design)
+              <TileLayer
+                attribution='&copy; OpenStreetMap contributors &copy; CARTO'
+                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                subdomains="abcd"
+                maxZoom={19}
+              />
+              */}
+
+              {/* Option 3: Stamen Terrain (Terrain with English labels)
+              <TileLayer
+                attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+                url="https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg"
+                subdomains={['a', 'b', 'c', 'd']}
+                maxZoom={18}
+              />
+              */}
+
+              {/* Option 4: OpenStreetMap Standard
+              <TileLayer
+                attribution='&copy; OpenStreetMap contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                subdomains={['a', 'b', 'c']}
+                maxZoom={19}
+              />
+              */}
+
+              {/* Map controller for smooth animations */}
+              <MapController center={mapCenter} zoom={mapZoom} />
+
+              {/* Markers for all hospitals with animations */}
+              {strapiHospitals?.map((hospital) => (
+                <Marker
+                  key={hospital?.id || hospital?.documentId}
+                  position={[
+                    hospital?.address?.address?.latitude || 0,
+                    hospital?.address?.address?.longitude || 0,
+                  ]}
+                  icon={
+                    hospital?.id === selectedHospital?.id
+                      ? pinkIcon
+                      : new L.Icon.Default()
+                  }
+                  riseOnHover={true}
+                >
+                  <Popup closeButton={true} autoClose={false} autoPan={true}>
+                    <div
+                      style={{
+                        fontFamily: "'Be Vietnam Pro', sans-serif",
+                        padding: '8px',
+                        minWidth: '200px',
+                      }}
+                    >
+                      <strong
+                        style={{
+                          fontSize: '16px',
+                          color: '#36454F',
+                          display: 'block',
+                          marginBottom: '8px',
+                        }}
+                      >
+                        {hospital?.name || ''}
+                      </strong>
+                      {hospital?.address?.address?.address && (
+                        <p
+                          style={{
+                            fontSize: '14px',
+                            color: '#666',
+                            margin: '4px 0',
+                          }}
+                        >
+                          📍 {hospital?.address?.address?.address}
+                        </p>
+                      )}
+                      {hospital?.contact_details && (
+                        <p
+                          style={{
+                            fontSize: '14px',
+                            color: '#666',
+                            margin: '4px 0',
+                          }}
+                        >
+                          📞 {hospital?.contact_details}
+                        </p>
+                      )}
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
+          </MapWrapper>
+
+          <HospitalsList>
+            {strapiHospitals?.map((hospital) => (
+              <HospitalCard
+                className={hospital?.id === currentSelectedId ? 'active' : ''}
+                key={hospital?.id || hospital?.documentId}
+                $isSelected={hospital?.id === currentSelectedId}
+                onClick={() => handleHospitalClick(hospital?.id)}
+              >
+                {hospital?.name || ''}
+              </HospitalCard>
+            ))}
+          </HospitalsList>
+        </ContentWrapper>
+
+        {showButtons && (
+          <ButtonsWrapper>
+            {locationData?.cta1?.text && (
+            <Link
+              className='btn btn-pink-solid'
+                to={locationData?.cta1?.URL || '#'}
+                target={locationData?.cta1?.target || '_self'}
+            >
+                {locationData?.cta1?.text}
+            </Link>
+            )}
+            {locationData?.cta2?.text && (
+            <Link
+              className='btn btn-dark-solid'
+                to={locationData?.cta2?.URL || '#'}
+                target={locationData?.cta2?.target || '_self'}
+            >
+                {locationData?.cta2?.text}
+            </Link>
+            )}
+          </ButtonsWrapper>
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default LocationNetwork;

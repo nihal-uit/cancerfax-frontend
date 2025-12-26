@@ -1,0 +1,2046 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  max-width: 100vw;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #F8F8F8;
+  max-width: 100vw;
+  font-family: "Be Vietnam Pro", sans-serif;
+  color: #36454F;
+}
+
+#root {
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+}
+
+button,
+p,
+a,
+div {
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+.g-6, .gy-6 {
+    --bs-gutter-y: 60px;
+}
+
+.g-6, .gx-6 {
+    --bs-gutter-x: 60px;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+}
+a:focus-visible {
+    outline-offset: 0;
+}
+.f-w-600 {
+  font-weight: 600;
+}
+.flag-text {
+  font-size: 22px;
+  line-height: 16px;
+}
+.max-w-800 {
+  max-width: 800px;
+}
+.max-w-600 {
+  max-width: 600px;
+}
+.sec_bg_white {
+  background-color: #FFFFFF;
+}
+.containerWrapper {
+  width: 100%;
+  max-width: 1240px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+.one_side_full_container {
+    max-width: calc(1240px + (100vw - 1240px) / 2);
+}
+.text-pink {
+  color: #FF69B4;
+}
+.content-small {
+  flex-direction: row !important;
+  gap: 40px !important;
+}
+.content-small p {
+  max-width: 180px;
+  line-height: normal;
+}
+.content-large p {
+  margin-bottom: 40px;
+}
+
+.homeHero_sec {
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  height: 100vh;
+  min-height: 751px;
+  padding-top: 0; /* 16px (padding-top) + 48px (height) + 16px (padding-bottom) */
+  display: flex;
+  align-items: flex-start;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.blog_banner_hero.homeHero_sec{
+  height: 40vh;
+  min-height: 400px;
+}
+.home-hero-banner {
+  width: 100%;
+  position: relative;
+}
+.home-hero-banner::after {
+  content: "";
+  inset: 0;
+  position: absolute;
+  z-index: 0;
+  background: radial-gradient(49.51% 44.17% at 58.63% 39.76%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.57) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+}
+.home-hero-banner.hospital_details_hero::after {
+background: linear-gradient(180deg, rgba(0, 0, 0, 0) 41.55%, #000000 100%);
+}
+.home-hero-banner::before {
+  content: "";
+  position: absolute;
+  backdrop-filter: blur(53px);
+  -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(50%, rgba(54, 69, 79, 0.901)), to(transparent));
+  -webkit-mask-image: linear-gradient(to top, rgba(54, 69, 79, 0.901) 50%, transparent 90%);
+  mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(50%, rgba(54, 69, 79, 0.901)), to(transparent));
+  mask-image: linear-gradient(to top, rgba(54, 69, 79, 0.901) 50%, transparent 90%);
+  height: 430px;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+}
+.home-hero-banner .ratio img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.home-hero-banner .ratio::before {
+    padding-top: calc(751 / 1440 * 100%);
+    min-height: 751px;
+    height: 100vh;
+}
+.blog_banner_hero .home-hero-banner .ratio::before {
+  padding-top: calc(400 / 1440 * 100%);
+  min-height: 400px;
+  height: 40vh;
+}
+.homeHero_sec .heroContent_wrap {
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 0 60px 0;
+  position: absolute;
+  bottom: 0;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.homeHero_sec .heroContent_wrap .commContent_wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.commContent_wrap .contentLabel {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  word-wrap: break-word;
+}
+.commContent_wrap .title-1,
+.commContent_wrap .title-2,
+.commContent_wrap h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 52px;
+  font-weight: 600;
+  line-height: 58px;
+  margin: 0;
+  letter-spacing: -2.63px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.commContent_wrap .title-3,
+.commContent_wrap h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 56px;
+  letter-spacing: -1px;
+  margin: 0;
+}
+
+.commContent_wrap .title-size-36 {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 36px;
+  line-height: 48px;
+  font-weight: 600;
+}
+
+.commContent_wrap .title-4,
+.commContent_wrap h4 {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 28px;
+  line-height: 38px;
+  letter-spacing: -1px;
+  margin: 0;
+}
+
+.commContent_wrap .title-5,
+.commContent_wrap h5 {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  margin: 0;
+}
+
+.commContent_wrap .text-24 {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  margin: 0;
+}
+
+.commContent_wrap .text-20 {
+  font-size: 20px;
+  line-height: 1.8;
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-weight: 400;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.commContent_wrap .text-18 {
+  font-size: 18px;
+  line-height: 1.8;
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-weight: 400;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.commContent_wrap .text-16,
+.commContent_wrap p {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-weight: 400;
+}
+
+.commContent_wrap .text-14,
+.commContent_wrap .text-14 p,
+.commContent_wrap .text-14 strong {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-weight: 400;
+}
+.commContent_wrap .text-14 strong {
+  font-weight: 600;
+}
+
+.default_content a {
+  color: #FF69B4 !important;
+}
+
+.text_theme_dark {
+  color: #36454F !important;
+}
+/* .commContent_wrap .title-1 span,
+.commContent_wrap h1 span {
+  font-weight: 400;
+} */
+
+.storyCard_wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 110px;
+  padding: 40px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  width: 100%;
+  max-width: 100%;
+}
+
+.btn {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  height: 48px;
+  padding: 18px 28px;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 16px;
+  opacity: 1;
+  transform: rotate(0deg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-text {
+  padding-left: 0;
+  padding-right: 0;
+}
+.btn-text svg {
+  margin-left: 5px;
+}
+.btn-md {
+  height: 44px;
+  font-weight: 400;
+  padding: 16px 20px;
+}
+.btn:hover,
+.btn:focus {
+  transform: translateY(-2px) rotate(0deg);
+  opacity: 0.9;
+}
+.btn:active {
+    transform: translateY(0) rotate(0deg);
+}
+
+.btn-pink-solid {
+  background-color: #FF69B4;
+  color: #ffffff;
+}
+.btn-pink-solid:hover,
+.btn-pink-solid:active,
+.btn-pink-solid:focus {
+  background-color: #FF69B4 !important;
+  color: #ffffff !important;
+}
+.btn-dark-solid {
+  background-color: #36454F;
+  color: #ffffff;
+}
+.btn-dark-solid:hover,
+.btn-dark-solid:active,
+.btn-dark-solid:focus {
+  background-color: #36454F !important;
+  color: #ffffff !important;
+}
+.content-gap-12 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.hospitalDetails_info .commContent_wrap strong {
+  display: inline-block;
+  margin-bottom: 5px;
+}
+.line-2-text {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.content-gap-20 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.content-gap-24 {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.content-gap-32 {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.content-gap-40 {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.clinicalTrials_sec {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: 751px;
+  margin: 0 auto;
+  opacity: 1;
+  transform: rotate(0deg);
+  overflow: hidden;
+  box-sizing: border-box;
+  isolation: isolate;
+}
+.clinicalTrials_sec .clinicalTrials_slide::after {
+  content: "";
+  inset: 0;
+  position: absolute;
+  z-index: 0;
+  background: radial-gradient(49.51% 44.17% at 58.63% 39.76%, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.466) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+}
+.clinicalTrials_sec .clinicalTrials_slide::before {
+  content: "";
+  position: absolute;
+  backdrop-filter: blur(53px);
+  -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(50%, rgba(255, 255, 255, 0.970)), to(rgba(54, 69, 79, 0)));
+  -webkit-mask-image: linear-gradient(to top, rgba(255, 255, 255, 0.970) 50%, rgba(54, 69, 79, 0) 100%);
+  mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(50%, rgba(255, 255, 255, 0.970)), to(rgba(54, 69, 79, 0)));
+  mask-image: linear-gradient(to top, rgba(255, 255, 255, 0.970) 50%, rgba(54, 69, 79, 0) 100%);
+  height: 400px;
+  width: 100%;
+  left: 0;
+  top: auto;
+  z-index: 1;
+}
+
+.clinicalTrials_sliderWrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  z-index: 1;
+}
+
+.clinicalTrials_slide {
+  min-width: 100%;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-color: #1a1a1a;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: flex-end;
+  flex-shrink: 0;
+  flex-grow: 0;
+  flex-basis: 100%;
+  opacity: 1;
+  box-sizing: border-box;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+.clinicalTrials_slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 70%, transparent 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.clinicalTrials_slide_content {
+    max-width: 100%;
+    width: 100%;
+    padding: 0 0 80px 0;
+    box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    position: relative;
+    z-index: 2;
+}
+
+.clinicalTrials_slide .slider-nav-wrap {
+    position: absolute;
+    right: 16px;
+    bottom: 80px;
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.clinicalTrials_slide .slider-nav-wrap button {
+    pointer-events: auto;
+}
+
+.clinicalTrials_slide .slider-nav-wrap .slider-nav-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #FFFFFF;
+  background-color: transparent;
+  z-index: 100;
+  position: relative;
+}
+.clinicalTrials_slide .slider-nav-wrap .slider-nav-button:hover:not(:disabled) {
+    transform: scale(1.1);
+}
+.clinicalTrials_slide .slider-nav-wrap .slider-nav-button:active:not(:disabled) {
+    transform: scale(1.05);
+}
+.clinicalTrials_slide .slider-nav-wrap .slider-nav-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: transparent;
+}
+.clinicalTrials_slide .slider-nav-wrap .slider-nav-button svg {
+    width: 44px;
+    height: 32px;
+    transition: transform 0.2s ease;
+    stroke: #FFFFFF;
+    fill: none;
+    stroke-width: 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+.py-120 {
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+.pt-120 {
+  padding-top: 120px;
+}
+.pb-120 {
+  padding-bottom: 120px;
+}
+.py-88 {
+  padding-top: 88px;
+  padding-bottom: 88px;
+}
+.py-60 {
+  padding-top: 60px;
+  padding-bottom: 80px;
+}
+.pt-60 {
+  padding-top: 60px;
+}
+.about_sec {
+  background: #F8F8F8;
+  width: 100%;
+  box-sizing: border-box;
+}
+.about_row {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 100px;
+}
+.about_left_content {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-bottom: 56px;
+}
+
+.innovativeCare_sec {
+  position: relative;
+  width: 100%;
+  background-color: #F8F8F8;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.innovativeCare_sec.with_border,
+.WhatWeDo_sec.with_border {
+  border-top: 1px solid #ADBCC6;
+}
+
+.innovativeCare_sec:after {
+    content: '';
+    background-image: url('../public/images/innovativecare-after-img.png');
+    background-repeat: no-repeat;
+    background-size: 100%;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    inset: 0;
+    pointer-events: none;
+}
+.globalBreakthroughs_sec {
+  position: relative;
+}
+.globalBreakthroughs_sec:after {
+    content: '';
+    background-image: url('../public/images/globalBreakthroughs-after-bg.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: top right;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    right: 0;
+    top: -50px;
+}
+.testimonials_single_sec {
+  position: relative;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: calc(100vh - 92px);
+  min-height: 500px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  overflow: visible;
+}
+.testimonials_single_sec::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(270deg, rgba(54, 69, 79, 0) 29.83%, rgba(54, 69, 79, 0.69) 79.51%);
+}
+
+.aboutclinicalTrials_sec {
+  position: relative;
+}
+.clinical_row {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+.clinical_left {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+  max-width: 100%;
+  flex: 0 0 310px;
+}
+.clinical_mid {
+  position: relative;
+  flex: 0 0 425px;
+  max-width: 100%;
+  margin-left: 0;
+}
+.clinical_right {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.getInTouch_sec {
+  background-color: #36454F;
+  position: relative;
+}
+.getInTouch_sec:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 0px);
+    background-image: url('../public/images/getIntouch-after-img.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.videoTestimonials_sec .videoTestimonials_wrap,
+.videoTestimonials_wrap {
+  position: relative;
+  height: 527px;
+  z-index: 2;
+}
+
+.howItWork_sec,
+.videoTestimonials_sec {
+  background-color: #FFFFFF;
+  position: relative;
+}
+
+.videoTestimonials_sec::after {
+  content: '';
+  position: absolute;
+  background-color: #F8F8F8;
+  width: 100%;
+  height: 50%;
+  bottom: 0;
+}
+
+.resources_sec {
+  position: relative;
+  overflow: hidden;
+}
+
+.location_sec {
+  position: relative;
+  background-color: #F8F8F8;
+  overflow: visible;
+}
+
+.bg_light_gray {
+  background-color: #F8F8F8;
+}
+
+section {
+  overflow-x: hidden;
+}
+.page_wrapper {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  box-sizing: border-box;
+}
+.others_hero_content {
+  position: relative;
+  overflow: hidden;
+}
+.comm_hero_pt {
+  padding-top: 92px ;
+}
+.hero_content_row {
+  display: flex;
+  gap: 75px;
+  align-items: flex-start;
+}
+.hero_content_row .hero_content_left {
+  flex: 1 1 auto;
+  max-width: 100%;
+}
+.hero_content_row .hero_content_right {
+  flex: 0 0 475px;
+  max-width: 475px;
+}
+.hospital_slider_wrapper .swiper-slide {
+  border-radius: 0 50px 50px 0;
+}
+.hospital_slider_wrapper .swiper-slide .hospital_info_slider_content .commContent_wrap {
+  opacity: 0;
+  position: relative;
+  transform: translateY(100px);
+  transition: ease-in-out 500ms all;
+}
+.hospital_slider_wrapper .swiper-slide.swiper-slide-active .hospital_info_slider_content .commContent_wrap {
+  opacity: 1;
+  transform: translateY(0px);
+}
+.hospital_info_slider {
+  position: relative;
+  border-radius: 0 50px 50px 0;
+  overflow: hidden;
+  height: 600px;
+}
+.hospital_info_slider::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 250px;
+  -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(60%, rgba(0, 0, 0, 0.915)), to(transparent));
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.915) 60%, transparent 90%);
+  mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(60%, rgba(0, 0, 0, 0.915)), to(transparent));
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.915) 60%, transparent 90%);
+  backdrop-filter: blur(30px);
+  z-index: 1;
+}
+.hospital_info_slider::before {
+  content: '';
+  background: linear-gradient(0deg, rgb(0, 0, 0) 0%, rgba(54, 69, 79, 0) 100%);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 150px;
+  z-index: 0;
+}
+.hospital_info_slider img {
+  width: 100%;
+  height: 600px;
+  object-fit: cover;
+  -o-object-fit: cover;
+  border-radius: 0 50px 50px 0;
+}
+.hospital_info_slider .hospital_info_slider_content {
+  position: absolute;
+  bottom: 40px;
+  color: #FFFFFF;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 2;
+}
+.hospital_info_slider .hospital_info_slider_content .inner_container {
+  padding-right: 0;
+  padding-left: 20px;
+  margin-right: 0;
+  margin-left: auto;
+  width: 100%;
+  max-width: 1232px;
+}
+.hospital_info_slider .hospital_info_slider_content .inner_container .commContent_wrap {
+  max-width: 900px;
+  padding-right: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.hospital_info_slider .hospital_info_slider_content .inner_container .commContent_wrap p {
+  width: 100%;
+  margin-bottom: 24px;
+}
+.quickFinds_sec {
+  background: linear-gradient(180deg, #F8F8F8 0%, #EFEEEA 100%);
+}
+
+.innovationInsight_sec {
+  background: linear-gradient(180deg, #F8F8F8 0%, #EFEEEA 100%);
+}
+
+.keyFactors_sec,
+.videoTestimonials_pagesec {
+  background-color: #FFFFFF;
+}
+
+.marquee_wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.gallery_marquee_wrap {
+  background-image: url('../public/images/gallery-text.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: auto;
+  background-attachment: fixed;
+}
+
+.hospitalDetailsInfo_sec {
+  overflow: visible;
+}
+.hospitalDetailsInfo_sec .hospitalDetailsInfo_wrap {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 256px minmax(0, 1fr);
+  gap: 20px;
+  padding: 0;
+}
+
+.hospitalDetailsInfo_sec .hospitalDetailsInfo_wrap.cancer_sidebar_wrap {
+  grid-template-columns: 270px minmax(0, 1fr);
+}
+
+/* SIDEBAR */
+
+.hospitalDetailsInfo_wrap .sidebar {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 120px;
+  height: max-content;
+  align-self: flex-start;
+  z-index: 11;
+}
+
+.hospitalDetailsInfo_wrap .sidebar.disease-sidebar {
+  top: 90px;
+}
+
+.hospitalDetailsInfo_wrap .sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.hospitalDetailsInfo_wrap .sidebar.cancer-sidebar ul {
+  gap: 24px;
+}
+
+.hospitalDetailsInfo_wrap .sidebar.disease-sidebar ul {
+  gap: 14px;
+}
+
+.hospitalDetailsInfo_wrap .sidebar li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 0;
+  transition: all 300ms ease-in-out;
+}
+
+.hospitalDetailsInfo_wrap .sidebar li img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  transition: all 300ms ease-in-out;
+  position: relative;
+  left: 0;
+  opacity: 1;
+  visibility: visible;
+}
+
+.hospitalDetailsInfo_wrap .sidebar li span {
+  font-size: 16px;
+  cursor: pointer;
+  color: #36454F;
+  transition: all 300ms ease-in-out;
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-weight: 400;
+  position: relative;
+  padding: 2px 0;
+}
+
+.hospitalDetailsInfo_wrap .sidebar li span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 30px;
+  height: 3px;
+  background-color: #FF69B4;
+  transition: width 300ms ease-in;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.hospitalDetailsInfo_wrap .sidebar li.active span {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.hospitalDetailsInfo_wrap .sidebar li.active span::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.hospitalDetailsInfo_wrap .sidebar li.active img {
+  position: absolute;
+  opacity: 0;
+  visibility: hidden;
+  display: none;
+}
+
+/* MAIN CONTENT */
+
+.hospitalDetails_info {
+  padding: 0 0 40px;
+}
+
+.hospitalDetails_info .section {
+  scroll-margin-top: 120px; /* offset for sticky nav */
+  padding-bottom: 40px;
+  min-height: 10vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hospitalDetails_info .section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.hospitalDetails_info .commContent_wrap .details-img {
+  height: 500px;
+  width: 100%;
+  border-radius: 30px;
+  overflow: hidden;
+}
+.hospitalDetails_info .commContent_wrap .details-img img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.hospitalDetails_info .commContent_wrap .doctors-details-img {
+  height: 321px;
+  width: 100%;
+  border-radius: 30px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hospitalDetails_info .commContent_wrap .doctors-details-img::after {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 70.69%, #000000 100%);
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0px;
+  width: 100%;
+  height: 160px;
+  z-index: 2;
+  -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(60%, #000000), to(transparent));
+  -webkit-mask-image: linear-gradient(to top, #000000 60%, transparent 100%);
+  mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(60%, #000000), to(transparent));
+  mask-image: linear-gradient(to top, #000000 60%, transparent 100%);
+}
+
+.hospitalDetails_info .commContent_wrap .doctors-details-img img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.address-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.infrastructure-slider-wrap {
+  position: relative;
+}
+
+.facilities-nav {
+  flex-wrap: wrap;
+  margin-left: -12px;
+  margin-right: -12px;
+}
+.facilities-nav .nav-item {
+  flex: 0 0 33.3333333%;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.facilities-nav .nav-item .nav-link {
+  box-shadow: 0px 1px 0px 1px #C2CBD1;
+  border-radius: 16px;
+  height: 53px;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #FFFFFF;
+  font-size: 18px;
+  color: #36454F;
+  font-family: "Be Vietnam Pro", sans-serif;
+}
+.facilities-nav .nav-item .nav-link.active {
+  background-color: #FF69B4;
+  color: #FFFFFF;
+  box-shadow: none;
+}
+
+.aboutgrid {
+  display: flex;
+  gap: 50px;
+}
+.doctorsDetails_info .commContent_wrap .text-16, .doctorsDetails_info .commContent_wrap p {
+    font-size: 16px;
+    line-height: 28px;
+    font-weight: 300;
+}
+.doctorsDetails_info .section {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.day-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.day-list li {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #008080;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: #FFFFFF;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.doctorsDetails_slider_wrapper .swiper-slide {
+  border-radius: 40px;
+}
+.hospital_slider_wrapper .swiper-slide .doctorsDetails_info_slider_content .commContent_wrap {
+  opacity: 0;
+  position: relative;
+  transform: translateY(100px);
+  transition: ease-in-out 500ms all;
+}
+.hospital_slider_wrapper .swiper-slide.swiper-slide-active .doctorsDetails_info_slider_content .commContent_wrap {
+  opacity: 1;
+  transform: translateY(0px);
+}
+.doctorsDetails_info_slider {
+  position: relative;
+  border-radius: 40px;
+  overflow: hidden;
+  height: 453px;
+}
+.doctorsDetails_info_slider::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 250px;
+  -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(60%, rgba(0, 0, 0, 0.915)), to(transparent));
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.915) 60%, transparent 90%);
+  mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(60%, rgba(0, 0, 0, 0.915)), to(transparent));
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.915) 60%, transparent 90%);
+  backdrop-filter: blur(30px);
+  z-index: 1;
+}
+.doctorsDetails_info_slider::before {
+  content: '';
+  background: linear-gradient(0deg, rgb(0, 0, 0) 0%, rgba(54, 69, 79, 0) 100%);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 150px;
+  z-index: 0;
+}
+.doctorsDetails_info_slider img {
+  width: 100%;
+  height: 453px;
+  object-fit: cover;
+  -o-object-fit: cover;
+  border-radius: 40px;
+}
+.doctorsDetails_info_slider .doctorsDetails_info_slider_content {
+  position: absolute;
+  bottom: 40px;
+  color: #FFFFFF;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 2;
+}
+.doctorsDetails_info_slider .doctorsDetails_info_slider_content .inner_container {
+  padding-right: 30px;
+  padding-left: 30px;
+  margin: auto;
+  width: 100%;
+}
+.doctorsDetails_info_slider .doctorsDetails_info_slider_content .inner_container .commContent_wrap {
+  max-width: 335px;
+  padding-right: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.doctorsDetails_info_slider .doctorsDetails_info_slider_content .inner_container .commContent_wrap p {
+  width: 100%;
+  margin-bottom: 0;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.bg_doctors_box {
+  position: relative;
+  max-width: 400px;
+  margin-left: auto;
+}
+
+.plus-accodion-wrap .accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.plus-accodion-wrap .accordion .accordion-item {
+  background-color: #FFFFFF;
+  border-radius: 20px !important;
+}
+.plus-accodion-wrap .accordion .accordion-item .accordion-button {
+  border-radius: 20px !important;
+  box-shadow: none;
+  font-size: 20px;
+  color: #36454F;
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-weight: 500;
+  min-height: 76px;
+}
+.plus-accodion-wrap .accordion .accordion-item .accordion-button:not(.collapsed) {
+  background-color: transparent;
+  box-shadow: none;
+}
+.plus-accodion-wrap .accordion .accordion-item .accordion-button::after {
+    background-image: url('../public/images/accodion-plus.svg');
+}
+.plus-accodion-wrap .accordion .accordion-item .accordion-button:not(.collapsed)::after {
+    background-image: url('../public/images/accodion-minus.svg');
+    transform: none;
+}
+.plus-accodion-wrap .accordion .accordion-item .accordion-body {
+  padding-top: 0;
+}
+
+.comm-accodion-wrap .accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.comm-accodion-wrap .accordion .accordion-item {
+  background-color: transparent;
+  border-radius: 0px !important;
+  border-left: 0;
+  border-right: 0;
+}
+.comm-accodion-wrap .accordion .accordion-item:first-child {
+  border-top: 0;
+}
+.comm-accodion-wrap .accordion .accordion-item:first-child .accordion-button {
+  padding-top: 0;
+  min-height: 44px;
+}
+.comm-accodion-wrap .accordion .accordion-item .accordion-button {
+  border-radius: 20px !important;
+  box-shadow: none;
+  font-size: 20px;
+  color: #36454F;
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-weight: 500;
+  min-height: 72px;
+  background-color: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+.comm-accodion-wrap .accordion .accordion-item .accordion-button:not(.collapsed) {
+  background-color: transparent;
+  box-shadow: none;
+}
+.comm-accodion-wrap .accordion .accordion-item .accordion-body {
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;
+}
+
+.bg_dark_gray {
+  background-color: #36454F;
+}
+
+.procedures_performed_nav {
+  flex-wrap: wrap;
+  margin-left: -12px;
+  margin-right: -12px;
+}
+.procedures_performed_nav .nav-item {
+  flex: 0 0 25%;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.procedures_performed_nav .nav-item .nav-link {
+  box-shadow: none;
+  border-radius: 16px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.3);
+  font-size: 16px;
+  color: #ffffff;
+  font-family: "Be Vietnam Pro", sans-serif;
+}
+.procedures_performed_nav .nav-item .nav-link.active {
+  background-color: #FF69B4;
+  color: #FFFFFF;
+  box-shadow: none;
+}
+
+.research-nav {
+  flex-wrap: wrap;
+  margin-left: -12px;
+  margin-right: -12px;
+}
+.research-nav .nav-item {
+  flex: 0 0 33.3333333333333%;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.research-nav .nav-item .nav-link {
+  box-shadow: none;
+  border-radius: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  background-color: rgba(255, 255, 255, 0);
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 400;
+  color: #36454F;
+  font-family: "Be Vietnam Pro", sans-serif;
+  transition: all 300ms ease-in;
+  position: relative;
+}
+.research-nav .nav-item .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 30px;
+  height: 3px;
+  background-color: #FF69B4;
+  transition: width 300ms ease-in;
+  opacity: 0;
+  visibility: hidden;
+}
+.research-nav .nav-item .nav-link.active::after {
+  opacity: 1;
+  visibility: visible;
+}
+.research-nav .nav-item .nav-link img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+.research-nav .nav-item .nav-link.active {
+  box-shadow: none;
+  font-weight: 600;
+  font-size: 22px;
+}
+.research-nav .nav-item .nav-link.active img {
+  display: none;
+}
+.comm_ul {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 0;
+  padding-left: 17px;
+}
+.comm_ul li {
+  font-size: 16px;
+}
+.dark_gray_card {
+  border-radius: 20px;
+  padding: 30px;
+}
+.supporting_life_sec {
+  position: relative;
+}
+.bg_light_blue {
+  background: rgba(0, 128, 128, 0.05);
+}
+
+/* main image card */
+.supporting_life_sec .img-wrapper {
+  max-width: 611px;
+  aspect-ratio: 611 / 372;
+}
+
+/* main trick */
+.supporting_life_sec .img-wrapper .img-clip {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.popularFaq_sec {
+  position: relative;
+  background: rgba(248, 248, 248, 1);
+}
+
+.blogDetails_info .blog-details-img img {
+  border-radius: 20px;
+}
+
+.hospitalDetails_info .section.bg_dark_gray {
+  border-radius: 20px;
+}
+
+.tags_wrap .tags_ul {
+  display: flex;
+  column-gap: 24px;
+  row-gap: 10px;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+.tags_wrap .tags_ul li {
+  border: 1px solid #FF69B4;
+  color: #FF69B4;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 30px;
+  min-height: 34px;
+  padding: 5px 18px;
+  transition: all ease 300ms;
+  cursor: pointer;
+}
+.tags_wrap .tags_ul li:hover,
+.tags_wrap .tags_ul li.active {
+  background-color: #FF69B4;
+  color: #FFFFFF;
+}
+
+.relatedBlog_sec {
+  position: relative;
+}
+
+.commCircle_navigation {
+  overflow: visible;
+}
+/* .commCircle_navigation .swiper-wrapper {
+  overflow: hidden;
+} */
+.commCircle_navigation .customPrev,
+.commCircle_navigation .customNext {
+  color: #727B81;
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  z-index: 10;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0px 5px 8px 0px #00000040;
+  border: 1px solid #36454F;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #fff;
+}
+.commCircle_navigation .customPrev {
+  left: -18px;
+  right: auto;
+}
+.commCircle_navigation .customPrev.left-0 {
+  left: 0;
+}
+.commCircle_navigation .customNext {
+  left: auto;
+  right: -18px;
+}
+.commCircle_navigation .customNext.right-0 {
+  right: 0;
+}
+.contact_hero_sec {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #F8F8F8 0%, #E2E7EA 100%);
+}
+.pagination_slider .swiper-slide {
+  padding-bottom: 20px;
+}
+.pagination_slider .swiper-pagination {
+  bottom: -4px !important;
+}
+.pagination_slider .swiper-pagination .swiper-pagination-bullet {
+  width: 10px;
+  height: 5px;
+  border-radius: 18px;
+  transition: all ease 300ms;
+  background-color: #36454F;
+  opacity: 0.4;
+  border: 2px solid transparent;
+}
+.pagination_slider .swiper-pagination .swiper-pagination-bullet.swiper-pagination-bullet-active {
+  width: 30px;
+  opacity: 1;
+}
+.dedicatedSupport_sec {
+  background: linear-gradient(0deg, #E2E7EA 0%, #E2E7EA 100%);
+}
+
+.homeHero_sec.faqHero_sec {
+  height: 500px;
+  min-height: auto !important;
+  background: linear-gradient(180deg, #008080 0%, rgba(0, 0, 0, 0.973) 151.92%);
+  position: relative;
+}
+.faqHero_sec::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: url('../public/images/faq_after_bg.png');
+  background-repeat: no-repeat;
+  background-position: right top;
+  top: 0;
+  right: 0;
+}
+.faq_sec {
+  overflow: visible;
+}
+.thank-you-img {
+  height: 236px;
+}
+.error-404-img {
+  height: 203px;
+}
+.ourCertifications_sec {
+  position: relative;
+  background: linear-gradient(to top, var(--dark-gray) 75%, #f8f8f8 40%);
+}
+.ourCertifications_slider {
+  background: transparent;
+  padding-bottom: 0;
+  margin-bottom: -180px;
+  position: relative;
+  z-index: 2;
+}
+.ourCertifications_slider .hospital_slider_wrapper {
+  padding-bottom: 0;
+}
+.ourCertifications_body {
+  position: relative;
+  z-index: 1;
+  padding-top: 220px;
+}
+.ourCertifications_sec::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: url('../public/images/about_after_bg.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  bottom: 0;
+  right: 0;
+  background-position: right bottom;
+  z-index: 1;
+}
+.mt-85 {
+  margin-top: 85px;
+}
+.hospital_slider_sec.ourCertifications_sec .hospital_slider_wrapper .hospital_info_slider::before,
+.hospital_slider_sec.ourCertifications_sec .hospital_slider_wrapper .hospital_info_slider::after {
+  display: none;
+}
+.certificate_grid {
+  display: flex;
+  gap: 85px;
+  margin-right: 85px;
+}
+.certificate_grid .certificate__item img {
+  object-fit: contain;
+  -o-object-fit: contain;
+  height: 100px;
+}
+
+.mission_grid {
+    display: grid;
+    grid-template-columns: 679px 1fr;
+    gap: 56px;
+}
+.mission_left .mission_image_wrap {
+  position: relative;
+  border-radius: 40px;
+  overflow: hidden;
+  height: 580px;
+}
+.mission_left .mission_image_wrap::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 350px;
+  -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(60%, rgb(0, 0, 0)), to(transparent));
+  -webkit-mask-image: linear-gradient(to top, rgb(0, 0, 0) 60%, transparent 90%);
+  mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(60%, rgb(0, 0, 0)), to(transparent));
+  mask-image: linear-gradient(to top, rgb(0, 0, 0) 60%, transparent 90%);
+  backdrop-filter: blur(30px);
+  z-index: 1;
+}
+.mission_left .mission_image_wrap::before {
+  content: '';
+  background: linear-gradient(0deg, rgba(54, 69, 79, 0.65) 0%, rgba(54, 69, 79, 0) 100%);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 350px;
+  z-index: 0;
+}
+.mission_left .mission_image_wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -o-object-fit: cover;
+  border-radius: 40px;
+}
+.mission_image_content {
+  position: absolute;
+  z-index: 2;
+  padding: 40px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  color: #FFFFFF;
+}
+.mission_vision_list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.mission_vision_list li {
+  border-bottom: 1px solid #008080;
+}
+.mission_vision_list li:first-child {
+  border-top: 1px solid #008080;
+}
+.mission_vision_list li .mission_vision_content {
+  padding: 38px 0 33px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.mission_vision_list li .mission_vision_content .mission_icon {
+  margin-bottom: 16px;
+  display: inline-block;
+}
+.mission_vision_list li .mission_vision_content .mission_icon img {
+  width: 40px;
+  height: 40px;
+}
+.mission_vision_list li .mission_vision_content h5 {
+  font-size: 24px;
+  line-height: 34px;
+  font-weight: 600;
+  color: #36454F;
+  font-family: "Be Vietnam Pro", sans-serif;
+}
+.mission_vision_list li .mission_vision_content p {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: #36454F;
+  font-family: "Be Vietnam Pro", sans-serif;
+}
+.ourstory_sec {
+  background-image: url('../public/images/our_story_bg.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  background-position: bottom left -5px;
+}
+.ourstory_sec.ourStory_slider_sec {
+  background-position: center;
+  background-image: url('../public/images/our_story_slider_bg.jpg');
+}
+.ourstory_card {
+  background-color: #ffffff;
+  border-radius: 40px;
+  padding: 16px 16px 16px 60px;
+}
+.ourstory_grid {
+  display: grid;
+  grid-template-columns: 1fr 520px;
+  gap: 52px;
+  align-items: center;
+}
+.ourstory_grid.align-start {
+  align-items: flex-start;
+}
+
+.ourstory_grid.align-start .ourstory_left {
+  padding-top: 44px;
+  padding-bottom: 44px;
+}
+
+.ourstory_image_wrap {
+  position: relative;
+}
+
+.ourstory_image_wrap img,
+.ourstory_image_wrap video {
+  border-radius: 24px;
+  height: 484px;
+  width: 100%;
+  object-fit: cover;
+  -o-object-fit: cover;
+  display: block;
+}
+
+.OurJourney_sec {
+  overflow: visible;
+  background-color: #FFFFFF;
+}
+
+.ourValues_sec {
+  background-color: #F8F8F8;
+}
+.ourValues_sec .mission_image_wrap .ratio::before {
+    padding-top: calc(453 / 791 * 100%);
+    min-height: 453px;
+}
+.ourValues_sec .mission_left .mission_image_wrap {
+  position: relative;
+  border-radius: 40px;
+  overflow: hidden;
+  height: 453px;
+}
+.ourValues_sec .mission_left .mission_image_wrap::after {
+  height: 170px;
+}
+
+.values_card_wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.values_card {
+  background-color: #FFFFFF;
+  border-radius: 36px;
+  padding: 32px;
+  border: 1px solid transparent;
+}
+.values_card.with_border {
+    border: 1px solid #C2CBD1;
+    background-color: transparent;
+}
+.values_card.with_green_bg {
+  background-color: #008080;
+  border: 1px solid #008080;
+}
+.values_card.with_green_bg .values_card_content .mission_icon {
+  background-color: #ffffff;
+}
+.values_card.with_green_bg .values_card_content h5,
+.values_card.with_green_bg .values_card_content p {
+  color: #ffffff;
+}
+.values_card .values_card_content {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9.5px;
+}
+.values_card .values_card_content.gap-24 {
+  gap: 24px;
+}
+.values_card .values_card_content .mission_icon {
+  margin-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #36454F;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+}
+.values_card .values_card_content .mission_icon img {
+  width: 24px;
+  height: 24px;
+}
+.values_card .values_card_content h5 {
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 500;
+  color: #36454F;
+  font-family: "Be Vietnam Pro", sans-serif;
+}
+.values_card .values_card_content p {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: #727B81;
+  font-family: "Be Vietnam Pro", sans-serif;
+}
+
+.storiesVideo_wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin-top: 70px;
+}
+.stories_video {
+  width: 100%;
+  position: relative;
+  border-radius: 50px;
+  overflow: hidden;
+}
+.stories_video::after {
+  content: "";
+  inset: 0;
+  position: absolute;
+  z-index: 0;
+  background: radial-gradient(49.51% 44.17% at 58.63% 39.76%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.57) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+}
+.stories_video::before {
+  content: "";
+  position: absolute;
+  backdrop-filter: blur(53px);
+  -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(50%, rgba(54, 69, 79, 0.901)), to(transparent));
+  -webkit-mask-image: linear-gradient(to top, rgba(54, 69, 79, 0.901) 50%, transparent 90%);
+  mask-image: -webkit-gradient(linear, left bottom, left top, color-stop(50%, rgba(54, 69, 79, 0.901)), to(transparent));
+  mask-image: linear-gradient(to top, rgba(54, 69, 79, 0.901) 50%, transparent 90%);
+  height: 430px;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+}
+.stories_video .ratio video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50px;
+}
+.stories_video .ratio::before {
+    padding-top: calc(600 / 1200 * 100%);
+    min-height: 600px;
+}
+.storiesVideo_wrap .storiesVideo_Content_wrap {
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px;
+  position: absolute;
+  bottom: 0;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.storiesVideo_wrap .storiesVideo_Content_wrap .commContent_wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.supporting_light_sec {
+  background-color: rgba(0, 128, 128, 0.05);
+}
+.aboutDisease_sec {
+  background-color: #F8F8F8;
+}
+
+.myStory_banner img {
+  width: 100%;
+  height: calc(100vh - 92px);
+  min-height: 400px;
+  -o-object-fit: cover;
+  object-fit: cover;
+}
+.ourValues_sec.life_after_treatment_sec .mission_left .mission_image_wrap::after,
+.ourValues_sec.life_after_treatment_sec .mission_left .mission_image_wrap::before {
+  display: none;
+}
+.therapyInfo_sec {
+  background-color: rgba(0, 128, 128, 0.05);
+}
+
+.blog-arrow-wrap {
+  display: flex;
+  gap: 30px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 200px;
+}
+.blog-arrow-wrap .blog-arrow-left,
+.blog-arrow-wrap .blog-arrow-right {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+.blog-arrow-wrap .blog-arrow-left p,
+.blog-arrow-wrap .blog-arrow-right p {
+  font-size: 18px;
+  font-weight: 400;
+  color: #000000;
+  font-family: "Be Vietnam Pro", sans-serif;
+}
+.blog-arrow-wrap .blog-arrow-right p {
+  text-align: right;
+}
+.blog-arrow-wrap .arrow-btn {
+  border: 1px solid #008080;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  padding: 10px;
+  color: #008080;
+  background-color: transparent;
+}
+.blog-arrow-wrap .arrow-btn:hover,
+.blog-arrow-wrap .arrow-btn.active {
+  color: #FFFFFF;
+  background-color: #008080;
+}
+
+.topOncologists_sec  {
+  background-color: #FFFFFF;
+}
+
+.cancerCenter_slider_wrapper .swiper-slide .cancerCenter_info_slider_content .commContent_wrap {
+  opacity: 0;
+  position: relative;
+  transform: translateY(100px);
+  transition: ease-in-out 500ms all;
+}
+.cancerCenter_slider_wrapper .swiper-slide.swiper-slide-active .cancerCenter_info_slider_content .commContent_wrap {
+  opacity: 1;
+  transform: translateY(0px);
+}
+.cancerCenter_info_slider {
+  position: relative;
+  border-radius: 0;
+  overflow: hidden;
+  height: 660px;
+}
+.cancerCenter_info_slider::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0) 0%, #000000 100%);
+  z-index: 1;
+}
+.cancerCenter_info_slider img {
+  width: 100%;
+  height: 660px;
+  object-fit: cover;
+  -o-object-fit: cover;
+  border-radius: 0;
+}
+.cancerCenter_info_slider .cancerCenter_info_slider_content {
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    color: #FFFFFF;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    padding: 50px 0;
+  }
+.cancerCenter_info_slider .cancerCenter_info_slider_content .commContent_wrap {
+  max-width: 520px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding-bottom: 40px;
+}
+.cancerCenter_info_slider .cancerCenter_info_slider_content .commContent_wrap p {
+  width: 100%;
+  line-height: 22px;
+  font-size: 14px;
+}
+.cancerCenter_info_slider .cancerCenter_info_slider_content .commContent_wrap a.btn {
+  font-weight: 400;
+}
+.commContent_wrap {
+  position: relative;
+}
+.read-more-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 115px;
+  backdrop-filter: blur(4px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgb(248 248 248) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.readMore_btn {
+  border: 1px solid #36454F;
+  color: #36454F;
+  background-color: transparent;
+  font-size: 18px;
+  font-weight: 400;
+  padding: 9px 24px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  transition: all ease-in-out 300ms;
+}
+.readMore_btn:hover {
+  background-color: #36454F;
+  color: #fff;
+}

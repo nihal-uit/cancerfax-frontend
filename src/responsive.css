@@ -1,0 +1,442 @@
+  @media (max-width: 1440px) {
+    .clinicalTrials_sec {
+      width: 100%;
+    }
+  }
+  @media (max-width: 1200px) {
+    .commContent_wrap .title-1,
+    .commContent_wrap .title-2,
+    .commContent_wrap h1 {
+      font-size: 42px;
+      line-height: 52px;
+      letter-spacing: -2px;
+    }
+    .commContent_wrap .title-3,
+    .commContent_wrap h3 {
+      font-size: 38px;
+      line-height: 48px;
+    }
+    .py-120 {
+      padding-top: 80px;
+      padding-bottom: 80px;
+    }
+    .pb-120 {
+      padding-bottom: 80px;
+    }
+    .pt-120 {
+      padding-top: 80px;
+    }
+    .py-88 {
+      padding-top: 60px;
+      padding-bottom: 60px;
+    }
+    .clinical_row {
+      gap: 40px;
+    }
+    .clinical_left {
+      flex: 0 0 250px;
+    }
+    .clinical_mid {
+      flex: 0 0 360px;
+    }
+    .commContent_wrap .title-5,
+    .commContent_wrap h5 {
+      font-size: 18px;
+      line-height: 24px;
+    }
+    .hero_content_row {
+      gap: 35px;
+    }
+    .certificate_grid {
+      gap: 50px;
+      margin-right: 50px;
+    }
+    .mission_grid {
+        grid-template-columns: 550px 1fr;
+        gap: 40px;
+    }
+    .ourstory_grid {
+      grid-template-columns: 1fr 460px;
+      gap: 40px;
+    }
+    .commContent_wrap .title-size-36 {
+      font-size: 34px;
+      line-height: 46px;
+    }
+    .builtExperience_sec .builtExperience_row {
+      grid-template-columns: 430px minmax(0, 1fr);
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .homeHero_sec {
+      max-height: 100%;
+      min-height: 651px;
+    }
+    .home-hero-banner .ratio::before {
+        padding-top: calc(651 / 1440 * 100%);
+        height: 651px;
+    }
+    .homeHero_sec .heroContent_wrap {
+          padding: 0 0 60px 0;
+    }
+    .homeHero_sec .heroContent_wrap .containerWrapper {
+      gap: 24px;
+    }
+    .clinicalTrials_sec {
+      height: 600px;
+    }
+    .clinicalTrials_slide_content {
+        padding: 0 0 60px 0;
+    }
+    .clinicalTrials_slide .slider-nav-wrap {
+        bottom: 60px;
+    }
+    .py-120 {
+      padding-top: 60px;
+      padding-bottom: 60px;
+    }
+    .pb-120 {
+      padding-bottom: 60px;
+    }
+    .pt-120 {
+      padding-top: 60px;
+    }
+    .py-88 {
+      padding-top: 50px;
+      padding-bottom: 50px;
+    }
+    .py-60 {
+      padding-top: 50px;
+      padding-bottom: 60px;
+    }
+    .about_row {
+      flex-direction: column;
+      gap: 60px;
+    }
+    .homeHero_sec .heroContent_wrap .commContent_wrap {
+      gap: 24px;
+    }
+    .clinical_row {
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    .comm_hero_pt {
+      padding-top: 72px;
+    }
+    .hero_content_row {
+      flex-direction: column;
+      gap: 24px;
+    }
+    .hero_content_row .hero_content_right {
+      flex: 1 1 auto;
+      max-width: 100%;
+    }
+
+    .hospitalDetailsInfo_sec .hospitalDetailsInfo_wrap {
+      display: block;
+      padding: 0;
+    }
+
+    .hospitalDetailsInfo_wrap .sidebar {
+      border: none;
+      padding: 10px 0;
+      overflow-x: auto;
+      background-color: #f8f8f8;
+      top: 72px;
+    }
+    .hospitalDetailsInfo_wrap .sidebar::-webkit-scrollbar {
+       height: 4px;
+    }
+    .hospitalDetailsInfo_wrap .sidebar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .hospitalDetailsInfo_wrap .sidebar::-webkit-scrollbar-thumb {
+        background-color: rgba(54, 69, 79, 0.252);
+        border-radius: 8px;
+        border: 0px solid #ffffff;
+    }
+
+    .hospitalDetailsInfo_wrap .sidebar ul {
+      gap: 24px;
+      flex-direction: row;
+    }
+
+    .hospitalDetailsInfo_wrap .sidebar li {
+      white-space: nowrap;
+      margin-bottom: 0;
+      flex: none;
+    }
+
+    .hospitalDetailsInfo_wrap .sidebar li span,
+    .hospitalDetailsInfo_wrap .sidebar li.active span {
+      font-size: 18px;
+    }
+    .hospitalDetails_info {
+      padding: 40px 0 0;
+    }
+    .hospitalDetails_info .section {
+      scroll-margin-top: 160px; /* offset for sticky nav */
+    }
+
+    .address-card {
+      grid-template-columns: 1fr;
+    }
+    .gallery_marquee_wrap {
+      background-size: contain;
+    }
+    .testimonials_single_sec {
+      height: 100%;
+    }
+    .mission_grid {
+      display: flex;
+      flex-direction: column-reverse;
+    }
+    .mission_grid,
+    .ourstory_grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    .ourstory_card {
+      padding: 30px;
+    }
+    .storiesVideo_wrap {
+      margin-top: 50px;
+    }
+    .ourstory_grid.align-start .ourstory_left {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    .ourstory_image_wrap img,
+    .ourstory_image_wrap video {
+        height: 100%;
+        max-height: 434px;
+    }
+    .builtExperience_sec .builtExperience_row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    /* .homeHero_sec {
+      padding-top: 64px;
+    } */
+    .commContent_wrap .title-1,
+    .commContent_wrap .title-2,
+    .commContent_wrap h1 {
+      font-size: 36px;
+      line-height: 44px;
+      letter-spacing: -2px;
+    }
+    .commContent_wrap .title-3,
+    .commContent_wrap h3 {
+      font-size: 32px;
+      line-height: 42px;
+    }
+    .commContent_wrap .title-size-36 {
+      font-size: 30px;
+      line-height: 40px;
+    }
+    .storyCard_wrap {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 24px 0 0;
+    }
+    .heroContent_wrap .storyCard_wrap .btn.btn-pink-solid {
+      width: 100%;
+      padding: 14px 24px;
+      font-size: 14px;
+    }
+    .clinicalTrials_sec {
+      min-height: 600px;
+      max-height: 600px;
+      overflow: hidden;
+      position: relative;
+    }
+    .clinicalTrials_slide::before {
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
+    }
+    .clinicalTrials_slide .slider-nav-wrap {
+        gap: 20px;
+        left: auto;
+        width: auto;
+        height: auto;
+    }
+    .clinicalTrials_slide .slider-nav-wrap .slider-nav-button {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+    .clinicalTrials_slide .slider-nav-wrap .slider-nav-button svg {
+      width: 36px;
+      height: 24px;
+    }
+    .about_left_content {
+      gap: 24px;
+      margin-bottom: 36px;
+    }
+    .flag-text {
+      font-size: 18px;
+      line-height: 14px;
+    }
+    .clinical_row {
+      justify-content: center;
+    }
+    .clinical_left {
+      flex: 0 0 100%;
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+    .clinical_mid {
+      max-width: 360px;
+      margin: 0 auto;
+    }
+    .hospitalDetailsInfo_wrap .sidebar {
+      top: 68px;
+    }
+    .heroContent_wrap .commContent_wrap .contentLabel,
+    .heroContent_wrap .commContent_wrap .title-1,
+    .heroContent_wrap .commContent_wrap h1 {
+        text-shadow: 0 0 8px #505050;
+    }
+    .commCircle_navigation .customPrev,
+    .commCircle_navigation .customNext {
+      width: 40px;
+      height: 40px;
+    }
+    .homeHero_sec.faqHero_sec {
+      height: 400px;
+    }
+    .certificate_grid {
+      gap: 30px;
+      margin-right: 30px;
+    }
+    .OurJourney_sec.py-120 {
+      padding-top: 0;
+    }
+    .about_video_sec.pt-120 {
+      padding-top: 0;
+    }
+    .stories_video .ratio::before {
+        padding-top: calc(500 / 980 * 100%);
+        min-height: 500px;
+    }
+    .myStory_banner img {
+      height: 100%;
+      min-height: 400px;
+    }
+    .homeHero_sec.cancer_hero_sec {
+      height: 100%;
+    }
+    .homeHero_sec .heroContent_wrap {
+        padding: 60px 0 60px 0;
+    }
+    .cancer_hero_sec .home-hero-banner .ratio::before {
+        padding-top: calc(600 / 500 * 100%);
+        height: 100%;
+         min-height: calc(100vh + 100px);
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .homeHero_sec {
+      max-height: 100%;
+      min-height: 651px;
+    }
+    .home-hero-banner .ratio::before {
+        padding-top: calc(651 / 1440 * 100%);
+        height: 651px;
+    }
+    .cancer_hero_sec .home-hero-banner .ratio::before {
+         min-height: calc(100vh + 80px);
+    }
+    .commContent_wrap .title-1,
+    .commContent_wrap .title-2,
+    .commContent_wrap h1 {
+      font-size: 30px;
+      line-height: 36px;
+      letter-spacing: -1.5px;
+    }
+    .commContent_wrap .title-3,
+    .commContent_wrap h3 {
+      font-size: 26px;
+      line-height: 32px;
+    }
+    .commContent_wrap .title-size-36 {
+      font-size: 28px;
+      line-height: 38px;
+    }
+    .storyCard_wrap {
+        gap: 16px;
+    }
+    .commContent_wrap .text-16, .commContent_wrap p {
+      line-height: 1.5;
+    }
+    .clinicalTrials_slide .slider-nav-wrap .slider-nav-button {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+    }
+    .clinicalTrials_slide .slider-nav-wrap .slider-nav-button svg {
+      width: 30px;
+      height: 20px;
+    }
+    .clinicalTrials_slide .slider-nav-wrap {
+        bottom: 40px;
+        right: auto;
+        transform: translateX(-50%);
+        left: 50%;
+        position: relative;
+        justify-content: center;
+    }
+    .homeHero_sec .heroContent_wrap {
+          padding: 0 0 40px 0;
+    }
+    .homeHero_sec .heroContent_wrap .commContent_wrap {
+        gap: 20px;
+    }
+    .marquee_wrap .rfm-overlay::before, 
+    .marquee_wrap .rfm-overlay::after {
+      background: transparent;
+    }
+    .ourstory_card {
+        padding: 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    /* .homeHero_sec {
+      padding-top: 52px;
+    } */
+    .flag-text {
+      font-size: 16px;
+      line-height: 14px;
+    }
+    .testimonials_single_sec {
+      background-position: -500px center;
+    }
+    .hospitalDetailsInfo_wrap .sidebar {
+      top: 62px;
+    }
+    .cancer_hero_sec .home-hero-banner .ratio::before {
+        min-height: calc(100vh + 120px);
+    }
+  }
+
+  @media (max-width: 400px) {
+    .cancer_hero_sec .home-hero-banner .ratio::before {
+        min-height: calc(100vh + 140px);
+    }
+  }
+
+@media (min-width: 992px) {
+    .about-col-left {
+        flex: 0 0 500px;
+    }
+    .about-col-right {
+      flex: 1;
+    }
+}

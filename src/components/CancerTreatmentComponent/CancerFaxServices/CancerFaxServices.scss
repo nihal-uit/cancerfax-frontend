@@ -1,0 +1,131 @@
+.cancerFax_services_sec {
+    .cancerFax_row {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 580px minmax(0, 1fr);
+        gap: 50px;
+        padding: 0;
+        margin-bottom: 60px;
+        @media (max-width: 1200px) {
+            grid-template-columns: 400px minmax(0, 1fr);
+        }
+        @media (max-width: 991px) {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+    }
+
+    .steps-grid {
+        overflow: hidden;
+        background: transparent;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        &__item {
+            padding: 22px 18px;
+            min-height: 140px;
+            font-size: 14px;
+            line-height: 22px;
+            color: #36454F;
+            font-weight: 400;
+            border: 1px solid #E9E9E9;
+            display: flex;
+            align-items: flex-start;
+            flex: 0 0 20%;
+            background-color: #FFFFFF;
+            @media (max-width: 991px) {
+                flex: 0 0 25%;
+            }
+            @media (max-width: 768px) {
+                flex: 0 0 33.33333333333%;
+            }
+            @media (max-width: 575px) {
+                flex: 0 0 50%;
+                padding: 16px 16px;
+                min-height: 120px;
+                line-height: 20px;
+            }
+        }
+
+        // remove right border on last column (5th, 10th, 15th, ...)
+        &__item:first-child {
+            border-radius: 20px 0 0 0;
+        }
+        &__item:nth-child(2) {
+            @media (max-width: 575px) {
+                border-radius: 0 20px 0 0;
+            }
+        }
+        &__item:nth-child(4) {
+            @media (max-width: 991px) {
+                border-radius: 0 20px 0 0;
+            }
+            @media (max-width: 768px) {
+                border-radius: 0 0 0 0;
+            }
+        }
+        &__item:nth-child(5) {
+            border-radius: 0 20px 0 0;
+            @media (max-width: 991px) {
+                border-radius: 0 0 0 0;
+            }
+        }
+        &__item:nth-child(6) {
+            border-radius: 0 0 0 20px;
+            @media (max-width: 991px) {
+                border-radius: 0 0 0 0;
+            }
+        }
+        &__item:nth-child(9) {
+            @media (max-width: 991px) {
+                border-radius: 0 0 0 20px;
+            }
+            @media (max-width: 768px) {
+                border-radius: 0 0 0 0;
+            }
+        }
+        &__item:nth-child(10),
+        &__item:last-child {
+            border-radius: 0 0 20px 0;
+        }
+        &__item:nth-child(10) {
+            @media (max-width: 991px) {
+                border-radius: 0 0 0 0;
+            }
+            @media (max-width: 768px) {
+                border-radius: 0 0 0 20px;
+            }
+            @media (max-width: 575px) {
+                border-radius: 0 0 0 0;
+            }
+        }
+        &__item:nth-child(11) {
+                border-radius: 0 0 0 20px;
+            @media (max-width: 991px) {
+                border-radius: 0 0 0 0;
+            }
+            @media (max-width: 575px) {
+                border-radius: 0 0 0 20px;
+            }
+        }
+        &__item:nth-child(12) {
+            @media (max-width: 991px) {
+                border-radius: 0 0 20px 0;
+            }
+        }
+        &__item:last-child {
+            @media (max-width: 991px) {
+                border-radius: 0 0 20px 20px;
+            }
+        }
+        // &__item:nth-child(4n) {
+        //     background-color: aqua;
+        // }
+        // // remove bottom border on last row (last 5 items)
+        // &__item:nth-last-child(-n + 3) {
+        //     background-color: brown;
+        // }
+    }
+
+}

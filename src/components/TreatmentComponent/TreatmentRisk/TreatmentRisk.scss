@@ -1,0 +1,147 @@
+.riskSectionOne_sec {
+    .content {
+        @media screen and (min-width: 1200px) {
+            padding-right: 20px;
+        }
+
+        &__holder {
+            @media screen and (min-width: 1200px) {
+                padding-right: 70px;
+            }
+        }
+    }
+
+    .certificate {
+        &__holder {
+            overflow: hidden;
+            margin-top: 30px;
+
+            h4 {
+                color: var(--dark-gray);
+                font-size: 24px;
+                line-height: calc(36/24);
+                font-weight: 600;
+                margin-bottom: 40px;
+
+                @media screen and (max-width: 1023.98px) {
+                    margin-bottom: 30px;
+                }
+
+                @media screen and (max-width: 767.98px) {
+                    margin-bottom: 20px;
+                }
+            }
+
+            .rfm-marquee {
+                .rfm-initial-child-container {
+                    // gap: 38px;
+                }
+            }
+        }
+
+        &__list {
+            display: flex;
+            gap: 38px;
+            align-items: center;
+
+            &__holder {
+                mask-image: linear-gradient(90deg, transparent, #ffffff 15%, #ffffff 85%, transparent);
+
+            }
+        }
+
+        &__item {
+            flex-shrink: 0;
+            height: 100%;
+            width: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-inline: 20px;
+
+            img {
+                width: auto;
+                height: auto;
+
+            }
+        }
+    }
+
+    .accordion {
+        --bs-accordion-color: #36454F;
+        --bs-accordion-bg: transparent;
+        // --bs-accordion-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, border-radius 0.15s ease;
+        --bs-accordion-border-color: #C2CBD1;
+        --bs-accordion-border-width: 1px;
+        --bs-accordion-border-radius: 0;
+        --bs-accordion-inner-border-radius: calc(var(--bs-border-radius) - (var(--bs-border-width)));
+        --bs-accordion-btn-padding-x: 0px;
+        --bs-accordion-btn-padding-y: 24px;
+        --bs-accordion-btn-color: var(--bs-body-color);
+        --bs-accordion-btn-bg: transparent;
+        // --bs-accordion-btn-icon: url(data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27 fill=%27none%27 stroke=%27%23212529%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpath d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e);
+        --bs-accordion-btn-icon-width: 14px;
+        --bs-accordion-btn-icon-transform: rotate(-180deg);
+        --bs-accordion-btn-icon-transition: transform 0.2s ease-in-out;
+        --bs-accordion-btn-active-icon: url(data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27 fill=%27none%27 stroke=%27%23052c65%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpath d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e);
+        --bs-accordion-btn-focus-box-shadow: null;
+        --bs-accordion-body-padding-x: 0rem;
+        --bs-accordion-body-padding-y: 10px;
+        --bs-accordion-active-color: #36454F;
+        --bs-accordion-active-bg: transparent;
+
+        @media screen and (min-width: 1200px) {
+            margin-right: -8px;
+        }
+
+        @media (max-width: 991.98px) {
+            --bs-accordion-btn-padding-y: 20px;
+            margin-top: 20px;
+        }
+
+        &.accordion-flush {
+            .accordion-item {
+                &:last-child {
+                    border-bottom: var(--bs-accordion-border-width) solid var(--bs-accordion-border-color);
+                }
+            }
+        }
+
+        &-item {
+            &:has(.show) {
+                background: #ffffff;
+                box-shadow: 0px 4px 4px 0px #36454F1F;
+                border-radius: 20px;
+                padding: 0px 28px;
+            }
+        }
+
+        &-button {
+            font-family: var(--font-vietanam);
+            font-size: 20px;
+            line-height: calc(30/20);
+            font-weight: 500;
+            box-shadow: none !important;
+
+            &.collapsed {
+                font-size: 16px;
+                line-height: calc(24/16);
+                font-weight: 400;
+            }
+
+            &::after {
+                margin-right: 5px;
+            }
+        }
+
+        &-body {
+            padding-bottom: 24px;
+
+            p {
+                color: #36454F;
+                font-size: 16px;
+                line-height: calc(24/16);
+            }
+        }
+    }
+}
