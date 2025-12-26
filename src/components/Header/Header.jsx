@@ -511,10 +511,12 @@ const Header = ({ darkText = false }) => {
             // 1. Category without children -> clickable
             // 2. Subcategory without children -> clickable
             // 3. Link -> always clickable
+            // 4. Item with is_clickable = true and internal_path not null -> clickable
             const shouldBeClickable =
               itemType === 'link' ||
               (itemType === 'category' && !hasChildren) ||
-              (itemType === 'subcategory' && !hasChildren);
+              (itemType === 'subcategory' && !hasChildren) ||
+              (item.is_clickable === true && item.internal_path !== null);
 
             // Determine if this item should have a dropdown
             // Only show dropdown if category has children
@@ -728,19 +730,34 @@ const Header = ({ darkText = false }) => {
                           const categoryKey = category.slug || category.id;
                           const isActive =
                             categoryKey === effectiveSelectedCategory;
+                          const categoryUrl =
+                            category.internal_path ||
+                            category.external_url ||
+                            category.link ||
+                            '#';
+                          const isCategoryClickable =
+                            category.is_clickable === true &&
+                            category.internal_path !== null;
 
                           return (
                             <TreatmentCategoryItem
                               key={category.id}
                               active={isActive}
+                              as={isCategoryClickable ? Link : 'button'}
+                              to={isCategoryClickable ? categoryUrl : undefined}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setSelectedTreatmentCategory(categoryKey);
+                                if (isCategoryClickable) {
+                                  handleDropdownMenuClose(dropdownKey)();
+                                } else {
+                                  setSelectedTreatmentCategory(categoryKey);
+                                }
                               }}
                               onMouseEnter={(e) => {
                                 e.stopPropagation();
                                 if (window.innerWidth > 768) {
                                   clearHoverTimeout(dropdownKey);
+                                  setSelectedTreatmentCategory(categoryKey);
                                 }
                               }}
                             >
@@ -875,11 +892,13 @@ const Header = ({ darkText = false }) => {
                         Array.isArray(child.children) &&
                         child.children.length > 0;
                       // Subcategory without children should be clickable
+                      // Also clickable if is_clickable = true and internal_path is not null
                       const childIsClickable =
                         child.type === 'link' ||
                         (child.type === 'subcategory' &&
                           !childHasChildren &&
-                          child.is_clickable !== false);
+                          child.is_clickable !== false) ||
+                        (child.is_clickable === true && child.internal_path !== null);
                       const isChildActive = isLinkActive(childLink);
 
                       return (

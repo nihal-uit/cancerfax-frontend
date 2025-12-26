@@ -70,6 +70,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
 
   // Fetch blogs with category and subcategory filters
   useEffect(() => {
+    setSelectedFilterCategory(activeCategorySlug)
     dispatch(fetchBlogs({ 
       limit: BLOGS_PAGE_SIZE, 
       start: 0,

@@ -66,7 +66,7 @@ const HospitalGrid = ( { data, loading }) => {
             return (
               <ScrollAnimationComponent animationVariants={fadeIn}>
               <Card key={hospital?.id} onClick={() => handleCardClick(hospital)}>
-                <CardImage bgImage={formatMedia(hospital?.hospitalImage)} />
+                <CardImage bgImage={formatMedia(hospital?.about?.featuredImage)} />
                 <CardContent>
                   <HospitalName>{hospital?.name}</HospitalName>
                   <ArrowIcon>

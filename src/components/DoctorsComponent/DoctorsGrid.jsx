@@ -69,7 +69,7 @@ const DoctorsGrid = ( { doctors, loading }) => {
           {visibleItems.map((doctor) => {
             return (
               <Card key={doctor.id} onClick={() => handleCardClick(doctor)}>
-                <CardImage bgImage={formatMedia(doctor?.profilePicture)} />
+                <CardImage bgImage={formatMedia(doctor?.about?.doctor_image)} />
                 <CardContent>
                   <div className='doctors-text'>
                     <DoctorName>{doctor?.first_name ?? ''} {doctor?.last_name ?? ''}</DoctorName>

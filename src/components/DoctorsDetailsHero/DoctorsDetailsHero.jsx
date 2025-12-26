@@ -24,14 +24,14 @@ const DoctorsDetailsHero = ({ data, loading }) => {
           <div className='commContent_wrap'>
             <HeroContentGrid>
               <TopRow>
-                {data?.doctor_image && (
+                {/* {data?.doctor_image && (
                   <DoctorImageWrapper>
                     <DoctorImage
                       src={formatMedia(data?.doctor_image)}
                       alt={data?.doctor_image?.alternativeText || data?.doctor_name || ''}
                     />
                   </DoctorImageWrapper>
-                )}
+                )} */}
                 <DoctorTitle className='title-1'>{data?.doctor_name || ''}</DoctorTitle>
                 <SubText className="text-18">{data?.doctor_title || ''}</SubText>
               </TopRow>
