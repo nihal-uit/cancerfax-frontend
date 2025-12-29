@@ -33,7 +33,6 @@ const Contact = () => {
 
   return (
     // <div className='page_wrapper'>
-
     //   <Header darkText={true} />
     //   <ContactHero />    
     //   <PartnerHospitals />

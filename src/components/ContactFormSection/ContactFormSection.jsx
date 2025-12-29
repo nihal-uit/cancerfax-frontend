@@ -15,45 +15,11 @@ import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import ReactStars from "react-rating-stars-component";
+import { formatMedia } from '@/utils/strapiHelpers';
 
   
 const ContactFormSection = ({ data }) => {
   const carouselRef = useRef(null);
-
-  const testimonialData = [ 
-  {
-    id: 1,
-    rating: 5,
-    text: "Quicklnk helps me to manage & grow  my Instagram account from 467 followers to 748K followers with-in a year.",
-    name: "Vishal Pragya",
-    role: "Cancer Patient",
-    avatar: "https://placehold.co/40x41"
-  },
-  {
-    id: 2,
-    rating: 4,
-    text: "Quicklnk helps me to manage & grow  my Instagram account from 467 followers to 748K followers with-in a year.",
-    name: "Vishal Pragya",
-    role: "Cancer Patient",
-    avatar: "https://placehold.co/40x41"
-  },
-  {
-    id: 3,
-    rating: 3.5,
-    text: "Quicklnk helps me to manage & grow  my Instagram account from 467 followers to 748K followers with-in a year.",
-    name: "Vishal Pragya",
-    role: "Cancer Patient",
-    avatar: "https://placehold.co/40x41"
-  },
-  {
-    id: 4,
-    rating: 4.5,
-    text: "Quicklnk helps me to manage & grow  my Instagram account from 467 followers to 748K followers with-in a year.",
-    name: "Vishal Pragya",
-    role: "Cancer Patient",
-    avatar: "https://placehold.co/40x41"
-  },
-];
   
   const dispatch = useDispatch();
   const { 
@@ -168,7 +134,7 @@ const ContactFormSection = ({ data }) => {
               }}
               className="pagination_slider"
             >
-              {testimonialData.map((testimonials, index) => {
+              {data?.reviews.map((testimonials) => {
                 return (
                   <SwiperSlide key={testimonials.id}>
                     <TestimonialCard>
@@ -184,13 +150,13 @@ const ContactFormSection = ({ data }) => {
                           />
                       </Stars>
                       <TestimonialText>
-                        {testimonials.text}
+                        {testimonials.review}
                       </TestimonialText>
                       <ProfileSection>
-                        <Avatar src={testimonials.avatar} alt={testimonials.text} />
+                        <Avatar src={formatMedia(testimonials.image)} alt='' />
                         <ProfileInfo>
                           <ProfileName>{testimonials.name}</ProfileName>
-                          <ProfileRole>{testimonials.role}</ProfileRole>
+                          <ProfileRole>{testimonials.titke}</ProfileRole>
                         </ProfileInfo>
                       </ProfileSection>
                     </TestimonialCard>
@@ -321,7 +287,7 @@ const ContactFormSection = ({ data }) => {
                   disabled={submissionStatus === 'loading'}
                 />
                 <CheckboxLabel htmlFor="consent">
-                  {formFields.termsText || 'By reaching out to us, you agree to our'}{' '}
+                  {data?.consent_message || ''}
                   <TermsLink href={formFields.termsLink || '#'}>
                     {formFields.termsLinkText || 'Terms & Condition'}
                   </TermsLink>

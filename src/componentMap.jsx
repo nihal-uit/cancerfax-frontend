@@ -120,7 +120,7 @@ export const componentMap = {
   "contact.partners-section": lazy(() => import("@/components/PartnerHospitals/PartnerHospitals.jsx")),
   "contact.contact-info-section": lazy(() => import("@/components/DedicatedSupport/DedicatedSupport.jsx")),
   "contact.location": lazy(() => import("@/components/LocationNetwork/LocationNetwork.jsx")),
-  "contact.testimonial-section": lazy(() => import("@/components/reusable/VideoTestimonialComponent.jsx")),
+  "contact.testimonial-section": lazy(() => import("@/components/ContactTestimonialWrapper/ContactTestimonialWrapper.jsx")),
   
   // Reusable
   "dynamic-zone.supporting-life-component": lazy(() => import("@/components/reusable/SupportingLifeComponent.jsx")),

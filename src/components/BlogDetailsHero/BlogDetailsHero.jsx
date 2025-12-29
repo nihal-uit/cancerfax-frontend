@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import { getMediaUrl } from '../../services/api';
 import { formatDate, formatMedia } from '../../utils/strapiHelpers';
 
@@ -98,9 +99,16 @@ const BlogDetailsHero = ({ data, loading }) => {
       mediaUrl = featuredImage || featuredVideo;
     }
 
+    // Get subcategory data (handle both Strapi v4 structure and flattened structure)
+    const subcategory = data?.resource_subcategory?.data?.attributes || 
+                       data?.resource_subcategory?.data ||
+                       data?.resource_subcategory?.attributes || 
+                       data?.resource_subcategory;
+
     return {
       tags: data.resource_tags ?? [],
-      category: data?.resource_subcategory?.name ?? '',
+      category: subcategory?.name || data?.resource_subcategory?.name ?? '',
+      categoryData: subcategory || data?.resource_subcategory || null,
       blogTitle: data.title ?? '',
       mediaType,
       mediaUrl,
@@ -241,9 +249,35 @@ const BlogDetailsHero = ({ data, loading }) => {
                 <div
                   style={{ display: 'flex', gap: '8px', flexWrap: 'nowrap' }}
                 >
-                  {content?.category && (
-                    <CategoryBadge>{content?.category}</CategoryBadge>
-                  )}
+                  {content?.category && (() => {
+                    const categoryData = content?.categoryData;
+                    const isClickable = categoryData?.is_clickable === true;
+                    const hasInternalPath = !!categoryData?.internal_path;
+                    const hasExternalUrl = !!categoryData?.external_url;
+                    const shouldBeClickable = isClickable && (hasInternalPath || hasExternalUrl);
+
+                    if (shouldBeClickable) {
+                      const url = categoryData?.internal_path || categoryData?.external_url;
+                      const target = categoryData?.target || (categoryData?.external_url ? '_blank' : '_self');
+                      
+                      // Use Link for internal paths, anchor for external URLs
+                      if (hasInternalPath) {
+                        return (
+                          <CategoryBadge as={Link} to={url} target={target}>
+                            {content?.category}
+                          </CategoryBadge>
+                        );
+                      } else {
+                        return (
+                          <CategoryBadge as="a" href={url} target={target}>
+                            {content?.category}
+                          </CategoryBadge>
+                        );
+                      }
+                    }
+
+                    return <CategoryBadge>{content?.category}</CategoryBadge>;
+                  })()}
                 </div>
                 <HospitalName>{content.blogTitle}</HospitalName>
                 <TopRow>
@@ -423,6 +457,23 @@ const CategoryBadge = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+
+  /* When used as a link */
+  &[href],
+  &[to] {
+    cursor: pointer;
+    
+    &:hover {
+      background: rgba(255, 105, 180, 0.9);
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
 `;
 
 const Description = styled.p`

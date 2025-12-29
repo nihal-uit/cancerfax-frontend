@@ -411,7 +411,7 @@ const Header = ({ darkText = false }) => {
     actualCtaUrl ||
     buttons?.connectButtonLink ||
     buttons?.connectButton?.link ||
-    '/contact';
+    '/contact-us';
 
   const [isSticky, setIsSticky] = useState(false);
 

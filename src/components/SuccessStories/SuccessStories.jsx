@@ -3,44 +3,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { fetchSuccessStories } from '../../store/slices/successStoriesSlice';
 import { getMediaUrl } from '../../services/api';
-// Default fallback data
-const defaultData = {
-  subtitle: 'JOY OF SUCCESS',
-  title: 'Stories of Strength and Healing',
-  description: 'Discover the journeys of courage, resilience, and hope from patients and families whose lives have been touched by our care and innovative treatments',
-  stories: [],
-};
 
-const SuccessStories = () => {
-  const dispatch = useDispatch();
-  const { sectionData, stories } = useSelector((state) => state.successStories);
-
-  useEffect(() => {
-    dispatch(fetchSuccessStories());
-  }, [dispatch]);
-
-  // Extract data with fallbacks
-  const subtitle = sectionData?.attributes?.subtitle || defaultData.subtitle;
-  const title = sectionData?.attributes?.title || defaultData.title;
-  const description = sectionData?.attributes?.description || defaultData.description;
-  const displayStories = stories.length > 0 ? stories : defaultData.stories;
-
+const SuccessStories = ({ data }) => {
   return (
     <SectionContainer className='p-0'>
       <div className='containerWrapper'>
         <HeaderSection className='commContent_wrap'>
           <LeftColumn>
-            <span className='contentLabel'>{subtitle}</span>
-            <h3 className='title-3'>{title}</h3>
+            <span className='contentLabel'>{data?.heading}</span>
+            <h3 className='title-3'>{data?.subHeading}</h3>
           </LeftColumn>
           <RightColumn>
-            <p className='text-16'>{description}</p>
+            <p className='text-16'>{data?.description_text}</p>
           </RightColumn>
         </HeaderSection>
 
-        {displayStories.length > 0 && (
+        {data?.stories?.length > 0 && (
           <StoriesGrid>
-            {displayStories.map((story, index) => {
+            {data?.stories?.map((story, index) => {
               const storyData = story.attributes || story;
               const storyTitle = storyData.title;
               const storyExcerpt = storyData.excerpt;

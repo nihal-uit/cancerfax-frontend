@@ -74,7 +74,7 @@ const HospitalSlider = ({ componentData, data }) => {
       id: hospital?.id || hospital?.documentId,
       title: hospital?.name || '',
       label: formatRichText(hospital?.description) || '',
-      backgroundImage: formatMedia(hospital?.hospitalImage),
+      backgroundImage: formatMedia(hospital?.about?.featuredImage),
       slug: hospital?.slug || '',
     }))
     .filter((slide) => slide.title);

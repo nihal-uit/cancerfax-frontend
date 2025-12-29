@@ -235,6 +235,8 @@ const LocationNetwork = ({ showButtons = true, componentData, data }) => {
   const { selectedHospitalId } = useSelector((state) => state.locationNetwork);
   const locationData = componentData || data;
 
+  console.log(locationData);
+
   const strapiHospitals = locationData?.hospitals || [];
 
   const parseCoordinate = (value) => {
@@ -247,22 +249,36 @@ const LocationNetwork = ({ showButtons = true, componentData, data }) => {
     strapiHospitals.length > 0
       ? strapiHospitals
           .map((hospital, index) => {
-            const hospitalData = hospital?.address?.address;
-            const latitude = parseCoordinate(hospitalData?.latitude);
-            const longitude = parseCoordinate(hospitalData?.longitude);
+            const addressData = hospital?.address?.address;
+            const latitude = parseCoordinate(addressData?.latitude);
+            const longitude = parseCoordinate(addressData?.longitude);
+
+            // Construct address string from individual fields
+            const addressParts = [
+              addressData?.flatNo,
+              addressData?.streetAddress,
+              addressData?.locality,
+              addressData?.city,
+              addressData?.state,
+              addressData?.country,
+            ].filter(Boolean);
+            const formattedAddress = addressParts.length > 0 
+              ? addressParts.join(', ') 
+              : '';
 
             return {
-              id: hospital?.id || hospitalData?.id || index + 1,
-              name: hospitalData?.name || '',
+              id: hospital?.id || hospital?.documentId || index + 1,
+              name: hospital?.name || '',
               latitude,
               longitude,
-              order: hospitalData?.order || index + 1,
-              address: hospitalData?.address?.address || '',
-              phone: hospitalData?.contact_details || '',
+              order: addressData?.order || hospital?.order || index + 1,
+              address: formattedAddress,
+              phone: hospital?.contact_details || '',
             };
           })
-          .filter((hospital) => hospital.name)
+          .filter((hospital) => hospital.name && hospital.latitude && hospital.longitude)
       : [];
+
 
   const hospitalsList = formattedStrapiHospitals.length > 0 ? formattedStrapiHospitals : [];
 
@@ -386,13 +402,10 @@ const LocationNetwork = ({ showButtons = true, componentData, data }) => {
               <MapController center={mapCenter} zoom={mapZoom} />
 
               {/* Markers for all hospitals with animations */}
-              {strapiHospitals?.map((hospital) => (
+              {hospitalsList?.map((hospital) => (
                 <Marker
-                  key={hospital?.id || hospital?.documentId}
-                  position={[
-                    hospital?.address?.address?.latitude || 0,
-                    hospital?.address?.address?.longitude || 0,
-                  ]}
+                  key={hospital?.id}
+                  position={[hospital?.latitude || 0, hospital?.longitude || 0]}
                   icon={
                     hospital?.id === selectedHospital?.id
                       ? pinkIcon
@@ -418,7 +431,7 @@ const LocationNetwork = ({ showButtons = true, componentData, data }) => {
                       >
                         {hospital?.name || ''}
                       </strong>
-                      {hospital?.address?.address?.address && (
+                      {hospital?.address && (
                         <p
                           style={{
                             fontSize: '14px',
@@ -426,10 +439,10 @@ const LocationNetwork = ({ showButtons = true, componentData, data }) => {
                             margin: '4px 0',
                           }}
                         >
-                          📍 {hospital?.address?.address?.address}
+                          📍 {hospital?.address}
                         </p>
                       )}
-                      {hospital?.contact_details && (
+                      {hospital?.phone && (
                         <p
                           style={{
                             fontSize: '14px',
@@ -437,7 +450,7 @@ const LocationNetwork = ({ showButtons = true, componentData, data }) => {
                             margin: '4px 0',
                           }}
                         >
-                          📞 {hospital?.contact_details}
+                          📞 {hospital?.phone}
                         </p>
                       )}
                     </div>
@@ -448,10 +461,10 @@ const LocationNetwork = ({ showButtons = true, componentData, data }) => {
           </MapWrapper>
 
           <HospitalsList>
-            {strapiHospitals?.map((hospital) => (
+            {hospitalsList?.map((hospital) => (
               <HospitalCard
                 className={hospital?.id === currentSelectedId ? 'active' : ''}
-                key={hospital?.id || hospital?.documentId}
+                key={hospital?.id}
                 $isSelected={hospital?.id === currentSelectedId}
                 onClick={() => handleHospitalClick(hospital?.id)}
               >

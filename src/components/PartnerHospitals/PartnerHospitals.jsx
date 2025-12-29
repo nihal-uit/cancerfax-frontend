@@ -57,7 +57,7 @@ const PartnerHospitals = ({ data }) => {
           autoFill={true}
           direction={'left'}
         >
-            {partnersData.map((partners, index) => {
+            {partnersData.map((partners) => {
               return (
                 <div key={partners.id} style={{ flex: "0 0 auto", margin: "0 30px" }}>
                   <img

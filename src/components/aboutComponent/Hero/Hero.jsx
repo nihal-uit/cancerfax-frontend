@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 
 const Hero = ({ sectionClass, data }) => {
   return (
-    <div className={`others_hero_content comm_hero_pt ${sectionClass}`}>
+    // <div className={`others_hero_content comm_hero_pt ${sectionClass}`}>
+    <div className={`others_hero_content comm_hero_pt about_sec`}>
       <div className="containerWrapper py-88">
         <div className="hero_content_row">
           <div className="hero_content_left commContent_wrap">
