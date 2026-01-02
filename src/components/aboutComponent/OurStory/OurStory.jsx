@@ -4,7 +4,7 @@ import { formatMedia } from "@/utils/strapiHelpers";
 const OurStory = ( { data } ) => {
 
   return (
-    <section className='ourstory_sec py-120' style={{ backgroundImage: `url(${formatMedia(data?.backgroundImage)})`}}>
+    <section className='ourstory_sec py-120' style={{ '--bg-image': `url(${formatMedia(data?.backgroundImage)})` }}>
       <div className='containerWrapper'>
         <div className="ourstory_card">
           <div className="ourstory_grid">

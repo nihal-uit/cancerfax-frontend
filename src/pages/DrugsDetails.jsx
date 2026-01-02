@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
@@ -10,14 +10,29 @@ import { fetchGlobalData } from '../store/slices/globalSlice';
 import { fetchDrugBySlug } from '../store/slices/drugSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import DynamicComponents from './DynamicComponents';
 
 const DrugsDetails = () => {
   const { slug } = useParams();
+  const location = useLocation();
   const dispatch = useDispatch();
+  const prevLoadingRef = useRef(false);
   const { data: globalData, loading: globalLoading } = useSelector(state => state.global);
   const { drug, loading: drugLoading } = useSelector((state) => state.drug);
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Scroll to top when data finishes loading
+  useEffect(() => {
+    if (prevLoadingRef.current && !drugLoading && !globalLoading && drug) {
+      window.scrollTo(0, 0);
+    }
+    prevLoadingRef.current = drugLoading || globalLoading;
+  }, [drugLoading, globalLoading, drug]);
 
   useEffect(() => {
     if (!globalData && !globalLoading) {
@@ -28,10 +43,6 @@ const DrugsDetails = () => {
   useEffect(() => {
     dispatch(fetchDrugBySlug(slug));
   }, [slug, dispatch]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
   
   if (globalLoading || drugLoading || !drug) {
     return <LoadingSpinner />

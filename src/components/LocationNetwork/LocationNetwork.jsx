@@ -235,8 +235,6 @@ const LocationNetwork = ({ showButtons = true, componentData, data }) => {
   const { selectedHospitalId } = useSelector((state) => state.locationNetwork);
   const locationData = componentData || data;
 
-  console.log(locationData);
-
   const strapiHospitals = locationData?.hospitals || [];
 
   const parseCoordinate = (value) => {
@@ -314,7 +312,6 @@ const LocationNetwork = ({ showButtons = true, componentData, data }) => {
   if (!locationData) {
     return null;
   }
-
 
   const currentSelectedId =
     selectedHospitalId && hospitalsList.some((h) => h.id === selectedHospitalId)

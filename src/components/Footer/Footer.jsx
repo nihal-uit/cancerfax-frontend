@@ -1339,7 +1339,7 @@ const Footer = () => {
                 { text: 'Terms of Service', url: '/404', target: '_self' },
                 { text: 'Privacy Policy', url: '/404', target: '_self' },
                 { text: 'Refund Policy', url: '/404', target: '_self' },
-                { text: 'Cookies', url: '/404', target: '_self' },
+                { text: 'Cookies', url: '/cookie-policy', target: '_self' },
               ],
         socialMediaLinks: strapiSocialLinks.length > 0 ? strapiSocialLinks : [],
       }
@@ -1607,7 +1607,24 @@ const Footer = () => {
                     contact.url && contact.url !== '#'
                       ? contact.type === 'email'
                         ? `mailto:${contact.url}`
+                        : contact.type === 'whatsapp'
+                        ? (() => {
+                            const cleanNumber = contact.url.replace(/[^0-9+]/g, '');
+                            const message = encodeURIComponent('Hello, I would like to know more about CancerFax.');
+                            return `https://wa.me/${cleanNumber}?text=${message}`;
+                          })()
                         : `tel:${contact.url}`
+                      : undefined
+                  }
+                  target={contact.type === 'whatsapp' ? '_blank' : undefined}
+                  onClick={
+                    contact.type === 'whatsapp' && contact.text
+                      ? (e) => {
+                          const cleanNumber = contact.text.replace(/[^0-9+]/g, '');
+                          const message = encodeURIComponent('Hello, I would like to know more about CancerFax.');
+                          window.open(`https://wa.me/${cleanNumber}?text=${message}`, '_blank');
+                          e.preventDefault();
+                        }
                       : undefined
                   }
                 >

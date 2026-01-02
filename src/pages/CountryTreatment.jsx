@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
@@ -19,7 +19,9 @@ import { fetchGlobalData } from '../store/slices/globalSlice';
 
 const CountryTreatment = () => {
   const { slug } = useParams();
+  const location = useLocation();
   const dispatch = useDispatch();
+  const prevLoadingRef = useRef(false);
   const { countryTreatment, loading: countryTreatmentLoading } = useSelector(
     (state) => state.treatment
   );
@@ -27,9 +29,18 @@ const CountryTreatment = () => {
     (state) => state.global
   );
 
+  // Scroll to top when route changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [location.pathname]);
+
+  // Scroll to top when data finishes loading
+  useEffect(() => {
+    if (prevLoadingRef.current && !countryTreatmentLoading && !globalLoading && countryTreatment) {
+      window.scrollTo(0, 0);
+    }
+    prevLoadingRef.current = countryTreatmentLoading || globalLoading;
+  }, [countryTreatmentLoading, globalLoading, countryTreatment]);
 
   useEffect(() => {
     if (!globalData && !globalLoading) {

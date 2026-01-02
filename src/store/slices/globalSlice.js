@@ -25,6 +25,17 @@ export const fetchGlobalData = createAsyncThunk(
       const globalPopulateQuery = qs.stringify(
         {
           populate: {
+            settings: {
+              populate: {
+                logo: { fields: ["id", "url", "hash", "name"] },
+                favicon: { fields: ["id", "url", "hash", "name"] },
+                address: true,
+                offices: { populate: true },
+                ogImage: { fields: ["id", "url", "hash", "name"] },
+                whatsappButton: true,
+                cookieConsent: true,
+              },
+            },
             navbar: { populate: true },
             footer: {
               populate: {

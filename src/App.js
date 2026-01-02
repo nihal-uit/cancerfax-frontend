@@ -14,15 +14,21 @@ import CancerTreatmentInUSA from './pages/CountryTreatment';
 import TherapyPage from './pages/TherapyPage';
 import NotFound from './pages/NotFound';
 import ClinicalTrialsDetailsPage from './pages/ClinicalTrialsDetailsPage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
+import CookieConsent from './components/CookieConsent/CookieConsent';
+import WhatsAppButton from './components/WhatsAppButton/WhatsAppButton';
 import './App.scss';
 
 function App() {
   return (
     <div className='App'>
+      <CookieConsent />
+      <WhatsAppButton />
       <Routes>
         {/* Reserved routes - must come before dynamic route */}
         <Route path='/' element={<HomePage />} />
         <Route path='/thank-you' element={<ThankYou />} />
+        <Route path='/cookie-policy' element={<CookiePolicyPage />} />
 
         {/* Resource listing pages - must come before detail routes */}
         {/* /resources and /resources/:category are handled by DynamicPage */}

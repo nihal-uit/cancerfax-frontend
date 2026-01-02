@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchGlobalData } from "../store/slices/globalSlice";
-import { fetchTherapiesBySlug } from "../store/slices/therapiesSlice";
-import { useParams } from "react-router-dom";
+import { fetchClinicalTrialsBySlug } from "../store/slices/clinicalTrialsSlice";
+import { useParams, useLocation } from "react-router-dom";
 import Header from "../components/Header/Header";
 import WhyOpt from "../components/TreatmentComponent/WhyOpt/WhyOpt";
 import Testimonials from "../components/Testimonials/Testimonials";
@@ -20,9 +20,24 @@ import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
 const ClinicalTrialsDetailsPage = () => {
   const dispatch = useDispatch();
   const { slug } = useParams();
+  const location = useLocation();
+  const prevLoadingRef = useRef(false);
 
   const { data: globalData, loading: globalLoading } = useSelector((state) => state.global);
-  const { therapies, loading: therapiesLoading } = useSelector((state) => state.therapies || {});
+  const { clinicalTrials, loading: clinicalTrialsLoading } = useSelector((state) => state.clinicalTrials || {});
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Scroll to top when data finishes loading
+  useEffect(() => {
+    if (prevLoadingRef.current && !clinicalTrialsLoading && !globalLoading && clinicalTrials) {
+      window.scrollTo(0, 0);
+    }
+    prevLoadingRef.current = clinicalTrialsLoading || globalLoading;
+  }, [clinicalTrialsLoading, globalLoading, clinicalTrials]);
 
   useEffect(() => {
     if (!globalData && !globalLoading) {
@@ -31,34 +46,33 @@ const ClinicalTrialsDetailsPage = () => {
   }, [globalData, globalLoading, dispatch]);
 
   useEffect(() => {
-    dispatch(fetchTherapiesBySlug(slug));
+    dispatch(fetchClinicalTrialsBySlug(slug));
   }, [dispatch, slug]);
 
-  if (globalLoading || therapiesLoading || !therapies) {
+  if (globalLoading || clinicalTrialsLoading || !clinicalTrials) {
     return <LoadingSpinner />
   }
-
 
   return (
     <div>
       <Header darkText={false} />
-      <TreatmentDetailHero data={therapies?.[0]} loading={therapiesLoading} />
-      <Chronic data={therapies?.[0]} loading={therapiesLoading} />
+      <TreatmentDetailHero data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
+      <Chronic data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
       <CartCellTherapy
         fadeIn={fadeIn}
         sideLeft={sideLeft}
         sideRight={sideRight}
-        data={therapies?.[0]}
-        loading={therapiesLoading}
+        data={clinicalTrials?.[0]}
+        loading={clinicalTrialsLoading}
       />
-      <WhyOpt sectionClass="theraphy__detail__sec" data={therapies?.[0]} loading={therapiesLoading} />
+      <WhyOpt sectionClass="theraphy__detail__sec" data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
       <hr className="treatment__divider" />
-      <FdaTherapy fadeIn={fadeIn} sideLeft={sideLeft} sideRight={sideRight} data={therapies?.[0]} loading={therapiesLoading} />
-      <Testimonials data={therapies?.[0]} loading={therapiesLoading} />
-      <GetInTouch data={therapies?.[0]} loading={therapiesLoading} />
-      <Research data={therapies?.[0]} loading={therapiesLoading} />
-      <Transcend data={therapies?.[0]} loading={therapiesLoading} />
-      <Resources sectionClass="treatment__resource" data={therapies?.[0]} loading={therapiesLoading} />
+      <FdaTherapy fadeIn={fadeIn} sideLeft={sideLeft} sideRight={sideRight} data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
+      <Testimonials data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
+      <GetInTouch data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
+      <Research data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
+      <Transcend data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
+      <Resources sectionClass="treatment__resource" data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
       <Footer />
     </div>
   );

@@ -34,10 +34,20 @@ const BlogDetails = () => {
   );
   const hasFetchedRef = useRef(false);
   const currentDocumentIdRef = useRef(null);
+  const prevLoadingRef = useRef(false);
 
+  // Scroll to top when route changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [location.pathname]);
+
+  // Scroll to top when data finishes loading
+  useEffect(() => {
+    if (prevLoadingRef.current && !loading && !globalLoading && singleBlog) {
+      window.scrollTo(0, 0);
+    }
+    prevLoadingRef.current = loading || globalLoading;
+  }, [loading, globalLoading, singleBlog]);
 
   useEffect(() => {
     if (!globalData && !globalLoading) {

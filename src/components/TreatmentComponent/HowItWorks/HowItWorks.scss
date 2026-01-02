@@ -1,7 +1,8 @@
 .treatment__howwork_sec {
-    background-color: var(--dark-gray);
+    background-color: #2d4a5a; // Dark teal-blue background
     position: relative;
     min-height: 880px;
+    overflow: hidden;
 
     @media screen and (max-width: 1023.98px) {
         min-height: 600px;
@@ -9,15 +10,27 @@
 
     .howItWork_bg {
         position: absolute;
-        left: 0;
-        bottom: 0;
+        inset: 0;
         width: 100%;
-        height: auto;
+        height: 100%;
+        z-index: 0;
         pointer-events: none;
 
         img {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            opacity: 0.15;
+            filter: blur(2px);
+            transform: scale(1.1);
+        }
+
+        &_overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(45, 74, 90, 0.7) 0%, rgba(45, 74, 90, 0.5) 100%);
+            z-index: 1;
         }
     }
 

@@ -39,8 +39,6 @@ const InnovativeSolutionsComponent = ({ data }) => {
     };
   }, []);
 
-  if(!data || !data?.isActive) return null;
-
   return (
     <>
       <ScrollAnimationComponent animationVariants={fadeIn}>

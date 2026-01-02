@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import SEO from '../components/SEO/SEO';
 import Header from '../components/Header/Header';
@@ -146,10 +146,12 @@ const DynamicPage = () => {
   };
 
   const { slug, category, subcategory } = useParams();
+  const location = useLocation();
   const dispatch = useDispatch();
   const pageData = useSelector((state) => state.page?.pageData);
   const pageLoading = useSelector((state) => state.page?.pageLoading);
   const pageError = useSelector((state) => state.page?.pageError);
+  const prevLoadingRef = useRef(false);
 
   // Pass category and subcategory to DynamicComponents so BlogKnowledgeChest can use them
   const urlParams = { category, subcategory };
@@ -185,6 +187,19 @@ const DynamicPage = () => {
       dispatch(fetchGlobalData());
     }
   }, [dispatch, globalData, globalLoading]);
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Scroll to top when data finishes loading
+  useEffect(() => {
+    if (prevLoadingRef.current && !pageLoading && pageData) {
+      window.scrollTo(0, 0);
+    }
+    prevLoadingRef.current = pageLoading;
+  }, [pageLoading, pageData]);
 
   useEffect(() => {
     // Normalize slug: trim whitespace and handle URL encoding

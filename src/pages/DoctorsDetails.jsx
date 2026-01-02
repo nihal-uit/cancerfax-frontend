@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import DoctorsDetailsHero from '../components/DoctorsDetailsHero/DoctorsDetailsHero';
 import DoctorsDetailsInfo from '../components/DoctorDetailsInfo/DoctorDetailsInfo';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
@@ -13,14 +13,26 @@ import DynamicComponents from './DynamicComponents';
 
 const DoctorsDetails = () => {
   const { slug } = useParams();
+  const location = useLocation();
   const dispatch = useDispatch();
+  const prevLoadingRef = useRef(false);
   const { data: globalData, loading: globalLoading } = useSelector(
     (state) => state.global
   );
   const { doctor, loading } = useSelector((state) => state.doctor);
+
+  // Scroll to top when route changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [location.pathname]);
+
+  // Scroll to top when data finishes loading
+  useEffect(() => {
+    if (prevLoadingRef.current && !loading && !globalLoading && doctor) {
+      window.scrollTo(0, 0);
+    }
+    prevLoadingRef.current = loading || globalLoading;
+  }, [loading, globalLoading, doctor]);
 
   useEffect(() => {
     if (!globalData && !globalLoading) {
@@ -53,4 +65,5 @@ const PageContainer = styled.div`
 `;
 
 export default DoctorsDetails;
+
 

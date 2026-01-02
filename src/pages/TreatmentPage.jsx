@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, lazy, Suspense } from "react";
+import React, { useEffect, useMemo, lazy, Suspense, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchGlobalData } from "../store/slices/globalSlice";
 import styled from "styled-components";
@@ -11,7 +11,7 @@ import TreatmentRisk from "../components/TreatmentComponent/TreatmentRisk/Treatm
 import GetInTouch from "../components/TreatmentComponent/GetInTouch/GetInTouch";
 import DynamicComponents from "./DynamicComponents";
 import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { fetchTreatmentBySlug } from "@/store/slices/treatmentSlice";
 
 const Journey = lazy(() =>
@@ -52,9 +52,24 @@ const PageWrapper = styled.div`
 const TreatmentPage = () => {
   const dispatch = useDispatch();
   const { slug } = useParams();
+  const location = useLocation();
+  const prevLoadingRef = useRef(false);
 
   const { data: globalData, loading: globalLoading } = useSelector((state) => state.global);
   const { treatment, loading: treatmentLoading } = useSelector((state) => state.treatment || {});
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Scroll to top when data finishes loading
+  useEffect(() => {
+    if (prevLoadingRef.current && !treatmentLoading && !globalLoading && treatment) {
+      window.scrollTo(0, 0);
+    }
+    prevLoadingRef.current = treatmentLoading || globalLoading;
+  }, [treatmentLoading, globalLoading, treatment]);
 
   useEffect(() => {
     if (!globalData && !globalLoading) {

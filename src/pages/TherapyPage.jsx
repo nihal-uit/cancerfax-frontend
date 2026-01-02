@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchGlobalData } from "../store/slices/globalSlice";
 import { fetchTherapiesBySlug } from "../store/slices/therapiesSlice";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import Header from "../components/Header/Header";
 import WhyOpt from "../components/TreatmentComponent/WhyOpt/WhyOpt";
 import Testimonials from "../components/Testimonials/Testimonials";
@@ -20,9 +20,24 @@ import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
 const TherapyPage = () => {
   const dispatch = useDispatch();
   const { slug } = useParams();
+  const location = useLocation();
+  const prevLoadingRef = useRef(false);
 
   const { data: globalData, loading: globalLoading } = useSelector((state) => state.global);
   const { therapies, loading: therapiesLoading } = useSelector((state) => state.therapies || {});
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Scroll to top when data finishes loading
+  useEffect(() => {
+    if (prevLoadingRef.current && !therapiesLoading && !globalLoading && therapies) {
+      window.scrollTo(0, 0);
+    }
+    prevLoadingRef.current = therapiesLoading || globalLoading;
+  }, [therapiesLoading, globalLoading, therapies]);
 
   useEffect(() => {
     if (!globalData && !globalLoading) {

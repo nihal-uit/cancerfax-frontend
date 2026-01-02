@@ -47,6 +47,7 @@ const HowItWorks = ({ data, loading }) => {
       {data?.backgroundImage && (
         <div className="howItWork_bg">
           <img src={formatMedia(data?.backgroundImage)} alt={data?.backgroundImage?.alternativeText || ''} />
+          <div className="howItWork_bg_overlay"></div>
         </div>
       )}
       <div className="containerWrapper z-2 position-relative">

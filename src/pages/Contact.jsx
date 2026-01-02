@@ -1,5 +1,6 @@
 import React, { useEffect, Suspense, lazy } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { fetchPageBySlug } from '../store/slices/pageSlice';
 import DynamicComponents from './DynamicComponents';
 import styled from 'styled-components';
@@ -21,15 +22,17 @@ const ContactFormSection = lazy(() => import('../components/ContactFormSection/C
 
 const Contact = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { pageData, pageLoading } = useSelector(state => state.page);
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   useEffect(() => {
     dispatch(fetchPageBySlug("contact-us"));
   }, [dispatch]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   return (
     // <div className='page_wrapper'>

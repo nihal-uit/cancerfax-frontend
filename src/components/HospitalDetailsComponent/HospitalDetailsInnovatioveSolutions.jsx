@@ -1,10 +1,8 @@
 import InnovativeSolutionsComponent from '../reusable/InnovativeSolutionsComponent';
 
-const HospitalDetailsInnovatioveSolutions = ( {data, loading} ) => {
-    if (loading || !data || !data?.isActive) {
-      return null;
-    }
-    
+const HospitalDetailsInnovatioveSolutions = ( {data} ) => {
+  if(!data) return null;
+  
     return (
       <section className='innovativeCare_sec py-120' id="treatments">
       <div className='containerWrapper'>

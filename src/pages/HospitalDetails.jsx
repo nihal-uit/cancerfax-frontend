@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import store from '../store';
@@ -10,17 +10,32 @@ import HospitalDetailsHero from '../components/HospitalDetailsComponent/Hospital
 import HospitalDetailsInfo from '../components/HospitalDetailsComponent/HospitalDetailsInfo';
 import HospitalDetailsTestimonials from '../components/HospitalDetailsComponent/HospitalDetailsTestimonials';
 import HospitalDetailsInnovatioveSolutions from '../components/HospitalDetailsComponent/HospitalDetailsInnovatioveSolutions';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import DynamicComponents from './DynamicComponents';
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
 import { fetchHospitalBySlug } from '../store/slices/hospitalNetworkSlice';
 
 const HospitalDetails = () => {
   const { slug } = useParams();
+  const location = useLocation();
   const dispatch = useDispatch();
+  const prevLoadingRef = useRef(false);
 
   const { data: globalData, loading: globalLoading } = useSelector((state) => state.global);
   const { hospital, loading } = useSelector((state) => state.hospitalNetwork)
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Scroll to top when data finishes loading
+  useEffect(() => {
+    if (prevLoadingRef.current && !loading && !globalLoading && hospital) {
+      window.scrollTo(0, 0);
+    }
+    prevLoadingRef.current = loading || globalLoading;
+  }, [loading, globalLoading, hospital]);
 
   useEffect(() => {
     if (!globalData && !globalLoading) {
@@ -31,10 +46,6 @@ const HospitalDetails = () => {
   useEffect(() => {
     dispatch(fetchHospitalBySlug(slug));
   }, [slug, dispatch]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   if (globalLoading || loading || !hospital || !hospital?.[0]) {
     return <LoadingSpinner />

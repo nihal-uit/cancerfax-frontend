@@ -25,6 +25,18 @@ export const fetchTrialTypes = createAsyncThunk(
   }
 );
 
+export const fetchClinicalTrialsBySlug = createAsyncThunk(
+  'clinicalTrials/fetchBySlug',
+  async (slug, { rejectWithValue }) => {
+    try {
+      const data = await clinicalTrialsAPI.getClinicalTrialsBySlug(slug);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch clinical trials by slug');
+    }
+  }
+);
+
 const clinicalTrialsSlice = createSlice({
   name: 'clinicalTrials',
   initialState: {

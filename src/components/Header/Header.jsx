@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { setCurrentLanguage } from '../../store/slices/navigationSlice';
 import { getMediaUrl } from '../../services/api';
 import { formatMedia } from '../../utils/strapiHelpers';
@@ -157,8 +158,18 @@ const Header = ({ darkText = false }) => {
     setLanguageMenuOpen(!languageMenuOpen);
   };
 
+  const { i18n } = useTranslation();
+
   const handleLanguageSelect = (language) => {
+    const langCode = language.code || language;
+    // Update i18n language
+    if (i18n) {
+      i18n.changeLanguage(langCode);
+    }
+    // Update Redux store
     dispatch(setCurrentLanguage(language));
+    // Save to localStorage
+    localStorage.setItem('preferredLanguage', langCode);
     setLanguageMenuOpen(false);
   };
 

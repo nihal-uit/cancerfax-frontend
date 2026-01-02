@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Header from "../components/Header/Header";
@@ -15,7 +15,7 @@ import OurStory from "../components/SurvivorStoriesComponent/OurStory/OurStory";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
 import { fetchSurvivorStoryBySlug } from "../store/slices/successStoriesSlice";
 import DynamicComponents from "./DynamicComponents";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 
 const PageWrapper = styled.div`
@@ -25,8 +25,23 @@ const PageWrapper = styled.div`
 const SurvivorStoriesDetailsPage = () => {
   const dispatch = useDispatch();
   const { slug } = useParams();
+  const location = useLocation();
+  const prevLoadingRef = useRef(false);
   const { data: globalData, loading: globalLoading } = useSelector((state) => state.global);
   const { survivorStory, loading } = useSelector((state) => state.successStories);
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Scroll to top when data finishes loading
+  useEffect(() => {
+    if (prevLoadingRef.current && !loading && !globalLoading && survivorStory) {
+      window.scrollTo(0, 0);
+    }
+    prevLoadingRef.current = loading || globalLoading;
+  }, [loading, globalLoading, survivorStory]);
 
   // Fetch global data for navbar and footer
   useEffect(() => {

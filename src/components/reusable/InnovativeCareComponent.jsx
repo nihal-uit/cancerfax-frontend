@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import { formatMedia } from '@/utils/strapiHelpers';
+import { Link } from 'react-router-dom';
 
 const InnovativeCareComponent = ({ data }) => {
   const carouselRef = useRef(null);
@@ -95,7 +96,7 @@ const InnovativeCareComponent = ({ data }) => {
                       <HoverDescription>
                         {therapy?.description_text || ''}
                       </HoverDescription>
-                      <ExploreButton>Explore</ExploreButton>
+                      <ExploreButton to={'/therapy/' + therapy?.slug}>Explore</ExploreButton>
                     </CardHoverContent>
                   </CardImage>
                 </TherapyCard>
@@ -337,7 +338,7 @@ const HoverDescription = styled.p`
   }
 `;
 
-const ExploreButton = styled.button`
+const ExploreButton = styled(Link)`
   display: inline-flex;
   align-items: center;
   justify-content: center;

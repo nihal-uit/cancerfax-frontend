@@ -1,6 +1,7 @@
 // Core Components
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import { componentMap } from "@/componentMap";
 import Header from "../components/Header/Header";
@@ -11,7 +12,22 @@ import styled from "styled-components";
 
 const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader = true, showFooter = true }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const prevLoadingRef = useRef(false);
   const { data: globalData, loading: globalLoading} = useSelector(state => state.global);
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Scroll to top when data finishes loading
+  useEffect(() => {
+    if (prevLoadingRef.current && !pageLoading && !globalLoading && pageData) {
+      window.scrollTo(0, 0);
+    }
+    prevLoadingRef.current = pageLoading || globalLoading;
+  }, [pageLoading, globalLoading, pageData]);
 
   useEffect(() => {
     if (!globalData && !globalLoading) {
