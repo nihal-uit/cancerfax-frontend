@@ -12,7 +12,7 @@ const MyStory = ({ data }) => {
   };
 
   const storyContent = data?.story_content;
-  if (!storyContent) return null;
+  if (!storyContent || !storyContent?.isActive) return null;
 
   const imageUrl = formatMedia(storyContent?.image);
   const label = storyContent?.heading || 'My Story';

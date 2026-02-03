@@ -48,17 +48,15 @@ const TreatmentDetailHero = ({ data }) => {
                   {data?.description_text}
                 </SubText>
 
-                {
-                  data?.cta && (
-                    <Link
-                      className="btn btn-pink-solid"
-                      to={data?.cta?.URL}
-                      target={data?.cta?.target}
-                    >
-                      {data?.cta?.text}
-                    </Link>
-                  )
-                }
+                {data?.cta?.text && (
+                  <Link
+                    className="btn btn-pink-solid"
+                    to={data?.cta?.URL || '#'}
+                    target={data?.cta?.target || '_self'}
+                  >
+                    {data?.cta?.text}
+                  </Link>
+                )}
               </TopRow>
             </HeroContentGrid>
           </div>

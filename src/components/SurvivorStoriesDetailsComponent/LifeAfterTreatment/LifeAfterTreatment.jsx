@@ -15,7 +15,7 @@ const LifeAfterTreatment = ({ data }) => {
   };
 
   const postTreatment = data?.post_treatment;
-  if (!postTreatment) return null;
+  if (!postTreatment || !postTreatment?.isActive) return null;
 
   const imageUrl = formatMedia(postTreatment?.patient_image);
   const iconUrl = formatMedia(postTreatment?.icon);

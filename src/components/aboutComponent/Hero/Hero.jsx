@@ -20,13 +20,15 @@ const Hero = ({ sectionClass, data }) => {
                 <p className="text-16 text_theme_dark">
                   {data?.description_text || ''}
                 </p>
-                <ExploreButton
-                  className="btn btn-pink-solid"
-                  to={data?.cta?.URL || '#'}
-                  target={data?.cta?.target || '_blank'}
-                >
-                  {data?.cta?.text || ''}
-                </ExploreButton>
+                {data?.cta?.text && (
+                  <ExploreButton
+                    className="btn btn-pink-solid"
+                    to={data?.cta?.URL || '#'}
+                    target={data?.cta?.target || '_blank'}
+                  >
+                    {data?.cta?.text}
+                  </ExploreButton>
+                )}
               </div>
             </ScrollAnimationComponent>
           </div>

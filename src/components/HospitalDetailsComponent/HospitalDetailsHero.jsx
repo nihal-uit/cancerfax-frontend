@@ -173,9 +173,9 @@ const HospitalDetailsHero = ({ data, loading }) => {
             </TopRow>
             
             <BottomRow>
-              {data?.cta?.URL && (
-                <Link className='btn btn-md btn-pink-solid' to={data?.cta?.URL} target={data?.cta?.target || '_self'}>
-                  {data?.cta?.text || 'Submit reports & check eligibility'}
+              {data?.cta?.text && (
+                <Link className='btn btn-md btn-pink-solid' to={data?.cta?.URL || '#'} target={data?.cta?.target || '_self'}>
+                  {data?.cta?.text}
                 </Link>
               )}
               

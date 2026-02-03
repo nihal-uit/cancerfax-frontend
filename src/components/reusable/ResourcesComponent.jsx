@@ -123,13 +123,15 @@ const ResourcesComponent = ({ data }) => {
           </Title>
         </HeaderContent>
 
-        <Link
-          className='btn btn-pink-solid'
-          to={data?.cta?.URL || '#'}
-          target={data?.cta?.target || '_blank'}
-        >
-          {data?.cta?.text || ''}
-        </Link>
+        {data?.cta?.text && (
+          <Link
+            className='btn btn-pink-solid'
+            to={data?.cta?.URL || '#'}
+            target={data?.cta?.target || '_blank'}
+          >
+            {data?.cta?.text}
+          </Link>
+        )}
       </HeaderSection>
 
       <BlogsGrid>

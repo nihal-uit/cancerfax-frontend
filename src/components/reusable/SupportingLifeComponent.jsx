@@ -4,6 +4,8 @@ import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAni
 import { formatMedia } from "../../utils/strapiHelpers";
 
 const SupportingLifeComponent = ({ data }) => {
+  if (!data || !data?.isActive) return null;
+
   const slideLeft = {
     hidden: { x: -100, opacity: 0 },
     visible: { x: 0, opacity: 1 },

@@ -27,13 +27,15 @@ const GetInTouch = ({ data }) => {
                   {data?.description_text ||
                     ''}
                 </Description>
-                <CTAButton
-                  className="btn btn-pink-solid"
-                  to={data?.cta?.URL || "#"}
-                  target={data?.cta?.target || "_blank"}
-                >
-                  {data?.cta?.text || ''}
-                </CTAButton>
+                {data?.cta?.text && (
+                  <CTAButton
+                    className="btn btn-pink-solid"
+                    to={data?.cta?.URL || "#"}
+                    target={data?.cta?.target || "_blank"}
+                  >
+                    {data?.cta?.text}
+                  </CTAButton>
+                )}
               </CommContentRight>
             </ScrollAnimationComponent>
           </div>

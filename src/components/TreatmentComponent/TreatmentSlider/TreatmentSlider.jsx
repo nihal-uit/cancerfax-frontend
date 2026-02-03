@@ -53,13 +53,13 @@ const TreatmentSlider = ({ sectionClass, data }) => {
                             {therapy?.hero?.subHeading && (
                               <p>{therapy?.hero?.subHeading}</p>
                             )}
-                            {therapy?.hero?.cta?.URL && (
+                            {therapy?.hero?.cta?.text && (
                               <Link
                                 to={therapy?.hero?.cta?.URL || ''}
                                 target={therapy?.hero?.cta?.target || '_blank'}
                                 className='btn btn-pink-solid'
                               >
-                                {therapy?.hero?.cta?.text || ''}
+                                {therapy?.hero?.cta?.text}
                               </Link>
                             )}
                           </div>

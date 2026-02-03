@@ -36,11 +36,13 @@ const ClinicalGuidance = ({data}) => {
                         {data?.description_text}
                       </p>
                     </div>
-                    <div className="btn__holder">
-                      <Link to={data?.cta?.URL} target={data?.cta?.target} className="btn btn-pink-solid">
-                        {data?.cta?.text}
-                      </Link>
-                    </div>
+                    {data?.cta?.text && (
+                      <div className="btn__holder">
+                        <Link to={data?.cta?.URL || '#'} target={data?.cta?.target || '_self'} className="btn btn-pink-solid">
+                          {data?.cta?.text}
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </ScrollAnimationComponent>
               </ContentHolder>

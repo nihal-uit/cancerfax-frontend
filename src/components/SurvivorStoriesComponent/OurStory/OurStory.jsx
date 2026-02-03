@@ -10,8 +10,6 @@ import 'swiper/css';
 const OurStory = ({ componentData, data }) => {
   const sliderData = componentData || data;
 
-  console.log("sliderData -> ", sliderData);
-
   // Hooks must be called before any early returns
   const carouselRef = useRef(null);
 
@@ -30,7 +28,7 @@ const OurStory = ({ componentData, data }) => {
     visible: { opacity: 1, y: 0 },
   };
 
-  if (!sliderData) {
+  if (!sliderData || !sliderData?.isActive) {
     return null;
   }
 

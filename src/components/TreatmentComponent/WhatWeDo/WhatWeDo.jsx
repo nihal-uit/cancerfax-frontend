@@ -77,11 +77,11 @@ const WhatWeDo = ({ data, loading }) => {
             </div>
           ))}
         </div>
-        {data?.cta?.URL && (
+        {data?.cta?.text && (
           <ScrollAnimationComponent animationVariants={fadeIn}>
             <div className="btn__holder">
-              <Link to={data?.cta?.URL || ''} className="btn btn-pink-solid" target={data?.cta?.target || '_blank'}>
-                {data?.cta?.text || ''}
+              <Link to={data?.cta?.URL || '#'} className="btn btn-pink-solid" target={data?.cta?.target || '_blank'}>
+                {data?.cta?.text}
               </Link>
             </div>
           </ScrollAnimationComponent>

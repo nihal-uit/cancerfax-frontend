@@ -9,7 +9,7 @@ const TherapyInfo = ({ data }) => {
   };
 
   const therapy = data?.understanding_treatment;
-  if (!therapy) return null;
+  if (!therapy || !therapy?.isActive) return null;
 
   const cards = [
     therapy?.card_1,

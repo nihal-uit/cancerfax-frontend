@@ -37,9 +37,11 @@ const Chronic = ({data}) => {
                     </Ratio>
                     <div className="ratio__overlay">
                       <div className="ratio__overlay__content">
-                        <Link to={data?.cta?.URL} target={data?.cta?.target} className="btn btn-pink-solid">
-                          {data?.cta?.text}
-                        </Link>
+                        {data?.cta?.text && (
+                          <Link to={data?.cta?.URL || '#'} target={data?.cta?.target || '_self'} className="btn btn-pink-solid">
+                            {data?.cta?.text}
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </div>

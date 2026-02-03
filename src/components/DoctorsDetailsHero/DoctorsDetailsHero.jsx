@@ -42,13 +42,13 @@ const DoctorsDetailsHero = ({ data, loading }) => {
                     {data?.right_side_content || ''}
                   </Description>
                 )}
-                {data?.cta?.URL && (
+                {data?.cta?.text && (
                   <Button 
                     className='btn btn-md btn-pink-solid' 
                     href={data?.cta?.URL || '#'} 
                     target={data?.cta?.target || '_self'}
                   >
-                    {data?.cta?.text || ''}
+                    {data?.cta?.text}
                   </Button>
                 )}
               </BottomRow>

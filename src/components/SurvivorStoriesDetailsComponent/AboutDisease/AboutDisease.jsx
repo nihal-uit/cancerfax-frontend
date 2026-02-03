@@ -10,7 +10,7 @@ const AboutDisease = ({ data }) => {
   };
 
   const diseaseInfo = data?.disease_info;
-  if (!diseaseInfo) return null;
+  if (!diseaseInfo || !diseaseInfo?.isActive) return null;
 
   const cards = [
     diseaseInfo?.condition && {
@@ -45,7 +45,7 @@ const AboutDisease = ({ data }) => {
     },
   ].filter(Boolean);
 
-  if (cards.length === 0) return null;
+  if (cards.length === 0 ) return null;
 
   return (
     <section className='aboutDisease_sec py-120'>

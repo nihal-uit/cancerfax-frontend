@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { getMediaUrl } from '../../services/api';
 
 const DrugsDetailsHero = ({ data}) => {
+  console.log('data', data);
+  if (!data || !data?.isActive) return null;
+
   return (
     <section className='homeHero_sec'>
 

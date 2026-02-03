@@ -65,14 +65,16 @@ const Hero = ({ componentData, data }) => {
               </StoryTitle>
 
               <div className='storyCard_wrap'>
-                <StoryButton
-                  className='btn btn-pink-solid'
-                  as='a'
-                  href={heroData?.cta?.URL || '#'}
-                  target={heroData?.cta?.target || '_blank'}
-                >
-                  {heroData?.cta?.text || ''}
-                </StoryButton>
+                {heroData?.cta?.text && (
+                  <StoryButton
+                    className='btn btn-pink-solid'
+                    as='a'
+                    href={heroData?.cta?.URL || '#'}
+                    target={heroData?.cta?.target || '_blank'}
+                  >
+                    {heroData?.cta?.text}
+                  </StoryButton>
+                )}
                 <StoryDescription className='text-16'>
                   {heroData?.description_text || ''}
                 </StoryDescription>

@@ -19,13 +19,15 @@ const WhatWeDo = ( { data } ) => {
             <Title className="title-3">{data?.subHeading || ''}</Title>
             <Description className='text-16'>{data?.description_text || ''}</Description>
           </HeaderContent>
-          <Link
-            className="btn btn-pink-solid"
-            to={data?.cta?.URL || "#"}
-            target={data?.cta?.target || "_blank"}
-          >
-            {data?.cta?.text || ''}
-          </Link>
+          {data?.cta?.text && (
+            <Link
+              className="btn btn-pink-solid"
+              to={data?.cta?.URL || "#"}
+              target={data?.cta?.target || "_blank"}
+            >
+              {data?.cta?.text}
+            </Link>
+          )}
         </HeaderSection>        
         <div className="swiper__holder">
           <Swiper

@@ -1539,12 +1539,10 @@ section {
 }
 .ourCertifications_sec {
   position: relative;
-  background: linear-gradient(to top, var(--dark-gray) 75%, #f8f8f8 40%);
+  background: linear-gradient(to top, var(--dark-gray) 100%, #f8f8f8 40%);
 }
 .ourCertifications_slider {
   background: transparent;
-  padding-bottom: 0;
-  margin-bottom: -180px;
   position: relative;
   z-index: 2;
 }
@@ -1554,7 +1552,6 @@ section {
 .ourCertifications_body {
   position: relative;
   z-index: 1;
-  padding-top: 220px;
 }
 .ourCertifications_sec::after {
   content: '';

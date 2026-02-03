@@ -33,13 +33,13 @@ const GetInTouch = ({ data, loading }) => {
                     {data?.description_text}
                   </Description>
                 )}
-                {data?.cta?.URL && (
+                {data?.cta?.text && (
                   <CTAButton
                     className="btn btn-pink-solid"
                     target={data?.cta?.target || '_blank'}
                     to={data?.cta?.URL || ''}
                   >
-                    {data?.cta?.text || ''}
+                    {data?.cta?.text}
                   </CTAButton>
                 )}
               </CommContentRight>

@@ -117,10 +117,10 @@ const IsForYou = ({ data, loading }) => {
                             ))}
                           </ul>
                         )}
-                        {inclusionCriteria?.cta?.URL && (
+                        {inclusionCriteria?.cta?.text && (
                           <div className="btn__holder">
-                            <a href={inclusionCriteria?.cta?.URL || ''} target={inclusionCriteria?.cta?.target || '_blank'} className="btn btn-pink-solid">
-                              {inclusionCriteria?.cta?.text || ''}
+                            <a href={inclusionCriteria?.cta?.URL || '#'} target={inclusionCriteria?.cta?.target || '_blank'} className="btn btn-pink-solid">
+                              {inclusionCriteria?.cta?.text}
                             </a>
                           </div>
                         )}
@@ -159,10 +159,10 @@ const IsForYou = ({ data, loading }) => {
                             ))}
                           </ul>
                         )}
-                        {exclusionCriteria?.cta?.URL && (
+                        {exclusionCriteria?.cta?.text && (
                           <div className="btn__holder">
-                            <a href={exclusionCriteria?.cta?.URL || ''} target={exclusionCriteria?.cta?.target || '_blank'} className="btn btn-pink-solid">
-                              {exclusionCriteria?.cta?.text || ''}
+                            <a href={exclusionCriteria?.cta?.URL || '#'} target={exclusionCriteria?.cta?.target || '_blank'} className="btn btn-pink-solid">
+                              {exclusionCriteria?.cta?.text}
                             </a>
                           </div>
                         )}

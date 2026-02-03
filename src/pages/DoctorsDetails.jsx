@@ -44,7 +44,7 @@ const DoctorsDetails = () => {
     dispatch(fetchDoctorBySlug(slug));
   }, [slug, dispatch]);
 
-  if (globalLoading || loading || !doctor || !doctor?.[0]) {
+  if (globalLoading || loading || !doctor || !doctor?.[0] || !doctor?.[0]?.isActive) {
     return <LoadingSpinner />
   }
 

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getPreviewQueryParams } from '../utils/preview';
 
 const API_URL = process.env.REACT_APP_STRAPI_URL || 'https://cancerfax.unifiedinfotechonline.com';
 const API_BASE = `${API_URL}/api`;
@@ -21,10 +22,19 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     
-    // Add cache-busting for GET requests to ensure fresh data from Strapi
-    // Using query parameter instead of headers to avoid CORS preflight issues
+    // Add preview parameters if in preview mode
     if (config.method === 'get' || config.method === 'GET') {
-      // Add timestamp to prevent caching (query parameter, not header)
+      const previewParams = getPreviewQueryParams();
+      if (previewParams.publicationState) {
+        const separator = config.url.includes('?') ? '&' : '?';
+        config.url = `${config.url}${separator}publicationState=${previewParams.publicationState}`;
+        if (previewParams.documentId) {
+          config.url = `${config.url}&documentId=${previewParams.documentId}`;
+        }
+      }
+      
+      // Add cache-busting for GET requests to ensure fresh data from Strapi
+      // Using query parameter instead of headers to avoid CORS preflight issues
       const separator = config.url.includes('?') ? '&' : '?';
       config.url = `${config.url}${separator}_t=${Date.now()}`;
       // Note: Removed Cache-Control headers to avoid CORS preflight issues

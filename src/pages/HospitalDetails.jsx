@@ -47,7 +47,7 @@ const HospitalDetails = () => {
     dispatch(fetchHospitalBySlug(slug));
   }, [slug, dispatch]);
 
-  if (globalLoading || loading || !hospital || !hospital?.[0]) {
+  if (globalLoading || loading || !hospital || !hospital?.[0] || !hospital?.[0]?.isActive) {
     return <LoadingSpinner />
   }
 

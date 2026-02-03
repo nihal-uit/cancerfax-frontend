@@ -17,11 +17,13 @@ import ClinicalTrialsDetailsPage from './pages/ClinicalTrialsDetailsPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import CookieConsent from './components/CookieConsent/CookieConsent';
 import WhatsAppButton from './components/WhatsAppButton/WhatsAppButton';
+import PreviewBanner from './components/PreviewBanner/PreviewBanner';
 import './App.scss';
 
 function App() {
   return (
     <div className='App'>
+      <PreviewBanner />
       <CookieConsent />
       <WhatsAppButton />
       <Routes>

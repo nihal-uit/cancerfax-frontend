@@ -7,7 +7,7 @@ import "swiper/css/effect-fade";
 
 const AboutSlider = ({ data }) => {
   return (
-    <section className="hospital_slider_sec ourCertifications_sec ourCertifications_slider">
+    <section className="hospital_slider_sec ourCertifications_sec ourCertifications_slider pb-120">
       <div className="containerWrapper one_side_full_container ms-0 me-auto ps-0">
         <div className="hospital_slider_wrapper">
           <Swiper

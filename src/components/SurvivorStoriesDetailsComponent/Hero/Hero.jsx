@@ -48,7 +48,7 @@ const Hero = ({ data }) => {
     }
   }, [isPlaying]);
 
-  if (!data) return null;
+  if (!data || !data?.isActive) return null;
 
   return (
     <section className='homeHero_sec'>

@@ -122,7 +122,7 @@ const TreatmentPage = () => {
         <TreatmentHero sectionClass="treatment__here" data={sections.hero} loading={treatmentLoading}/>
       )}
       {isSectionActive(sections.slider) && (
-        <TreatmentSlider sectionClass="treatment__banner" data={sections.slider} loading={treatmentLoading}/>
+        <TreatmentSlider sectionClass="treatment__banner pb-120" data={sections.slider} loading={treatmentLoading}/>
       )}
 
       <Suspense fallback={<SectionSkeleton />}>

@@ -109,7 +109,7 @@ const TestimonialsComponent = ({ data }) => {
           </TestimonialContent>
         </TestimonialsBox>
 
-        {ctaUrl && ctaUrl !== '#' && (
+        {(data?.cta?.text || survivorStory?.hero?.cta?.text) && ctaUrl && ctaUrl !== '#' && (
           <ReadButton className='btn btn-pink-solid' href={ctaUrl}>
             {data?.cta?.text || survivorStory?.hero?.cta?.text || 'Read Full Story'}
           </ReadButton>

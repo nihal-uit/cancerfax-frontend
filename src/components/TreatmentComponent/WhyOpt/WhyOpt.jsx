@@ -47,13 +47,13 @@ const WhyOpt = ({ sectionClass, data }) => {
                 {data?.description_text || ''}
               </Description>
             </Header>
-            {data?.cta?.URL && (
+            {data?.cta?.text && (
               <ExploreButton
                 className='btn btn-pink-solid'
                 to={data?.cta?.URL || ''}
                 target={data?.cta?.target || '_blank'}
               >
-                {data?.cta?.text || ''}
+                {data?.cta?.text}
               </ExploreButton>
             )}
           </HeaderWrapper>

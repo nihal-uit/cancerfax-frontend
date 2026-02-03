@@ -32,7 +32,7 @@ const OurJourney = ({ data }) => {
     visible: { opacity: 1, y: 0 },
   };
 
-  if (!journey || tabItems.length === 0) return null;
+  if (!journey || !journey?.isActive || tabItems.length === 0) return null;
 
   return (
     <section className='OurJourney_sec py-120'>

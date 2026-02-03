@@ -6,7 +6,7 @@ const InnovativeGalleryMarqueComponent = ( { data } ) => {
 
   return (
     <>
-      <div className='gallery_marquee_wrap'>
+      <div className='gallery_marquee_wrap py-120'>
         <Marquee
           pauseOnHover={true}
           speed={60}
