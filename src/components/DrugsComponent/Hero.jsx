@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getSectionData } from "../../utils/strapiHelpers";
+import { getSectionData, renderRichTextWithImages } from "../../utils/strapiHelpers";
 import { fetchPageBySlug } from "../../store/slices/pageSlice";
 import { formatRichText } from "../../utils/strapiHelpers";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
@@ -28,7 +28,7 @@ const Hero = () => {
   
   const heroContent = drugsHeroSection ? {
     title: drugsHeroSection.heading || defaultHeroContent.title,
-    description: formatRichText(drugsHeroSection.description) || drugsHeroSection.description || defaultHeroContent.description,
+    description: renderRichTextWithImages(drugsHeroSection.description_block) || drugsHeroSection.description || defaultHeroContent.description,
   } : defaultHeroContent;
 
   const slideLeft = {

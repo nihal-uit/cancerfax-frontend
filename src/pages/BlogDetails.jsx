@@ -14,7 +14,7 @@ import {
   fetchBlogs,
 } from '../store/slices/resourcesSlice';
 import { fetchGlobalData } from '../store/slices/globalSlice';
-import { formatRichText, formatMedia } from '../utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '../utils/strapiHelpers';
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
 import DynamicComponents from './DynamicComponents';
 import NotFound from './NotFound';
@@ -186,7 +186,8 @@ const BlogDetails = () => {
     return (
       <PageContainer>
         <Header darkText={true} />
-        <NotFound />
+        {/* <NotFound /> */}
+        <LoadingSpinner/>
         <Footer />
       </PageContainer>
     );
@@ -216,7 +217,7 @@ const BlogDetails = () => {
     ? {
         label: blogData?.expert?.heading,
         title: blogData?.expert?.subHeading,
-        description: formatRichText(blogData?.expert?.description_text),
+        description: renderRichTextWithImages(blogData?.expert?.description_block),
         buttonText: blogData?.expert?.cta?.text,
         buttonLink: blogData?.expert?.cta?.URL,
         buttonTarget: blogData?.expert?.cta?.target,
@@ -227,7 +228,8 @@ const BlogDetails = () => {
 
   return (
     <PageContainer>
-      <Header darkText={blogData?.gradient_shadow} />
+      {/* <Header darkText={blogData?.gradient_shadow} /> */}
+      <Header darkText={false} />
       <BlogDetailsHero data={blogData} loading={loading} />
       <BlogDetailsInfo data={blogData} loading={loading} />
       {blogData?.related_posts?.length > 0 && (

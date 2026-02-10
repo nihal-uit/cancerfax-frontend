@@ -1,3 +1,4 @@
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 import VideoTestimonialComponents from '../reusable/VideoTestimonialComponent';
 import styled from 'styled-components';
 
@@ -68,7 +69,7 @@ const HospitalDetailsTestimonials = ({data, loading}) => {
             </LeftContent>
             
             <RightContent className='commContent_wrap'>
-              {testimonial?.description_text && <Description className='text-16'>{testimonial.description_text}</Description>}
+              {(testimonial?.description_block ||testimonial?.description_text) && <Description className='text-16'>{renderRichTextWithImages(testimonial.description_block)||testimonial.description_text}</Description>}
             </RightContent>
           </TopSection>
 

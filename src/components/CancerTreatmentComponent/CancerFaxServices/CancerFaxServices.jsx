@@ -2,6 +2,7 @@ import React from "react";
 import styled from 'styled-components';
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import "./CancerFaxServices.scss";
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 const CancerFaxServices = ({ data }) => {
   const section = data;
   const steps =
@@ -14,7 +15,7 @@ const CancerFaxServices = ({ data }) => {
     visible: { opacity: 1, y: 0 },
   };
 
-  if (!section?.isActive || (!section?.heading && !section?.description_text && !steps.length)) {
+  if (!section?.isActive || (!section?.heading && !section?.description_block && !steps.length)) {
     return null;
   }
 
@@ -38,9 +39,9 @@ const CancerFaxServices = ({ data }) => {
           <div>
             <ScrollAnimationComponent animationVariants={fadeIn}>
               <div className="commContent_wrap">
-                {section?.description_text && (
+                {section?.description_block && (
                   <p>
-                    {section.description_text}
+                    {renderRichTextWithImages(section.description_text)}
                   </p>
                 )}
               </div>

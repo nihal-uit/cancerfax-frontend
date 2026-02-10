@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import styled from 'styled-components';
 import Marquee from "react-fast-marquee";
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const partnersData = [
   { 
@@ -45,7 +46,7 @@ const PartnerHospitals = ({ data }) => {
             <h3 className='title-3'>{data?.subHeading}</h3>
           </LeftColumn>
           <RightColumn>
-            <p className='text-16 line-2-text'>{data?.description_text}</p>
+            <p className='text-16 line-2-text'>{renderRichTextWithImages(data?.description_block)||data?.description_text}</p>
           </RightColumn>
         </HeaderSection>
 

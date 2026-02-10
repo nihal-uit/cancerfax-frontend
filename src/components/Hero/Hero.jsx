@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { formatMedia } from '../../utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 
 const Hero = ({ componentData, data }) => {
@@ -76,7 +76,7 @@ const Hero = ({ componentData, data }) => {
                   </StoryButton>
                 )}
                 <StoryDescription className='text-16'>
-                  {heroData?.description_text || ''}
+                  {renderRichTextWithImages(heroData?.description_block)||heroData?.description_text || ''}
                 </StoryDescription>
               </div>
             </div>

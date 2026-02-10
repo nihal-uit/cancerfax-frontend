@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
-import { formatMedia } from "@/utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const CancerTreatmentTopOncologists = ({ data }) => {
   const section = data;
@@ -22,9 +22,9 @@ const CancerTreatmentTopOncologists = ({ data }) => {
             {section?.heading && (
               <Title className="title-3">{section.heading}</Title>
             )}
-            {(section?.subHeading || section?.description_text) && (
+            {(section?.subHeading || section?.description_block ||section?.description_text) && (
               <Description className='text-16'>
-                {section.subHeading || section.description_text}
+                {section.subHeading || renderRichTextWithImages(section?.description_block) || section.description_text}
               </Description>
             )}
           </HeaderContent>

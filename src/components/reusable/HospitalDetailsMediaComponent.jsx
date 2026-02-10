@@ -1,7 +1,7 @@
 import React from "react";
 import styled from 'styled-components';
 import Marquee from "react-fast-marquee";
-import { formatMedia } from '@/utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const HospitalDetailsMediaComponent = ({ data, loading }) => {
   if (loading || !data) {
@@ -23,9 +23,9 @@ const HospitalDetailsMediaComponent = ({ data, loading }) => {
     <div className="commContent_wrap content-gap-24">
       {data?.heading && <h3 className="title-3">{data.heading}</h3>}
 
-      {data?.description_text && (
+      {(data.description_block || data?.description_text) && (
         <div className="text-14">
-          <p>{data.description_text}</p>
+          <p>{renderRichTextWithImages(data.description_block)||data.description_text}</p>
         </div>
       )}
 

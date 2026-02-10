@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 50 },
@@ -73,7 +74,7 @@ const ClinicalPhases = ({ componentData, data }) => {
                   {phasesData?.subHeading || ''}
                   </h3>
                   <div className="content__des text_theme_dark">
-                  <p>{phasesData?.description_text || ''}</p>
+                  <p>{renderRichTextWithImages(phasesData?.description_block)||phasesData?.description_text || ''}</p>
                 </div>
               </div>
                 <div className="list__holder">
@@ -124,7 +125,7 @@ const ClinicalPhases = ({ componentData, data }) => {
                       <div className="card__content">
                         <h4 className="card__title">{phase?.title || ''}</h4>
                         <div className="card__description">
-                          <p>{phase?.description_text || ''}</p>
+                          <p>{renderRichTextWithImages(phase?.description_block) ||phase?.description_text || ''}</p>
                         </div>
                       </div>
                     </div>

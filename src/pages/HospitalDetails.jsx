@@ -54,7 +54,7 @@ const HospitalDetails = () => {
   return (
     <PageContainer>
       <Header/>
-      <HospitalDetailsHero data={hospital?.[0]?.hero} loading={loading} />
+      <HospitalDetailsHero data={hospital?.[0]?.hero} loading={loading} hospitalImage={hospital?.[0]?.hospitalImage}/>
       <HospitalDetailsInfo data={hospital?.[0]} loading={loading} />
       {hospital?.[0]?.testimonial?.testimonial_card && (
         <HospitalDetailsTestimonials data={hospital?.[0]} loading={loading} />

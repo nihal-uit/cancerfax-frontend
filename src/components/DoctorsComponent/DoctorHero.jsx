@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const DoctorHero = ({ componentData, data }) => {
   const heroData = componentData || data;
@@ -28,7 +29,7 @@ const DoctorHero = ({ componentData, data }) => {
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className='commContent_wrap content-gap-40'>
                 <p className='text-16 text_theme_dark'>
-                  {heroData?.description_text || ''}
+                  {renderRichTextWithImages(heroData?.description_block)||heroData?.description_text || ''}
                 </p>
                 {heroData?.cta?.text && (
                   <ExploreButton

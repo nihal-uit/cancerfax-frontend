@@ -19,6 +19,7 @@ import CookieConsent from './components/CookieConsent/CookieConsent';
 import WhatsAppButton from './components/WhatsAppButton/WhatsAppButton';
 import PreviewBanner from './components/PreviewBanner/PreviewBanner';
 import './App.scss';
+import CostCalculatorPage from './pages/CostCalculatorPage';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path='/' element={<HomePage />} />
         <Route path='/thank-you' element={<ThankYou />} />
         <Route path='/cookie-policy' element={<CookiePolicyPage />} />
+        <Route path='/cost' element={<CostCalculatorPage />} />
 
         {/* Resource listing pages - must come before detail routes */}
         {/* /resources and /resources/:category are handled by DynamicPage */}

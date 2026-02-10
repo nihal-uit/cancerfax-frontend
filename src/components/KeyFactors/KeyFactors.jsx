@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { fetchKeyFactorsSection, fetchKeyFactors } from '../../store/slices/keyFactorsSlice';
 import { getMediaUrl } from '../../services/api';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const KeyFactors = () => {
 
@@ -192,7 +193,7 @@ const KeyFactors = () => {
               >
                 <IconWrapper>{getIcon(factor.icon)}</IconWrapper>
                 <StepTitle className='title-5 text_theme_dark'>{factor.title}</StepTitle>
-                {factor.description && <StepDescription className='text-16 text_theme_dark'>{factor.description}</StepDescription>}
+                {factor.description_block && <StepDescription className='text-16 text_theme_dark'>{renderRichTextWithImages(factor.description_block)}</StepDescription>}
               </StepCard>
             );
           })}

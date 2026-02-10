@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { fetchSuccessStories } from '../../store/slices/successStoriesSlice';
 import { getMediaUrl } from '../../services/api';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const SuccessStories = ({ data }) => {
   return (
@@ -14,7 +15,7 @@ const SuccessStories = ({ data }) => {
             <h3 className='title-3'>{data?.subHeading}</h3>
           </LeftColumn>
           <RightColumn>
-            <p className='text-16'>{data?.description_text}</p>
+            <p className='text-16'>{renderRichTextWithImages(data?.description_block)||data?.description_text}</p>
           </RightColumn>
         </HeaderSection>
 

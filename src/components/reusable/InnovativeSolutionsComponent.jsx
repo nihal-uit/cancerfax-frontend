@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 
-import { formatMedia } from '@/utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const InnovativeSolutionsComponent = ({ data }) => {
   const carouselRef = useRef(null);
@@ -48,7 +48,7 @@ const InnovativeSolutionsComponent = ({ data }) => {
             <Title className="title-3">{data?.subHeading}</Title>
           </Header>
           <Description className="text-16">
-            {data?.description_text}
+            {renderRichTextWithImages(data?.description_block)||data?.description_text}
           </Description>
         </div>
       </ScrollAnimationComponent>
@@ -95,9 +95,9 @@ const InnovativeSolutionsComponent = ({ data }) => {
                   </CardOverlay>
                   <CardHoverContent className="card-hover-content">
                     <HoverTitle>{hospital?.name || ''}</HoverTitle>
-                    {hospital?.description && (
+                    {hospital?.description_block && (
                       <HoverDescription>
-                        {hospital.description}
+                        {renderRichTextWithImages(hospital.description_block)}
                       </HoverDescription>
                     )}
                     {hospital?.contact_details?.phone && (

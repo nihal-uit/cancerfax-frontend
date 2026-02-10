@@ -72,7 +72,7 @@ const HospitalDetailsInfo = ({ data, loading }) => {
         return data?.facilities && Array.isArray(data?.facilities) && data?.facilities?.length > 0;
       }
       if (sectionId === 'media') {
-        return data?.media && (data?.media?.media_galary?.length > 0 || data?.media?.heading || data?.media?.description_text);
+        return data?.media && (data?.media?.media_galary?.length > 0 || data?.media?.heading || renderRichTextWithImages(data?.media?.description_block) ||data?.media?.description_text);
       }
       
       // Default check for standard sections
@@ -350,11 +350,11 @@ const HospitalDetailsInfo = ({ data, loading }) => {
                   >
                     <div className="commContent_wrap content-gap-24">
                       {infrastructureData?.heading && <h3 className="title-3">{infrastructureData.heading}</h3>}
-                      {infrastructureData?.description_text && (
+                      {infrastructureData?.description_block && (
                         <div className="text-14">
-                          {Array.isArray(infrastructureData.description_text) 
-                            ? renderRichTextWithImages(infrastructureData.description_text)
-                            : <p>{formatRichText(infrastructureData.description_text)}</p>
+                          {Array.isArray(infrastructureData.description_block) 
+                            ? renderRichTextWithImages(infrastructureData.description_block)
+                            : <p>{formatRichText(infrastructureData.description_block)}</p>
                           }
                         </div>
                       )}
@@ -427,11 +427,11 @@ const HospitalDetailsInfo = ({ data, loading }) => {
                   >
                     <div className="commContent_wrap content-gap-24">
                       {teamData?.heading && <h3 className="title-3">{teamData.heading}</h3>}
-                      {teamData?.description_text && (
+                      {teamData?.description_block && (
                         <div className="text-14">
-                          {Array.isArray(teamData.description_text) 
-                            ? renderRichTextWithImages(teamData.description_text)
-                            : <p>{formatRichText(teamData.description_text)}</p>
+                          {Array.isArray(teamData.description_block) 
+                            ? renderRichTextWithImages(teamData.description_block)
+                            : <p>{formatRichText(teamData.description_block)}</p>
                           }
                         </div>
                       )}

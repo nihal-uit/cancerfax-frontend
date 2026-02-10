@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { fetchQuickFindsSection } from '../../store/slices/quickFindsSlice';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const ClinicalFeature = ({ componentData, data }) => {
   const dispatch = useDispatch();
@@ -54,7 +55,7 @@ const ClinicalFeature = ({ componentData, data }) => {
               <p className='contentLabel'>{listingData?.heading || ''}</p>
               <h3 className='title-3'>{listingData?.subHeading || ''}</h3>
               <div className='content__des text_theme_dark'>
-                <p className='text-16'>{listingData?.description_text || ''}</p>
+                <p className='text-16'>{renderRichTextWithImages(listingData?.description_block)||listingData?.description_text || ''}</p>
               </div>
             </div>
           </TopSection>

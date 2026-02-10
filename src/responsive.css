@@ -68,12 +68,24 @@
       gap: 30px;
       margin-bottom: 60px;
     }
+    .treatment_new_row .treatment_new_right {
+      flex: 0 0 500px;
+      max-width: 500px;
+    }
+    .treatment_new_row {
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    .treatment_location_wrap {
+      grid-template-columns: repeat(7, 1fr);
+    }
   }
 
   @media (max-width: 1024px) {
     .homeHero_sec {
       max-height: 100%;
       min-height: 651px;
+      height: 100%;
     }
     .home-hero-banner .ratio::before {
         padding-top: calc(651 / 1440 * 100%);
@@ -217,6 +229,21 @@
     .builtExperience_sec .builtExperience_row {
       grid-template-columns: 1fr;
     }
+    .commContent_wrap .title-4,
+    .commContent_wrap h4 {
+      font-size: 24px;
+      line-height: 32px;
+    }
+    .treatment_location_wrap {
+      margin-top: 40px;
+    }
+    .treatment_new_row .treatment_new_right {
+      flex: 0 0 auto;
+      max-width: 100%;
+    }
+    .treatment_location_wrap {
+      grid-template-columns: repeat(5, 1fr);
+    }
   }
 
   @media (max-width: 768px) {
@@ -339,6 +366,14 @@
         height: 100%;
          min-height: calc(100vh + 100px);
     }
+    .commContent_wrap .title-4,
+    .commContent_wrap h4 {
+      font-size: 20px;
+      line-height: 28px;
+    }
+    .treatment_location_wrap {
+      grid-template-columns: repeat(4, 1fr);
+    }
   }
   
   @media (max-width: 576px) {
@@ -405,6 +440,9 @@
     .ourstory_card {
         padding: 20px;
     }
+    .treatment_location_wrap {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
   
   @media (max-width: 480px) {
@@ -423,6 +461,9 @@
     }
     .cancer_hero_sec .home-hero-banner .ratio::before {
         min-height: calc(100vh + 120px);
+    }
+    .treatment_location_wrap {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 

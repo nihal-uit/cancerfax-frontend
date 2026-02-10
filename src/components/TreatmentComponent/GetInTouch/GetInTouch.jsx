@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import { Link } from "react-router-dom";
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const GetInTouch = ({ data, loading }) => {
   if (loading || !data?.isActive) {
@@ -28,9 +29,9 @@ const GetInTouch = ({ data, loading }) => {
           <div>
             <ScrollAnimationComponent animationVariants={slideRight}>
               <CommContentRight className="commContent_wrap">
-                {data?.description_text && (
+                { (data?.description_block|| data?.description_text) && (
                   <Description className="text-16">
-                    {data?.description_text}
+                    {renderRichTextWithImages(data?.description_block) || data?.description_text}
                   </Description>
                 )}
                 {data?.cta?.text && (

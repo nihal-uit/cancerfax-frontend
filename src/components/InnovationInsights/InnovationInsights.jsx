@@ -5,6 +5,7 @@ import { fetchInnovationInsightsSection, fetchInnovationImages, fetchStaticImage
 import { getMediaUrl } from '../../services/api';
 import Marquee from "react-fast-marquee";
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const InnovationInsights = () => {
 
@@ -92,7 +93,7 @@ const InnovationInsights = () => {
         <Header className='commContent_wrap content-gap-40'>
           <Label className='contentLabel text_theme_dark'>{content.label}</Label>
           <Title className='title-3 text_theme_dark'>{content.title}</Title>
-          <Description className='text-16 text_theme_dark'>{content.description}</Description>
+          <Description className='text-16 text_theme_dark'>{renderRichTextWithImages(content.description)}</Description>
         </Header>
         </ScrollAnimationComponent>
       </div>

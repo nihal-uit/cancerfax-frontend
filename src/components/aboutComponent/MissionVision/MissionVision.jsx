@@ -1,5 +1,5 @@
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
-import { formatMedia } from "@/utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const MissionVision = ( { data } ) => {
   return (
@@ -18,7 +18,7 @@ const MissionVision = ( { data } ) => {
                     <span className="contentLabel mb-2">{data?.heading || ''}</span>
                     <h3>{data?.subHeading || ''}</h3>
                     <p className="text-16">
-                      {data?.description_text || ''}
+                      { renderRichTextWithImages(data?.description_block) || data?.description_text || ''}
                     </p>
                   </div>
                 </div>
@@ -36,7 +36,7 @@ const MissionVision = ( { data } ) => {
                     <h5>
                       {data?.card_1?.title || ''}
                     </h5>
-                    <p>{data?.card_1?.description_text || ''}</p>
+                    <p>{ renderRichTextWithImages(data?.card_1?.description_block) || data?.card_1?.description_text || ''}</p>
                   </div>
                 </li>
                 <li>
@@ -47,7 +47,7 @@ const MissionVision = ( { data } ) => {
                     <h5>
                       {data?.card_2?.title || ''}
                     </h5>
-                    <p>{data?.card_2?.description_text || ''}</p>
+                    <p>{renderRichTextWithImages(data?.card_2?.description_block) ||data?.card_2?.description_text || ''}</p>
                   </div>
                 </li>
               </ul>

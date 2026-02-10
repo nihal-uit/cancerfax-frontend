@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { formatMedia } from "../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../utils/strapiHelpers";
 import Marquee from "react-fast-marquee";
 
 const Header = styled.div`
@@ -205,7 +205,7 @@ const HospitalInnovationInsights = ({ componentData, data }) => {
             {insightsData?.subHeading || ''}
           </Title>
           <Description className="text-16 text_theme_dark">
-            {insightsData?.description_text || ''}
+            {renderRichTextWithImages(insightsData?.description_block)||insightsData?.description_text || ''}
           </Description>
         </Header>
       </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchGlobalData } from "../store/slices/globalSlice";
 import { fetchTherapiesBySlug } from "../store/slices/therapiesSlice";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useSearchParams } from "react-router-dom";
 import Header from "../components/Header/Header";
 import WhyOpt from "../components/TreatmentComponent/WhyOpt/WhyOpt";
 import Testimonials from "../components/Testimonials/Testimonials";
@@ -16,12 +16,19 @@ import Chronic from "../components/TreatmentComponent/Chronic/Chronic";
 import CartCellTherapy from "../components/TreatmentComponent/CartCellTherapy/CartCellTherapy";
 import FdaTherapy from "../components/TreatmentComponent/FdaTherapy";
 import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
+import TreatmentwiseCost from "../components/CostCalculatorComponent/TreatmentwiseCost";
+import AvailableTreatmentComponent from "../components/CostCalculatorComponent/AvailableTreatmentComponent";
+import CancerTreatmentTopOncologists from '../components/CancerTreatmentComponent/CancerTreatmentTopOncologists/CancerTreatmentTopOncologists';
+import HospitalSlider from "../components/HospitalComponents/HospitalSlider";
+
 
 const TherapyPage = () => {
   const dispatch = useDispatch();
   const { slug } = useParams();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const prevLoadingRef = useRef(false);
+  const countryParam = searchParams.get('country');
 
   const { data: globalData, loading: globalLoading } = useSelector((state) => state.global);
   const { therapies, loading: therapiesLoading } = useSelector((state) => state.therapies || {});
@@ -61,11 +68,15 @@ const TherapyPage = () => {
           <TreatmentDetailHero data={therapies?.[0]?.hero} loading={therapiesLoading} />
         )
       }
+      {countryParam && <TreatmentwiseCost />} 
+      <HospitalSlider data={therapies?.[0]?.hospitals} />
       {
         therapies?.[0]?.overview?.isActive && (
           <Chronic data={therapies?.[0]?.overview} loading={therapiesLoading} />
         )
       }
+     <CancerTreatmentTopOncologists data={therapies?.[0]?.doctors} />
+     {countryParam && <AvailableTreatmentComponent countryParam={countryParam} />} 
       {
         therapies?.[0]?.understanding?.isActive && (
           <CartCellTherapy

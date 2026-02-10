@@ -10,6 +10,7 @@ import {
 } from "react-bootstrap";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import { getMediaUrl } from "../../../services/api";
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const IsForYou = ({ data, loading }) => {
   if (loading || !data?.isActive) return null;
@@ -38,9 +39,9 @@ const IsForYou = ({ data, loading }) => {
                 {data?.subHeading}
               </h3>
             )}
-            {data?.description_text && (
+            {data?.description_block || data?.description_text && (
               <div className="content__des">
-                {data?.description_text}
+                {renderRichTextWithImages(data?.description_block) || data?.description_text}
               </div>
             )}
           </div>

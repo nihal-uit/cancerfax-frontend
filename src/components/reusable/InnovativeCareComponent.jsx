@@ -4,7 +4,7 @@ import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAni
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css';
-import { formatMedia } from '@/utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '@/utils/strapiHelpers';
 import { Link } from 'react-router-dom';
 
 const InnovativeCareComponent = ({ data }) => {
@@ -43,7 +43,7 @@ const InnovativeCareComponent = ({ data }) => {
           </Header>
 
           <Description className='text-16'>
-            {therapyData?.description_text || ''}
+            {renderRichTextWithImages(therapyData?.description_block)||therapyData?.description_text || ''}
           </Description>
         </div>
       </ScrollAnimationComponent>

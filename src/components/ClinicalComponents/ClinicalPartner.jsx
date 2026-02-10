@@ -1,6 +1,6 @@
 import React from 'react';
 import Marquee from 'react-fast-marquee';
-import { formatMedia } from '../../utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
 
 const ClinicalPartner = ({ componentData, data }) => {
@@ -33,7 +33,7 @@ const ClinicalPartner = ({ componentData, data }) => {
             <p className='contentLabel'>{collaborationData?.heading || ''}</p>
             <h3 className='title-3'>{collaborationData?.subHeading || ''}</h3>
             <div className='content__des text_theme_dark'>
-              <p>{collaborationData?.description_text || ''}</p>
+              <p>{renderRichTextWithImages(collaborationData?.description_block)||collaborationData?.description_text || ''}</p>
             </div>
           </div>
         </ScrollAnimationComponent>

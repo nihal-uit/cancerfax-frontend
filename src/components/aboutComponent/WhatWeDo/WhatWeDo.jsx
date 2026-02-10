@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import { Link } from "react-router-dom";
-import { formatMedia } from "@/utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const WhatWeDo = ( { data } ) => {
 
@@ -17,7 +17,7 @@ const WhatWeDo = ( { data } ) => {
           <HeaderContent>
             <Label className="contentLabel">{data?.heading || ''}</Label>
             <Title className="title-3">{data?.subHeading || ''}</Title>
-            <Description className='text-16'>{data?.description_text || ''}</Description>
+            <Description className='text-16'>{renderRichTextWithImages(data?.description_block) || data?.description_text || ''}</Description>
           </HeaderContent>
           {data?.cta?.text && (
             <Link
@@ -78,7 +78,7 @@ const WhatWeDo = ( { data } ) => {
                       </CardOverlay>
                       <CardHoverContent className="card-hover-content">
                         <HoverTitle>{item?.title || ''}</HoverTitle>
-                        <HoverDescription>{item?.description_text || ''}</HoverDescription>
+                        <HoverDescription>{renderRichTextWithImages(item?.description_block) || item?.description_text || ''}</HoverDescription>
                       </CardHoverContent>
                     </CardImage>
                   </TherapyCard>

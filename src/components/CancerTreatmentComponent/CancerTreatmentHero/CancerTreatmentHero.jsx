@@ -7,7 +7,7 @@ import {
   resetSubmissionStatus,
 } from '../../../store/slices/contactFormSlice';
 import { useNavigate } from 'react-router-dom';
-import { formatMedia } from '@/utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const CancerTreatmentHero = ({ data }) => {
   const dispatch = useDispatch();
@@ -110,9 +110,9 @@ const CancerTreatmentHero = ({ data }) => {
                       {data.heading}
                     </DiseaseTitle>
                   )}
-                  {(data?.subHeading || data?.description_text) && (
+                  {(data?.subHeading || data?.description_block ||data?.description_text) && (
                     <Description className='text-16'>
-                      {data.subHeading || data.description_text}
+                      {data?.subHeading || renderRichTextWithImages(data?.description_block) || data?.description_text}
                     </Description>
                   )}
                 </div>

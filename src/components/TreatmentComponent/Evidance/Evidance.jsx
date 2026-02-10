@@ -3,7 +3,7 @@ import styled from "styled-components";
 import "./Evidance.scss";
 import Card from "react-bootstrap/Card";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
-import { formatMedia } from "../../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../../utils/strapiHelpers";
 
 const Evidance = ({ data, loading }) => {
   if (loading || !data?.isActive) {
@@ -42,9 +42,9 @@ const Evidance = ({ data, loading }) => {
                         )
                       }
                     </div>
-                    {data?.card_1?.description_text && (
+                    { data?.card_1?.description_block || data?.card_1?.description_text && (
                       <div className="card__body">
-                        <p>{data?.card_1?.description_text}</p>
+                        <p>{renderRichTextWithImages(data?.card_1?.description_block)||data?.card_1?.description_text}</p>
                       </div>
                     )}
                   </Card>
@@ -86,9 +86,9 @@ const Evidance = ({ data, loading }) => {
                             </div>
                           )}
                         </div>
-                        {data?.card_3?.description_text && (
+                        {data?.card_3?.description_block || data?.card_3?.description_text && (
                           <div className="card__body">
-                            <p>{data?.card_3?.description_text}</p>
+                            <p>{renderRichTextWithImages(data?.card_3?.description_block) || data?.card_3?.description_text}</p>
                           </div>
                         )}
                       </div>
@@ -119,9 +119,9 @@ const Evidance = ({ data, loading }) => {
                           )
                         }
                       </div>
-                      {data?.card_4?.description_text && (
+                      {data?.card_4?.description_block || data?.card_4?.description_text && (
                         <div className="card__body">
-                          <p>{data?.card_4?.description_text}</p>
+                          <p>{renderRichTextWithImages(data?.card_4?.description_block) || data?.card_4?.description_text}</p>
                         </div>
                       )}
                     </Card>
@@ -145,9 +145,9 @@ const Evidance = ({ data, loading }) => {
                           )
                         }
                       </div>
-                      {data?.card_5?.description_text && (
+                      {data?.card_5?.description_block || data?.card_5?.description_text && (
                         <div className="card__body">
-                          <p>{data?.card_5?.description_text}</p>
+                          <p>{renderRichTextWithImages(data?.card_5?.description_block) || data?.card_5?.description_text}</p>
                         </div>
                       )}
                     </Card>

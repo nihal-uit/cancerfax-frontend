@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, EffectFade } from 'swiper/modules';
-import { formatRichText } from '../../utils/strapiHelpers';
+import { formatRichText, renderRichTextWithImages } from '../../utils/strapiHelpers';
 import { formatMedia } from '../../utils/strapiHelpers';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
@@ -73,7 +73,7 @@ const HospitalSlider = ({ componentData, data }) => {
     .map((hospital) => ({
       id: hospital?.id || hospital?.documentId,
       title: hospital?.name || '',
-      label: formatRichText(hospital?.description) || '',
+      label: renderRichTextWithImages(hospital?.description_block) || '',
       backgroundImage: formatMedia(hospital?.about?.featuredImage),
       slug: hospital?.slug || '',
     }))

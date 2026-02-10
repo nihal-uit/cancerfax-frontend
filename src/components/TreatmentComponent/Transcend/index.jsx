@@ -1,5 +1,6 @@
 import React from "react";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const Transcend = ({ data, loading }) => {
   if (loading || !data || !Array.isArray(data) || data.length === 0 || !data[0]?.isActive) {
@@ -52,7 +53,7 @@ const Transcend = ({ data, loading }) => {
                         {item?.title && <span>{item?.title}</span>}
                       </div>
                       <div className="content__right">
-                        {item?.description_text && <p>{item?.description_text}</p>}
+                        {(item?.description_text || item?.description_block) && <p>{renderRichTextWithImages(item?.description_block) || item?.description_text}</p>}
                       </div>
                     </div>
                   </ScrollAnimationComponent>

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAnimationComponent";
-import { formatMedia } from "../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../utils/strapiHelpers";
 
 const SupportingLifeComponent = ({ data }) => {
   if (!data || !data?.isActive) return null;
@@ -30,7 +30,7 @@ const SupportingLifeComponent = ({ data }) => {
                   {data?.subHeading }
                 </Title>
               <p className="text-16">
-                  {data?.description_text }
+                  {renderRichTextWithImages(data?.description_block)||data?.description_text }
               </p>
                 {data?.cta?.text && (
               <CTAButton

@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const TherapyInfo = ({ data }) => {
   const fadeIn = {
@@ -27,10 +28,10 @@ const TherapyInfo = ({ data }) => {
               )}
             </LeftContent>
             
-            {(data?.subHeading || data?.description_text) && (
+            {(data?.subHeading || data?.description_block ||data?.description_text) && (
               <RightContent className='commContent_wrap'>
                 <p className='text-16'>
-                  {data.subHeading || data.description_text}
+                  {data.subHeading || renderRichTextWithImages(data?.description_block)  || data.description_text}
                 </p>
               </RightContent>
             )}
@@ -40,7 +41,7 @@ const TherapyInfo = ({ data }) => {
             <div className="row g-4">
               {steps.map((step) => {
                 const title = step?.title;
-                const description = step?.heading || step?.description_text;
+                const description = step?.heading || step?.description_text || step?.description_block;
 
                 if (!title && !description) return null;
 
@@ -53,7 +54,7 @@ const TherapyInfo = ({ data }) => {
                       <StepContent>
                         {title && <StepTitle>{title}</StepTitle>}
                         {description && (
-                          <StepDescription>{description}</StepDescription>
+                          <StepDescription>{renderRichTextWithImages(description)}</StepDescription>
                         )}
                       </StepContent>
                     </TherapyInfoCard>

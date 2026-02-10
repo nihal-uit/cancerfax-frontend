@@ -1,3 +1,4 @@
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import SurvivorStoriesVideo from "../SurvivorStoriesVideo/SurvivorStoriesVideo";
 
@@ -23,7 +24,7 @@ const SurvivorStoriesHero = ({ componentData, data, sectionClass }) => {
                 {heroData?.heading || ''}
               </h1>
               <p className="text-16 text_theme_dark">
-                {heroData?.description_text || ''}
+                {renderRichTextWithImages(heroData?.description_block)||heroData?.description_text || ''}
               </p>
             </div>
           </div>

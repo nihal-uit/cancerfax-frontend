@@ -2,7 +2,7 @@ import React from "react";
 import { Col, Image, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
-import { formatMedia } from "../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../utils/strapiHelpers";
 
 const ClinicalHelp = ({ componentData, data }) => {
   const benefitsData = componentData || data;
@@ -34,7 +34,7 @@ const ClinicalHelp = ({ componentData, data }) => {
                   {benefitsData?.subHeading || ''}
                   </h3>
                   <div className="content__des text_theme_dark">
-                  <p>{benefitsData?.description_text || ''}</p>
+                  <p>{renderRichTextWithImages(benefitsData?.description_block)||benefitsData?.description_text || ''}</p>
                   </div>
                 </div>
               </ScrollAnimationComponent>
@@ -57,14 +57,14 @@ const ClinicalHelp = ({ componentData, data }) => {
                       <div className="list__card__icon">
                         <Image
                             src={iconUrl}
-                            alt={benefit?.icon?.alternativeText || benefit?.description_text || "Benefit icon"}
+                            alt={benefit?.icon?.alternativeText || renderRichTextWithImages(benefit?.description_block) || benefit?.description_text || "Benefit icon"}
                           width={28}
                           height={28}
                         />
                       </div>
                       )}
                       <div className="list__card__content">
-                        <h5 className="list__card__title">{benefit?.description_text || ''}</h5>
+                        <h5 className="list__card__title">{renderRichTextWithImages(benefit?.description_block) || benefit?.description_text || ''}</h5>
                       </div>
                     </div>
                   </div>

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { formatMedia } from '../../utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { Link } from 'react-router-dom';
 
@@ -209,7 +209,7 @@ const AboutSection = ({ componentData, data }) => {
                 </Label>
                 <Title className='title-3'>{aboutData?.subHeading || ''}</Title>
                 <Description className='text-16'>
-                  {aboutData?.description_text || ''}
+                  {renderRichTextWithImages(aboutData?.description_block) || aboutData?.description_text || ''}
                 </Description>
                 {aboutData?.cta?.text && (
                   <CTAButton

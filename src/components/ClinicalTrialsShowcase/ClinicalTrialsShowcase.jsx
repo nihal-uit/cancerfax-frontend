@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getSectionData, formatMedia, formatRichText } from '../../utils/strapiHelpers';
+import { getSectionData, formatMedia, formatRichText, renderRichTextWithImages } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { hideFallbacks } from '../../utils/config';
 import { Link } from 'react-router-dom';
@@ -72,7 +72,7 @@ const ClinicalTrialsShowcase = ({ componentData, data }) => {
             // Handle nested structure - slide might be in attributes or direct
             const slideData = slide?.attributes || slide;
             const description =
-              formatRichText(slideData?.description_block) ??
+              renderRichTextWithImages(slideData?.description_block) ??
               formatRichText(slideData?.description) ??
               slideData?.description_block ??
               slideData?.description ??

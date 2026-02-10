@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import { Link } from "react-router-dom";
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const GetInTouch = ({ data }) => {
   return (
@@ -24,8 +25,7 @@ const GetInTouch = ({ data }) => {
             <ScrollAnimationComponent animationVariants={slideRight}>
               <CommContentRight className="commContent_wrap">
                 <Description className="text-16">
-                  {data?.description_text ||
-                    ''}
+                  { renderRichTextWithImages(data?.description_block) || data?.description_text || ''}
                 </Description>
                 {data?.cta?.text && (
                   <CTAButton

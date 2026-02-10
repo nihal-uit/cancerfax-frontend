@@ -3,7 +3,7 @@ import styled from "styled-components";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import { motion, AnimatePresence } from "framer-motion";
 import "./WhyCancerTreatmentUSA.scss";
-import { formatMedia } from "@/utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const Section = styled.section`
   overflow: hidden;
@@ -89,7 +89,7 @@ const WhyCancerTreatmentUSA = ({ sectionClass = "", data }) => {
     return "card__next";
   };
 
-  if (!section?.isActive || (!section?.heading && !section?.description_text && !benefits.length)) {
+  if (!section?.isActive || (!section?.heading && !section?.description_block && !benefits.length)) {
     return null;
   }
 
@@ -102,9 +102,9 @@ const WhyCancerTreatmentUSA = ({ sectionClass = "", data }) => {
               <Title className="title-3">
                 {section?.heading || ""}
               </Title>
-              {section?.description_text && (
+              {section?.description_block && (
                 <Description className="text-16">
-                  {section.description_text}
+                  {renderRichTextWithImages(section.description_block)}
                 </Description>
               )}
             </Header>

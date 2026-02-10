@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../components/ScrollAnimation/ScrollAnimationComponent";
-import { formatMedia } from "../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../utils/strapiHelpers";
 import api from "../../services/api";
 
 const BlogSupport = ({ data, loading }) => {
@@ -79,7 +79,7 @@ const BlogSupport = ({ data, loading }) => {
                 <Title className="title-3 text_theme_dark">
                   {data?.subHeading}
                 </Title>
-                <div className="text-16">{data?.description_text}</div>
+                <div className="text-16">{renderRichTextWithImages(data?.description_block) || data?.description_text}</div>
                 <form className="w-100" onSubmit={handleSubmit}>
                   <div className="subscribe_wrap">
                     <input

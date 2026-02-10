@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image } from 'react-bootstrap';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
-import { formatMedia, formatRichText } from '../../utils/strapiHelpers';
+import { formatMedia, formatRichText, renderRichTextWithImages } from '../../utils/strapiHelpers';
 
 const ClinicalHowWork = ({ componentData, data }) => {
   const understandingData = componentData || data;
@@ -36,7 +36,7 @@ const ClinicalHowWork = ({ componentData, data }) => {
             <p className='contentLabel'>{understandingData?.heading || ''}</p>
             <h3 className='title-3'>{understandingData?.subHeading || ''}</h3>
             <div className='content__des'>
-              {formatRichText(understandingData?.description_text) || ''}
+              {renderRichTextWithImages(understandingData?.description_block) || ''}
             </div>
           </div>
         </ScrollAnimationComponent>

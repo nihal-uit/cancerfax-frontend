@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { formatMedia } from '../../utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { Link } from 'react-router-dom';
 
@@ -375,7 +375,7 @@ const HowItWorks = ({ componentData, data }) => {
                       {index + 1 + '. ' + step?.title || ''}
                     </StepTitle>
                     <StepDescription className='text-16'>
-                      {step?.description_text || ''}
+                      {renderRichTextWithImages(step?.description_block)||step?.description_text || ''}
                     </StepDescription>
                   </StepContent>
                 </StepCard>

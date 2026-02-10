@@ -2,6 +2,7 @@ import React from "react";
 import styled from 'styled-components';
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import { getMediaUrl } from "@/services/api";
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const OurValues = ( { data } ) => {
   return (
@@ -44,7 +45,7 @@ const OurValues = ( { data } ) => {
                       <img src={getMediaUrl(data?.card_1?.icon)} alt="our values icon" />
                     </span>
                     <h5>{data?.card_1?.title || "Lorem Ipsum"}</h5>
-                    <p>{data?.card_1?.description_text || "Lorem Ipsum dolor sit amet"}</p>
+                    <p>{ renderRichTextWithImages(data?.card_1?.description_block) || data?.card_1?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </div>
                 </ScrollAnimationComponent>
@@ -55,7 +56,7 @@ const OurValues = ( { data } ) => {
                       <img src={getMediaUrl(data?.card_2?.icon)} alt="our values icon" />
                     </span>
                     <h5>{data?.card_2?.title || "Lorem Ipsum"}</h5>
-                    <p>{data?.card_2?.description_text || "Lorem Ipsum dolor sit amet"}</p>
+                    <p>{renderRichTextWithImages(data?.card_2?.description_block) || data?.card_2?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </div>
                 </ScrollAnimationComponent>
@@ -69,7 +70,7 @@ const OurValues = ( { data } ) => {
                       <img src={getMediaUrl(data?.card_3?.icon)} alt="our values icon" />
                     </span>
                     <h5>{data?.card_3?.title || "Lorem Ipsum"}</h5>
-                    <p>{data?.card_3?.description_text || "Lorem Ipsum dolor sit amet"}</p>
+                    <p>{renderRichTextWithImages(data?.card_3?.description_block) || data?.card_3?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </div>
               </ScrollAnimationComponent>
@@ -82,7 +83,7 @@ const OurValues = ( { data } ) => {
                       <img src={getMediaUrl(data?.card_4?.icon)} alt="our values icon" />
                     </span>
                     <h5>{data?.card_4?.title || "Lorem Ipsum"}</h5>
-                    <p>{data?.card_4?.description_text || "Lorem Ipsum dolor sit amet"}</p>
+                    <p>{renderRichTextWithImages(data?.card_4?.description_block) || data?.card_4?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </div>
               </ScrollAnimationComponent>
@@ -95,7 +96,7 @@ const OurValues = ( { data } ) => {
                       <img src={getMediaUrl(data?.card_5?.icon)} alt="our values icon" />
                     </span>
                     <h5>{data?.card_5?.title || "Lorem Ipsum"}</h5>
-                    <p>{data?.card_5?.description_text || "Lorem Ipsum dolor sit amet"}</p>
+                    <p>{renderRichTextWithImages(data?.card_5?.description_block) || data?.card_5?.description_text || "Lorem Ipsum dolor sit amet"}</p>
                   </div>
                 </div>
               </ScrollAnimationComponent>

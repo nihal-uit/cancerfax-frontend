@@ -10,7 +10,7 @@ import {
   Tab,
 } from "react-bootstrap";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
-import { formatMedia } from "../../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../../utils/strapiHelpers";
 
 const ContentWrapper = styled.div`
   display: flex;
@@ -36,7 +36,7 @@ const CartCellTherapy = ({ fadeIn, data }) => {
                 <p className="contentLabel">{data?.heading}</p>
                 <h3 className="title-3">{data?.subHeading}</h3>
                 <div className="content__des">
-                  {data?.description_text}
+                  {renderRichTextWithImages(data?.description_block)||data?.description_text}
                 </div>
               </div>
             </ScrollAnimationComponent>

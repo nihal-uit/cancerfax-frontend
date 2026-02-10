@@ -4,7 +4,7 @@ import ScrollAnimationComponent from '../../ScrollAnimation/ScrollAnimationCompo
 import { motion, AnimatePresence } from 'framer-motion';
 import './WhyOpt.scss';
 import { Link } from 'react-router-dom';
-import { formatMedia } from '../../../utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '../../../utils/strapiHelpers';
 
 const WhyOpt = ({ sectionClass, data }) => {
   const cards = data?.cards || [];
@@ -44,7 +44,7 @@ const WhyOpt = ({ sectionClass, data }) => {
               <Label className='contentLabel'>{data?.heading || ''}</Label>
               <Title className='title-3'>{data?.subHeading || ''}</Title>
               <Description className='text-16'>
-                {data?.description_text || ''}
+                {renderRichTextWithImages(data?.description_block) || data?.description_text || ''}
               </Description>
             </Header>
             {data?.cta?.text && (

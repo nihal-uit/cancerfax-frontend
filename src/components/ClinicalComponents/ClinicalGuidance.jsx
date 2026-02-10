@@ -3,7 +3,7 @@ import { Col, Image, Ratio, Row } from "react-bootstrap";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
 import { Link } from "react-router-dom";
-import { formatMedia } from "@/utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 50 },
@@ -33,7 +33,7 @@ const ClinicalGuidance = ({data}) => {
                     </h3>
                     <div className="content__des text_theme_dark">
                       <p>
-                        {data?.description_text}
+                        {renderRichTextWithImages(data?.description_block)||data?.description_text}
                       </p>
                     </div>
                     {data?.cta?.text && (

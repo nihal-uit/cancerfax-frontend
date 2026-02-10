@@ -124,7 +124,7 @@ const Description = styled.p`
   color: ${props => props.theme.colors.white};
 `;
 
-const HospitalDetailsHero = ({ data, loading }) => {
+const HospitalDetailsHero = ({ data, loading, hospitalImage }) => {
   if (loading || !data?.isActive) {
     return null;
   }
@@ -135,7 +135,7 @@ const HospitalDetailsHero = ({ data, loading }) => {
       <div className='home-hero-banner hospital_details_hero'>
         <div className='ratio'>
           <BackgroundImage
-            src={formatMedia(data?.background_image)}
+            src={formatMedia(hospitalImage || data?.background_image)}
             alt={data?.hospital_name || ''}
             loading="lazy"
           />

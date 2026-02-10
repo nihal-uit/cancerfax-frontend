@@ -3,7 +3,7 @@ import { Nav, Tab, Image } from 'react-bootstrap';
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import './OurJourney.css';
 import styled from 'styled-components';
-import { formatMedia } from '../../../utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '../../../utils/strapiHelpers';
 
 const OurJourney = ({ data }) => {
   const journey = data?.journey_timeline;
@@ -14,7 +14,7 @@ const OurJourney = ({ data }) => {
       .map((m, idx) => ({
         key: m?.id?.toString() || `milestone-${idx}`,
         title: m?.title || '',
-        description: m?.description_text || '',
+        description: renderRichTextWithImages(m?.description_block) || m?.description_text || '',
         image: formatMedia(m?.image),
       }))
       .filter((m) => m.title || m.description || m.image);

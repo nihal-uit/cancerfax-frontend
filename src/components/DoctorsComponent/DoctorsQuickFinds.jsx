@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import DoctorsGrid from './DoctorsGrid';
 import { fetchDoctors } from '../../store/slices/doctorSlice';
-import { formatRichText } from '../../utils/strapiHelpers';
+import { formatRichText, renderRichTextWithImages } from '../../utils/strapiHelpers';
 
 const DOCTORS_PAGE_SIZE = 6;
 
@@ -79,7 +79,7 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
           
           <RightContent className='commContent_wrap'>
             <Description className='text-16'>
-              {formatRichText(quickFindsData?.description_text) || ''}
+              {renderRichTextWithImages(quickFindsData?.description_block) || ''}
             </Description>
           </RightContent>
         </TopSection>

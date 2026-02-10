@@ -1,7 +1,7 @@
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
-import { formatMedia } from "../../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../../utils/strapiHelpers";
 
 const FdaTherapy = ({ fadeIn, sideLeft, sideRight, data }) => {  
   if (!data || !data?.isActive) {
@@ -27,7 +27,7 @@ const FdaTherapy = ({ fadeIn, sideLeft, sideRight, data }) => {
                   <p className="contentLabel">{data?.heading}</p>
                   <h3 className="title-3">{data?.subHeading}</h3>
                   <div className="content__des">
-                    {data?.description_text}
+                    {renderRichTextWithImages(data?.description_block) || data?.description_text}
                   </div>
                 </div>
               </ScrollAnimationComponent>
@@ -49,7 +49,7 @@ const FdaTherapy = ({ fadeIn, sideLeft, sideRight, data }) => {
                     <h4 className="therapy__item__title">{data?.proofs[0]?.title}</h4>
                     <div className="therapy__item__des">
                       <p>
-                        {data?.proofs[0]?.description_text}
+                        {renderRichTextWithImages(data?.proofs[0]?.description_block) || data?.proofs[0]?.description_text}
                       </p>
                     </div>
                   </div>
@@ -69,7 +69,7 @@ const FdaTherapy = ({ fadeIn, sideLeft, sideRight, data }) => {
                     <h4 className="therapy__item__title">{data?.proofs[1]?.title}</h4>
                     <div className="therapy__item__des">
                       <p>
-                        {data?.proofs[1]?.description_text}
+                        {renderRichTextWithImages(data?.proofs[1]?.description_block) || data?.proofs[1]?.description_text}
                       </p>
                     </div>
                   </div>

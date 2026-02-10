@@ -2,6 +2,7 @@ import React from 'react';
 import ScrollAnimationComponent from '../../ScrollAnimation/ScrollAnimationComponent';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const TreatmentHero = ({ sectionClass, data, loading }) => {
   if (loading || !data?.isActive) {
@@ -23,9 +24,9 @@ const TreatmentHero = ({ sectionClass, data, loading }) => {
           <div className='hero_content_right'>
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className='commContent_wrap content-gap-40'>
-                {data?.description_text && (
+                { (data?.description_block|| data?.description_text) && (
                   <p className='text-16 text_theme_dark'>
-                    {data?.description_text}
+                    {renderRichTextWithImages(data?.description_block) || data?.description_text}
                   </p>
                 )}
                 {data?.cta?.text && (

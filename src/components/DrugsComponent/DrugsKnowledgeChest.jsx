@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import DrugsGrid from './DrugsGrid';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
 import { fetchDrugs } from '@/store/slices/drugSlice';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const DRUGS_PAGE_SIZE = 6;
 
@@ -92,7 +93,7 @@ const DrugKnowledgeChest = ({ data }) => {
           </LeftContent>
           
           <RightContent className='commContent_wrap'>
-            <Description className='text-16'>{data?.description_text}</Description>
+            <Description className='text-16'>{renderRichTextWithImages(data?.description_block)||data?.description_text}</Description>
           </RightContent>
         </TopSection>
 

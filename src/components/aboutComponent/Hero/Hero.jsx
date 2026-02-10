@@ -1,6 +1,7 @@
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const Hero = ({ sectionClass, data }) => {
   return (
@@ -18,7 +19,7 @@ const Hero = ({ sectionClass, data }) => {
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className="commContent_wrap content-gap-40">
                 <p className="text-16 text_theme_dark">
-                  {data?.description_text || ''}
+                  { renderRichTextWithImages(data?.description_block) || data?.description_text || ''}
                 </p>
                 {data?.cta?.text && (
                   <ExploreButton

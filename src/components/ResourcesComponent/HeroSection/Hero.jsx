@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import "./Hero.css";
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const ContentWrapper = styled.div`
   display: flex;
@@ -28,7 +29,7 @@ const HeroSection = () => {
             <div className='hero_content_right'>
               <div className='commContent_wrap content-gap-40'>
                 <p className='text-16 text_theme_dark'>
-                  {heroContent.description}
+                  {renderRichTextWithImages(heroContent.description_block)}
                 </p>
               </div>
             </div>

@@ -15,7 +15,7 @@ import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import ReactStars from "react-rating-stars-component";
-import { formatMedia } from '@/utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '@/utils/strapiHelpers';
 
   
 const ContactFormSection = ({ data }) => {
@@ -118,7 +118,7 @@ const ContactFormSection = ({ data }) => {
           <LeftBox>
             <TextContent>
               <Description>
-                {data?.description_text}
+                {renderRichTextWithImages(data?.description_block)||data?.description_text}
               </Description>
             </TextContent>
 

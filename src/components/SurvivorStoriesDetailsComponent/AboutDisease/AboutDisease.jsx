@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import ScrollAnimationComponent from '../../ScrollAnimation/ScrollAnimationComponent';
-import { formatMedia } from '../../../utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '../../../utils/strapiHelpers';
 
 const AboutDisease = ({ data }) => {
   const fadeIn = {
@@ -16,31 +16,31 @@ const AboutDisease = ({ data }) => {
     diseaseInfo?.condition && {
       key: 'condition',
       title: diseaseInfo?.condition?.title,
-      description: diseaseInfo?.condition?.description_text,
+      description: renderRichTextWithImages(diseaseInfo?.condition?.description_block) || diseaseInfo?.condition?.description_text,
       icon: formatMedia(diseaseInfo?.condition?.icon),
     },
     diseaseInfo?.treatment && {
       key: 'treatment',
       title: diseaseInfo?.treatment?.title,
-      description: diseaseInfo?.treatment?.description_text,
+      description: renderRichTextWithImages(diseaseInfo?.treatment?.description_block) || diseaseInfo?.treatment?.description_text,
       icon: formatMedia(diseaseInfo?.treatment?.icon),
     },
     diseaseInfo?.country && {
       key: 'country',
       title: diseaseInfo?.country?.title,
-      description: diseaseInfo?.country?.description_text,
+      description: renderRichTextWithImages(diseaseInfo?.country?.description_block) || diseaseInfo?.country?.description_text,
       icon: formatMedia(diseaseInfo?.country?.icon),
     },
     diseaseInfo?.current_status && {
       key: 'current_status',
       title: diseaseInfo?.current_status?.title,
-      description: diseaseInfo?.current_status?.description_text,
+      description: renderRichTextWithImages(diseaseInfo?.current_status?.description_block) || diseaseInfo?.current_status?.description_text,
       icon: formatMedia(diseaseInfo?.current_status?.icon),
     },
     diseaseInfo?.significance && {
       key: 'significance',
       title: diseaseInfo?.significance?.title,
-      description: diseaseInfo?.significance?.description_text,
+      description: renderRichTextWithImages(diseaseInfo?.significance?.description_block) || diseaseInfo?.significance?.description_text,
       icon: formatMedia(diseaseInfo?.significance?.icon),
     },
   ].filter(Boolean);
@@ -68,7 +68,7 @@ const AboutDisease = ({ data }) => {
             {diseaseInfo?.description_text && (
               <RightContent className='commContent_wrap'>
                 <Description className='text-16'>
-                  {diseaseInfo?.description_text}
+                  {renderRichTextWithImages(diseaseInfo?.description_block)|| diseaseInfo?.description_text}
                 </Description>
               </RightContent>
             )}

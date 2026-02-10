@@ -1,3 +1,4 @@
+import React from 'react';
 import { getMediaUrl } from '../services/api';
 
 /**
@@ -245,13 +246,39 @@ export const renderRichTextWithImages = (description = []) => {
     if (!Array.isArray(children)) return null;
     
     return children.map((child, idx) => {
-      // Handle text nodes with formatting
-      if (child?.type === "text" && typeof child?.text === "string") {
-        if (child.bold) {
-          return <strong key={idx}>{child.text}</strong>;
-        }
-        return child.text;
+      // Handle link nodes
+      if (child?.type === "link" && child?.url) {
+        const linkText = renderTextNodes(child.children);
+        if (!linkText || linkText.length === 0) return null;
+        return (
+          <a key={idx} href={child.url} target="_blank" rel="noopener noreferrer" className="link-css">
+            {linkText}
+          </a>
+        );
       }
+      
+      // Handle text nodes with formatting
+      // if (child?.type === "text" && typeof child?.text === "string") {
+      //   if (child.bold) {
+      //     return <strong key={idx}>{child.text}</strong>;
+          
+      //   }
+      //   return child.text;
+      // }
+
+      if (child?.type === "text" && typeof child?.text === "string") {
+        const parts = child.text.split("\n");
+      
+        const content = parts.map((part, i) => (
+          <React.Fragment key={`${idx}-${i}`}>
+            {child.bold ? <strong>{part}</strong> : part}
+            {i < parts.length - 1 && <br />}
+          </React.Fragment>
+        ));
+      
+        return content;
+      }
+      
       
       // Handle nested children
       if (Array.isArray(child?.children)) {

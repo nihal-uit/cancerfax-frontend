@@ -202,7 +202,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0) 41.55%, #000000 100%);
   font-family: 'Montserrat', sans-serif;
   font-size: 44px;
   font-weight: 600;
-  line-height: 56px;
+  line-height: 52px;
   letter-spacing: -1px;
   margin: 0;
 }
@@ -310,12 +310,15 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0) 41.55%, #000000 100%);
   width: 100%;
   max-width: 100%;
 }
-
+.btn-wrap {
+  display: flex;
+  gap: 16px;
+}
 .btn {
   font-family: 'Be Vietnam Pro', sans-serif;
   height: 48px;
   padding: 18px 28px;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 20px;
   font-size: 16px;
   font-weight: 500;
@@ -347,11 +350,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0) 41.55%, #000000 100%);
 }
 .btn:hover,
 .btn:focus {
-  transform: translateY(-2px) rotate(0deg);
   opacity: 0.9;
-}
-.btn:active {
-    transform: translateY(0) rotate(0deg);
 }
 
 .btn-pink-solid {
@@ -363,6 +362,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0) 41.55%, #000000 100%);
 .btn-pink-solid:focus {
   background-color: #FF69B4 !important;
   color: #ffffff !important;
+  border: 1px solid #FF69B4;
 }
 .btn-dark-solid {
   background-color: #36454F;
@@ -371,6 +371,17 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0) 41.55%, #000000 100%);
 .btn-dark-solid:hover,
 .btn-dark-solid:active,
 .btn-dark-solid:focus {
+  background-color: #36454F !important;
+  color: #ffffff !important;
+}
+.btn-dark-outline {
+  background-color: transparent;
+  border: 1px solid #36454F;
+  color: #36454F;
+}
+.btn-dark-outline:hover,
+.btn-dark-outline:active,
+.btn-dark-outline:focus {
   background-color: #36454F !important;
   color: #ffffff !important;
 }
@@ -2055,4 +2066,172 @@ section {
 .readMore_btn:hover {
   background-color: #36454F;
   color: #fff;
+}
+.cost-list ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.cost-list ul li {
+  border: 1px solid #E9E9E9;
+  background-color: #fff;
+  border-radius: 24px;
+  color: #36454F;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 6px 14px;
+  min-height: 34px;
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+.cost-list ul li span {
+  color: #008080;
+}
+
+.current-location-wrap {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.current-location-wrap .location-pin {
+  background-color: #008080;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.current-location-wrap h6 {
+  color: #262624;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.proposed-location-list ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.proposed-location-list ul li {
+  border: 1px solid #E9E9E9;
+  background-color: #fff;
+  border-radius: 24px;
+  color: #008080;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 5px 20px;
+  height: 39px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  min-width: 110px;
+}
+
+.link-css {
+  color: #FF69B4;
+  text-decoration: none;
+  position: relative;
+  cursor: pointer;
+}
+
+.link-css::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.2s ease;
+}
+
+.link-css:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.treatment_new_row {
+  display: flex;
+  gap: 75px;
+  align-items: flex-end;
+}
+.treatment_new_row .treatment_new_left {
+  flex: 1 1 auto;
+  max-width: 100%;
+}
+.treatment_new_row .treatment_new_right {
+  flex: 0 0 618px;
+  max-width: 618px;
+}
+
+.treatment_location_wrap {
+  gap: 10px;
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+}
+.treatment_location_wrap .treatment_location_list {
+  border: 1px solid #E9E9E9;
+  background-color: #FFFFFF;
+  border-radius: 6px;
+  height: 83px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 14px;
+  gap: 10px;
+}
+.treatment_location_wrap .treatment_location_list h5 {
+  color: #36454F;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+
+.treatment_location_list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+
+
+/* Hover blue box */
+.treatment_location_list:hover {
+  border-color: #0080ff;
+  background: rgba(0, 128, 255, 0.08);
+}
+
+/* Active (ONLY countryParam match) */
+.treatment_location_list.active_location {
+  border-color: #0080ff;
+  background: rgba(0, 128, 255, 0.15);
+  font-weight: 600;
+}
+
+/* Remove default button styles */
+.treatment_location_list {
+  appearance: none;
+  border: 1px solid transparent;
 }

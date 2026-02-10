@@ -2,7 +2,7 @@ import React, { useRef, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
-import { formatDate } from '../../utils/strapiHelpers';
+import { formatDate, renderRichTextWithImages } from '../../utils/strapiHelpers';
 import { useLoadMore } from '../../utils/useLoadMore';
 import SkeletonBlogCard from '../reusable/SkeletonBlogCard';
 import { getMediaUrl } from '../../services/api';
@@ -73,7 +73,7 @@ const BlogGrid = ({ data, loading }) => {
             documentId: blog?.documentId || blog?.id,
             slug: blogData?.slug || blog?.slug || '',
             title: blogData?.title || blog?.title || '',
-            description: blogData?.description || blog?.description || '',
+            description: blogData?.description_block || blog?.description_block || blogData?.description || blog?.description || '',
             author: {
               name: `${
                 blogData?.author?.firstName || blog?.author?.firstName || ''
@@ -181,7 +181,7 @@ const BlogGrid = ({ data, loading }) => {
               <BlogContent>
                 <div>
                   <BlogTitle>{blog.title}</BlogTitle>
-                  <BlogDescription>{blog.description}</BlogDescription>
+                  <BlogDescription>{renderRichTextWithImages(blog.description)}</BlogDescription>
                 </div>
                 <AuthorInfo>
                   <AuthorAvatar>

@@ -3,6 +3,7 @@ import "./Journey.scss";
 import styled from "styled-components";
 import { Container } from "react-bootstrap";
 import { getMediaUrl } from "../../../services/api";
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const Journey = ({ data, loading }) => {
   if (loading || !data?.isActive) {
@@ -25,8 +26,8 @@ const Journey = ({ data, loading }) => {
           {data?.subHeading && (
             <Title className="title-3">{data?.subHeading}</Title>
           )}
-          {data?.description_text && (
-            <Description>{data?.description_text}</Description>
+          {data?.description_block || data?.description_text && (
+            <Description>{renderRichTextWithImages(data?.description_block) || data?.description_text}</Description>
           )}
         </Header>
         

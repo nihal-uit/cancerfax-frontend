@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { formatRichText } from '../../utils/strapiHelpers';
+import { formatRichText, renderRichTextWithImages } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
@@ -36,7 +36,7 @@ const HospitalHero = ({ componentData, data }) => {
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className='commContent_wrap content-gap-40'>
                 <p className='text-16 text_theme_dark'>
-                  {formatRichText(heroData?.description_text) || ''}
+                  {renderRichTextWithImages(heroData?.description_block) || ''}
                 </p>
                 {heroData?.cta?.text && (
                   <ExploreButton

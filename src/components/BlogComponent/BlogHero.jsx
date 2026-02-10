@@ -1,4 +1,4 @@
-import { formatRichText } from "../../utils/strapiHelpers";
+import { formatRichText, renderRichTextWithImages } from "../../utils/strapiHelpers";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
 
 const BlogHero = ({ data }) => {
@@ -26,7 +26,7 @@ const BlogHero = ({ data }) => {
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className="commContent_wrap content-gap-40">
                 <p className="text-16 text_theme_dark">
-                  {data?.description_text}
+                  {renderRichTextWithImages(data?.description_block) || data?.description_text}
                 </p>
               </div>
             </ScrollAnimationComponent>

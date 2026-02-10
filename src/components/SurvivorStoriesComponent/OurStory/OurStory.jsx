@@ -4,7 +4,7 @@ import ScrollAnimationComponent from '../../ScrollAnimation/ScrollAnimationCompo
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { Link } from 'react-router-dom';
-import { formatMedia, formatRichText } from '../../../utils/strapiHelpers';
+import { formatMedia, formatRichText, renderRichTextWithImages } from '../../../utils/strapiHelpers';
 import 'swiper/css';
 
 const OurStory = ({ componentData, data }) => {
@@ -55,7 +55,7 @@ const OurStory = ({ componentData, data }) => {
             <Label className='contentLabel'>{sliderData?.heading || sliderData?.related_stories?.heading || ''}</Label>
             <div className='content-gap-12'>
               <Title className='title-3'>{sliderData?.subHeading || sliderData?.related_stories?.subHeading || ''}</Title>
-              <Description>{sliderData?.description_text || sliderData?.related_stories?.description_text || ''}</Description>
+              <Description>{renderRichTextWithImages(sliderData?.description_block) || renderRichTextWithImages(sliderData?.related_stories?.description_block) || sliderData?.description_text || sliderData?.related_stories?.description_text || ''}</Description>
             </div>
           </CommContent>
         </ScrollAnimationComponent>

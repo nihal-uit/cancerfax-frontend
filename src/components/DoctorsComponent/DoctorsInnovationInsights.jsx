@@ -1,6 +1,7 @@
 import React from "react";
 import styled from 'styled-components';
 import DoctorsInnovativeGalleryMarque from './DoctorsInnovativeGalleryMarque';
+import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const DoctorsInnovationInsights = ({ componentData, data }) => {
   const insightsData = componentData || data;
@@ -20,7 +21,7 @@ const DoctorsInnovationInsights = ({ componentData, data }) => {
             {insightsData?.subHeading || ''}
           </Title>
           <Description className='text-16 text_theme_dark'>
-            {insightsData?.description_text || ''}
+            {renderRichTextWithImages(insightsData?.description_block) || insightsData?.description_text || ''}
           </Description>
         </Header>
       </div>

@@ -1,5 +1,5 @@
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
-import { formatMedia } from "@/utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const OurStory = ( { data } ) => {
 
@@ -14,7 +14,7 @@ const OurStory = ( { data } ) => {
                   <span className="contentLabel mb-2">{data?.heading || ''}</span>
                   <h3 className="title-size-36">{data?.subHeading || ''}</h3>
                   <p className="text-16">
-                    {data?.description_text || ''}
+                    {renderRichTextWithImages(data?.description_block) || data?.description_text || ''}
                   </p>
                 </div>
               </ScrollAnimationComponent>            

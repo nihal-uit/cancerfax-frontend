@@ -636,4 +636,28 @@ export const diseaseAPI = {
     const data = response.data.data;
     return Array.isArray(data) && data.length > 0 ? data[0] : null;
   },
+
+  getDiseasesByAgeAndGender: async (ageCriteria, genderCriteria) => {
+    const params = new URLSearchParams();
+    params.append('filters[age_criteria][$in][0]', ageCriteria);
+    params.append('filters[age_criteria][$in][1]', 'both');
+    params.append('filters[gender_criteria][$in][0]', genderCriteria);
+    params.append('filters[gender_criteria][$in][1]', 'both');
+    // params.append('filters[isActive][$eq]', 'true');
+    
+    const response = await api.get(`/diseases?${params.toString()}`);
+    return response.data.data;
+  },
+};
+
+// Therapy API for cost calculator
+export const therapyAPI = {
+  getTherapiesByDisease: async (diseaseId) => {
+    const params = new URLSearchParams();
+    params.append('filters[diseases][id][$eq]', diseaseId);
+    params.append('populate', '*');
+    
+    const response = await api.get(`/therapies?${params.toString()}`);
+    return response.data.data;
+  },
 };

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { formatMedia } from "../../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../../utils/strapiHelpers";
 import { Link } from "react-router-dom";
 
 const TreatmentDetailHero = ({ data }) => {
@@ -45,7 +45,7 @@ const TreatmentDetailHero = ({ data }) => {
                   {data?.subHeading}
                 </DoctorTitle>
                 <SubText>
-                  {data?.description_text}
+                  {renderRichTextWithImages(data?.description_block) || data?.description_text}
                 </SubText>
 
                 {data?.cta?.text && (

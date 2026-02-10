@@ -2,7 +2,7 @@ import React from "react";
 import "./WhatWeDo.scss";
 import { Link } from "react-router-dom";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
-import { formatMedia } from "../../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../../utils/strapiHelpers";
 
 const WhatWeDo = ({ data, loading }) => {
   const fadeIn = {
@@ -37,10 +37,10 @@ const WhatWeDo = ({ data, loading }) => {
                 {data?.subHeading}
               </h3>
             )}
-            {data?.description_text && (
+            {(data?.description_text  || data?.description_block) && (
               <div className="content__des text_theme_dark">
                 <p>
-                  {data?.description_text}
+                  {renderRichTextWithImages(data?.description_block) || data?.description_text}
                 </p>
               </div>
             )}

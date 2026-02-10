@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import HospitalGrid from './HospitalGrid';
 import { fetchHospitals } from '../../store/slices/hospitalNetworkSlice';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const HOSPITALS_PAGE_SIZE = 6;
 
@@ -78,7 +79,7 @@ const HospitalQuickFinds = ({ componentData, data }) => {
           
           <RightContent className='commContent_wrap'>
             <Description className='text-16'>
-              {quickFindsData?.description_text || ''}
+              {renderRichTextWithImages(quickFindsData?.description_block)||quickFindsData?.description_text || ''}
             </Description>
           </RightContent>
         </TopSection>

@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -340,7 +341,7 @@ const LocationNetwork = ({ showButtons = true, componentData, data }) => {
             {locationData?.subHeading || ''}
           </Title>
           <Description className='text-16'>
-            {locationData?.description_text || ''}
+            {renderRichTextWithImages(locationData?.description_block)||locationData?.description_text || ''}
           </Description>
         </Header>
 

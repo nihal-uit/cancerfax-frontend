@@ -3,7 +3,7 @@ import Marquee from "react-fast-marquee";
 import { Accordion } from "react-bootstrap";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import "./TreatmentRisk.scss";
-import { formatMedia } from "../../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../../utils/strapiHelpers";
 
 const TreatmentRisk = ({ data, loading }) => {
   if (loading || !data?.isActive) {
@@ -25,8 +25,8 @@ const TreatmentRisk = ({ data, loading }) => {
                     {data?.subHeading && (
                       <h3 className="title-3">{data?.subHeading}</h3>
                     )}
-                    {data?.description_text && (
-                      <div className="content__des">{data?.description_text}</div>
+                    { data?.description_block || data?.description_text && (
+                      <div className="content__des">{renderRichTextWithImages(data?.description_block) || data?.description_text}</div>
                     )}
                   </div>
                 </ScrollAnimationComponent>
@@ -86,10 +86,10 @@ const TreatmentRisk = ({ data, loading }) => {
                           {item?.title && (
                             <Accordion.Header>{item?.title}</Accordion.Header>
                           )}
-                          {item?.description_text && (
+                          {(item?.description_text || item?.description_block) && (
                             <Accordion.Body>
                               <p>
-                                {item?.description_text}
+                                {renderRichTextWithImages(item?.description_block) || item?.description_text}
                               </p>
                             </Accordion.Body>
                           )}

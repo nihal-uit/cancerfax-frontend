@@ -4,7 +4,7 @@ import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationCompo
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import "./Chronic.scss";
-import { formatMedia } from "../../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../../utils/strapiHelpers";
 
 const Chronic = ({data}) => {
   if (!data || !data?.isActive) {
@@ -52,7 +52,7 @@ const Chronic = ({data}) => {
               <ScrollAnimationComponent animationVariants={fadeIn}>
                 <Description>
                   <p>
-                    {data?.description_text}
+                    {renderRichTextWithImages(data?.description_block) || data?.description_text}
                   </p>
                 </Description>
               </ScrollAnimationComponent>

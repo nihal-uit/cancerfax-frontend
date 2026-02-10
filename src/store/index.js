@@ -32,6 +32,7 @@ import treatmentReducer from './slices/treatmentSlice';
 import drugReducer from './slices/drugSlice';
 import diseaseReducer from './slices/diseaseSlice';
 import resourceCategoryReducer from './slices/resourcesCategorySlice';
+import costCalculatorReducer from './slices/costCalculatorSlice';
 
 const store = configureStore({
   reducer: {
@@ -68,6 +69,7 @@ const store = configureStore({
     drug: drugReducer,
     disease: diseaseReducer,
     resourceCategory: resourceCategoryReducer,
+    costCalculator: costCalculatorReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { formatMedia } from '../../utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { Link } from 'react-router-dom';
 
@@ -112,7 +112,7 @@ const ClinicalTrialsAbout = ({ componentData, data }) => {
           
           <div className='clinical_right'>
             <Description className='text-16'>
-              {statsData?.description_text || ''}
+              {renderRichTextWithImages(statsData?.description_block) || statsData?.description_text || ''}
             </Description>
             {statsData?.cta?.text && (
               <ExploreButton className='btn btn-pink-solid' to={statsData?.cta?.URL || '#'} target={statsData?.cta?.target || '_blank'}>

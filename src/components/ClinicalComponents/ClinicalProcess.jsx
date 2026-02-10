@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
-import { formatMedia } from "../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../utils/strapiHelpers";
 
 const ClinicalProcess = ({ componentData, data }) => {
   const processData = componentData || data;
@@ -87,7 +87,7 @@ const ClinicalProcess = ({ componentData, data }) => {
                         <div className="card__content">
                           <h4 className="card__title">{step?.title || ''}</h4>
                           <div className="card__description">
-                            <p>{step?.description || ''}</p>
+                            <p>{step?.description || renderRichTextWithImages(step?.description_block)||''}</p>
                           </div>
                         </div>
                       </div>

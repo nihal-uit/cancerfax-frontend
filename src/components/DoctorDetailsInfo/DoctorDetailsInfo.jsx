@@ -248,7 +248,7 @@ const DoctorsDetailsInfo = ({ data, loading }) => {
                               {(aboutData?.hospitals || []).map((desc, idx) => (
                                 <SwiperSlide key={idx}>
                                   <div className='doctorsDetails_info_slider'>
-                                    <img src={desc?.about?.featuredImage ? formatMedia(desc?.about?.featuredImage) : ''} alt={desc?.about?.heading || ''} />
+                                    <img src={(desc?.hospitalImage || desc?.about?.featuredImage) ? formatMedia(desc?.hospitalImage ||desc?.about?.featuredImage) : ''} alt={desc?.about?.heading || ''} />
                                     <div className='doctorsDetails_info_slider_content'>
                                       <div className='inner_container'>
                                         <div className='commContent_wrap'>
@@ -347,7 +347,7 @@ const DoctorsDetailsInfo = ({ data, loading }) => {
                     </div>
                     <div className="content-gap-20">
                       <h4 className="title-4 f-w-600">{specializationData?.specialities?.[1]?.heading || ''}</h4>
-                      <p className="text-18">{specializationData?.specialities?.[1]?.description || ''}</p>
+                      <p className="text-18">{renderRichTextWithImages(specializationData?.specialities?.[1]?.description_block) || specializationData?.specialities?.[1]?.description || ''}</p>
                     </div>
                     <div className="plus-accodion-wrap">
                       <Accordion defaultActiveKey="0">

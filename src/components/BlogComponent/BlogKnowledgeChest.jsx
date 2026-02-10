@@ -14,6 +14,7 @@ import {
   fetchResourceCategories,
   fetchResourceSubCategories,
 } from '../../store/slices/resourcesCategorySlice';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const BLOGS_PAGE_SIZE = 6;
 
@@ -270,7 +271,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
     ? {
         label: data?.heading || '',
         title: data?.subHeading ?? '',
-        description: data?.description_text || '',
+        description: renderRichTextWithImages(data?.description_block) || data?.description_text || '',
         resources: data?.resources,
       }
     : {};
@@ -293,7 +294,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
 
             <RightContent className='commContent_wrap'>
               <Description className='text-16'>
-                {content.description}
+                {renderRichTextWithImages(content.description)}
               </Description>
             </RightContent>
           </TopSection>

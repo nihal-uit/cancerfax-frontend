@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { fetchQuickFindsSection } from '../../store/slices/quickFindsSlice';
 import DoctorsGrid from '../../components/DoctorsGrid/DoctorsGrid';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const DoctorsQuickFinds = () => {
   const dispatch = useDispatch();
@@ -85,7 +86,7 @@ const DoctorsQuickFinds = () => {
           </LeftContent>
           
           <RightContent className='commContent_wrap'>
-            <Description className='text-16'>{content.description}</Description>
+            <Description className='text-16'>{renderRichTextWithImages(content.description)}</Description>
           </RightContent>
         </TopSection>
 

@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectFade } from "swiper/modules";
 import 'swiper/css';
 import 'swiper/css/effect-fade';
-import { formatMedia, formatRichText } from "@/utils/strapiHelpers";
+import { formatMedia, formatRichText, renderRichTextWithImages } from "@/utils/strapiHelpers";
 
 const CancerCenterBanner = ({ data }) => {
   const fadeIn = {
@@ -35,7 +35,7 @@ const CancerCenterBanner = ({ data }) => {
                 {hospitals.map((hospital) => {
                   const imageUrl = formatMedia(hospital?.hospitalImage);
                   const title = hospital?.name;
-                  const description = formatRichText(hospital?.description);
+                  const description = renderRichTextWithImages(hospital?.description_block) || formatRichText(hospital?.description);
                   const locationCta = hospital?.address?.cta;
 
                   if (!imageUrl && !title && !description) return null;

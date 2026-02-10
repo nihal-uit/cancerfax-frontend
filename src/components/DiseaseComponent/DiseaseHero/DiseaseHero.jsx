@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { formatMedia } from '../../../utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '../../../utils/strapiHelpers';
 
 const DiseaseHero = ({ data }) => {  
   if (!data || !data?.isActive) {
@@ -43,8 +43,8 @@ const DiseaseHero = ({ data }) => {
                   {data?.subHeading && (
                     <Description className='text-16'>{data?.subHeading}</Description>
                   )}
-                  {data?.description_text && (
-                    <Description className='text-16'>{data?.description_text}</Description>
+                  {(data?.description_block || data?.description_text) && (
+                    <Description className='text-16'>{renderRichTextWithImages(data?.description_block)||data?.description_text}</Description>
                   )}
                 </div>
                 

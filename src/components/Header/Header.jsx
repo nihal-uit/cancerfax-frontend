@@ -1533,6 +1533,7 @@ const Logo = styled.a`
   }
 
   @media (max-width: 1024px) {
+    min-width: 100px;
     img {
       height: 24px;
       max-width: 140px;

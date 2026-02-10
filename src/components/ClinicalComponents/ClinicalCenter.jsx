@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
-import { formatMedia } from "../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../utils/strapiHelpers";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 50 },
@@ -31,7 +31,7 @@ const ClinicalCenter = ({ componentData, data }) => {
               {requirementData?.subHeading || ''}
             </h3>
             <div className="content__des text_theme_dark">
-              <p>{requirementData?.description_text || ''}</p>
+              <p>{renderRichTextWithImages(requirementData?.description_block) || requirementData?.description_text || ''}</p>
             </div>
           </div>
         </ScrollAnimationComponent>

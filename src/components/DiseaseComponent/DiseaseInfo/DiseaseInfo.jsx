@@ -18,6 +18,9 @@ const SECTION_MAP = {
   livingWithDisease: 'livingWithDisease',
   lifeStyleNutrition: 'lifestyleAndNutrition',
   researchAdvancements: 'researchAndAdvancements',
+  supportResources: 'supportAndResources',
+  clinicalTrials: 'clinicalTrials',
+  healthcareInsurance: 'healthcareAndInsurance',
 };
 
 // Section labels
@@ -34,6 +37,9 @@ const SECTION_LABELS = {
   livingWithDisease: 'Living with Disease',
   lifeStyleNutrition: 'Life style & Nutrition',
   researchAdvancements: 'Research & Advancements',
+  supportResources: 'Support & Resources',
+  clinicalTrials: 'Clinical Trials',
+  healthcareInsurance: 'Healthcare & Insurance',
 };
 
 // Section icons (fallback to default if not in API)
@@ -50,6 +56,9 @@ const SECTION_ICONS = {
   livingWithDisease: '../images/disease-icon-10.svg',
   lifeStyleNutrition: '../images/disease-icon-11.svg',
   researchAdvancements: '../images/disease-icon-12.svg',
+  supportResources: '../images/disease-icon-13.svg',
+  clinicalTrials: '../images/disease-icon-14.svg',
+  healthcareInsurance: '../images/disease-icon-15.svg',
 };
 
 const DiseaseInfo = ({ data }) => {

@@ -37,7 +37,7 @@ const ClinicalPlan = ({ componentData, data }) => {
                     {pricingData?.subHeading || ''}
                     </h3>
                     <div className="content__des text_theme_dark">
-                    <p>{pricingData?.description_text || ''}</p>
+                    <p>{renderRichTextWithImages(pricingData?.description_block) || pricingData?.description_text || ''}</p>
                     </div>
                   </div>
                 </ScrollAnimationComponent>
@@ -48,7 +48,7 @@ const ClinicalPlan = ({ componentData, data }) => {
                       {features.map((feature) => (
                         <li key={feature?.id}>
                           <h5 className="list__title">{feature?.title || ''}</h5>
-                          <p>{feature?.description_text || ''}</p>
+                          <p>{renderRichTextWithImages(feature?.description_block) || feature?.description_text || ''}</p>
                       </li>
                       ))}
                     </ul>

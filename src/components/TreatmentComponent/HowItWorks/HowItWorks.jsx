@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import "./HowItWorks.scss";
-import { formatMedia } from "../../../utils/strapiHelpers";
+import { formatMedia, renderRichTextWithImages } from "../../../utils/strapiHelpers";
 
 const CommContent = styled.div`
   display: flex;
@@ -63,9 +63,9 @@ const HowItWorks = ({ data, loading }) => {
                 {data?.subHeading}
               </Title>
             )}
-            {data?.description_text && (
+            {data?.description_block || data?.description_text && (
               <Description className="text-16">
-                {data?.description_text}
+                {renderRichTextWithImages(data?.description_block) || data?.description_text}
               </Description>
             )}
           </CommContent>

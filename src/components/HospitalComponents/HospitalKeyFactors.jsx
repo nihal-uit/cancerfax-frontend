@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { formatMedia } from '../../utils/strapiHelpers';
+import { formatMedia, renderRichTextWithImages } from '../../utils/strapiHelpers';
 
 const Header = styled.div`
   display: flex;
@@ -356,9 +356,9 @@ const HospitalKeyFactors = ({ componentData, data }) => {
                 <StepTitle className='title-5 text_theme_dark'>
                   {step?.title || ''}
                 </StepTitle>
-                {step?.description_text && (
+                {(step?.description_block || step?.description_text) && (
                   <StepDescription className='text-16 text_theme_dark'>
-                    {step?.description_text}
+                    {renderRichTextWithImages(step?.description_block)||step?.description_text}
                   </StepDescription>
                 )}
               </StepCard>
