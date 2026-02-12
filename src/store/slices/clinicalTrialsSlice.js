@@ -37,15 +37,45 @@ export const fetchClinicalTrialsBySlug = createAsyncThunk(
   }
 );
 
+export const fetchClinicalTrialsList = createAsyncThunk(
+  'clinicalTrials/fetchList',
+  async (
+    { search = '', country = '', specialty = '', treatment = '', start = 0, limit = 12 } = {},
+    { rejectWithValue }
+  ) => {
+    try {
+      const data = await clinicalTrialsAPI.getClinicalTrials({
+        search,
+        country,
+        specialty,
+        treatment,
+        start,
+        limit,
+      });
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch clinical trials list');
+    }
+  }
+);
+
 const clinicalTrialsSlice = createSlice({
   name: 'clinicalTrials',
   initialState: {
     sectionContent: null,
     trialTypes: [],
+    list: [],
+    listLoading: false,
+    listError: null,
     loading: false,
     error: null,
+    heroSearchQuery: '',
   },
-  reducers: {},
+  reducers: {
+    setHeroSearchQuery: (state, action) => {
+      state.heroSearchQuery = action.payload ?? '';
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchClinicalTrialsSection.pending, (state) => {
@@ -62,10 +92,24 @@ const clinicalTrialsSlice = createSlice({
       })
       .addCase(fetchTrialTypes.fulfilled, (state, action) => {
         state.trialTypes = action.payload;
+      })
+      .addCase(fetchClinicalTrialsList.pending, (state) => {
+        state.listLoading = true;
+        state.listError = null;
+      })
+      .addCase(fetchClinicalTrialsList.fulfilled, (state, action) => {
+        state.listLoading = false;
+        state.list = action.payload || [];
+      })
+      .addCase(fetchClinicalTrialsList.rejected, (state, action) => {
+        state.listLoading = false;
+        state.listError = action.payload;
+        state.list = [];
       });
   },
 });
 
+export const { setHeroSearchQuery } = clinicalTrialsSlice.actions;
 export default clinicalTrialsSlice.reducer;
 
 

@@ -16,7 +16,7 @@ const HospitalGrid = ( { data, loading }) => {
 
   const handleCardClick = (hospital) => {
     if (!hospital?.slug) return;
-    navigate(`/hospitals/${hospital?.slug}`);
+    navigate(`/hospital/${hospital?.slug}`);
   };
 
   const handleCallClick = (e, phone) => {

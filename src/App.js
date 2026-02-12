@@ -48,14 +48,15 @@ function App() {
         <Route path='/resource/:slug' element={<BlogDetails />} />
 
         {/* Other detail pages */}
-        <Route path='/doctors/:slug' element={<DoctorsDetails />} />
-        <Route path='/hospitals/:slug' element={<HospitalDetails />} />
-        <Route path='/drugs/:slug' element={<DrugsDetails />} />
+        <Route path='/doctor/:slug' element={<DoctorsDetails />} />
+        <Route path='/hospital/:slug' element={<HospitalDetails />} />
+        <Route path='/drug/:slug' element={<DrugsDetails />} />
         <Route
-          path='/survivor-stories/:slug'
+          path='/survivor-story/:slug'
           element={<SurvivorStoriesDetailsPage />}
         />
-        <Route path='/treatments/:slug' element={<TreatmentPage />} />
+
+        <Route path='/treatment/:slug' element={<TreatmentPage />} />
         <Route path='/therapy/:slug' element={<TherapyPage />} />
         <Route path='/disease/:slug' element={<DiseasePage />} />
         <Route
@@ -63,7 +64,7 @@ function App() {
           element={<CancerTreatmentInUSA />}
         />
         <Route
-          path='/clinical-trials/:slug'
+          path='/clinical-trial/:slug'
           element={<ClinicalTrialsDetailsPage />}
         />
 

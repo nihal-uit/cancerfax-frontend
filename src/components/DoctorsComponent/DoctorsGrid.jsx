@@ -9,7 +9,7 @@ const DoctorsGrid = ( { doctors, loading }) => {
 
   const handleCardClick = (doctor) => {
     if (!doctor?.slug) return;
-    navigate(`/doctors/${doctor?.slug}`);
+    navigate(`/doctor/${doctor?.slug}`);
   };
 
   const getSpecializationText = (specialization) => {

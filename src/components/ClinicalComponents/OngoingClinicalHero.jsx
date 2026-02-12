@@ -1,9 +1,25 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
+import { useDispatch } from "react-redux";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
 import styled from "styled-components";
 import { renderRichTextWithImages } from "@/utils/strapiHelpers";
+import { setHeroSearchQuery } from "@/store/slices/clinicalTrialsSlice";
 
-const OngoingClinicalHero = ({ data }) => {  
+const OngoingClinicalHero = ({ data }) => {
+  const dispatch = useDispatch();
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleSubmitSearch = useCallback(() => {
+    const trimmed = searchValue?.trim() ?? "";
+    dispatch(setHeroSearchQuery(trimmed));
+  }, [dispatch, searchValue]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSubmitSearch();
+    }
+  };
+
   return (
     <section className="clinical__safety__sec py-120 pb-0 bg-white">
       <div className="containerWrapper">
@@ -13,8 +29,14 @@ const OngoingClinicalHero = ({ data }) => {
               <h1 className="title-1 text_theme_dark">{data?.heading}</h1>
               <FiltersContainer>
                 <SearchInput>
-                  <Input type="text" placeholder="Search with keywords" />
-                  <SearchIcon>
+                  <Input
+                    type="text"
+                    placeholder="Search with keywords"
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                  />
+                  <SearchIcon onClick={handleSubmitSearch} role="button" aria-label="Search">
                     <svg
                       viewBox="0 0 24 24"
                       fill="none"

@@ -94,6 +94,42 @@ export const clinicalTrialsAPI = {
     const response = await api.get(`/clinical-trials?filters[slug][$eq]=${slug}&populate=*`);
     return formatStrapiResponse(response.data.data);
   },
+
+  /**
+   * Fetch clinical trials list with optional search and filters.
+   * @param {Object} params - { search, country, specialty, treatment, start, limit }
+   * @returns {Array} List of trial records (same shape as trialData.json).
+   */
+  getClinicalTrials: async ({
+    search = '',
+    country = '',
+    specialty = '',
+    treatment = '',
+    start = 0,
+    limit = 12,
+  } = {}) => {
+    const params = new URLSearchParams();
+    params.append('populate', '*');
+    params.append('filters[isActive][$eq]', 'true');
+    params.append('pagination[start]', String(start));
+    params.append('pagination[limit]', String(limit));
+
+    if (search && search.trim()) {
+      params.append('filters[name][$containsi]', search.trim());
+    }
+    if (country) {
+      params.append('filters[countries][slug][$eq]', country);
+    }
+    if (specialty) {
+      params.append('filters[diseases][slug][$eq]', specialty);
+    }
+    if (treatment) {
+      params.append('filters[therapies][slug][$eq]', treatment);
+    }
+
+    const response = await api.get(`/clinical-trials?${params.toString()}`);
+    return response.data.data || [];
+  },
 };
 
 // How It Works API
@@ -439,17 +475,17 @@ export const quickFindsAPI = {
   },
 
   getCountries: async () => {
-    const response = await api.get('/countries?populate=*&sort=order:asc');
+    const response = await api.get('/countries?populate=*&sort=name:asc');
     return formatStrapiResponse(response.data.data);
   },
 
   getSpecialties: async () => {
-    const response = await api.get('/specialties?populate=*&sort=order:asc');
+    const response = await api.get('/specialties?populate=*&sort=name:asc');
     return formatStrapiResponse(response.data.data);
   },
 
   getTreatments: async () => {
-    const response = await api.get('/treatments?populate=*&sort=order:asc');
+    const response = await api.get('/treatments?populate=*&sort=name:asc');
     return formatStrapiResponse(response.data.data);
   },
 };

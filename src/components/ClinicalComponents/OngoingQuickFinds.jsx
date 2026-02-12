@@ -1,255 +1,151 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import DoctorsGrid from '../DoctorsComponent/DoctorsGrid';
-import { fetchDoctors } from '../../store/slices/doctorSlice';
+import { fetchClinicalTrialsList } from '../../store/slices/clinicalTrialsSlice';
+import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
-const DOCTORS_PAGE_SIZE = 6;
+const ONGOING_LISTING_SECTION_KEY = 'on-going-clinical-trial-listing.listing-section';
 
 const OngoingQuickFinds = ({ data }) => {
   const dispatch = useDispatch();
-  const { countries, specialties, treatments } = useSelector((state) => state.quickFinds);
-  const { doctors, doctorsLoading, doctorsHasMore } = useSelector(state => state.doctor);
-  
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState('');
-  const [selectedSpecialty, setSelectedSpecialty] = useState('');
-  const [selectedTreatment, setSelectedTreatment] = useState('');
+  const listingData = data;
+  const isOngoingListingSection =
+  data?.__component === ONGOING_LISTING_SECTION_KEY &&
+    (data?.isActive === true ||
+      data?.isActive === 'True' ||
+      data?.isActive === 'true');
+
+  const { list: trialsList, listLoading: trialsLoading, heroSearchQuery } =
+    useSelector((state) => ({
+      ...(state.clinicalTrials || { list: [], listLoading: false }),
+      heroSearchQuery: state.clinicalTrials?.heroSearchQuery ?? '',
+    }));
+
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // When hero search is used and this listing section is active, sync hero search to local query
+  useEffect(() => {
+    if (isOngoingListingSection && heroSearchQuery !== undefined) {
+      setSearchQuery(heroSearchQuery);
+    }
+  }, [isOngoingListingSection, heroSearchQuery]);
 
   useEffect(() => {
-    dispatch(fetchDoctors({ limit: DOCTORS_PAGE_SIZE, start: 0 }));
-  }, [dispatch]);
+    dispatch(
+      fetchClinicalTrialsList({
+        search: searchQuery,
+        start: 0,
+        limit: 24,
+      })
+    );
+  }, [dispatch, searchQuery]);
 
-  const defaultCountries = [
-    { id: 1, name: 'United States', value: 'us' },
-    { id: 2, name: 'United Kingdom', value: 'uk' },
-    { id: 3, name: 'Canada', value: 'ca' },
-    { id: 4, name: 'Germany', value: 'de' },
-    { id: 5, name: 'France', value: 'fr' },
-  ];
+  const trials = Array.isArray(trialsList) ? trialsList : [];
 
-  const defaultSpecialties = [
-    { id: 1, name: 'Oncology', value: 'oncology' },
-    { id: 2, name: 'Cardiology', value: 'cardiology' },
-    { id: 3, name: 'Neurology', value: 'neurology' },
-    { id: 4, name: 'Immunotherapy', value: 'immunotherapy' },
-  ];
-
-  const defaultTreatments = [
-    { id: 1, name: 'Chemotherapy', value: 'chemotherapy' },
-    { id: 2, name: 'Radiation Therapy', value: 'radiation' },
-    { id: 3, name: 'Immunotherapy', value: 'immunotherapy' },
-    { id: 4, name: 'Surgery', value: 'surgery' },
-  ];
-
-  const countryOptions = Array.isArray(countries) && countries.length > 0 ? countries : defaultCountries;
-  const specialtyOptions = Array.isArray(specialties) && specialties.length > 0 ? specialties : defaultSpecialties;
-  const treatmentOptions = Array.isArray(treatments) && treatments.length > 0 ? treatments : defaultTreatments;
-
-  const handleSearch = () => {
-    dispatch(fetchDoctors({ limit: DOCTORS_PAGE_SIZE, start: 0, query: searchTerm }));
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
+  const fadeIn = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
-    <section className='quickFinds_sec py-120'>
+    <section className='quickFinds_sec pb-120'>
       <div className='containerWrapper'>
-        <TopSection>
-          <LeftContent className='commContent_wrap'>
-            <Label className='contentLabel text_theme_dark'>{data?.heading || ''}</Label>
-            <Title className='title-3 text_theme_dark'>{data?.subHeading || ''}</Title>
-          </LeftContent>
-          
-          <RightContent className='commContent_wrap'>
-            <Description className='text-16'>{data?.description_block || ''}</Description>
-          </RightContent>
-        </TopSection>
+        <ScrollAnimationComponent animationVariants={fadeIn}>
+          {listingData && (
+            <TopSection>
+              <div className='commContent_wrap commContent_new '>
+                <p className='contentLabel'>{listingData?.heading || ''}</p>
+                <h3 className='title-3'>{listingData?.subHeading || ''}</h3>
+                <div className='content__des text_theme_dark'>
+                  <p className='text-16'>
+                    {renderRichTextWithImages(listingData?.description_block) ||
+                      listingData?.description_text ||
+                      ''}
+                  </p>
+                </div>
+              </div>
+            </TopSection>
+          )}
 
-        <FiltersContainer>
-          <SearchInput>
-            <Input
-              type="text"
-              placeholder="Search with keywords"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
-            <SearchIcon onClick={handleSearch}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-            </SearchIcon>
-          </SearchInput>
-
-          <SelectWrapper>
-            <Select
-              value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
-            >
-              <option value="">Select country</option>
-              {countryOptions.map((country) => (
-                <option key={country.id} value={country.value}>
-                  {country.name}
-                </option>
-              ))}
-            </Select>
-            <SelectDisplay className={!selectedCountry ? 'placeholder' : ''}>
-              {selectedCountry 
-                ? countryOptions.find(c => c.value === selectedCountry)?.name || 'Select country'
-                : 'Select country'}
-            </SelectDisplay>
-            <DropdownIcon>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </DropdownIcon>
-          </SelectWrapper>
-
-          <SelectWrapper>
-            <Select
-              value={selectedSpecialty}
-              onChange={(e) => setSelectedSpecialty(e.target.value)}
-            >
-              <option value="">Select specialty</option>
-              {specialtyOptions.map((specialty) => (
-                <option key={specialty.id} value={specialty.value}>
-                  {specialty.name}
-                </option>
-              ))}
-            </Select>
-            <SelectDisplay className={!selectedSpecialty ? 'placeholder' : ''}>
-              {selectedSpecialty 
-                ? specialtyOptions.find(s => s.value === selectedSpecialty)?.name || 'Select specialty'
-                : 'Select specialty'}
-            </SelectDisplay>
-            <DropdownIcon>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </DropdownIcon>
-          </SelectWrapper>
-
-          <SelectWrapper>
-            <Select
-              value={selectedTreatment}
-              onChange={(e) => setSelectedTreatment(e.target.value)}
-            >
-              <option value="">Select treatment</option>
-              {treatmentOptions.map((treatment) => (
-                <option key={treatment.id} value={treatment.value}>
-                  {treatment.name}
-                </option>
-              ))}
-            </Select>
-            <SelectDisplay className={!selectedTreatment ? 'placeholder' : ''}>
-              {selectedTreatment 
-                ? treatmentOptions.find(t => t.value === selectedTreatment)?.name || 'Select treatment'
-                : 'Select treatment'}
-            </SelectDisplay>
-            <DropdownIcon>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </DropdownIcon>
-          </SelectWrapper>
-        </FiltersContainer>
-
-        <DoctorsGrid doctors={doctors || []} loading={doctorsLoading} />
-
-        {doctors?.length > 0 && doctorsHasMore && (
-          <LoadMoreWrapper>
-            <LoadMoreButton
-              type='button'
-              onClick={() =>
-                dispatch(
-                  fetchDoctors({ limit: DOCTORS_PAGE_SIZE, start: doctors.length })
-                )
-              }
-              disabled={doctorsLoading}
-            >
-              {doctorsLoading ? 'Loading...' : 'Load More'}
-            </LoadMoreButton>
-          </LoadMoreWrapper>
-        )}
-
+          {trialsLoading ? (
+            <div className='text-16 text_theme_dark'>Loading trials...</div>
+          ) : (
+            <CardListHolder>
+              {trials.length > 0 ? (
+                <CardList>
+                  {trials.map((trial, index) => (
+                    <Card key={trial?.id ?? trial?.documentId ?? index}>
+                      <CardContent>
+                        {
+                          trial?.trial_id && (
+                            <CardSl>Trial No.:{trial?.trial_id}</CardSl>
+                          )
+                        }
+                        {trial?.current_status && (
+                          <StatusBadge $status={trial.current_status}>
+                            {trial.current_status}
+                          </StatusBadge>
+                        )}
+                        {trial?.name && (
+                          <CardTitle>{trial?.name || ''}</CardTitle>
+                        )}
+                        <CTAButton
+                          className='btn btn-pink-solid'
+                          to={trial?.slug ? `/clinical-trial/${trial?.slug}` : '#'}
+                          target='_self'
+                        >
+                          Explore
+                        </CTAButton>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </CardList>
+              ) : (
+                <div className='text-16 text_theme_dark'>
+                  No clinical trials found. Try adjusting your search or filters.
+                </div>
+              )}
+            </CardListHolder>
+          )}
+        </ScrollAnimationComponent>
       </div>
     </section>
   );
 };
-
 const TopSection = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 60px;
-  margin-bottom: 60px;
-  
+  width: 910px;
+  max-width: 100%;
+  margin-bottom: 52px;
+
   @media (max-width: 1024px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 40px;
-    margin-bottom: 50px;
-  }
-  
-  @media (max-width: 768px) {
-    gap: 32px;
     margin-bottom: 40px;
   }
-`;
 
-const LeftContent = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  flex: 0 0 500px;
-  @media (max-width: 1024px) {
-  flex: 1 1 auto;
-  }
   @media (max-width: 768px) {
-    gap: 24px;
+    margin-bottom: 30px;
   }
-`;
-
-const Label = styled.div`
-`;
-
-const Title = styled.h3`
-  max-width: 500px;
-`;
-
-const RightContent = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-`;
-
-const Description = styled.p`
 `;
 
 const FiltersContainer = styled.div`
   display: grid;
   grid-template-columns: 400px 1fr 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 30px;
+  gap: 12px;
+  margin-bottom: 40px;
   @media (max-width: 1200px) {
     gap: 20px;
   }
-  
+
   @media (max-width: 1024px) {
     grid-template-columns: 1fr 1fr;
     gap: 16px;
   }
-  
+
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 12px;
+    margin-bottom: 30px;
   }
 `;
 
@@ -260,18 +156,18 @@ const SearchInput = styled.div`
   background: white;
   border-radius: 20px;
   padding: 17px 20px;
-  border: 1px solid #E9E9E9;
+  border: 1px solid #e9e9e9;
   transition: all 0.3s ease;
-  
+
   &:focus-within {
     box-shadow: none;
-    border: 1px solid #36454F;
+    border: 1px solid #36454f;
   }
   &:focus {
     box-shadow: none;
-    border: 1px solid #36454F;
+    border: 1px solid #36454f;
   }
-  
+
   @media (max-width: 768px) {
     padding: 14px 20px;
   }
@@ -284,17 +180,17 @@ const Input = styled.input`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: #36454F;
+  color: #36454f;
   background: transparent;
-  
+
   &::placeholder {
-    color: rgba(54, 69, 79, 0.5)
+    color: rgba(54, 69, 79, 0.5);
   }
 
   &.placeholder {
-    color: rgba(54, 69, 79, 0.5)
+    color: rgba(54, 69, 79, 0.5);
     background-color: transparent;
-  }  
+  }
 `;
 
 const SearchIcon = styled.div`
@@ -305,7 +201,7 @@ const SearchIcon = styled.div`
   color: rgba(54, 69, 79, 1);
   font-size: 18px;
   cursor: pointer;
-  
+
   svg {
     width: 20px;
     height: 20px;
@@ -319,18 +215,18 @@ const SelectWrapper = styled.div`
   background: white;
   border-radius: 20px;
   padding: 17px 20px;
-  border: 1px solid #E9E9E9;
+  border: 1px solid #e9e9e9;
   transition: all 0.3s ease;
-  
+
   &:focus-within {
     box-shadow: none;
-    border: 1px solid #36454F;
+    border: 1px solid #36454f;
   }
   &:focus {
     box-shadow: none;
-    border: 1px solid #36454F;
+    border: 1px solid #36454f;
   }
-  
+
   @media (max-width: 768px) {
     padding: 14px 20px;
   }
@@ -347,7 +243,7 @@ const Select = styled.select`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color:rgba(54, 69, 79, 0.5);
+  color: rgba(54, 69, 79, 0.5);
   background: transparent;
   cursor: pointer;
   appearance: none;
@@ -356,14 +252,14 @@ const Select = styled.select`
   padding: 17px 20px;
   border-radius: 50px;
   z-index: 2;
-  
+
   option {
     font-family: 'Be Vietnam Pro', sans-serif;
     padding: 12px;
     background: white;
-    color: #36454F;
+    color: #36454f;
   }
-  
+
   @media (max-width: 768px) {
     padding: 14px 20px;
   }
@@ -374,12 +270,12 @@ const SelectDisplay = styled.div`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: #36454F;
+  color: #36454f;
   pointer-events: none;
   z-index: 1;
-  
+
   &.placeholder {
-    color:rgba(54, 69, 79, 0.5);
+    color: rgba(54, 69, 79, 0.5);
     background-color: transparent;
   }
 `;
@@ -389,44 +285,105 @@ const DropdownIcon = styled.div`
   align-items: center;
   justify-content: center;
   margin-left: 12px;
-  color:rgba(54, 69, 79, 0.5);
+  color: rgba(54, 69, 79, 0.5);
   font-size: 18px;
   pointer-events: none;
   transition: transform 0.3s ease;
   z-index: 1;
-  
+
   svg {
     width: 16px;
     height: 16px;
   }
 `;
 
-const LoadMoreWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
+const StatusBadge = styled.span`
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: ${(props) =>
+    props.$status === 'recruiting'
+      ? '#e8f5e9'
+      : props.$status === 'completed'
+        ? '#e3f2fd'
+        : '#fff3e0'};
+  color: ${(props) =>
+    props.$status === 'recruiting'
+      ? '#2e7d32'
+      : props.$status === 'completed'
+        ? '#1565c0'
+        : '#e65100'};
 `;
 
-const LoadMoreButton = styled.button`
-  padding: 14px 36px;
-  border-radius: 999px;
-  border: 1px solid #36454f;
-  background: transparent;
-  color: #36454f;
-  font-family: 'Be Vietnam Pro', sans-serif;
+const CardListHolder = styled.div``;
+const CardList = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  @media (max-width: 1199.98px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 767.98px) {
+    grid-template-columns: 1fr;
+  }
+`;
+const Card = styled.div`
+  border-width: 0px 0px 1px 1px;
+
+  border-style: solid;
+
+  border-color: #727b81;
+  border-bottom-left-radius: 24px;
+  padding: 40px;
+  height: 100%;
+  @media (max-width: 991.98px) {
+    padding: 30px;
+  }
+  @media (max-width: 767.98px) {
+    padding: 20px;
+  }
+`;
+const CardContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  height: 100%;
+  @media (max-width: 767.98px) {
+    gap: 20px;
+  }
+`;
+const CardSl = styled.p`
+  color: #768792;
   font-size: 16px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover:not(:disabled) {
-    background: #36454f;
-    color: #fff;
+  line-height: calc(24 / 16);
+  margin: 0;
+`;
+const CardTitle = styled.h4`
+  font-family: ${(props) => props.theme.fonts.primary};
+  color: ${(props) => props.theme.colors.primary};
+  font-size: 24px;
+  font-weight: 600;
+  line-height: calc(36 / 24);
+  margin-bottom: 90px;
+  @media (max-width: 1199.98px) {
+    font-size: 22px;
+    margin-bottom: 70px;
   }
+  @media (max-width: 767.98px) {
+    font-size: 20px;
+    margin-bottom: 30px;
+  }
+`;
 
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+const CTAButton = styled(Link)`
+  max-width: 324px;
+  @media (max-width: 575px) {
+    max-width: 100%;
   }
 `;
 

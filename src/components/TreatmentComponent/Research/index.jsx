@@ -69,7 +69,7 @@ const Research = ({ data, loading }) => {
                           <h4 className="card__title">{item?.name}</h4>
                         )}
                         <div className="btn__holder">
-                          <Link className="btn btn-pink-solid" to={`/clinical-trials/${item?.slug}`}>
+                          <Link className="btn btn-pink-solid" to={`/clinical-trial/${item?.slug}`}>
                             Explore
                           </Link>
                         </div>

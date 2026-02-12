@@ -116,7 +116,7 @@ const HospitalSlider = ({ componentData, data }) => {
                           {slide.label && <p>{slide.label}</p>}
                           {slide.slug && (
                             <a
-                              href={`/hospitals/${slide.slug}`}
+                              href={`/hospital/${slide.slug}`}
                               className='btn btn-pink-solid'
                             >
                               View Details

@@ -63,7 +63,7 @@ const HowItWorks = ({ data, loading }) => {
                 {data?.subHeading}
               </Title>
             )}
-            {data?.description_block || data?.description_text && (
+            {data?.description_block && (
               <Description className="text-16">
                 {renderRichTextWithImages(data?.description_block) || data?.description_text}
               </Description>

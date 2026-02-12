@@ -63,7 +63,7 @@ const CartCellTherapy = ({ fadeIn, data }) => {
 
           <Tab.Content>
             <div className="tab-content__bg">
-              <img src={formatMedia(data?.backgroundImage)} alt="Cart Cell Therapy" />
+              <img src='/images/cart__cell_bg.svg' alt="Cart Cell Therapy" />
             </div>
             <Tab.Pane eventKey="first">
               <Row className="">

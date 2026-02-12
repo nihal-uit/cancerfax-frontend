@@ -79,6 +79,7 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
 
 const PageWrapper = styled.div`
   width: 100%;
+  overflow-x: hidden;
 `;
 
 export default DynamicComponents;

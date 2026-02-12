@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchQuickFindsSection } from '../../store/slices/quickFindsSlice';
+import {
+  fetchCountries,
+  fetchSpecialties,
+  fetchTreatments,
+} from '../../store/slices/quickFindsSlice';
+import { fetchClinicalTrialsList } from '../../store/slices/clinicalTrialsSlice';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
@@ -11,18 +17,42 @@ const ClinicalFeature = ({ componentData, data }) => {
   const { countries, specialties, treatments } = useSelector(
     (state) => state.quickFinds
   );
+  const { list: trialsList, listLoading: trialsLoading } = useSelector(
+    (state) => state.clinicalTrials || { list: [], listLoading: false }
+  );
+
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [selectedTreatment, setSelectedTreatment] = useState('');
 
-  useEffect(() => {
-    dispatch(fetchQuickFindsSection());
-  }, [dispatch]);
+  // Load filter options
+  // useEffect(() => {
+  //   dispatch(fetchCountries());
+  //   dispatch(fetchSpecialties());
+  //   dispatch(fetchTreatments());
+  // }, [dispatch]);
 
-  if (!listingData) {
-    return null;
-  }
+  // Fetch trials when search or filters change
+  useEffect(() => {
+    dispatch(
+      fetchClinicalTrialsList({
+        search: searchQuery,
+        country: selectedCountry,
+        specialty: selectedSpecialty,
+        treatment: selectedTreatment,
+        start: 0,
+        limit: 24,
+      })
+    );
+  }, [
+    dispatch,
+    searchQuery,
+    selectedCountry,
+    selectedSpecialty,
+    selectedTreatment,
+  ]);
 
   const countryOptions =
     Array.isArray(countries) && countries.length > 0 ? countries : [];
@@ -32,7 +62,7 @@ const ClinicalFeature = ({ componentData, data }) => {
     Array.isArray(treatments) && treatments.length > 0 ? treatments : [];
 
   const handleSearch = () => {
-    // Implement search functionality
+    setSearchQuery(searchTerm.trim());
   };
 
   const handleKeyPress = (e) => {
@@ -40,6 +70,10 @@ const ClinicalFeature = ({ componentData, data }) => {
       handleSearch();
     }
   };
+
+  const trials = Array.isArray(trialsList) ? trialsList : [];
+  const getOptionValue = (item) => item?.slug ?? item?.value ?? item?.id ?? '';
+  const getOptionName = (item) => item?.name ?? item?.label ?? '';
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
@@ -50,15 +84,21 @@ const ClinicalFeature = ({ componentData, data }) => {
     <section className='quickFinds_sec py-120'>
       <div className='containerWrapper'>
         <ScrollAnimationComponent animationVariants={fadeIn}>
-          <TopSection>
-            <div className='commContent_wrap commContent_new '>
-              <p className='contentLabel'>{listingData?.heading || ''}</p>
-              <h3 className='title-3'>{listingData?.subHeading || ''}</h3>
-              <div className='content__des text_theme_dark'>
-                <p className='text-16'>{renderRichTextWithImages(listingData?.description_block)||listingData?.description_text || ''}</p>
+          {listingData && (
+            <TopSection>
+              <div className='commContent_wrap commContent_new '>
+                <p className='contentLabel'>{listingData?.heading || ''}</p>
+                <h3 className='title-3'>{listingData?.subHeading || ''}</h3>
+                <div className='content__des text_theme_dark'>
+                  <p className='text-16'>
+                    {renderRichTextWithImages(listingData?.description_block) ||
+                      listingData?.description_text ||
+                      ''}
+                  </p>
+                </div>
               </div>
-            </div>
-          </TopSection>
+            </TopSection>
+          )}
 
           <FiltersContainer>
             <SearchInput>
@@ -91,10 +131,10 @@ const ClinicalFeature = ({ componentData, data }) => {
                   <option value=''>Select country</option>
                   {countryOptions.map((country) => (
                     <option
-                      key={country?.id || country?.value}
-                      value={country?.value || ''}
+                      key={country?.id ?? country?.slug}
+                      value={getOptionValue(country)}
                     >
-                      {country?.name || ''}
+                      {getOptionName(country)}
                     </option>
                   ))}
                 </Select>
@@ -102,8 +142,11 @@ const ClinicalFeature = ({ componentData, data }) => {
                   className={!selectedCountry ? 'placeholder' : ''}
                 >
                   {selectedCountry
-                    ? countryOptions.find((c) => c.value === selectedCountry)
-                        ?.name || 'Select country'
+                    ? getOptionName(
+                      countryOptions.find(
+                        (c) => getOptionValue(c) === selectedCountry
+                      )
+                    ) || 'Select country'
                     : 'Select country'}
                 </SelectDisplay>
                 <DropdownIcon>
@@ -128,10 +171,10 @@ const ClinicalFeature = ({ componentData, data }) => {
                   <option value=''>Select specialty</option>
                   {specialtyOptions.map((specialty) => (
                     <option
-                      key={specialty?.id || specialty?.value}
-                      value={specialty?.value || ''}
+                      key={specialty?.id ?? specialty?.slug}
+                      value={getOptionValue(specialty)}
                     >
-                      {specialty?.name || ''}
+                      {getOptionName(specialty)}
                     </option>
                   ))}
                 </Select>
@@ -139,9 +182,11 @@ const ClinicalFeature = ({ componentData, data }) => {
                   className={!selectedSpecialty ? 'placeholder' : ''}
                 >
                   {selectedSpecialty
-                    ? specialtyOptions.find(
-                        (s) => s.value === selectedSpecialty
-                      )?.name || 'Select specialty'
+                    ? getOptionName(
+                      specialtyOptions.find(
+                        (s) => getOptionValue(s) === selectedSpecialty
+                      )
+                    ) || 'Select specialty'
                     : 'Select specialty'}
                 </SelectDisplay>
                 <DropdownIcon>
@@ -166,10 +211,10 @@ const ClinicalFeature = ({ componentData, data }) => {
                   <option value=''>Select treatment</option>
                   {treatmentOptions.map((treatment) => (
                     <option
-                      key={treatment?.id || treatment?.value}
-                      value={treatment?.value || ''}
+                      key={treatment?.id ?? treatment?.slug}
+                      value={getOptionValue(treatment)}
                     >
-                      {treatment?.name || ''}
+                      {getOptionName(treatment)}
                     </option>
                   ))}
                 </Select>
@@ -177,9 +222,11 @@ const ClinicalFeature = ({ componentData, data }) => {
                   className={!selectedTreatment ? 'placeholder' : ''}
                 >
                   {selectedTreatment
-                    ? treatmentOptions.find(
-                        (t) => t.value === selectedTreatment
-                      )?.name || 'Select treatment'
+                    ? getOptionName(
+                      treatmentOptions.find(
+                        (t) => getOptionValue(t) === selectedTreatment
+                      )
+                    ) || 'Select treatment'
                     : 'Select treatment'}
                 </SelectDisplay>
                 <DropdownIcon>
@@ -195,6 +242,47 @@ const ClinicalFeature = ({ componentData, data }) => {
               </SelectWrapper>
             )}
           </FiltersContainer>
+
+          {trialsLoading ? (
+            <div className='text-16 text_theme_dark'>Loading trials...</div>
+          ) : (
+            <CardListHolder>
+              {trials.length > 0 ? (
+                <CardList>
+                  {trials.map((trial, index) => (
+                    <Card key={trial?.id ?? trial?.documentId ?? index}>
+                      <CardContent>
+                        {
+                          trial?.trial_id && (
+                            <CardSl>Trial No.:{trial?.trial_id}</CardSl>
+                          )
+                        }
+                        {trial?.current_status && (
+                          <StatusBadge $status={trial.current_status}>
+                            {trial.current_status}
+                          </StatusBadge>
+                        )}
+                        {trial?.name && (
+                          <CardTitle>{trial?.name || ''}</CardTitle>
+                        )}
+                        <CTAButton
+                          className='btn btn-pink-solid'
+                          to={trial?.slug ? `/clinical-trial/${trial?.slug}` : '#'}
+                          target='_self'
+                        >
+                          Explore
+                        </CTAButton>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </CardList>
+              ) : (
+                <div className='text-16 text_theme_dark'>
+                  No clinical trials found. Try adjusting your search or filters.
+                </div>
+              )}
+            </CardListHolder>
+          )}
         </ScrollAnimationComponent>
       </div>
     </section>
@@ -383,6 +471,27 @@ const DropdownIcon = styled.div`
   }
 `;
 
+const StatusBadge = styled.span`
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: ${(props) =>
+    props.$status === 'recruiting'
+      ? '#e8f5e9'
+      : props.$status === 'completed'
+        ? '#e3f2fd'
+        : '#fff3e0'};
+  color: ${(props) =>
+    props.$status === 'recruiting'
+      ? '#2e7d32'
+      : props.$status === 'completed'
+        ? '#1565c0'
+        : '#e65100'};
+`;
+
 const CardListHolder = styled.div``;
 const CardList = styled.div`
   display: grid;
@@ -444,17 +553,11 @@ const CardTitle = styled.h4`
     margin-bottom: 30px;
   }
 `;
-const CardButton = styled.div`
-  margin-top: auto;
-`;
-const ButtonHolder = styled.div`
-  text-align: center;
-  margin-top: 52px;
-  @media (max-width: 991.98px) {
-    margin-top: 40px;
-  }
-  @media (max-width: 767.98px) {
-    margin-top: 30px;
+
+const CTAButton = styled(Link)`
+  max-width: 324px;
+  @media (max-width: 575px) {
+    max-width: 100%;
   }
 `;
 

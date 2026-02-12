@@ -167,7 +167,7 @@ const ClinicalTrials = ({ componentData, data }) => {
       ? trialsData?.clinical_trials?.map((trial, index) => ({
         id: trial?.id || trial?.documentId || index + 1,
         title: trial?.name || "",
-        link: trial?.slug ? `/clinical-trials/${trial?.slug}` : "#",
+        link: trial?.slug ? `/clinical-trial/${trial?.slug}` : "#",
         order: trial?.order || index + 1,
         target: "_self",
       }))

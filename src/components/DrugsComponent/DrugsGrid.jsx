@@ -48,7 +48,7 @@ const DrugsGrid = ( { drugs, loading }) => {
   }
 
   const handleCardClick = (medicine) => {
-    navigate(`/drugs/${medicine?.slug}`);
+    navigate(`/drug/${medicine?.slug}`);
   };
 
   return (
