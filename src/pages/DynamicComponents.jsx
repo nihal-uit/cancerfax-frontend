@@ -36,10 +36,14 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
   }, [globalData, globalLoading, dispatch]);
 
   if (pageLoading || globalLoading) return <LoadingSpinner />;
+  
+  // Normalize dynamic zone - handle both snake_case (dynamic_zone) and camelCase (dynamicZone)
+  const dynamicZone = pageData?.dynamicZone || pageData?.dynamic_zone || [];
+  
   if (
     !pageData ||
-    !Array.isArray(pageData.dynamicZone) ||
-    pageData.dynamicZone.length === 0
+    !Array.isArray(dynamicZone) ||
+    dynamicZone.length === 0
   ) {
     return (
       <PageWrapper>
@@ -52,7 +56,7 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
   }
 
   // Filter components where isActive is true
-  const activeComponents = pageData?.dynamicZone?.filter((block) => {
+  const activeComponents = dynamicZone.filter((block) => {
     // Handle both boolean true and string "True"/"true" for compatibility
     return block.isActive === true || block.isActive === "True" || block.isActive === "true";
   }) || [];

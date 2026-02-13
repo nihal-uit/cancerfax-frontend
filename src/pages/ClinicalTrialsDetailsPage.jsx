@@ -16,6 +16,7 @@ import Chronic from "../components/TreatmentComponent/Chronic/Chronic";
 import CartCellTherapy from "../components/TreatmentComponent/CartCellTherapy/CartCellTherapy";
 import FdaTherapy from "../components/TreatmentComponent/FdaTherapy";
 import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
+import DynamicComponents from "./DynamicComponents";
 
 const ClinicalTrialsDetailsPage = () => {
   const dispatch = useDispatch();
@@ -73,6 +74,7 @@ const ClinicalTrialsDetailsPage = () => {
       <Research data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
       <Transcend data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
       <Resources sectionClass="treatment__resource" data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
+      <DynamicComponents pageData={clinicalTrials?.[0]} pageLoading={clinicalTrialsLoading} showHeader={false} showFooter={false} />
       <Footer />
     </div>
   );

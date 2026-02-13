@@ -20,6 +20,7 @@ import TreatmentwiseCost from "../components/CostCalculatorComponent/Treatmentwi
 import AvailableTreatmentComponent from "../components/CostCalculatorComponent/AvailableTreatmentComponent";
 import CancerTreatmentTopOncologists from '../components/CancerTreatmentComponent/CancerTreatmentTopOncologists/CancerTreatmentTopOncologists';
 import HospitalSlider from "../components/HospitalComponents/HospitalSlider";
+import DynamicComponents from "./DynamicComponents";
 
 
 const TherapyPage = () => {
@@ -128,6 +129,7 @@ const TherapyPage = () => {
           <Resources sectionClass="treatment__resource" data={therapies?.[0]?.resources} loading={therapiesLoading} />
         )
       }
+      <DynamicComponents pageData={therapies?.[0]} pageLoading={therapiesLoading} showHeader={false} showFooter={false} />
       <Footer />
     </div>
   );

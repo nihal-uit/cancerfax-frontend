@@ -184,7 +184,7 @@ const TreatmentPage = () => {
         </>
       </Suspense>
 
-      <DynamicComponents pageData={treatmentData} pageLoading={treatmentLoading} darkText={true} showFooter={false} showHeader={false}/>
+      <DynamicComponents pageData={sections} pageLoading={treatmentLoading} darkText={true} showFooter={false} showHeader={false}/>
       <Footer />
     </PageWrapper>
   );

@@ -63,7 +63,7 @@ const DrugsDetails = () => {
             <SupportingLifeComponent data={drug[0]?.supporting_section}/>
         </div>
       </section>
-      <DynamicComponents pageData={drug} pageLoading={drugLoading} showHeader={false} showFooter={false} />
+      <DynamicComponents pageData={drug[0]} pageLoading={drugLoading} showHeader={false} showFooter={false} />
       <Footer />
     </PageContainer>
   );

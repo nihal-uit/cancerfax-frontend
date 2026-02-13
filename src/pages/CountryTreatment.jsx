@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchCountryTreatmentBySlug } from '../store/slices/treatmentSlice';
 import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
 import { fetchGlobalData } from '../store/slices/globalSlice';
+import DynamicComponents from "./DynamicComponents";
 
 const CountryTreatment = () => {
   const { slug } = useParams();
@@ -87,6 +88,7 @@ const CountryTreatment = () => {
 
       {/* Resources specific to this country treatment page */}
       <Resources data={countryTreatment?.resources} />
+      <DynamicComponents pageData={countryTreatment} pageLoading={countryTreatmentLoading} showHeader={false} showFooter={false} />
       <Footer />
     </PageContainer>
   );

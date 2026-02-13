@@ -53,7 +53,7 @@ const DoctorsDetails = () => {
       <Header darkText={true}/>
       <DoctorsDetailsHero data={doctor?.[0]?.hero} loading={loading} />
       <DoctorsDetailsInfo data={doctor?.[0]} loading={loading} />
-      <DynamicComponents pageData={doctor} pageLoading={loading} showHeader={false} showFooter={false} />
+      <DynamicComponents pageData={doctor?.[0]} pageLoading={loading} showHeader={false} showFooter={false} />
       <Footer />
     </PageContainer>
   );
