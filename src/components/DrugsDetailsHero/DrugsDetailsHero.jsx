@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { getMediaUrl } from '../../services/api';
+import { Link } from 'react-router-dom';
 
 const DrugsDetailsHero = ({ data}) => {
   console.log('data', data);
@@ -28,12 +29,14 @@ const DrugsDetailsHero = ({ data}) => {
                 <Description className='text-16'>{data?.subHeading}</Description>
               </div>
               
-              <IconButton >
-                <Icon 
-                  src="../images/icon-share.svg"
-                  alt=""
-                />
-              </IconButton>
+              <Link to={data?.cta?.URL} target={data?.cta?.target}>
+                <IconButton >
+                  <Icon 
+                    src="../images/icon-share.svg"
+                    alt=""
+                  />
+                </IconButton>
+              </Link>
             </TopRow>
             
           </HeroContentGrid>          

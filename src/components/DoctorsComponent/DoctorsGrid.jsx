@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useLoadMore } from '../../utils/useLoadMore';
 import SkeletonBlogCard from '../reusable/SkeletonBlogCard';
+import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
 
 const DoctorsGrid = ( { doctors, loading }) => {
   const navigate = useNavigate();
@@ -45,17 +46,21 @@ const DoctorsGrid = ( { doctors, loading }) => {
     3
   );
 
-  if (loading) {
-    return (
-      <Grid>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <SkeletonBlogCard key={i} />
-        ))}
-      </Grid>
-    );
+  // if (loading) {
+  //   return (
+  //     <Grid>
+  //       {Array.from({ length: 3 }).map((_, i) => (
+  //         <SkeletonBlogCard key={i} />
+  //       ))}
+  //     </Grid>
+  //   );
+  // }
+
+  if(loading) {
+    return <LoadingSpinner />;
   }
 
-  if(doctors.length === 0) {
+  if(!loading && doctors.length === 0) {
     return (
       <Grid>
         <EmptyState>No doctors found</EmptyState>

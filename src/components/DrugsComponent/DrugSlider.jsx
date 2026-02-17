@@ -42,7 +42,7 @@ const DrugSlider = ({ data }) => {
                           {
                             slide?.hero?.cta && (
                               <Link
-                                to={slide?.hero?.cta?.URL || '/drugs/' + slide?.slug}
+                                to={slide?.hero?.cta?.URL || '/drug/' + slide?.slug}
                                 className="btn btn-pink-solid"
                                 target={slide?.hero?.cta?.target}
                               >

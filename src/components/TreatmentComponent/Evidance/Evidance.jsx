@@ -10,6 +10,8 @@ const Evidance = ({ data, loading }) => {
     return null;
   }
 
+  console.log('data - ', data);
+
   return (
     <section className="evidance_sec py-120 pb-0" id="evidance">
       <div className="containerWrapper z-2 position-relative">
@@ -42,9 +44,13 @@ const Evidance = ({ data, loading }) => {
                         )
                       }
                     </div>
-                    { data?.card_1?.description_block || data?.card_1?.description_text && (
+                    {(data?.card_1?.description_block || data?.card_1?.description_text) && (
                       <div className="card__body">
-                        <p>{renderRichTextWithImages(data?.card_1?.description_block)||data?.card_1?.description_text}</p>
+                        {data?.card_1?.description_block ? (
+                          renderRichTextWithImages(data?.card_1?.description_block)
+                        ) : (
+                          <p>{data?.card_1?.description_text}</p>
+                        )}
                       </div>
                     )}
                   </Card>
@@ -86,9 +92,13 @@ const Evidance = ({ data, loading }) => {
                             </div>
                           )}
                         </div>
-                        {data?.card_3?.description_block || data?.card_3?.description_text && (
+                        {(data?.card_3?.description_block || data?.card_3?.description_text) && (
                           <div className="card__body">
-                            <p>{renderRichTextWithImages(data?.card_3?.description_block) || data?.card_3?.description_text}</p>
+                            {data?.card_3?.description_block ? (
+                              renderRichTextWithImages(data?.card_3?.description_block)
+                            ) : (
+                              <p>{data?.card_3?.description_text}</p>
+                            )}
                           </div>
                         )}
                       </div>
@@ -119,9 +129,13 @@ const Evidance = ({ data, loading }) => {
                           )
                         }
                       </div>
-                      {data?.card_4?.description_block || data?.card_4?.description_text && (
+                      {(data?.card_4?.description_block || data?.card_4?.description_text) && (
                         <div className="card__body">
-                          <p>{renderRichTextWithImages(data?.card_4?.description_block) || data?.card_4?.description_text}</p>
+                          {data?.card_4?.description_block ? (
+                            renderRichTextWithImages(data?.card_4?.description_block)
+                          ) : (
+                            <p>{data?.card_4?.description_text}</p>
+                          )}
                         </div>
                       )}
                     </Card>
@@ -145,9 +159,13 @@ const Evidance = ({ data, loading }) => {
                           )
                         }
                       </div>
-                      {data?.card_5?.description_block || data?.card_5?.description_text && (
+                      {(data?.card_5?.description_block || data?.card_5?.description_text) && (
                         <div className="card__body">
-                          <p>{renderRichTextWithImages(data?.card_5?.description_block) || data?.card_5?.description_text}</p>
+                          {data?.card_5?.description_block ? (
+                            renderRichTextWithImages(data?.card_5?.description_block)
+                          ) : (
+                            <p>{data?.card_5?.description_text}</p>
+                          )}
                         </div>
                       )}
                     </Card>

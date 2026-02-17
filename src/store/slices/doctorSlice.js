@@ -15,9 +15,9 @@ export const fetchDoctorBySlug = createAsyncThunk(
 
 export const fetchDoctors = createAsyncThunk(
   'doctor/fetchDoctors',
-  async ({ limit = 3, start = 0, query = '' } = {}, { rejectWithValue }) => {
+  async ({ limit = 3, start = 0, query = '', sorting = '' } = {}, { rejectWithValue }) => {
     try {
-      const response = await doctorAPI.getDoctors({ limit, start, query });
+      const response = await doctorAPI.getDoctors({ limit, start, query, sorting });
       return {
         data: response.data,
         meta: response.meta,
@@ -35,6 +35,8 @@ const doctorSlice = createSlice({
     doctor: null,
     doctors: [],
     loading: false,
+    doctorsLoading: false,
+    doctorsHasMore: true,
     error: null,
   },
   reducers: {},
@@ -53,15 +55,33 @@ const doctorSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(fetchDoctors.pending, (state) => {
-        state.loading = true;
+        state.doctorsLoading = true;
         state.error = null;
       })
       .addCase(fetchDoctors.fulfilled, (state, action) => {
-        state.loading = false;
-        state.doctors = action.payload.data;
+        const { data, meta, start } = action.payload;
+        if (start === 0) {
+          state.doctors = data;
+        } else {
+          const existingIds = new Set(
+            state.doctors.map((doctor) => doctor?.documentId || doctor?.id)
+          );
+          const newItems = data.filter((doctor) => {
+            const identifier = doctor?.documentId || doctor?.id;
+            return identifier ? !existingIds.has(identifier) : true;
+          });
+          state.doctors = [...state.doctors, ...newItems];
+        }
+        state.doctorsMeta = meta;
+        const total = meta?.pagination?.total;
+        state.doctorsHasMore =
+          typeof total === 'number'
+            ? state.doctors.length < total
+            : data.length > 0;
+        state.doctorsLoading = false;
       })
       .addCase(fetchDoctors.rejected, (state, action) => {
-        state.loading = false;
+        state.doctorsLoading = false;
         state.error = action.payload;
       });
   },

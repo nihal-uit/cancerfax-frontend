@@ -19,8 +19,12 @@ export const fetchHospitals = createAsyncThunk(
   'hospitalNetwork/fetchHospitals',
   async ({ limit = 3, start = 0, query = '', sorting = '' } = {}, { rejectWithValue }) => {
     try {
-      const data = await hospitalNetworkAPI.getHospitals({ limit, start, query, sorting });
-      return data;
+      const response = await hospitalNetworkAPI.getHospitals({ limit, start, query, sorting });
+      return {
+        data: response.data,
+        meta: response.meta,
+        start,
+      };
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch hospitals');
     }
@@ -46,6 +50,8 @@ const hospitalNetworkSlice = createSlice({
     hospitals: [],
     hospital: null,
     loading: false,
+    hospitalsLoading: false,
+    hospitalsHasMore: true,
     error: null,
   },
   reducers: {},
@@ -66,15 +72,33 @@ const hospitalNetworkSlice = createSlice({
       })
       // Hospitals
       .addCase(fetchHospitals.pending, (state) => {
-        state.loading = true;
+        state.hospitalsLoading = true;
         state.error = null;
       })
       .addCase(fetchHospitals.fulfilled, (state, action) => {
-        state.loading = false;
-        state.hospitals = action.payload;
+        const { data, meta, start } = action.payload;
+        if (start === 0) {
+          state.hospitals = data;
+        } else {
+          const existingIds = new Set(
+            state.hospitals.map((hospital) => hospital?.documentId || hospital?.id)
+          );
+          const newItems = data.filter((hospital) => {
+            const identifier = hospital?.documentId || hospital?.id;
+            return identifier ? !existingIds.has(identifier) : true;
+          });
+          state.hospitals = [...state.hospitals, ...newItems];
+        }
+        state.hospitalsMeta = meta;
+        const total = meta?.pagination?.total;
+        state.hospitalsHasMore =
+          typeof total === 'number'
+            ? state.hospitals.length < total
+            : data.length > 0;
+        state.hospitalsLoading = false;
       })
       .addCase(fetchHospitals.rejected, (state, action) => {
-        state.loading = false;
+        state.hospitalsLoading = false;
         state.error = action.payload;
       })
 

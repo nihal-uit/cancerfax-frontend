@@ -6,6 +6,7 @@ import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAni
 import { useNavigate } from 'react-router-dom';
 import { useLoadMore } from '../../utils/useLoadMore';
 import SkeletonBlogCard from '../reusable/SkeletonBlogCard';
+import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
 
 const HospitalGrid = ( { data, loading }) => {
   const navigate = useNavigate();
@@ -41,17 +42,21 @@ const HospitalGrid = ( { data, loading }) => {
     3
   );
 
-  if (loading) {
-    return (
-      <Grid>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <SkeletonBlogCard key={i} />
-        ))}
-      </Grid>
-    );
+  // if (loading) {
+  //   return (
+  //     <Grid>
+  //       {Array.from({ length: 3 }).map((_, i) => (
+  //         <SkeletonBlogCard key={i} />
+  //       ))}
+  //     </Grid>
+  //   );  
+  // }
+
+  if(loading) {
+    return <LoadingSpinner />;
   }
 
-  if(data?.length === 0) {
+  if(!loading && data?.length === 0) {
     return (
       <Grid>
         <EmptyState>No hospitals found</EmptyState>

@@ -458,7 +458,7 @@ export const hospitalNetworkAPI = {
     
     const queryString = filters ? `${filters}&` : '';
     const response = await api.get(`/hospitals?${queryString}populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
-    return response.data.data;
+    return response.data;
   },
 
   getHospitalBySlug: async (slug) => {
