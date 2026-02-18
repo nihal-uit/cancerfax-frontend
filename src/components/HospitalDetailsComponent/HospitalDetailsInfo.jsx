@@ -63,13 +63,13 @@ const HospitalDetailsInfo = ({ data, loading }) => {
         return data?.direction && (data?.direction?.isActive !== false) && (data?.direction?.directions?.length > 0 || data?.direction?.map_embed_url);
       }
       if (sectionId === 'infrastructure') {
-        return data?.infrastructure && data?.infrastructure?.infrastructures && Array.isArray(data?.infrastructure?.infrastructures) && data?.infrastructure?.infrastructures?.length > 0;
+        return data?.infrastructure && data?.infrastructure?.infrastructures && Array.isArray(data?.infrastructure?.infrastructures);
       }
       if (sectionId === 'team') {
-        return data?.team && data?.team?.doctors && Array.isArray(data?.team?.doctors) && data?.team?.doctors?.length > 0;
+        return data?.team && data?.team?.doctors && Array.isArray(data?.team?.doctors);
       }
       if (sectionId === 'facilities') {
-        return data?.facilities && Array.isArray(data?.facilities) && data?.facilities?.length > 0;
+        return data?.facilities && Array.isArray(data?.facilities);
       }
       if (sectionId === 'media') {
         return data?.media && (data?.media?.media_galary?.length > 0 || data?.media?.heading || renderRichTextWithImages(data?.media?.description_block) ||data?.media?.description_text);
@@ -337,7 +337,7 @@ const HospitalDetailsInfo = ({ data, loading }) => {
               // Special handling for "infrastructure" section
               if (sectionId === 'infrastructure') {
                 const infrastructureData = data?.infrastructure;
-                if (!infrastructureData || !infrastructureData?.infrastructures || !Array.isArray(infrastructureData.infrastructures) || infrastructureData.infrastructures.length === 0) {
+                if (!infrastructureData || !infrastructureData?.infrastructures || !Array.isArray(infrastructureData.infrastructures)) {
                   return null;
                 }
                 
@@ -358,54 +358,58 @@ const HospitalDetailsInfo = ({ data, loading }) => {
                           }
                         </div>
                       )}
-                      <div className="infrastructure-slider-wrap">
-                        <Swiper
-                          spaceBetween={16}
-                          slidesPerView={1}
-                          breakpoints={{
-                            0: { slidesPerView: 1 },
-                            480: { slidesPerView: 1 },
-                            767: { slidesPerView: 2 },
-                            992: { slidesPerView: 2 },
-                            1200: { slidesPerView: 3 },
-                          }}
-                          modules={[Navigation]}
-                          navigation={{
-                            nextEl: ".customNext",
-                            prevEl: ".customPrev",
-                          }}
-                        >
-                          {infrastructureData.infrastructures.map((item, index) => (
-                            <SwiperSlide key={item?.id || index}>
-                              <TherapyCard>
-                                {item?.image && (
-                                  <img 
-                                    src={formatMedia(item.image)} 
-                                    alt={item?.name || item?.image?.alternativeText || 'Infrastructure'} 
-                                  />
-                                )}
-                                {item?.name && (
-                                  <CardOverlay className="card-overlay">
-                                    <CardTitle>{item.name}</CardTitle>
-                                  </CardOverlay>
-                                )}
-                              </TherapyCard>
-                            </SwiperSlide>
-                          ))}
-                        </Swiper>
-                        <NavigationContainer className='customNavigation'>
-                          <NavButton className='customPrev'>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="46" height="32" viewBox="0 0 46 32" fill="none">
-                              <path d="M15.8656 31.7313L17.6493 30.01L4.75497 17.1156H45.0481V14.6156H4.70684L17.5868 1.72125L15.8656 0L-3.43323e-05 15.8656L15.8656 31.7313Z" fill="#727B81"/>
-                            </svg>
-                          </NavButton>
-                          <NavButton className="customNext">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="46" height="32" viewBox="0 0 46 32" fill="none">
-                              <path d="M29.1825 31.7313L27.3988 30.01L40.2931 17.1156H0V14.6156H40.3413L27.4613 1.72125L29.1825 0L45.0481 15.8656L29.1825 31.7313Z" fill="#727B81"/>
-                            </svg>
-                          </NavButton>
-                        </NavigationContainer>
+                      {infrastructureData?.infrastructures?.length > 0 && 
+                      (
+                        <div className="infrastructure-slider-wrap">
+                          <Swiper
+                            spaceBetween={16}
+                            slidesPerView={1}
+                            breakpoints={{
+                              0: { slidesPerView: 1 },
+                              480: { slidesPerView: 1 },
+                              767: { slidesPerView: 2 },
+                              992: { slidesPerView: 2 },
+                              1200: { slidesPerView: 3 },
+                            }}
+                            modules={[Navigation]}
+                            navigation={{
+                              nextEl: ".customNext",
+                              prevEl: ".customPrev",
+                            }}
+                          >
+                            {infrastructureData?.infrastructures?.map((item, index) => (
+                              <SwiperSlide key={item?.id || index}>
+                                <TherapyCard>
+                                  {item?.image && (
+                                    <img 
+                                      src={formatMedia(item.image)} 
+                                      alt={item?.name || item?.image?.alternativeText || 'Infrastructure'} 
+                                    />
+                                  )}
+                                  {item?.name && (
+                                    <CardOverlay className="card-overlay">
+                                      <CardTitle>{item.name}</CardTitle>
+                                      <CardSubTitle>{item?.details && renderRichTextWithImages(item?.details)}</CardSubTitle>
+                                    </CardOverlay>
+                                  )}
+                                </TherapyCard>
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+                          <NavigationContainer className='customNavigation'>
+                            <NavButton className='customPrev'>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="46" height="32" viewBox="0 0 46 32" fill="none">
+                                <path d="M15.8656 31.7313L17.6493 30.01L4.75497 17.1156H45.0481V14.6156H4.70684L17.5868 1.72125L15.8656 0L-3.43323e-05 15.8656L15.8656 31.7313Z" fill="#727B81"/>
+                              </svg>
+                            </NavButton>
+                            <NavButton className="customNext">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="46" height="32" viewBox="0 0 46 32" fill="none">
+                                <path d="M29.1825 31.7313L27.3988 30.01L40.2931 17.1156H0V14.6156H40.3413L27.4613 1.72125L29.1825 0L45.0481 15.8656L29.1825 31.7313Z" fill="#727B81"/>
+                              </svg>
+                            </NavButton>
+                          </NavigationContainer>
                       </div>
+                    )}
                     </div>
                   </div>
                 );
@@ -414,7 +418,7 @@ const HospitalDetailsInfo = ({ data, loading }) => {
               // Special handling for "team" section
               if (sectionId === 'team') {
                 const teamData = data?.team;
-                if (!teamData || !teamData?.doctors || !Array.isArray(teamData.doctors) || teamData.doctors.length === 0) {
+                if (!teamData || !teamData?.doctors || !Array.isArray(teamData.doctors)) {
                   return null;
                 }
                 
@@ -435,7 +439,8 @@ const HospitalDetailsInfo = ({ data, loading }) => {
                           }
                         </div>
                       )}
-                      <div className="team-specialties-wrap">
+                      {teamData?.doctors?.length > 0 && (
+                        <div className="team-specialties-wrap">
                         <Row className="g-4">
                           {teamData.doctors.map((doctor, index) => (
                             <Col key={doctor?.id || doctor?.documentId || index} xl={4} lg={6} md={6} sm={6}>
@@ -454,6 +459,7 @@ const HospitalDetailsInfo = ({ data, loading }) => {
                           ))}
                         </Row>
                       </div>
+                    )}
                     </div>
                   </div>
                 );
@@ -462,7 +468,7 @@ const HospitalDetailsInfo = ({ data, loading }) => {
               // Special handling for "facilities" section
               if (sectionId === 'facilities') {
                 const facilitiesData = data?.facilities;
-                if (!facilitiesData || !Array.isArray(facilitiesData) || facilitiesData.length === 0) {
+                if (!facilitiesData || !Array.isArray(facilitiesData)) {
                   return null;
                 }
                 

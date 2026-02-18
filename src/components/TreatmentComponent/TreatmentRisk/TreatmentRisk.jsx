@@ -25,8 +25,8 @@ const TreatmentRisk = ({ data, loading }) => {
                     {data?.subHeading && (
                       <h3 className="title-3">{data?.subHeading}</h3>
                     )}
-                    { data?.description_block || data?.description_text && (
-                      <div className="content__des">{renderRichTextWithImages(data?.description_block) || data?.description_text}</div>
+                    { data?.description_block && (
+                      <div className="content__des">{renderRichTextWithImages(data?.description_block)}</div>
                     )}
                   </div>
                 </ScrollAnimationComponent>

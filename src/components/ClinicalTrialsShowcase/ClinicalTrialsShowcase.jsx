@@ -96,7 +96,7 @@ const ClinicalTrialsShowcase = ({ componentData, data }) => {
               ),
             };
           })
-          .filter((slide) => slide.title) // Filter out empty slides
+          .filter((slide) => slide.title || slide.label || slide.description) // Filter out slides with no content
       : [];
 
   const slidesData = formattedGlobalSlides;

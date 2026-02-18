@@ -13,7 +13,7 @@ const TreatmentSlider = ({ sectionClass, data }) => {
     return null;
   }
 
-  const slides = data?.therapies || [];
+  const slides = data?.therapies || data?.clinical_trials || [];
   
   if (!slides || slides.length === 0) {
     return null;

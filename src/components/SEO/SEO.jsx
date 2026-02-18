@@ -1,27 +1,48 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+
+const SITE_NAME = 'CancerFax';
+
+/** Format slug to title: "about-us" -> "About Us" */
+const slugToTitle = (slug) => {
+  if (!slug || typeof slug !== 'string') return null;
+  return slug
+    .trim()
+    .split(/[-_/]/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
 
 /**
  * SEO Component
- * Dynamically injects SEO meta tags from Strapi /api/global endpoint
- * Handles: title, description, meta tags, Open Graph, Twitter cards
+ * Injects SEO meta tags from Strapi (page or global) or from props.
+ * Priority: Props override > Page SEO (state.page.pageData) > Global SEO > Slug-based title > Defaults.
  */
-const SEO = ({data}) => {
-  const globalData = useSelector(state => state.global?.data);
-  const pageData = useSelector(state => state.global?.pageData);
-  
-  // Priority: Page-specific SEO > Global SEO > Defaults
-  const seo = pageData?.seo || globalData?.seo;
+const SEO = ({ data, title: propTitle, description: propDescription, keywords: propKeywords, slug: propSlug }) => {
+  const location = useLocation();
+  const globalData = useSelector((state) => state.global?.data);
+  const pageData = useSelector((state) => state.page?.pageData);
 
-  // Default SEO values
-  const defaultTitle = 'CancerFax - Advanced Cancer Treatments';
+  // Strapi relation can be nested: seo or seo.data.attributes
+  const rawSeo = pageData?.seo || globalData?.seo;
+  const seo = rawSeo?.data?.attributes
+    ? { ...rawSeo.data.attributes }
+    : rawSeo;
+
+  const defaultTitle = `${SITE_NAME} - Advanced Cancer Treatments`;
   const defaultDescription = 'CancerFax - Connecting You to Global Trials and Advanced Cancer Treatments';
   const defaultKeywords = 'cancer treatment, clinical trials, cancer care, medical tourism, advanced treatments';
 
-  // Extract SEO data from Strapi (page-specific or global)
-  const seoTitle = seo?.metaTitle || seo?.title || defaultTitle;
-  const seoDescription = seo?.metaDescription || seo?.description || defaultDescription;
-  const seoKeywords = seo?.keywords || defaultKeywords;
+  // Slug for fallback title: prop > pageData.slug > first path segment
+  const slug = propSlug ?? pageData?.slug ?? (location.pathname.replace(/^\/+|\/+$/g, '').split('/')[0] || null);
+  const slugTitle = slug ? slugToTitle(slug) : null;
+  const fallbackTitle = slugTitle ? `${slugTitle} | ${SITE_NAME}` : defaultTitle;
+
+  // Priority: Props > Strapi SEO > Slug-based title (for title only) > Defaults
+  const seoTitle = propTitle ?? seo?.metaTitle ?? seo?.title ?? fallbackTitle;
+  const seoDescription = propDescription ?? seo?.metaDescription ?? seo?.description ?? defaultDescription;
+  const seoKeywords = propKeywords ?? seo?.keywords ?? defaultKeywords;
   const canonicalUrl = seo?.canonicalURL || seo?.url || window.location.href;
   const ogImage = seo?.metaImage?.url || seo?.metaImage?.data?.attributes?.url || seo?.ogImage?.url || null;
   const ogTitle = seo?.ogTitle || seo?.metaTitle || seoTitle;

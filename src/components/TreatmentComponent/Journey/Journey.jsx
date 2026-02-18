@@ -26,8 +26,8 @@ const Journey = ({ data, loading }) => {
           {data?.subHeading && (
             <Title className="title-3">{data?.subHeading}</Title>
           )}
-          {data?.description_block || data?.description_text && (
-            <Description>{renderRichTextWithImages(data?.description_block) || data?.description_text}</Description>
+          {data?.description_block && (
+            <Description>{renderRichTextWithImages(data?.description_block)}</Description>
           )}
         </Header>
         

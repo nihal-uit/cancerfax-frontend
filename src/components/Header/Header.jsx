@@ -91,8 +91,8 @@ const Header = ({ darkText = false }) => {
   const strapiMenuItems = headerMenu
     ? transformMenuItems(headerMenu)
     : navbarMenu
-    ? transformMenuItems(navbarMenu)
-    : [];
+      ? transformMenuItems(navbarMenu)
+      : [];
   const menuItems =
     strapiMenuItems.length > 0 ? strapiMenuItems : legacyMenuItems;
 
@@ -334,10 +334,10 @@ const Header = ({ darkText = false }) => {
     apiMenuItems && apiMenuItems.length > 0
       ? apiMenuItems
       : menuItems && menuItems.length > 0
-      ? menuItems
-      : globalLoading || menuLoading
-      ? []
-      : [];
+        ? menuItems
+        : globalLoading || menuLoading
+          ? []
+          : [];
 
   const extractLogoUrl = useCallback((media) => {
     if (!media) return null;
@@ -408,8 +408,8 @@ const Header = ({ darkText = false }) => {
   const languageIcon = selectedLanguage?.flagImage?.data?.attributes?.url
     ? getMediaUrl(selectedLanguage.flagImage.data.attributes.url)
     : selectedLanguage?.flag?.data?.attributes?.url
-    ? getMediaUrl(selectedLanguage.flag.data.attributes.url)
-    : null;
+      ? getMediaUrl(selectedLanguage.flag.data.attributes.url)
+      : null;
 
   // Button handling - use actual API structure
   // Priority: globalCtaLabel/globalCtaUrl > navbar.cta > legacy buttons > default
@@ -440,7 +440,7 @@ const Header = ({ darkText = false }) => {
   // Helper function to check if a link is active
   const isLinkActive = useCallback((link) => {
     if (!link || link === '#') return false;
-    
+
     // Remove leading/trailing slashes and normalize
     const normalizePath = (path) => {
       if (!path) return '';
@@ -475,9 +475,8 @@ const Header = ({ darkText = false }) => {
   return (
     <NavContainer
       $darkText={darkText}
-      className={`header ${isSticky ? 'header-fixed' : ''} ${
-        darkText ? '' : 'header-overlay'
-      }`}
+      className={`header ${isSticky ? 'header-fixed' : ''} ${darkText ? '' : 'header-overlay'
+        }`}
     >
       <NavContent>
         <Logo href='/'>
@@ -502,7 +501,7 @@ const Header = ({ darkText = false }) => {
               item.external_url ||
               item.link ||
               `#${label.toLowerCase().replace(/\s+/g, '-')}`;
-            
+
             // Check if this item or any of its children is active
             const checkItemActive = (menuItem) => {
               const menuItemLink =
@@ -522,7 +521,7 @@ const Header = ({ darkText = false }) => {
             // 1. Category without children -> clickable
             // 2. Subcategory without children -> clickable
             // 3. Link -> always clickable
-            // 4. Item with is_clickable = true and internal_path not null -> clickable
+            // 4. Item with is_clickable = true and internal_path not null -> clickable (even with children)
             const shouldBeClickable =
               itemType === 'link' ||
               (itemType === 'category' && !hasChildren) ||
@@ -532,6 +531,9 @@ const Header = ({ darkText = false }) => {
             // Determine if this item should have a dropdown
             // Only show dropdown if category has children
             const shouldShowDropdown = hasChildren && itemType === 'category';
+
+            // If item is clickable and has dropdown, clicking should navigate (not just toggle dropdown)
+            const shouldNavigateOnClick = shouldBeClickable && shouldShowDropdown;
 
             // Check if children are subcategories (for TreatmentsDropdown layout)
             const hasSubcategories = children.some(
@@ -590,8 +592,8 @@ const Header = ({ darkText = false }) => {
                     onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
                   >
                     <NavLink
-                      href={itemLink}
-                      onClick={handleDropdownToggle(dropdownKey)}
+                      href={shouldNavigateOnClick ? itemLink : '#'}
+                      onClick={shouldNavigateOnClick ? handleDropdownMenuClose(dropdownKey) : handleDropdownToggle(dropdownKey)}
                       $darkText={darkText}
                       $isActive={isItemActive}
                     >
@@ -671,8 +673,8 @@ const Header = ({ darkText = false }) => {
               // Get links from active category (if it has children)
               const activeLinks = Array.isArray(activeCategory?.children)
                 ? activeCategory.children.filter(
-                    (child) => (child.type || '').toLowerCase() === 'link'
-                  )
+                  (child) => (child.type || '').toLowerCase() === 'link'
+                )
                 : [];
 
               // Right column should show:
@@ -691,8 +693,8 @@ const Header = ({ darkText = false }) => {
                   onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
                 >
                   <NavLink
-                    href={itemLink}
-                    onClick={handleDropdownToggle(dropdownKey)}
+                    href={shouldNavigateOnClick ? itemLink : '#'}
+                    onClick={shouldNavigateOnClick ? handleDropdownMenuClose(dropdownKey) : handleDropdownToggle(dropdownKey)}
                     $darkText={darkText}
                     $isActive={isItemActive}
                   >
@@ -782,61 +784,61 @@ const Header = ({ darkText = false }) => {
                       </TreatmentsColumn>
                       {(showActiveCategoryLinks ||
                         showSubcategoriesAsLinks) && (
-                        <TreatmentsColumn>
-                          <TreatmentSubItems>
-                            {showActiveCategoryLinks &&
-                              activeLinks.map((link) => {
-                                const linkUrl =
-                                  link.internal_path ||
-                                  link.external_url ||
-                                  link.link ||
-                                  '#';
-                                const isLinkItemActive = isLinkActive(linkUrl);
-                                return (
-                                  <DropdownMenuItem
-                                    key={link.id}
-                                    to={linkUrl}
-                                    onClick={handleDropdownMenuClose(
-                                      dropdownKey
-                                    )}
-                                    $isActive={isLinkItemActive}
-                                  >
-                                    <MenuItemIndicator />
-                                    <MenuItemText>
-                                      {(link.label || '').trim()}
-                                    </MenuItemText>
-                                  </DropdownMenuItem>
-                                );
-                              })}
-                            {showSubcategoriesAsLinks &&
-                              subcategoriesWithoutChildren.map(
-                                (subcategory) => {
-                                  const subcategoryUrl =
-                                    subcategory.internal_path ||
-                                    subcategory.external_url ||
-                                    subcategory.link ||
+                          <TreatmentsColumn>
+                            <TreatmentSubItems>
+                              {showActiveCategoryLinks &&
+                                activeLinks.map((link) => {
+                                  const linkUrl =
+                                    link.internal_path ||
+                                    link.external_url ||
+                                    link.link ||
                                     '#';
-                                  const isSubcategoryActive = isLinkActive(subcategoryUrl);
+                                  const isLinkItemActive = isLinkActive(linkUrl);
                                   return (
                                     <DropdownMenuItem
-                                      key={subcategory.id}
-                                      to={subcategoryUrl}
+                                      key={link.id}
+                                      to={linkUrl}
                                       onClick={handleDropdownMenuClose(
                                         dropdownKey
                                       )}
-                                      $isActive={isSubcategoryActive}
+                                      $isActive={isLinkItemActive}
                                     >
                                       <MenuItemIndicator />
                                       <MenuItemText>
-                                        {(subcategory.label || '').trim()}
+                                        {(link.label || '').trim()}
                                       </MenuItemText>
                                     </DropdownMenuItem>
                                   );
-                                }
-                              )}
-                          </TreatmentSubItems>
-                        </TreatmentsColumn>
-                      )}
+                                })}
+                              {showSubcategoriesAsLinks &&
+                                subcategoriesWithoutChildren.map(
+                                  (subcategory) => {
+                                    const subcategoryUrl =
+                                      subcategory.internal_path ||
+                                      subcategory.external_url ||
+                                      subcategory.link ||
+                                      '#';
+                                    const isSubcategoryActive = isLinkActive(subcategoryUrl);
+                                    return (
+                                      <DropdownMenuItem
+                                        key={subcategory.id}
+                                        to={subcategoryUrl}
+                                        onClick={handleDropdownMenuClose(
+                                          dropdownKey
+                                        )}
+                                        $isActive={isSubcategoryActive}
+                                      >
+                                        <MenuItemIndicator />
+                                        <MenuItemText>
+                                          {(subcategory.label || '').trim()}
+                                        </MenuItemText>
+                                      </DropdownMenuItem>
+                                    );
+                                  }
+                                )}
+                            </TreatmentSubItems>
+                          </TreatmentsColumn>
+                        )}
                     </TreatmentsContent>
                   </TreatmentsDropdown>
                 </NavLinkWrapper>
@@ -852,8 +854,8 @@ const Header = ({ darkText = false }) => {
                 onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
               >
                 <NavLink
-                  href={itemLink}
-                  onClick={handleDropdownToggle(dropdownKey)}
+                  href={shouldNavigateOnClick ? itemLink : '#'}
+                  onClick={shouldNavigateOnClick ? handleDropdownMenuClose(dropdownKey) : handleDropdownToggle(dropdownKey)}
                   $darkText={darkText}
                   $isActive={isItemActive}
                 >
@@ -946,36 +948,36 @@ const Header = ({ darkText = false }) => {
                   alt={selectedLanguage?.name || 'Language'}
                 />
               ) : // Show flag emoji or default UK Flag SVG
-              selectedLanguage?.flag &&
-                typeof selectedLanguage.flag === 'string' ? (
-                <span style={{ fontSize: '22px', lineHeight: '16px' }}>
-                  {selectedLanguage.flag}
-                </span>
-              ) : (
-                <svg width='35' height='35' viewBox='0 0 35 35' fill='none'>
-                  <circle cx='17.5' cy='17.5' r='17.5' fill='#012169' />
-                  <path
-                    d='M3.5 6.5L17.5 17.5M31.5 28.5L17.5 17.5M17.5 17.5L31.5 6.5M17.5 17.5L3.5 28.5'
-                    stroke='white'
-                    strokeWidth='2'
-                  />
-                  <path
-                    d='M3.5 6.5L17.5 17.5M31.5 28.5L17.5 17.5M17.5 17.5L31.5 6.5M17.5 17.5L3.5 28.5'
-                    stroke='#C8102E'
-                    strokeWidth='1'
-                  />
-                  <path
-                    d='M0 17.5H35M17.5 0V35'
-                    stroke='white'
-                    strokeWidth='4'
-                  />
-                  <path
-                    d='M0 17.5H35M17.5 0V35'
-                    stroke='#C8102E'
-                    strokeWidth='2.5'
-                  />
-                </svg>
-              )}
+                selectedLanguage?.flag &&
+                  typeof selectedLanguage.flag === 'string' ? (
+                  <span style={{ fontSize: '22px', lineHeight: '16px' }}>
+                    {selectedLanguage.flag}
+                  </span>
+                ) : (
+                  <svg width='35' height='35' viewBox='0 0 35 35' fill='none'>
+                    <circle cx='17.5' cy='17.5' r='17.5' fill='#012169' />
+                    <path
+                      d='M3.5 6.5L17.5 17.5M31.5 28.5L17.5 17.5M17.5 17.5L31.5 6.5M17.5 17.5L3.5 28.5'
+                      stroke='white'
+                      strokeWidth='2'
+                    />
+                    <path
+                      d='M3.5 6.5L17.5 17.5M31.5 28.5L17.5 17.5M17.5 17.5L31.5 6.5M17.5 17.5L3.5 28.5'
+                      stroke='#C8102E'
+                      strokeWidth='1'
+                    />
+                    <path
+                      d='M0 17.5H35M17.5 0V35'
+                      stroke='white'
+                      strokeWidth='4'
+                    />
+                    <path
+                      d='M0 17.5H35M17.5 0V35'
+                      stroke='#C8102E'
+                      strokeWidth='2.5'
+                    />
+                  </svg>
+                )}
             </LanguageButton>
             <LanguageDropdown isOpen={languageMenuOpen}>
               {availableLanguages.map((lang) => (
@@ -1028,7 +1030,7 @@ const Header = ({ darkText = false }) => {
             item.external_url ||
             item.link ||
             `#${(item.label || '').toLowerCase().replace(/\s+/g, '-')}`;
-          
+
           // Check if this item or any of its children is active (recursive check)
           const checkItemActive = (menuItem) => {
             const menuItemLink =
@@ -1043,7 +1045,7 @@ const Header = ({ darkText = false }) => {
             return false;
           };
           const isItemActive = checkItemActive(item);
-          
+
           if (item.label === 'About') {
             return (
               <MobileNavItem key={index}>
@@ -1415,9 +1417,9 @@ const NavContainer = styled.nav`
   transition: background 300ms ease, box-shadow 300ms ease;
   &.header-fixed {
     background-color: ${(props) =>
-      props.$darkText
-        ? props.theme.backgroundColor.white
-        : props.theme.backgroundColor.primary};
+    props.$darkText
+      ? props.theme.backgroundColor.white
+      : props.theme.backgroundColor.primary};
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
   &.header-overlay {
@@ -1512,6 +1514,8 @@ const Logo = styled.a`
 
   img {
     transition: all 0.3s ease;
+     height: 30px;
+    max-width: 176px;
   }
 
   svg {
@@ -1867,7 +1871,7 @@ const TreatmentCategoryItem = styled.button`
   &:hover {
     background: ${(props) => (props.active ? 'transparent' : '#F8F8F8')};
     border-color: ${(props) =>
-      props.active ? props.theme.colors.pink : 'rgba(255, 20, 147, 0.3)'};
+    props.active ? props.theme.colors.pink : 'rgba(255, 20, 147, 0.3)'};
   }
 
   &:active {
@@ -1917,7 +1921,7 @@ const DropdownHeaderIcon = styled.div`
 
   &::after {
     content: ${(props) =>
-      props.hasIcon ? 'none' : `'${props.icon || 'i'}'`};
+    props.hasIcon ? 'none' : `'${props.icon || 'i'}'`};
     font-family: 'Be Vietnam Pro', sans-serif;
     font-size: ${(props) => props.iconSize || '14px'};
     font-weight: 600;
@@ -2241,7 +2245,7 @@ const HamburgerButton = styled.button`
 
   &:hover {
     background: ${(props) =>
-      props.$darkText ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.3)'};
+    props.$darkText ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.3)'};
     border-color: ${(props) => (props.$darkText ? '#D0D0D0' : '#A1A1A1')};
   }
 
@@ -2292,8 +2296,8 @@ const HamburgerButton = styled.button`
     }
 
     ${(props) =>
-      props.isOpen &&
-      `
+    props.isOpen &&
+    `
       &:nth-child(1) {
         transform: rotate(45deg) translate(5px, 5px);
       }
@@ -2442,7 +2446,7 @@ const MobileNavItemHeader = styled.button`
   svg {
     transition: transform 0.3s ease;
     transform: ${(props) =>
-      props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
+    props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
     width: 16px;
     height: 16px;
     stroke: ${(props) => props.theme.colors.white};
@@ -2495,7 +2499,7 @@ const MobileTreatmentCategoryItem = styled.button`
   svg {
     transition: transform 0.3s ease;
     transform: ${(props) =>
-      props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
+    props.isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
     width: 14px;
     height: 14px;
     stroke: rgba(255, 255, 255, 0.9);

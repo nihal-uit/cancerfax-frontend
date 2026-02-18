@@ -39,9 +39,9 @@ const IsForYou = ({ data, loading }) => {
                 {data?.subHeading}
               </h3>
             )}
-            {data?.description_block || data?.description_text && (
+            {data?.description_block && (
               <div className="content__des">
-                {renderRichTextWithImages(data?.description_block) || data?.description_text}
+                {renderRichTextWithImages(data?.description_block)}
               </div>
             )}
           </div>

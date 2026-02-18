@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
+import { Link } from 'react-router-dom';
 
 const Content = styled.div`
   display: flex;
@@ -68,7 +69,7 @@ const Author = styled.p`
   }
 `;
 
-const ReadButton = styled.a`
+const ReadButton = styled(Link)`
   max-width: 300px;
   @media (max-width: 575px) {
     max-width: 100%;
@@ -96,6 +97,7 @@ const TestimonialsComponent = ({ data }) => {
   const ctaUrl = survivorStory?.slug
     ? `/survivor-stories/${survivorStory?.slug}`
     : data?.cta?.URL || '#';
+  const buttonText = data?.cta?.text ?? survivorStory?.hero?.cta?.text ?? 'Read Full Story';
 
   return (
     <ScrollAnimationComponent animationVariants={slideLeft}>
@@ -109,11 +111,18 @@ const TestimonialsComponent = ({ data }) => {
           </TestimonialContent>
         </TestimonialsBox>
 
-        {(data?.cta?.text || survivorStory?.hero?.cta?.text) && ctaUrl && ctaUrl !== '#' && (
-          <ReadButton className='btn btn-pink-solid' href={ctaUrl}>
+        {/* {(data?.cta?.text || survivorStory?.hero?.cta?.text) && ctaUrl && ctaUrl !== '#' && ( 
+          <ReadButton className='btn btn-pink-solid' to={ctaUrl}>
             {data?.cta?.text || survivorStory?.hero?.cta?.text || 'Read Full Story'}
           </ReadButton>
+        )} */}
+
+        {buttonText && ctaUrl && ctaUrl !== '#' && (
+          <ReadButton className='btn btn-pink-solid' to={ctaUrl}>
+            {buttonText}
+          </ReadButton>
         )}
+
       </Content>
     </ScrollAnimationComponent>
   );

@@ -8,7 +8,8 @@ const fadeIn = {
 };
 
 const PopularFaqComponent = ({data}) => {
-  if (!data || !data?.isActive) return null;
+
+  if (!data) return null;
 
   return (
       <ScrollAnimationComponent animationVariants={fadeIn}>
