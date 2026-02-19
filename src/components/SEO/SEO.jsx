@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import { selectPageBySlug } from '../../store/slices/pageSlice';
 
 const SITE_NAME = 'CancerFax';
 
@@ -22,7 +23,12 @@ const slugToTitle = (slug) => {
 const SEO = ({ data, title: propTitle, description: propDescription, keywords: propKeywords, slug: propSlug }) => {
   const location = useLocation();
   const globalData = useSelector((state) => state.global?.data);
-  const pageData = useSelector((state) => state.page?.pageData);
+  // Derive current page slug from route: "/" -> "home", "/about-us" -> "about-us"
+  const slugFromRoute = useMemo(() => {
+    const segment = location.pathname.replace(/^\/+|\/+$/g, '').split('/')[0] || '';
+    return segment || 'home';
+  }, [location.pathname]);
+  const { pageData } = useSelector((state) => selectPageBySlug(state, propSlug ?? slugFromRoute));
 
   // Strapi relation can be nested: seo or seo.data.attributes
   const rawSeo = pageData?.seo || globalData?.seo;

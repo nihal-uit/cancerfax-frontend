@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import { fetchGlobalData } from "../store/slices/globalSlice";
-import { fetchPageBySlug } from "../store/slices/pageSlice";
+import { fetchPageBySlug, selectPageBySlug } from "../store/slices/pageSlice";
 import { getSectionData } from "../utils/strapiHelpers";
 import SurvivorStoriesHero from "../components/SurvivorStoriesComponent/Hero/SurvivorStoriesHero";
 import OurStory from "../components/SurvivorStoriesComponent/OurStory/OurStory";
@@ -17,11 +17,11 @@ const PageWrapper = styled.div`
 
 const SurvivorStoriesPage = () => {
   const dispatch = useDispatch();
-  const { pageData, pageLoading } = useSelector(state => state.page);
+  const { pageData, pageLoading } = useSelector((state) => selectPageBySlug(state, 'survivor-stories'));
 
   useEffect(() => {
-    dispatch(fetchPageBySlug("survivor-stories"));
-  }, [dispatch]);
+    if (!pageData && !pageLoading) dispatch(fetchPageBySlug("survivor-stories"));
+  }, [dispatch, pageData, pageLoading]);
 
   return (
     // <PageWrapper>

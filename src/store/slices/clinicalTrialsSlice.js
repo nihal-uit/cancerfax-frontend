@@ -70,6 +70,7 @@ const clinicalTrialsSlice = createSlice({
     loading: false,
     error: null,
     heroSearchQuery: '',
+    clinicalTrials: null,
   },
   reducers: {
     setHeroSearchQuery: (state, action) => {
@@ -105,6 +106,20 @@ const clinicalTrialsSlice = createSlice({
         state.listLoading = false;
         state.listError = action.payload;
         state.list = [];
+      })
+      .addCase(fetchClinicalTrialsBySlug.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchClinicalTrialsBySlug.fulfilled, (state, action) => {
+        state.loading = false;
+        // Ensure clinicalTrials is always an array for consistency with component usage
+        state.clinicalTrials = Array.isArray(action.payload) ? action.payload : [action.payload];
+      })
+      .addCase(fetchClinicalTrialsBySlug.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.clinicalTrials = null;
       });
   },
 });

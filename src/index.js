@@ -24,3 +24,25 @@ root.render(
   </React.StrictMode>
 );
 
+// Register service worker in production for faster repeat visits (cached app shell)
+if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register(`${process.env.PUBLIC_URL || ''}/service-worker.js`)
+      .then((registration) => {
+        // Optional: log when SW updates
+        registration.onupdatefound = () => {
+          const installing = registration.installing;
+          if (installing) {
+            installing.onstatechange = () => {
+              if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                // New content available; optionally show "Refresh to update" toast
+              }
+            };
+          }
+        };
+      })
+      .catch((err) => console.warn('Service worker registration failed:', err));
+  });
+}
+

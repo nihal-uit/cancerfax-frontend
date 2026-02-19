@@ -163,7 +163,7 @@ const KeyFactors = () => {
 
         <ContentWrapper className='commContent_wrap'>
           <ImageSection>
-            <img src={imageUrl} alt={imageAlt} />
+            <img src={imageUrl} alt={imageAlt} loading="lazy" />
           </ImageSection>
 
           {factorsList.map((factor, index) => {

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPageBySlug } from "../store/slices/pageSlice";
+import { fetchPageBySlug, selectPageBySlug } from "../store/slices/pageSlice";
 import DynamicComponents from "./DynamicComponents";
 import Footer from "../components/Footer/Footer";
 import Header from "../components/Header/Header";
@@ -13,11 +13,11 @@ import OngoingQuickFinds from "../components/ClinicalComponents/OngoingQuickFind
 
 const ClinicalOngoingPage = () => {
   const dispatch = useDispatch();
-  const { pageData, pageLoading } = useSelector(state => state.page);
+  const { pageData, pageLoading } = useSelector((state) => selectPageBySlug(state, 'ongoing-clinical-trials'));
 
   useEffect(() => {
-    dispatch(fetchPageBySlug("ongoing-clinical-trials"));
-  }, [dispatch]);
+    if (!pageData && !pageLoading) dispatch(fetchPageBySlug("ongoing-clinical-trials"));
+  }, [dispatch, pageData, pageLoading]);
 
   return (
     // <>

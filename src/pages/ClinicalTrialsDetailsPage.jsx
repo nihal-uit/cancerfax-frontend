@@ -57,24 +57,24 @@ const ClinicalTrialsDetailsPage = () => {
   return (
     <div>
       <Header darkText={false} />
-      <TreatmentDetailHero data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
-      <Chronic data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
+      <TreatmentDetailHero data={clinicalTrials[0]?.hero} loading={clinicalTrialsLoading} />
+      <Chronic data={clinicalTrials[0]?.overview} loading={clinicalTrialsLoading} />
       <CartCellTherapy
         fadeIn={fadeIn}
         sideLeft={sideLeft}
         sideRight={sideRight}
-        data={clinicalTrials?.[0]}
+        data={clinicalTrials[0]?.understanding}
         loading={clinicalTrialsLoading}
       />
-      <WhyOpt sectionClass="theraphy__detail__sec" data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
+      <WhyOpt sectionClass="theraphy__detail__sec" data={clinicalTrials[0]?.why_clinical_trial} loading={clinicalTrialsLoading} />
       <hr className="treatment__divider" />
-      <FdaTherapy fadeIn={fadeIn} sideLeft={sideLeft} sideRight={sideRight} data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
-      <Testimonials data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
-      <GetInTouch data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
-      <Research data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
-      <Transcend data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
-      <Resources sectionClass="treatment__resource" data={clinicalTrials?.[0]} loading={clinicalTrialsLoading} />
-      <DynamicComponents pageData={clinicalTrials?.[0]} pageLoading={clinicalTrialsLoading} showHeader={false} showFooter={false} />
+      <FdaTherapy fadeIn={fadeIn} sideLeft={sideLeft} sideRight={sideRight} data={clinicalTrials[0]?.proof} loading={clinicalTrialsLoading} />
+      <Testimonials data={clinicalTrials[0]?.testimonial} loading={clinicalTrialsLoading} />
+      <GetInTouch data={clinicalTrials[0]?.get_in_touch} loading={clinicalTrialsLoading} />
+      <Research data={clinicalTrials[0]?.trials} loading={clinicalTrialsLoading} />
+      <Transcend data={clinicalTrials[0]?.study} loading={clinicalTrialsLoading} />
+      <Resources sectionClass="treatment__resource" data={clinicalTrials[0]?.resources} loading={clinicalTrialsLoading} />
+      <DynamicComponents pageData={clinicalTrials[0]} pageLoading={clinicalTrialsLoading} showHeader={false} showFooter={false} />
       <Footer />
     </div>
   );

@@ -20,7 +20,7 @@ import Footer from '../components/Footer/Footer';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import store from '../store';
 import DynamicComponents from './DynamicComponents';
-import { fetchPageBySlug } from '../store/slices/pageSlice';
+import { fetchPageBySlug, selectPageBySlug } from '../store/slices/pageSlice';
 
 // Lazy load components for code splitting and better performance
 const HeroLazy = lazy(() => import('../components/Hero/Hero'));
@@ -339,13 +339,14 @@ const HomePage = () => {
     [renderDynamicComponents]
   );
 
-  const { pageData, pageLoading } = useSelector((state) => state.page);
+  const { pageData, pageLoading, pageError } = useSelector((state) => selectPageBySlug(state, 'home'));
 
+  // Only fetch when not in cache and not loading/failed (cache-first; prevents loop when API is down)
   useEffect(() => {
-    if (!pageData && !pageLoading) {
+    if (!pageData && !pageLoading && !pageError) {
       dispatch(fetchPageBySlug("home"));
     }
-  }, [pageData, pageLoading, dispatch]);
+  }, [pageData, pageLoading, pageError, dispatch]);
 
   return (
     // <PageWrapper>

@@ -38,7 +38,7 @@ const SuccessStories = ({ data }) => {
                 <StoryCard key={story.id || index}>
                   {imageUrl && (
                     <StoryImage>
-                      <img src={imageUrl} alt={storyTitle} />
+                      <img src={imageUrl} alt={storyTitle} loading="lazy" />
                     </StoryImage>
                   )}
                   <StoryContent>

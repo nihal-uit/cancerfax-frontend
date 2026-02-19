@@ -17,16 +17,16 @@ import ClinicalFeature from "../components/ClinicalComponents/ClinicalFeature";
 
 
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPageBySlug } from "../store/slices/pageSlice";
+import { fetchPageBySlug, selectPageBySlug } from "../store/slices/pageSlice";
 import DynamicComponents from "./DynamicComponents";
 
 const ClinicalListPage = () => {
   const dispatch = useDispatch();
-  const { pageData, pageLoading } = useSelector(state => state.page);
+  const { pageData, pageLoading } = useSelector((state) => selectPageBySlug(state, 'clinical-trials'));
 
   useEffect(() => {
-    dispatch(fetchPageBySlug("clinical-trials"));
-  }, [dispatch]);
+    if (!pageData && !pageLoading) dispatch(fetchPageBySlug("clinical-trials"));
+  }, [dispatch, pageData, pageLoading]);
 
   return (
     // <>

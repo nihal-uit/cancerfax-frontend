@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -11,6 +11,7 @@ import { fetchMenuData } from '../../store/slices/globalSlice';
 const Header = ({ darkText = false }) => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const menuFetchAttemptedRef = useRef(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   // Generic dropdown state management using item IDs
@@ -33,8 +34,10 @@ const Header = ({ darkText = false }) => {
     (state) => state.global
   );
 
+  // Only fetch menu once when missing; avoid infinite retry loop when API is down/slow
   useEffect(() => {
-    if (!menuData && !menuLoading) {
+    if (!menuData && !menuLoading && !menuFetchAttemptedRef.current) {
+      menuFetchAttemptedRef.current = true;
       dispatch(fetchMenuData());
     }
   }, [dispatch, menuData, menuLoading]);

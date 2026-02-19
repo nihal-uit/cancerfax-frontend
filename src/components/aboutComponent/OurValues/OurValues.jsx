@@ -42,7 +42,7 @@ const OurValues = ( { data } ) => {
                 <div className="values_card">
                   <div className="values_card_content">
                     <span className="mission_icon">
-                      <img src={getMediaUrl(data?.card_1?.icon)} alt="our values icon" />
+                      <img src={getMediaUrl(data?.card_1?.icon)} alt="our values icon" loading="lazy" />
                     </span>
                     <h5>{data?.card_1?.title || "Lorem Ipsum"}</h5>
                     <p>{ renderRichTextWithImages(data?.card_1?.description_block) || data?.card_1?.description_text || "Lorem Ipsum dolor sit amet"}</p>
@@ -53,7 +53,7 @@ const OurValues = ( { data } ) => {
                 <div className="values_card with_border">
                   <div className="values_card_content">
                     <span className="mission_icon">
-                      <img src={getMediaUrl(data?.card_2?.icon)} alt="our values icon" />
+                      <img src={getMediaUrl(data?.card_2?.icon)} alt="our values icon" loading="lazy" />
                     </span>
                     <h5>{data?.card_2?.title || "Lorem Ipsum"}</h5>
                     <p>{renderRichTextWithImages(data?.card_2?.description_block) || data?.card_2?.description_text || "Lorem Ipsum dolor sit amet"}</p>
@@ -67,7 +67,7 @@ const OurValues = ( { data } ) => {
                 <div className="values_card with_border">
                   <div className="values_card_content">
                     <span className="mission_icon">
-                      <img src={getMediaUrl(data?.card_3?.icon)} alt="our values icon" />
+                      <img src={getMediaUrl(data?.card_3?.icon)} alt="our values icon" loading="lazy" />
                     </span>
                     <h5>{data?.card_3?.title || "Lorem Ipsum"}</h5>
                     <p>{renderRichTextWithImages(data?.card_3?.description_block) || data?.card_3?.description_text || "Lorem Ipsum dolor sit amet"}</p>
@@ -80,7 +80,7 @@ const OurValues = ( { data } ) => {
                 <div className="values_card">
                   <div className="values_card_content">
                     <span className="mission_icon">
-                      <img src={getMediaUrl(data?.card_4?.icon)} alt="our values icon" />
+                      <img src={getMediaUrl(data?.card_4?.icon)} alt="our values icon" loading="lazy" />
                     </span>
                     <h5>{data?.card_4?.title || "Lorem Ipsum"}</h5>
                     <p>{renderRichTextWithImages(data?.card_4?.description_block) || data?.card_4?.description_text || "Lorem Ipsum dolor sit amet"}</p>
@@ -93,7 +93,7 @@ const OurValues = ( { data } ) => {
                 <div className="values_card with_green_bg">
                   <div className="values_card_content">
                     <span className="mission_icon">
-                      <img src={getMediaUrl(data?.card_5?.icon)} alt="our values icon" />
+                      <img src={getMediaUrl(data?.card_5?.icon)} alt="our values icon" loading="lazy" />
                     </span>
                     <h5>{data?.card_5?.title || "Lorem Ipsum"}</h5>
                     <p>{renderRichTextWithImages(data?.card_5?.description_block) || data?.card_5?.description_text || "Lorem Ipsum dolor sit amet"}</p>

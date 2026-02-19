@@ -148,7 +148,7 @@ const BlogGrid = ({ data, loading }) => {
               }
             >
               <BlogImage>
-                <img src={blog.image} alt={blog.title} />
+                <img src={blog.image} alt={blog.title} loading="lazy" />
                 {blog.category && (
                   <CategoryBadge className='lg-badge'>
                     {blog.category}
@@ -189,6 +189,7 @@ const BlogGrid = ({ data, loading }) => {
                       <img
                         src={blog.author.avatar}
                         alt={blog.author.name || 'Author'}
+                        loading="lazy"
                       />
                     ) : (
                       <InitialDisplay>

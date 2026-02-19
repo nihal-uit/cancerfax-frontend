@@ -1,17 +1,17 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { fetchPageBySlug } from "../store/slices/pageSlice";
+import { fetchPageBySlug, selectPageBySlug } from "../store/slices/pageSlice";
 import DynamicComponents from "./DynamicComponents";
 
 const AboutUsPage = () => {
   const dispatch = useDispatch();
 
-  const { pageData, pageLoading } = useSelector(state => state.page);
+  const { pageData, pageLoading } = useSelector((state) => selectPageBySlug(state, 'about-us'));
 
   useEffect(() => {
-    dispatch(fetchPageBySlug("about-us"));
-  }, [dispatch]);
+    if (!pageData && !pageLoading) dispatch(fetchPageBySlug("about-us"));
+  }, [dispatch, pageData, pageLoading]);
 
   return (
     // <PageWrapper>

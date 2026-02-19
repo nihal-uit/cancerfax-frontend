@@ -10,7 +10,7 @@ const BlogSmallCard = ({ blog, getMediaUrl, onNavigate }) => {
     <ScrollAnimationComponent animationVariants={fadeIn}>
       <SmallCard key={blog.id} onClick={onNavigate}>
         <SmallImage>
-          <img src={getMediaUrl} alt={blog.title} />
+          <img src={getMediaUrl} alt={blog.title} loading="lazy" />
           {
             blog.resource_category && (
               <CategoryBadge>
@@ -46,7 +46,7 @@ const FeaturedBlogCard = ({ blog, getMediaUrl, onNavigate }) => {
   return (
     <FeaturedCard onClick={onNavigate}>
       <FeaturedImage>
-        <img src={getMediaUrl} alt='blog image' />
+        <img src={getMediaUrl} alt='blog image' loading="lazy" />
         {
           blog.resource_category && (
             <CategoryBadge className='lg-badge'>

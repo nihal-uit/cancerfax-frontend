@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import qs from "qs";
 import { getMediaUrl } from "../../services/api";
+import { withDedupe } from "../utils/dedupeInFlight";
 
 const API_URL = process.env.REACT_APP_STRAPI_URL || 'https://cancerfax.unifiedinfotechonline.com';
 
@@ -20,62 +21,62 @@ export const fetchGlobalData = createAsyncThunk(
   "global/fetchGlobalData",
   async (_, { rejectWithValue }) => {
     try {
-      const timestamp = Date.now();
-
-      const globalPopulateQuery = qs.stringify(
-        {
-          populate: {
-            settings: {
-              populate: {
-                logo: { fields: ["id", "url", "hash", "name"] },
-                favicon: { fields: ["id", "url", "hash", "name"] },
-                address: true,
-                offices: { populate: true },
-                ogImage: { fields: ["id", "url", "hash", "name"] },
-                whatsappButton: true,
-                cookieConsent: true,
+      return await withDedupe("global", async () => {
+        const timestamp = Date.now();
+        const globalPopulateQuery = qs.stringify(
+          {
+            populate: {
+              settings: {
+                populate: {
+                  logo: { fields: ["id", "url", "hash", "name"] },
+                  favicon: { fields: ["id", "url", "hash", "name"] },
+                  address: true,
+                  offices: { populate: true },
+                  ogImage: { fields: ["id", "url", "hash", "name"] },
+                  whatsappButton: true,
+                  cookieConsent: true,
+                },
+              },
+              navbar: { populate: true },
+              footer: {
+                populate: {
+                  logo: { fields: ["id", "url", "hash", "name"] },
+                  footer_columns: { populate: { links: true } },
+                  social_media_links: { populate: { image: true, link: true } },
+                  locations: true,
+                  policy_links: true,
+                  cta: true,
+                },
               },
             },
-            navbar: { populate: true },
-            footer: {
-              populate: {
-                logo: { fields: ["id", "url", "hash", "name"] },
-                footer_columns: { populate: { links: true } },
-                social_media_links: { populate: { image: true, link: true } },
-                locations: true,
-                policy_links: true,
-                cta: true,
-              },
-            },
+            _t: timestamp,
           },
-          _t: timestamp,
-        },
-        { encodeValuesOnly: true }
-      );
+          { encodeValuesOnly: true }
+        );
 
-      const url = `${API_URL}/api/global?${globalPopulateQuery}`;
+        const url = `${API_URL}/api/global?${globalPopulateQuery}`;
+        const res = await axios.get(url);
+        const raw = res?.data?.data || null;
+        const globalData = raw?.attributes ? { id: raw.id, ...raw.attributes } : raw;
 
-      const res = await axios.get(url);
-      const raw = res?.data?.data || null;
-      const globalData = raw?.attributes ? { id: raw.id, ...raw.attributes } : raw;
+        let navbarLogoUrl = resolveLogoUrl(globalData?.navbar?.logo);
+        let footerLogoUrl = resolveLogoUrl(globalData?.footer?.logo);
+        const knownLogoUrl = `${API_URL}/uploads/logo_851ef64fcb.png`;
 
-      let navbarLogoUrl = resolveLogoUrl(globalData?.navbar?.logo);
-      let footerLogoUrl = resolveLogoUrl(globalData?.footer?.logo);
-      const knownLogoUrl = `${API_URL}/uploads/logo_851ef64fcb.png`;
+        if (!navbarLogoUrl && !footerLogoUrl) {
+          navbarLogoUrl = footerLogoUrl = knownLogoUrl;
+        } else if (!navbarLogoUrl) {
+          navbarLogoUrl = footerLogoUrl || knownLogoUrl;
+        } else if (!footerLogoUrl) {
+          footerLogoUrl = navbarLogoUrl || knownLogoUrl;
+        }
 
-      if (!navbarLogoUrl && !footerLogoUrl) {
-        navbarLogoUrl = footerLogoUrl = knownLogoUrl;
-      } else if (!navbarLogoUrl) {
-        navbarLogoUrl = footerLogoUrl || knownLogoUrl;
-      } else if (!footerLogoUrl) {
-        footerLogoUrl = navbarLogoUrl || knownLogoUrl;
-      }
-
-      return {
-        ...globalData,
-        navbarLogoUrl,
-        footerLogoUrl,
-      };
+        return {
+          ...globalData,
+          navbarLogoUrl,
+          footerLogoUrl,
+        };
+      });
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message || "Failed to fetch global data");
     }
@@ -86,11 +87,27 @@ export const fetchMenuData = createAsyncThunk(
   "global/fetchMenuData",
   async (_, { rejectWithValue }) => {
     try {
-      const url = `${API_URL}/api/menu-items?populate=*`;
-      const response = await axios.get(url);
-      return response.data.data;
-    }
-    catch (err) {
+      return await withDedupe("menu", async () => {
+        const menuPopulateQuery = qs.stringify(
+          {
+            populate: {
+              parent: true,
+              children: {
+                populate: {
+                  children: {
+                    populate: { children: true },
+                  },
+                },
+              },
+            },
+          },
+          { encodeValuesOnly: true }
+        );
+        const url = `${API_URL}/api/menu-items?${menuPopulateQuery}`;
+        const response = await axios.get(url);
+        return response.data.data;
+      });
+    } catch (err) {
       return rejectWithValue(err.response?.data || err.message || "Failed to fetch menu data");
     }
   }

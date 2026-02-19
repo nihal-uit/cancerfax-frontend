@@ -33,10 +33,12 @@ api.interceptors.request.use(
         }
       }
       
-      // Add cache-busting for GET requests to ensure fresh data from Strapi
-      // Using query parameter instead of headers to avoid CORS preflight issues
-      const separator = config.url.includes('?') ? '&' : '?';
-      config.url = `${config.url}${separator}_t=${Date.now()}`;
+      // In development, cache-bust so edits in Strapi show immediately.
+      // In production, omit _t so browser/CDN can cache and repeat visits are faster.
+      if (process.env.NODE_ENV === 'development') {
+        const separator = config.url.includes('?') ? '&' : '?';
+        config.url = `${config.url}${separator}_t=${Date.now()}`;
+      }
       // Note: Removed Cache-Control headers to avoid CORS preflight issues
     }
     

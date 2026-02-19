@@ -17,7 +17,7 @@ import Resources from '../components/Resources/Resources';
 import GetInTouch from '../components/GetInTouch/GetInTouch';
 import LocationNetwork from '../components/LocationNetwork/LocationNetwork';
 import Footer from '../components/Footer/Footer';
-import { fetchPageBySlug, clearPageData } from '../store/slices/pageSlice';
+import { fetchPageBySlug, selectPageBySlug } from '../store/slices/pageSlice';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import ScrollAnimationComponent from '../components/ScrollAnimation/ScrollAnimationComponent';
 import DynamicComponents from './DynamicComponents';
@@ -148,9 +148,10 @@ const DynamicPage = () => {
   const { slug, category, subcategory } = useParams();
   const location = useLocation();
   const dispatch = useDispatch();
-  const pageData = useSelector((state) => state.page?.pageData);
-  const pageLoading = useSelector((state) => state.page?.pageLoading);
-  const pageError = useSelector((state) => state.page?.pageError);
+  const normalizedSlugForSelect = slug ? decodeURIComponent(slug.trim()) : '';
+  const { pageData, pageLoading, pageError } = useSelector((state) =>
+    selectPageBySlug(state, normalizedSlugForSelect)
+  );
   const prevLoadingRef = useRef(false);
 
   // Pass category and subcategory to DynamicComponents so BlogKnowledgeChest can use them
@@ -201,28 +202,20 @@ const DynamicPage = () => {
     prevLoadingRef.current = pageLoading;
   }, [pageLoading, pageData]);
 
+  // Fetch page by slug only when not in cache (cache-first; no clear on unmount so cache is reused)
   useEffect(() => {
-    // Normalize slug: trim whitespace and handle URL encoding
     const normalizedSlug = slug ? decodeURIComponent(slug.trim()) : null;
 
     if (
       normalizedSlug &&
-      !RESERVED_ROUTES.includes(normalizedSlug.toLowerCase())
+      !RESERVED_ROUTES.includes(normalizedSlug.toLowerCase()) &&
+      !pageData &&
+      !pageLoading &&
+      !pageError
     ) {
-      // Fetch page data by slug - this automatically works for ANY slug from Strapi
       dispatch(fetchPageBySlug(normalizedSlug));
-
-      // Cleanup: clear page data when component unmounts or slug changes
-      return () => {
-        dispatch(clearPageData());
-      };
-    } else if (
-      normalizedSlug &&
-      RESERVED_ROUTES.includes(normalizedSlug.toLowerCase())
-    ) {
-      console.log('DynamicPage: Slug is reserved route:', normalizedSlug);
     }
-  }, [slug, dispatch]);
+  }, [slug, dispatch, pageData, pageLoading, pageError]);
 
   // Redirect reserved routes
   if (slug && RESERVED_ROUTES.includes(slug)) {

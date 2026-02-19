@@ -87,7 +87,8 @@ const RelatedBlogComponent = ({ data }) => {
                 <BlogImage>
                   <img 
                     src={getMediaUrl(blog.featuredImage) ?? 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800'} 
-                    alt='blog_image' 
+                    alt='blog_image'
+                    loading="lazy"
                   />
                   {blog?.resource_category && <CategoryBadge className='lg-badge'>{blog.resource_category}</CategoryBadge>}
                 </BlogImage>

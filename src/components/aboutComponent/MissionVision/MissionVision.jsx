@@ -31,7 +31,7 @@ const MissionVision = ( { data } ) => {
                 <li>
                   <div className="mission_vision_content">
                     <span className="mission_icon">
-                      <img src={formatMedia(data?.card_1?.icon)} alt="mission icon" />
+                      <img src={formatMedia(data?.card_1?.icon)} alt="mission icon" loading="lazy" />
                     </span>
                     <h5>
                       {data?.card_1?.title || ''}
@@ -42,7 +42,7 @@ const MissionVision = ( { data } ) => {
                 <li>
                   <div className="mission_vision_content">
                     <span className="mission_icon">
-                      <img src={formatMedia(data?.card_2?.icon)} alt="vision icon" />
+                      <img src={formatMedia(data?.card_2?.icon)} alt="vision icon" loading="lazy" />
                     </span>
                     <h5>
                       {data?.card_2?.title || ''}

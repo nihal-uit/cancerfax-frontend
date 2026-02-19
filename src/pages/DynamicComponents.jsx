@@ -8,13 +8,15 @@ import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import SEO from "../components/SEO/SEO";
 import LoadingSpinner from "../components/LoadingSpinner/LoadingSpinner";
+import PageSkeleton from "../components/PageSkeleton/PageSkeleton";
+import ViewportSection from "../components/ViewportSection/ViewportSection";
 import styled from "styled-components";
 
 const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader = true, showFooter = true }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const prevLoadingRef = useRef(false);
-  const { data: globalData, loading: globalLoading} = useSelector(state => state.global);
+  const { data: globalData, loading: globalLoading, error: globalError } = useSelector(state => state.global);
 
   // Scroll to top when route changes
   useEffect(() => {
@@ -29,13 +31,14 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
     prevLoadingRef.current = pageLoading || globalLoading;
   }, [pageLoading, globalLoading, pageData]);
 
+  // Only fetch when we have no data, are not loading, and have not already failed (prevents infinite loop when API is down/slow)
   useEffect(() => {
-    if (!globalData && !globalLoading) {
+    if (!globalData && !globalLoading && !globalError) {
       dispatch(fetchGlobalData());
     }
-  }, [globalData, globalLoading, dispatch]);
+  }, [globalData, globalLoading, globalError, dispatch]);
 
-  if (pageLoading || globalLoading) return <LoadingSpinner />;
+  if (pageLoading || globalLoading) return <PageSkeleton showHeader={showHeader} showFooter={showFooter} />;
   
   // Normalize dynamic zone - handle both snake_case (dynamic_zone) and camelCase (dynamicZone)
   const dynamicZone = pageData?.dynamicZone || pageData?.dynamic_zone || [];
@@ -73,7 +76,21 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
             console.warn("No component mapped for →", key);
             return null;
           }
-          return <Component key={`${key}-${idx}`} componentData={block} data={block} />;
+          const componentProps = { componentData: block, data: block };
+          // First section (e.g. hero) renders immediately for fast LCP; rest are viewport-gated
+          if (idx === 0) {
+            return <Component key={`${key}-${idx}`} {...componentProps} />;
+          }
+          return (
+            <ViewportSection
+              key={`${key}-${idx}`}
+              component={Component}
+              componentProps={componentProps}
+              placeholderMinHeight={200}
+              rootMargin="200px 0px 200px 0px"
+              suspenseFallback={<SectionPlaceholder />}
+            />
+          );
         })}
       </Suspense>
       {showFooter && <Footer />}
@@ -84,6 +101,11 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
 const PageWrapper = styled.div`
   width: 100%;
   overflow-x: hidden;
+`;
+
+const SectionPlaceholder = styled.div`
+  min-height: 200px;
+  width: 100%;
 `;
 
 export default DynamicComponents;

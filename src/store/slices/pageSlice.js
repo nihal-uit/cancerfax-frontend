@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { withDedupe } from "../utils/dedupeInFlight";
 
 const API_URL = process.env.REACT_APP_STRAPI_URL || 'https://cancerfax.unifiedinfotechonline.com';
 
@@ -56,31 +57,32 @@ const fetchTherapiesWithMedia = async (therapyIds, timestamp) => {
   }
 };
 
-// fetchPageBySlug - heavy work: fetch page and enrich dynamic_zone components
+// fetchPageBySlug - heavy work: fetch page and enrich dynamic_zone components (deduped by slug)
 export const fetchPageBySlug = createAsyncThunk(
   "page/fetchPageBySlug",
   async (slug, { rejectWithValue }) => {
+    const normalizedSlug = slug?.trim?.() ?? "";
+    const key = `page:${normalizedSlug}`;
+
     try {
-      const normalizedSlug = slug?.trim?.() ?? "";
-      const timestamp = Date.now();
-      const pageParams = new URLSearchParams();
-      pageParams.append("filters[slug][$eq]", normalizedSlug);
-      // pageParams.append("populate[dynamic_zone][populate]", "*");
-      // pageParams.append("populate[seo][populate]", "*");
-      pageParams.append("populate", "*");
-      pageParams.append("_t", timestamp.toString());
+      const payload = await withDedupe(key, async () => {
+        const timestamp = Date.now();
+        const pageParams = new URLSearchParams();
+        pageParams.append("filters[slug][$eq]", normalizedSlug);
+        pageParams.append("populate[dynamic_zone][populate]", "*");
+        pageParams.append("populate[seo][populate]", "*");
+        pageParams.append("_t", timestamp.toString());
 
-      const apiUrl = `${API_URL}/api/pages?${pageParams.toString()}`;
-      const pagesRes = await axios.get(apiUrl);
+        const apiUrl = `${API_URL}/api/pages?${pageParams.toString()}`;
+        const pagesRes = await axios.get(apiUrl);
 
-      const page = pagesRes.data?.data?.[0] || null;
-      if (!page) {
-        return rejectWithValue({ status: 404, message: `Page "${normalizedSlug}" not found` });
-      }
+        const page = pagesRes.data?.data?.[0] || null;
+        if (!page) {
+          throw { status: 404, message: `Page "${normalizedSlug}" not found` };
+        }
 
-      // Normalize attributes shape
-      const pageAttributes = page.attributes || page;
-      let dynamicZone = Array.isArray(pageAttributes.dynamic_zone) ? [...pageAttributes.dynamic_zone] : [];
+        const pageAttributes = page.attributes || page;
+        let dynamicZone = Array.isArray(pageAttributes.dynamic_zone) ? [...pageAttributes.dynamic_zone] : [];
 
       // Collect therapy IDs for enrichment
       // const therapyIds = dynamicZone
@@ -138,16 +140,18 @@ export const fetchPageBySlug = createAsyncThunk(
       //   });
       // }
 
-      // Return normalized and enriched payload
-      return {
-        dynamicZone,
-        seo: pageAttributes.seo || null,
-        slug: pageAttributes.slug || normalizedSlug,
-        pageId: page.id || null,
-      };
+        return {
+          dynamicZone,
+          seo: pageAttributes.seo || null,
+          slug: pageAttributes.slug || normalizedSlug,
+          pageId: page.id || null,
+        };
+      });
+      return payload;
     } catch (err) {
+      if (err?.status === 404) return rejectWithValue({ status: 404, message: "Page not found" });
       if (err.response?.status === 404) return rejectWithValue({ status: 404, message: "Page not found" });
-      return rejectWithValue(err.response?.data || err.message || "Failed to fetch page");
+      return rejectWithValue(err.response?.data || err.message || err || "Failed to fetch page");
     }
   }
 );
@@ -155,33 +159,63 @@ export const fetchPageBySlug = createAsyncThunk(
 const pageSlice = createSlice({
   name: "page",
   initialState: {
-    pageData: null,
-    pageLoading: false,
-    pageError: null,
+    /** Cached page payloads keyed by slug */
+    pagesBySlug: {},
+    /** Slugs currently being fetched */
+    loadingSlugs: {},
+    /** Last fetch error per slug */
+    errorsBySlug: {},
   },
   reducers: {
-    clearPageData(state) {
-      state.pageData = null;
-      state.pageError = null;
+    clearPageData(state, action) {
+      const slug = action.payload;
+      if (slug != null) {
+        delete state.pagesBySlug[slug];
+        delete state.loadingSlugs[slug];
+        delete state.errorsBySlug[slug];
+      } else {
+        state.pagesBySlug = {};
+        state.loadingSlugs = {};
+        state.errorsBySlug = {};
+      }
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchPageBySlug.pending, (state) => {
-        state.pageLoading = true;
-        state.pageError = null;
+      .addCase(fetchPageBySlug.pending, (state, action) => {
+        const slug = action.meta.arg?.trim?.() ?? "";
+        if (slug) {
+          state.loadingSlugs[slug] = true;
+          delete state.errorsBySlug[slug];
+        }
       })
       .addCase(fetchPageBySlug.fulfilled, (state, action) => {
-        state.pageLoading = false;
-        state.pageData = action.payload;
+        const slug = action.payload?.slug ?? action.meta.arg?.trim?.() ?? "";
+        if (slug) {
+          state.pagesBySlug[slug] = action.payload;
+          delete state.loadingSlugs[slug];
+          delete state.errorsBySlug[slug];
+        }
       })
       .addCase(fetchPageBySlug.rejected, (state, action) => {
-        state.pageLoading = false;
-        state.pageError = action.payload;
-        state.pageData = null;
+        const slug = action.meta.arg?.trim?.() ?? "";
+        if (slug) {
+          state.errorsBySlug[slug] = action.payload;
+          delete state.loadingSlugs[slug];
+        }
       });
   },
 });
+
+/** Select page data, loading, and error for a given slug (for cached pages) */
+export const selectPageBySlug = (state, slug) => {
+  const normalizedSlug = slug?.trim?.() ?? "";
+  return {
+    pageData: state.page?.pagesBySlug?.[normalizedSlug] ?? null,
+    pageLoading: !!state.page?.loadingSlugs?.[normalizedSlug],
+    pageError: state.page?.errorsBySlug?.[normalizedSlug] ?? null,
+  };
+};
 
 export const { clearPageData } = pageSlice.actions;
 export default pageSlice.reducer;

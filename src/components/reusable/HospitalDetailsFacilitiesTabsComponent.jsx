@@ -47,7 +47,7 @@ const HospitalDetailsFacilitiesTabsComponent = ({ data, loading }) => {
                       <StepCard key={facility?.id || facilityIndex}>
                         {facility?.icon && (
                           <IconWrapper>
-                            <img src={formatMedia(facility.icon)} alt={facility?.icon?.alternativeText || facility?.details || ''} />
+                            <img src={formatMedia(facility.icon)} alt={facility?.icon?.alternativeText || facility?.details || ''} loading="lazy" />
                           </IconWrapper>
                         )}
                         <StepContent>

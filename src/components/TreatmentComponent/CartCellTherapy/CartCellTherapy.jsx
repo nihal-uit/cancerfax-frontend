@@ -22,6 +22,8 @@ const CartCellTherapy = ({ fadeIn, data }) => {
   if (!data || !data?.isActive) {
     return null;
   }
+
+  const points = data?.whatIsTherapy?.points || data?.whatIsClinicalTrial?.points
   
   return (
     <section
@@ -46,7 +48,7 @@ const CartCellTherapy = ({ fadeIn, data }) => {
           <Nav variant="tabs" className="tab__count__3">
             <Nav.Item>
               <Nav.Link eventKey="first">
-                <span>{data?.whatIsTherapy?.heading}</span>
+                <span>{data?.whatIsTherapy?.heading || data?.whatIsClinicalTrial?.heading}</span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -71,7 +73,7 @@ const CartCellTherapy = ({ fadeIn, data }) => {
                   <ScrollAnimationComponent animationVariants={fadeIn}>
                     <Stack direction="vertical" className="content">
                       <ul>
-                        {data?.whatIsTherapy?.points?.map((point) => (
+                        {points?.map((point) => (
                           <li key={point?.id}>
                             {point?.point}
                           </li>

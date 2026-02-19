@@ -6,7 +6,7 @@ import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import DynamicComponents from './DynamicComponents';
 import BlogKnowledgeChest from '../components/BlogComponent/BlogKnowledgeChest';
-import { fetchPageBySlug } from '../store/slices/pageSlice';
+import { fetchPageBySlug, selectPageBySlug } from '../store/slices/pageSlice';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import { resourceCategoriesAPI } from '../services/contentService';
 import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
@@ -18,15 +18,14 @@ const CategoryListingPage = ({ categorySlug }) => {
 
   const [subcategories, setSubcategories] = useState([]);
 
+  const actualCategorySlug = categorySlug;
+
   const { data: globalData, loading: globalLoading } = useSelector(
     (state) => state.global
   );
-  const pageDataFromStore = useSelector((state) => state.page?.pageData);
-  const pageLoading = useSelector((state) => state.page?.pageLoading);
-  const pageError = useSelector((state) => state.page?.pageError);
-
-  // Use categorySlug prop (passed from App.js route)
-  const actualCategorySlug = categorySlug;
+  const { pageData: pageDataFromStore, pageLoading, pageError } = useSelector((state) =>
+    selectPageBySlug(state, actualCategorySlug)
+  );
 
   useEffect(() => {
     if (!globalData && !globalLoading) {
@@ -36,8 +35,10 @@ const CategoryListingPage = ({ categorySlug }) => {
 
   const fetchCategoryData = useCallback(async () => {
     try {
-      // Fetch page via Redux
-      dispatch(fetchPageBySlug(actualCategorySlug));
+      // Fetch page via Redux only when not in cache
+      if (!pageDataFromStore && !pageLoading) {
+        dispatch(fetchPageBySlug(actualCategorySlug));
+      }
 
       // Fetch subcategories for filter buttons - fetch them separately filtered by category
       try {
@@ -60,7 +61,7 @@ const CategoryListingPage = ({ categorySlug }) => {
     } catch (err) {
       console.error('Error fetching category data:', err);
     }
-  }, [actualCategorySlug, dispatch]);
+  }, [actualCategorySlug, dispatch, pageDataFromStore, pageLoading]);
 
   useEffect(() => {
     fetchCategoryData();

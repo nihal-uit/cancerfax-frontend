@@ -332,7 +332,7 @@ export const renderRichTextWithImages = (description = []) => {
         if (!imageUrl) return null;
         return (
           <div key={index} className='blog-details-img'>
-            <img src={imageUrl} alt={img.alternativeText || 'blog image'} />
+            <img src={imageUrl} alt={img.alternativeText || 'blog image'} loading="lazy" />
           </div>
         );
       }

@@ -92,7 +92,7 @@ export const clinicalTrialsAPI = {
 
   getClinicalTrialsBySlug: async (slug) => {
     const response = await api.get(`/clinical-trials?filters[slug][$eq]=${slug}&populate=*`);
-    return formatStrapiResponse(response.data.data);
+    return response.data.data;
   },
 
   /**

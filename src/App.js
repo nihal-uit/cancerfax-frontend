@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { fetchGlobalData, fetchMenuData } from './store/slices/globalSlice';
 import HomePage from './pages/HomePage';
 import HospitalDetails from './pages/HospitalDetails';
 import DoctorsDetails from './pages/DoctorsDetails';
@@ -22,6 +24,14 @@ import './App.scss';
 import CostCalculatorPage from './pages/CostCalculatorPage';
 
 function App() {
+  const dispatch = useDispatch();
+
+  // Bootstrap: fire global + menu as soon as app loads so they run in parallel with page fetches
+  useEffect(() => {
+    dispatch(fetchGlobalData());
+    dispatch(fetchMenuData());
+  }, [dispatch]);
+
   return (
     <div className='App'>
       <PreviewBanner />

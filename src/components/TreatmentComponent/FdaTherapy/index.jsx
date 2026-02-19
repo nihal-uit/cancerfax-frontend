@@ -55,7 +55,7 @@ const FdaTherapy = ({ fadeIn, sideLeft, sideRight, data }) => {
                   </div>
                 </ScrollAnimationComponent>
               </div>
-              <div className="therapy__item">
+              {data?.proofs[1] && <div className="therapy__item">
                 <ScrollAnimationComponent animationVariants={sideRight}>
                   <div className="therapy__item__content">
                     <div className="icon">
@@ -74,7 +74,7 @@ const FdaTherapy = ({ fadeIn, sideLeft, sideRight, data }) => {
                     </div>
                   </div>
                 </ScrollAnimationComponent>
-              </div>
+              </div>}
             </div>
             <div className="ratio__holder">
               <div className="ratio">
