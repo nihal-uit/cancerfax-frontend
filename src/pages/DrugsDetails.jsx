@@ -50,7 +50,7 @@ const DrugsDetails = () => {
 
   return (
     <PageContainer>
-      <Header/>
+      <Header darkText={false}/>
       <DrugsDetailsHero data={drug[0]?.hero}/>
       <DrugsDetailsInfo data={drug[0]}/>
       <section className='popularFaq_sec pb-120'>

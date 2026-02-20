@@ -194,6 +194,9 @@ const FAQContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0;
+  @media (max-width: 1024px) {
+    width: 100%;
+}
 `;
 
 export default memo(FAQSection);

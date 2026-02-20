@@ -26,7 +26,7 @@ const DrugsDetailsHero = ({ data}) => {
             <TopRow>
               <div>
                 <HospitalName className='title-1 mb-3'>{data?.heading}</HospitalName>
-                <Description className='text-16'>{data?.subHeading}</Description>
+                <Description className='text-18'>{data?.subHeading}</Description>
               </div>
               
               <Link to={data?.cta?.URL} target={data?.cta?.target}>

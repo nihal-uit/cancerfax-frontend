@@ -482,7 +482,7 @@ const Header = ({ darkText = false }) => {
         }`}
     >
       <NavContent>
-        <Logo href='/'>
+        <Logo to='/'>
           {darkText ? (
             <img src={'/images/logo-dark.svg'} alt='CancerFax' />
           ) : (
@@ -550,7 +550,7 @@ const Header = ({ darkText = false }) => {
               return (
                 <NavLink
                   key={item.id || index}
-                  href={shouldBeClickable ? itemLink : '#'}
+                  to={shouldBeClickable ? itemLink : '#'}
                   $darkText={darkText}
                   $isActive={isItemActive}
                 >
@@ -595,7 +595,7 @@ const Header = ({ darkText = false }) => {
                     onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
                   >
                     <NavLink
-                      href={shouldNavigateOnClick ? itemLink : '#'}
+                      to={shouldNavigateOnClick ? itemLink : '#'}
                       onClick={shouldNavigateOnClick ? handleDropdownMenuClose(dropdownKey) : handleDropdownToggle(dropdownKey)}
                       $darkText={darkText}
                       $isActive={isItemActive}
@@ -696,7 +696,7 @@ const Header = ({ darkText = false }) => {
                   onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
                 >
                   <NavLink
-                    href={shouldNavigateOnClick ? itemLink : '#'}
+                    to={shouldNavigateOnClick ? itemLink : '#'}
                     onClick={shouldNavigateOnClick ? handleDropdownMenuClose(dropdownKey) : handleDropdownToggle(dropdownKey)}
                     $darkText={darkText}
                     $isActive={isItemActive}
@@ -857,7 +857,7 @@ const Header = ({ darkText = false }) => {
                 onMouseLeave={handleDropdownMouseLeave(dropdownKey)}
               >
                 <NavLink
-                  href={shouldNavigateOnClick ? itemLink : '#'}
+                  to={shouldNavigateOnClick ? itemLink : '#'}
                   onClick={shouldNavigateOnClick ? handleDropdownMenuClose(dropdownKey) : handleDropdownToggle(dropdownKey)}
                   $darkText={darkText}
                   $isActive={isItemActive}
@@ -1378,7 +1378,7 @@ const Header = ({ darkText = false }) => {
             return (
               <MobileNavLink
                 key={index}
-                href={item.link || '/resources'}
+                to={item.link || '/resources'}
                 onClick={closeMenu}
                 $isActive={isItemActive}
               >
@@ -1390,7 +1390,7 @@ const Header = ({ darkText = false }) => {
           return (
             <MobileNavLink
               key={index}
-              href={
+              to={
                 item.link || `#${item.label.toLowerCase().replace(/\s+/g, '-')}`
               }
               onClick={closeMenu}
@@ -1496,7 +1496,7 @@ const NavContent = styled.div`
   }
 `;
 
-const Logo = styled.a`
+const Logo = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -1651,7 +1651,7 @@ const NavMenu = styled.div`
   }
 `;
 
-const NavLink = styled.a`
+const NavLink = styled(Link)`
   color: ${(props) => (props.$darkText ? '#36454F' : props.theme.colors.white)};
   font-family: ${(props) =>
     props.$darkText ? "'Be Vietnam Pro', sans-serif" : 'inherit'};
@@ -2368,7 +2368,7 @@ const MobileMenu = styled.div`
   }
 `;
 
-const MobileNavLink = styled.a`
+const MobileNavLink = styled(Link)`
   color: ${(props) => props.theme.colors.white};
   font-size: 16px;
   font-weight: ${(props) => (props.$isActive ? '600' : '500')};

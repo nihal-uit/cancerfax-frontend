@@ -39,7 +39,7 @@ const DrugsGrid = ( { drugs, loading }) => {
     );
   }
 
-  if(medicines?.length === 0) {
+  if(!loading && medicines?.length === 0) {
     return (
       <Grid>
         <EmptyState>No drugs found</EmptyState>

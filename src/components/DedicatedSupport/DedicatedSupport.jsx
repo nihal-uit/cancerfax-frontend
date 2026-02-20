@@ -67,7 +67,8 @@ const HeaderSection = styled.div`
 `;
 
 const CardsGrid = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 27px;
   align-items: center;
   
@@ -76,8 +77,7 @@ const CardsGrid = styled.div`
   }
   
   @media (max-width: 1024px) {
-    flex-direction: column;
-    align-items: center;
+    grid-template-columns: auto;
   }
 `;
 

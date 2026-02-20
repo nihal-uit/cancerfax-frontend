@@ -20,9 +20,13 @@ const DrugKnowledgeChest = ({ data }) => {
   const [selectedSorting, setSelectedSorting] = useState('');
 
   useEffect(() => {
-    dispatch(fetchDrugs({ limit: DRUGS_PAGE_SIZE, start: 0, sorting: selectedSorting || '' }));
+    dispatch(fetchDrugs({
+      limit: DRUGS_PAGE_SIZE,
+      start: 0,
+      query: searchTerm.trim(),
+      sorting: selectedSorting || ''
+    }));
   }, [dispatch, selectedSorting]);
-
 
   const defaultCountries = [
     { id: 1, name: 'United States', value: 'us' },
@@ -60,7 +64,7 @@ const DrugKnowledgeChest = ({ data }) => {
     dispatch(fetchDrugs({ 
       limit: DRUGS_PAGE_SIZE, 
       start: 0, 
-      query: searchTerm,
+      query: searchTerm.trim(),
       sorting: selectedSorting || ''
     }));
   };
@@ -72,14 +76,8 @@ const DrugKnowledgeChest = ({ data }) => {
   };
 
   const handleSortingChange = (e) => {
-    const newSorting = e.target.value;
-    setSelectedSorting(newSorting);
-    dispatch(fetchDrugs({ 
-      limit: DRUGS_PAGE_SIZE, 
-      start: 0, 
-      query: searchTerm,
-      sorting: newSorting || ''
-    }));
+    setSelectedSorting(e.target.value);
+    // useEffect will refetch with new sorting and current searchTerm
   };
 
   return (
@@ -103,7 +101,18 @@ const DrugKnowledgeChest = ({ data }) => {
               type="text"
               placeholder="Search with keywords"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSearchTerm(value);
+                if (value === '') {
+                  dispatch(fetchDrugs({
+                    limit: DRUGS_PAGE_SIZE,
+                    start: 0,
+                    query: '',
+                    sorting: selectedSorting || ''
+                  }));
+                }
+              }}
               onKeyPress={handleKeyPress}
             />
             <SearchIcon onClick={handleSearch}>
@@ -174,7 +183,7 @@ const DrugKnowledgeChest = ({ data }) => {
                 dispatch(fetchDrugs({ 
                   limit: DRUGS_PAGE_SIZE, 
                   start: drugs.length,
-                  query: searchTerm,
+                  query: searchTerm.trim(),
                   sorting: selectedSorting || ''
                 }))
               }
@@ -363,7 +372,7 @@ const Select = styled.select`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color:rgba(54, 69, 79, 0.5);
+  color: transparent;
   background: transparent;
   cursor: pointer;
   appearance: none;
@@ -372,7 +381,8 @@ const Select = styled.select`
   padding: 17px 20px;
   border-radius: 50px;
   z-index: 2;
-  
+  caret-color: transparent;
+
   option {
     font-family: 'Be Vietnam Pro', sans-serif;
     padding: 12px;

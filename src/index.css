@@ -332,7 +332,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0) 41.55%, #000000 100%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  white-space: nowrap;
+  /* white-space: nowrap; */
   box-sizing: border-box;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -886,7 +886,7 @@ section {
   background-repeat: no-repeat;
   background-position: center;
   background-size: auto;
-  background-attachment: fixed;
+  /* background-attachment: fixed; */
 }
 
 .hospitalDetailsInfo_sec {
@@ -1333,6 +1333,7 @@ section {
   flex-wrap: wrap;
   margin-left: -12px;
   margin-right: -12px;
+  row-gap: 24px;
 }
 .procedures_performed_nav .nav-item {
   flex: 0 0 25%;
@@ -1342,7 +1343,8 @@ section {
 .procedures_performed_nav .nav-item .nav-link {
   box-shadow: none;
   border-radius: 16px;
-  height: 76px;
+  min-height: 76px; 
+  height: 100%;
   display: flex;
   align-items: center;
   padding: 10px 20px;

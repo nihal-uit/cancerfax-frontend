@@ -5,6 +5,7 @@ import { Navigation, EffectFade } from "swiper/modules";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
 import 'swiper/css';
 import 'swiper/css/effect-fade';
+import { Link } from "react-router-dom";
 
 
 const MedicineSection = () => {
@@ -93,7 +94,7 @@ const NavButton = styled.button`
                     <div className='commContent_wrap'>
                       <h3>Medicine name</h3>
                       <p>Associate Chief Physician & GCP center secretary , Experience: 25 Years</p>
-                      <a href="#" className='btn btn-pink-solid'>Know more</a>
+                      <Link to="#" className='btn btn-pink-solid'>Know more</Link>
                     </div>
                     </ScrollAnimationComponent>
                   </div>
@@ -109,7 +110,7 @@ const NavButton = styled.button`
                     <div className='commContent_wrap'>
                       <h3>Medicine name</h3>
                       <p>Associate Chief Physician & GCP center secretary , Experience: 25 Years</p>
-                      <a href="#" className='btn btn-pink-solid'>Know more</a>
+                      <Link to="#" className='btn btn-pink-solid'>Know more</Link>
                     </div>
                     </ScrollAnimationComponent>
                   </div>

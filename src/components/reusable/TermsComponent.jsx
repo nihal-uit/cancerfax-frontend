@@ -1,7 +1,7 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { renderRichTextWithImages, formatMedia } from '../../utils/strapiHelpers';
 import { getMediaUrl } from '../../services/api';
-import { formatDate, formatMedia } from '../../utils/strapiHelpers';
+import styled from 'styled-components';
 
 // Helper function to convert YouTube URL to embed format
 const getYouTubeEmbedUrl = (url) => {
@@ -53,23 +53,18 @@ const isYouTubeUrl = (url) => {
   return /youtube\.com|youtu\.be/.test(url);
 };
 
-const BlogDetailsHero = ({ data, loading }) => {
+const TermsComponent = (data) => {
+  const contentData = data?.data;
+
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
 
   const content = useMemo(() => {
-    if (loading || !data) return {};
+    if (!contentData) return {};
 
-    const authorName =
-      `${data.author?.firstName || ''} ${data.author?.lastName || ''}`.trim() ||
-      '';
-    const authorAvatar = getMediaUrl(data.author?.profilePicture);
-    const firstInitial = authorName.charAt(0).toUpperCase();
-
-    // Priority: externalVideo || featuredVideo || featuredImage
-    const externalVideo = data.featuredVideoExternal || '';
-    const featuredVideo = formatMedia(data.featuredVideo);
-    const featuredImage = getMediaUrl(data.featuredImage);
+    const externalVideo = contentData.featuredVideoExternal || '';
+    const featuredVideo = formatMedia(contentData.featuredVideo);
+    const featuredImage = getMediaUrl(contentData.featuredImage);
 
     // Determine media type and URL
     let mediaType = 'image';
@@ -81,9 +76,6 @@ const BlogDetailsHero = ({ data, loading }) => {
       mediaType = 'video';
       videoUrl = externalVideo;
       isYouTube = isYouTubeUrl(externalVideo);
-      // For videos, prioritize video thumbnail over featured image
-      // For YouTube: use YouTube thumbnail, fallback to featuredImage
-      // Priority: video thumbnail > featuredImage
       if (isYouTube) {
         mediaUrl = getYouTubeThumbnailUrl(externalVideo) || featuredImage || '';
       } else {
@@ -99,24 +91,13 @@ const BlogDetailsHero = ({ data, loading }) => {
     }
 
     return {
-      tags: data.resource_tags ?? [],
-      category: data?.resource_subcategory?.name ?? '',
-      blogTitle: data.title ?? '',
       mediaType,
       mediaUrl,
       videoUrl,
       isYouTube,
-      backgroundImage: featuredImage, // Fallback for image display
-      author: {
-        name: authorName,
-        avatar: authorAvatar ?? '',
-        hasAvatar: !!authorAvatar,
-        initial: firstInitial,
-      },
-      publishedDate: formatDate(data.publishedDate) ?? '',
-      readTime: data.readTime ?? '',
+      backgroundImage: featuredImage,
     };
-  }, [data]);
+  }, [contentData]);
 
   const handlePlayVideo = () => {
     setIsPlaying(true);
@@ -227,51 +208,26 @@ const BlogDetailsHero = ({ data, loading }) => {
 
   return (
     <>
-      <section className='homeHero_sec blog_banner_hero'>
-        <div className='home-hero-banner hospital_details_hero'>
-          <div className='ratio'>
-            {renderMedia()}
-            <GradientOverlay />
-          </div>
-        </div>
-        <div className='heroContent_wrap'>
-          <div className='containerWrapper'>
-            <div className='commContent_wrap'>
-              <HeroContentGrid>
-                <div
-                  style={{ display: 'flex', gap: '8px', flexWrap: 'nowrap' }}
-                >
-                  {content?.category && (
-                    <CategoryBadge>{content?.category}</CategoryBadge>
-                  )}
-                </div>
-                <HospitalName>{content.blogTitle}</HospitalName>
-                <TopRow>
-                  <AuthorInfo>
-                    <AuthorAvatar>
-                      {content.author.hasAvatar ? (
-                        <img
-                          src={content.author.avatar}
-                          alt={content.author.name || 'Author'}
-                        />
-                      ) : (
-                        <AvatarInitial>{content.author.initial}</AvatarInitial>
-                      )}
-                    </AuthorAvatar>
-                    <div>
-                      <AuthorName>{content.author.name}</AuthorName>
-                    </div>
-                  </AuthorInfo>
-                  <PostDate>
-                    {content.publishedDate} | {content.readTime ? `${content.readTime} min read` : ''}
-                  </PostDate>
-                </TopRow>
-              </HeroContentGrid>
+      <div className='ratio'>
+        {renderMedia()}
+        <GradientOverlay />
+      </div>
+      <div className='others_hero_content comm_hero_pt'>
+        <div className='containerWrapper py-88'>
+          <div className='row'>
+            <div className='col-md-12'>
+              <div className='commContent_wrap default_content content-gap-20'>
+                <h1>{contentData?.heading}</h1>
+                <p className='text-16'>{contentData?.subHeading}</p>
+                <hr />
+                {renderRichTextWithImages(
+                  contentData?.description_block
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </section>
-
+      </div>
       {/* Video Modal */}
       {isPlaying && content.videoUrl && (
         <VideoModal onClick={handleCloseVideo}>
@@ -659,4 +615,4 @@ const CloseIcon = styled.svg`
   }
 `;
 
-export default BlogDetailsHero;
+export default TermsComponent;

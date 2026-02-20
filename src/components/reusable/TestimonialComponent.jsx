@@ -95,7 +95,7 @@ const TestimonialsComponent = ({ data }) => {
     '';
   const author = survivorStory?.patient_name || survivorStory?.first_name || '';
   const ctaUrl = survivorStory?.slug
-    ? `/survivor-stories/${survivorStory?.slug}`
+    ? `/survivor-story/${survivorStory?.slug}`
     : data?.cta?.URL || '#';
   const buttonText = data?.cta?.text ?? survivorStory?.hero?.cta?.text ?? 'Read Full Story';
 

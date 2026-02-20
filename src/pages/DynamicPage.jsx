@@ -189,10 +189,10 @@ const DynamicPage = () => {
     }
   }, [dispatch, globalData, globalLoading]);
 
-  // Scroll to top when route changes
+  // Scroll to top only when the page (slug) changes, not when only category/subcategory filters change
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+  }, [slug]);
 
   // Scroll to top when data finishes loading
   useEffect(() => {
@@ -311,7 +311,7 @@ const DynamicPage = () => {
     <DynamicComponents
       pageData={filteredPageData}
       pageLoading={pageLoading}
-      darkText={!pageData?.dark_header}
+      darkText={pageData?.dark_header}
     />
   );
 };

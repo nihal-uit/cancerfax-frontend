@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import ScrollAnimationComponent from '../components/ScrollAnimation/ScrollAnimationComponent';
+import { Link } from 'react-router-dom';
 
 const ThankYou = () => {
 
@@ -31,7 +32,7 @@ const ThankYou = () => {
                   <ExploreButton className='btn' onClick={() => window.location.href = '/'}>
                     Return to Homepage
                   </ExploreButton>
-                  <span className='text-16'>Need help? Visit our <a className='text-pink' href="#">Help Center</a>.</span>
+                  <span className='text-16'>Need help? Visit our <Link className='text-pink' to="/contact-us">Help Center</Link>.</span>
                 </div>
               </ScrollAnimationComponent>
             </div>

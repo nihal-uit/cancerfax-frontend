@@ -1,4 +1,5 @@
 import { Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { formatMedia } from '../../utils/strapiHelpers';
 
@@ -43,13 +44,13 @@ const DoctorsDetailsHero = ({ data, loading }) => {
                   </Description>
                 )}
                 {data?.cta?.text && (
-                  <Button 
+                  <Link 
                     className='btn btn-md btn-pink-solid' 
-                    href={data?.cta?.URL || '#'} 
+                    to={data?.cta?.URL || '#'} 
                     target={data?.cta?.target || '_self'}
                   >
                     {data?.cta?.text}
-                  </Button>
+                  </Link>
                 )}
               </BottomRow>
             </HeroContentGrid>

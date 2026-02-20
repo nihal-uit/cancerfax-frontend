@@ -33,7 +33,7 @@ const BlogSmallCard = ({ blog, getMediaUrl, onNavigate }) => {
 
           <BlogMeta>
             {formatDate(blog.publishedDate)}
-            {blog.readTime && ` | ${blog.readTime} min read`}
+            {blog.readTime ? ` | ${blog.readTime} min read` : ''}
           </BlogMeta>
         </SmallCardContent>
       </SmallCard>
@@ -69,7 +69,7 @@ const FeaturedBlogCard = ({ blog, getMediaUrl, onNavigate }) => {
 
         <BlogMeta>
           {formatDate(blog.publishedDate)}
-          {blog.readTime && ` | ${blog.readTime} min read`}
+          {blog.readTime ? ` | ${blog.readTime} min read` : ''}
         </BlogMeta>
       </FeaturedContentCard>
     </FeaturedCard>
@@ -334,6 +334,9 @@ const SmallImage = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: 12px;
+  @media screen and (max-width: 767.98px){
+    aspect-ratio: 272/164;
+  }
 
   img {
     width: 100%;

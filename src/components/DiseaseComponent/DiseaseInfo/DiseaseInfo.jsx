@@ -132,7 +132,7 @@ const DiseaseInfo = ({ data }) => {
   }
 
   return (
-    <section className='hospitalDetailsInfo_sec py-120'>
+    <section className='hospitalDetailsInfo_sec disease__details__info__sec py-120'>
       <div className='containerWrapper'>
         <div className='hospitalDetailsInfo_wrap'>
           <aside className='sidebar disease-sidebar'>

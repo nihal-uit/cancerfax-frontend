@@ -55,7 +55,7 @@ const SurvivorStoriesVideo = ({ story }) => {
               {(cta?.text || storySlug) && (
                 <CTAButton 
                   className='btn btn-md btn-pink-solid'
-                  to={cta?.URL || (storySlug ? `/survivor-stories/${storySlug}` : '#')}
+                  to={cta?.URL || (storySlug ? `/survivor-story/${storySlug}` : '#')}
                   target={cta?.target || '_self'}
                 >
                   {cta?.text || 'Read Full Story'}

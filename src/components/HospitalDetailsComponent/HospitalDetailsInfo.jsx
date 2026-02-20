@@ -69,7 +69,8 @@ const HospitalDetailsInfo = ({ data, loading }) => {
         return data?.team && data?.team?.doctors && Array.isArray(data?.team?.doctors);
       }
       if (sectionId === 'facilities') {
-        return data?.facilities && Array.isArray(data?.facilities);
+        // return data?.facility && data?.facility?.facilities && Array.isArray(data?.facility?.facilities);
+        return data?.facility;
       }
       if (sectionId === 'media') {
         return data?.media && (data?.media?.media_galary?.length > 0 || data?.media?.heading || renderRichTextWithImages(data?.media?.description_block) ||data?.media?.description_text);
@@ -467,8 +468,8 @@ const HospitalDetailsInfo = ({ data, loading }) => {
 
               // Special handling for "facilities" section
               if (sectionId === 'facilities') {
-                const facilitiesData = data?.facilities;
-                if (!facilitiesData || !Array.isArray(facilitiesData)) {
+                const facilitiesData = data?.facility;
+                if (!facilitiesData || !Array.isArray(facilitiesData?.facilities)) {
                   return null;
                 }
                 
@@ -482,7 +483,7 @@ const HospitalDetailsInfo = ({ data, loading }) => {
                     <div className="commContent_wrap content-gap-24">
                       <h3 className="title-3">Facilities</h3>
                       <div>
-                        <HospitalDetailsFacilitiesTabsComponent data={facilitiesData} loading={loading} />
+                        <HospitalDetailsFacilitiesTabsComponent data={facilitiesData?.facilities} loading={loading} />
                       </div>
                     </div>
                   </div>

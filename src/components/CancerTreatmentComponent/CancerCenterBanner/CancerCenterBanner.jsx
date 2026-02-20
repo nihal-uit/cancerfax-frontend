@@ -5,6 +5,7 @@ import { Navigation, EffectFade } from "swiper/modules";
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 import { formatMedia, formatRichText, renderRichTextWithImages } from "@/utils/strapiHelpers";
+import { Link } from "react-router-dom";
 
 const CancerCenterBanner = ({ data }) => {
   const fadeIn = {
@@ -56,13 +57,13 @@ const CancerCenterBanner = ({ data }) => {
                                 {description && <p>{description}</p>}
                                 {locationCta?.text && (
                                   <ButtonGroup>
-                                    <a
-                                      href={locationCta.URL || "#"}
+                                    <Link
+                                      to={locationCta.URL || "#"}
                                       target={locationCta.target || "_self"}
                                       className='btn btn-pink-solid'
                                     >
                                       {locationCta.text}
-                                    </a>
+                                    </Link>
                                   </ButtonGroup>
                                 )}
                               </div>

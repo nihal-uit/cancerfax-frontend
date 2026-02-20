@@ -87,9 +87,8 @@ const ProceduresGrid = styled.div`
   margin-top: 10px;
 
   @media (max-width: 768px) {
-      .services-grid {
-        grid-template-columns: repeat(1, 1fr);
-      }
+    grid-template-columns: repeat(1, 1fr);
+    border-top: none;
   }
 `;
 
@@ -105,6 +104,10 @@ const ProceduresCol = styled.div`
   &:last-child {
     border-right: 1px solid transparent;
   }
+    @media (max-width: 768px) {
+      border-right: none;
+      border-top: 1px solid #E9E9E9;
+    }
 `;
 
 const ProceduresContent = styled.div`

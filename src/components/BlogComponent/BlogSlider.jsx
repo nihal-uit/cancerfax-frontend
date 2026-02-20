@@ -75,7 +75,7 @@ const BlogSlider = ({ data, loading }) => {
                         <h3 className="line-2-text mb-2">
                           {slide.title}
                         </h3>
-                        <BlogMeta>{slide.publishedDate} | {slide.readTime} min read</BlogMeta>
+                        <BlogMeta>{slide.publishedDate} | {slide.readTime ? `${slide.readTime} min read` : ''}</BlogMeta>
                         <Link to={slide.buttonLink} className="btn btn-pink-solid" target={slide.buttonTarget}>
                           {slide.buttonText}
                         </Link>

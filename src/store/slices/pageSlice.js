@@ -145,6 +145,7 @@ export const fetchPageBySlug = createAsyncThunk(
           seo: pageAttributes.seo || null,
           slug: pageAttributes.slug || normalizedSlug,
           pageId: page.id || null,
+          dark_header: pageAttributes.dark_header || false,
         };
       });
       return payload;

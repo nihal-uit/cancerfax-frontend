@@ -98,7 +98,7 @@ const OurStory = ({ componentData, data }) => {
                           )}
                           {story?.slug && (
                             <ButtonLink
-                              to={`/survivor-stories/${story.slug}`}
+                              to={`/survivor-story/${story.slug}`}
                               className='btn btn-pink-solid mt-3'
                             >
                               Read Full Story

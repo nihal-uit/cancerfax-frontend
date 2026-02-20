@@ -28,6 +28,8 @@ const BlogKnowledgeChest = ({ data, loading }) => {
     (state) => state.resourceCategory
   );
   const [searchTerm, setSearchTerm] = useState('');
+  // Applied query used for all fetches (filter/sort changes preserve it; clearing input resets it)
+  const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedFilterCategory, setSelectedFilterCategory] = useState('');
   const [selectedFilterSubcategory, setSelectedFilterSubcategory] =
     useState('');
@@ -109,18 +111,25 @@ const BlogKnowledgeChest = ({ data, loading }) => {
   const activeSubcategorySlug =
     selectedSubcategory || selectedFilterSubcategory || '';
 
-  // Fetch blogs with category and subcategory filters
+  // Fetch blogs with category, subcategory, sorting, and applied search query
   useEffect(() => {
     dispatch(
       fetchBlogs({
         limit: BLOGS_PAGE_SIZE,
         start: 0,
+        query: appliedQuery,
         categorySlug: activeCategorySlug,
         subcategorySlug: activeSubcategorySlug,
         sorting: selectedSorting || '',
       })
     );
-  }, [dispatch, activeCategorySlug, activeSubcategorySlug, selectedSorting]);
+  }, [
+    dispatch,
+    activeCategorySlug,
+    activeSubcategorySlug,
+    selectedSorting,
+    appliedQuery,
+  ]);
 
   const sortingOptions = [
     { id: 1, name: 'Name A-Z', value: 'a-z' },
@@ -130,16 +139,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
   ];
 
   const handleSearch = () => {
-    dispatch(
-      fetchBlogs({
-        limit: BLOGS_PAGE_SIZE,
-        start: 0,
-        query: searchTerm,
-        categorySlug: activeCategorySlug,
-        subcategorySlug: activeSubcategorySlug,
-        sorting: selectedSorting || '',
-      })
-    );
+    setAppliedQuery(searchTerm.trim());
   };
 
   const handleKeyPress = (e) => {
@@ -149,18 +149,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
   };
 
   const handleSortingChange = (e) => {
-    const newSorting = e.target.value;
-    setSelectedSorting(newSorting);
-    dispatch(
-      fetchBlogs({
-        limit: BLOGS_PAGE_SIZE,
-        start: 0,
-        query: searchTerm,
-        categorySlug: activeCategorySlug,
-        subcategorySlug: activeSubcategorySlug,
-        sorting: newSorting || '',
-      })
-    );
+    setSelectedSorting(e.target.value);
   };
 
   const handleFilterChange = (e) => {
@@ -294,7 +283,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
 
             <RightContent className='commContent_wrap'>
               <Description className='text-16'>
-                {renderRichTextWithImages(content.description)}
+                {content.description}
               </Description>
             </RightContent>
           </TopSection>
@@ -305,7 +294,11 @@ const BlogKnowledgeChest = ({ data, loading }) => {
                 type='text'
                 placeholder='Search with keywords'
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchTerm(value);
+                  if (value === '') setAppliedQuery('');
+                }}
                 onKeyPress={handleKeyPress}
               />
               <SearchIcon onClick={handleSearch}>
@@ -425,7 +418,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
                   fetchBlogs({
                     limit: BLOGS_PAGE_SIZE,
                     start: blogs.length,
-                    query: searchTerm,
+                    query: appliedQuery,
                     categorySlug: activeCategorySlug,
                     subcategorySlug: activeSubcategorySlug,
                     sorting: selectedSorting || '',
@@ -606,7 +599,7 @@ const Select = styled.select`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: rgba(54, 69, 79, 0.5);
+  color: transparent;
   background: transparent;
   cursor: pointer;
   appearance: none;
@@ -615,6 +608,7 @@ const Select = styled.select`
   padding: 17px 20px;
   border-radius: 50px;
   z-index: 2;
+  caret-color: transparent;
 
   option {
     font-family: 'Be Vietnam Pro', sans-serif;

@@ -560,18 +560,12 @@ const GridWrapper = styled.div`
   border-radius: 18px;
   overflow: hidden;
   background-color: #fff;
-  @media (max-width: 1024px) {
-      .services-grid {
-          grid-template-columns: repeat(3, 1fr);
-          grid-template-rows: repeat(4, auto);
-      }
-  }
+ 
 
   @media (max-width: 768px) {
-      .services-grid {
-          grid-template-columns: repeat(2, 1fr);
-          grid-template-rows: repeat(5, auto);
-      }
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(5, auto);
+      
   }
 
   @media (max-width: 480px) {

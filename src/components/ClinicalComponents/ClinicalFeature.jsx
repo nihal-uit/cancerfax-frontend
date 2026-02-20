@@ -80,6 +80,8 @@ const ClinicalFeature = ({ componentData, data }) => {
     visible: { opacity: 1, y: 0 },
   };
 
+  console.log(trials);
+
   return (
     <section className='quickFinds_sec py-120'>
       <div className='containerWrapper'>
@@ -122,7 +124,7 @@ const ClinicalFeature = ({ componentData, data }) => {
               </SearchIcon>
             </SearchInput>
 
-            {countryOptions.length > 0 && (
+            {/* {countryOptions.length > 0 && ( */}
               <SelectWrapper>
                 <Select
                   value={selectedCountry}
@@ -160,9 +162,9 @@ const ClinicalFeature = ({ componentData, data }) => {
                   </svg>
                 </DropdownIcon>
               </SelectWrapper>
-            )}
+            {/* )} */}
 
-            {specialtyOptions.length > 0 && (
+            {/* {specialtyOptions.length > 0 && ( */}
               <SelectWrapper>
                 <Select
                   value={selectedSpecialty}
@@ -200,9 +202,9 @@ const ClinicalFeature = ({ componentData, data }) => {
                   </svg>
                 </DropdownIcon>
               </SelectWrapper>
-            )}
+            {/* )} */}
 
-            {treatmentOptions.length > 0 && (
+            {/* {treatmentOptions.length > 0 && ( */}
               <SelectWrapper>
                 <Select
                   value={selectedTreatment}
@@ -240,7 +242,7 @@ const ClinicalFeature = ({ componentData, data }) => {
                   </svg>
                 </DropdownIcon>
               </SelectWrapper>
-            )}
+            {/* )} */}
           </FiltersContainer>
 
           {trialsLoading ? (
@@ -257,11 +259,11 @@ const ClinicalFeature = ({ componentData, data }) => {
                             <CardSl>Trial No.:{trial?.trial_id}</CardSl>
                           )
                         }
-                        {trial?.current_status && (
+                        {/* {trial?.current_status && (
                           <StatusBadge $status={trial.current_status}>
                             {trial.current_status}
                           </StatusBadge>
-                        )}
+                        )} */}
                         {trial?.name && (
                           <CardTitle>{trial?.name || ''}</CardTitle>
                         )}

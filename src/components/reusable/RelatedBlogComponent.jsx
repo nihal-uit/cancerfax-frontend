@@ -18,7 +18,6 @@ const RelatedBlogComponent = ({ data }) => {
 
   const relatedBlogs = useSelector(state => state.resources.relatedBlogs);
 
-
   useEffect(() => {
     dispatch(fetchRelatedBlogs(id));
   }, [id, dispatch]);
@@ -93,13 +92,13 @@ const RelatedBlogComponent = ({ data }) => {
                   {blog?.resource_category && <CategoryBadge className='lg-badge'>{blog.resource_category}</CategoryBadge>}
                 </BlogImage>
 
-                <BlogMeta>
+                {blog.readTime && <BlogMeta>
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M7.23294 4.66664C7.23294 4.37669 6.99789 4.14164 6.70794 4.14164C6.41799 4.14164 6.18294 4.37669 6.18294 4.66664V7.29164C6.18294 7.51049 6.31869 7.70638 6.5236 7.78322L8.85694 8.65822C9.12843 8.76002 9.43104 8.62247 9.53285 8.35098C9.63466 8.07949 9.4971 7.77688 9.22562 7.67507L7.23294 6.92782V4.66664Z" fill="#36454F"/>
                     <path fillRule="evenodd" clipRule="evenodd" d="M6.99961 1.22498C3.81016 1.22498 1.22461 3.81053 1.22461 6.99998C1.22461 10.1894 3.81016 12.775 6.99961 12.775C10.1891 12.775 12.7746 10.1894 12.7746 6.99998C12.7746 3.81053 10.1891 1.22498 6.99961 1.22498ZM2.27461 6.99998C2.27461 4.39043 4.39006 2.27498 6.99961 2.27498C9.60916 2.27498 11.7246 4.39043 11.7246 6.99998C11.7246 9.60952 9.60916 11.725 6.99961 11.725C4.39006 11.725 2.27461 9.60952 2.27461 6.99998Z" fill="#36454F"/>
                   </svg> 
                   {blog.readTime} min read
-                </BlogMeta>
+                </BlogMeta>}
 
                 <BlogContent>
                   <div>

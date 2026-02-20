@@ -188,7 +188,7 @@ const HomePage = () => {
     }
   }, [dispatch]);
 
-  // Manual refresh mechanism (only in development)
+  // Manual refresh mechanism (only in development) 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       const handleKeyPress = (e) => {

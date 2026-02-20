@@ -81,10 +81,10 @@ const VideoTestimonialComponents = ({ data }) => {
         )}
         <ScrollAnimationComponent animationVariants={slideLeft}>
           <Content className='commContent_wrap'>
-            <Label className='contentLabel'>
+            <Label className='contentLabel' style={{color:videoUrl ? 'white' : '#36454F'}}>
               {data?.testimonial_card?.heading || data?.heading || ''}
             </Label>
-            <Title>
+            <Title style={{color:videoUrl ? 'white' : '#36454F'}}>
               {data?.testimonial_card?.subHeading || data?.subHeading || ''}
             </Title>
             {data?.testimonial_card?.cta?.text && (
@@ -99,7 +99,7 @@ const VideoTestimonialComponents = ({ data }) => {
           </Content>
         </ScrollAnimationComponent>
 
-        <PlayButtonWrapper>
+        {videoUrl && <PlayButtonWrapper>
           <PlayButton
             onClick={handlePlayVideo}
             aria-label='Play video testimonials'
@@ -114,7 +114,7 @@ const VideoTestimonialComponents = ({ data }) => {
               <path d='M8 5v14l11-7z' fill='#FF1493' />
             </PlayIcon>
           </PlayButton>
-        </PlayButtonWrapper>
+        </PlayButtonWrapper>}
       </div>
 
       {isPlaying && videoUrl && (

@@ -16,16 +16,18 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import ReactStars from "react-rating-stars-component";
 import { formatMedia, renderRichTextWithImages } from '@/utils/strapiHelpers';
+import { Link, useNavigate } from 'react-router-dom';
 
   
 const ContactFormSection = ({ data }) => {
   const carouselRef = useRef(null);
-  
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { 
     sectionData, 
     inquiryTypes, 
-    submissionStatus 
+    submissionStatus,
+    error: submissionError 
   } = useSelector((state) => state.contactForm);
 
   const [formData, setFormData] = useState({
@@ -39,11 +41,11 @@ const ContactFormSection = ({ data }) => {
     consent: false,
   });
 
-  useEffect(() => {
-    dispatch(fetchContactFormSection());
-    dispatch(fetchTestimonials());
-    dispatch(fetchInquiryTypes());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchContactFormSection());
+  //   dispatch(fetchTestimonials());
+  //   dispatch(fetchInquiryTypes());
+  // }, [dispatch]);
 
   useEffect(() => {
     if (submissionStatus === 'succeeded') {
@@ -58,13 +60,13 @@ const ContactFormSection = ({ data }) => {
         message: '',
         consent: false,
       });
-      
+      navigate('/thank-you');
       // Show success message and reset after 3 seconds
       setTimeout(() => {
         dispatch(resetSubmissionStatus());
       }, 3000);
     }
-  }, [submissionStatus, dispatch]);
+  }, [submissionStatus, dispatch, navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -103,7 +105,7 @@ const ContactFormSection = ({ data }) => {
     messagePlaceholder: 'Write your message',
     termsText: 'By reaching out to us, you agree to our',
     termsLinkText: 'Terms & Condition',
-    termsLink: '#',
+    termsLink: '/default',
     buttonText: 'Send Message'
   };
 
@@ -174,7 +176,7 @@ const ContactFormSection = ({ data }) => {
                 <SuccessMessage>Thank you! Your message has been sent successfully.</SuccessMessage>
               )}
               {submissionStatus === 'failed' && (
-                <ErrorMessage>Sorry, there was an error sending your message. Please try again.</ErrorMessage>
+                <ErrorMessage>{submissionError || 'Sorry, there was an error sending your message. Please try again.'}</ErrorMessage>
               )}
               
               <FormRow>
@@ -288,7 +290,7 @@ const ContactFormSection = ({ data }) => {
                 />
                 <CheckboxLabel htmlFor="consent">
                   {data?.consent_message || ''}
-                  <TermsLink href={formFields.termsLink || '#'}>
+                  <TermsLink to={formFields.termsLink || '#'}>
                     {formFields.termsLinkText || 'Terms & Condition'}
                   </TermsLink>
                 </CheckboxLabel>
@@ -650,7 +652,7 @@ const CheckboxLabel = styled.label`
   cursor: pointer;
 `;
 
-const TermsLink = styled.a`
+const TermsLink = styled(Link)`
   color: #0e7490;
   text-decoration: none;
   font-weight: 400;

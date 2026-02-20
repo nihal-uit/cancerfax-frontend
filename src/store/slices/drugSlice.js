@@ -31,6 +31,8 @@ const drugSlice = createSlice({
     drug: null,
     drugs: [],
     loading: false,
+    drugsLoading: false,
+    drugsHasMore: false,
     error: null,
   },
   reducers: {},
@@ -49,15 +51,19 @@ const drugSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(fetchDrugs.pending, (state) => {
-        state.loading = true;
+        state.drugsLoading = true;
         state.error = null;
       })
       .addCase(fetchDrugs.fulfilled, (state, action) => {
-        state.loading = false;
-        state.drugs = action.payload.data;
+        state.drugsLoading = false;
+        state.drugs = action.payload.data ?? [];
+        const meta = action.payload.meta?.pagination;
+        state.drugsHasMore = meta
+          ? (meta.start + meta.limit) < meta.total
+          : false;
       })
       .addCase(fetchDrugs.rejected, (state, action) => {
-        state.loading = false;
+        state.drugsLoading = false;
         state.error = action.payload;
       });
   },

@@ -9,13 +9,59 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { formatMedia, renderRichTextWithImages } from '@/utils/strapiHelpers';
 
+const PLACEHOLDER_PHONE = 'Enter phone number';
+
+// Validation helpers
+const validateFullName = (value) => {
+  const trimmed = (value ?? '').toString().trim();
+  if (!trimmed) return 'Full name is required';
+  const parts = trimmed.split(/\s+/).filter(Boolean);
+  if (parts.length < 2) return 'Please enter both first and last name';
+  const allAlpha = parts.every((part) => /[a-zA-Z]/.test(part) && !/^\d+$/.test(part));
+  if (!allAlpha) return 'Full name must contain letters (e.g. John Smith)';
+  return '';
+};
+
+const validateEmail = (value) => {
+  const trimmed = (value ?? '').toString().trim();
+  if (!trimmed) return 'Email is required';
+  // Require proper format: local@domain.tld with TLD at least 2 chars
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if (!emailRegex.test(trimmed)) return 'Please enter a valid email (e.g. name@example.com)';
+  return '';
+};
+
+const validatePhone = (value, placeholder = PLACEHOLDER_PHONE) => {
+  const trimmed = (value ?? '').toString().trim();
+  if (!trimmed) return 'Phone number is required';
+  if (trimmed === placeholder) return 'Please enter your phone number';
+  const digitsOnly = trimmed.replace(/\D/g, '');
+  if (digitsOnly.length < 10) return 'Please enter a valid phone number (at least 10 digits)';
+  if (!/^\d+$/.test(digitsOnly)) return 'Phone number must contain only numbers';
+  return '';
+};
+
+const validateMessage = (value) => {
+  const trimmed = (value ?? '').toString().trim();
+  if (!trimmed) return 'Message is required';
+  if (!/[a-zA-Z0-9]/.test(trimmed)) return 'Message must contain letters or numbers';
+  return '';
+};
+
 const CancerTreatmentHero = ({ data }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { submissionStatus } = useSelector((state) => state.contactForm);
+  const { submissionStatus, error: submissionError } = useSelector((state) => state.contactForm);
 
   const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    message: '',
+  });
+
+  const [fieldErrors, setFieldErrors] = useState({
     fullName: '',
     email: '',
     phone: '',
@@ -30,37 +76,53 @@ const CancerTreatmentHero = ({ data }) => {
         phone: '',
         message: '',
       });
+      setFieldErrors({ fullName: '', email: '', phone: '', message: '' });
       setTimeout(() => {
         dispatch(resetSubmissionStatus());
       }, 3000);
       navigate('/thank-you');
     }
-  }, [submissionStatus, dispatch]);
+  }, [submissionStatus, dispatch, navigate]);
 
-  
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Split fullName into first_name and last_name
+    const fullNameError = validateFullName(formData.fullName);
+    const emailError = validateEmail(formData.email);
+    const phoneError = validatePhone(formData.phone, PLACEHOLDER_PHONE);
+    const messageError = validateMessage(formData.message);
+
+    const errors = {
+      fullName: fullNameError,
+      email: emailError,
+      phone: phoneError,
+      message: messageError,
+    };
+    setFieldErrors(errors);
+
+    if (fullNameError || emailError || phoneError || messageError) {
+      return;
+    }
+
     const nameParts = formData.fullName.trim().split(/\s+/);
     const first_name = nameParts[0] || '';
     const last_name = nameParts.slice(1).join(' ') || '';
-    
     const submissionData = {
       ...formData,
       first_name,
       last_name,
     };
-    // Remove fullName from submission data
     delete submissionData.fullName;
-    
     dispatch(submitContactForm(submissionData));
   };
 
@@ -120,12 +182,8 @@ const CancerTreatmentHero = ({ data }) => {
               <HeaderRight>
                 <RightBox>
                   <FormContainer onSubmit={handleSubmit}>
-                    {submissionStatus === 'succeeded' && (
-                      // <SuccessMessage>Thank you! Your message has been sent successfully.</SuccessMessage>
-                      navigate('/thank-you')
-                    )}
                     {submissionStatus === 'failed' && (
-                      <ErrorMessage>Sorry, there was an error sending your message. Please try again.</ErrorMessage>
+                      <ErrorMessage>{submissionError || 'Sorry, there was an error sending your message. Please try again.'}</ErrorMessage>
                     )}
                     
                     <FormRow>
@@ -139,7 +197,9 @@ const CancerTreatmentHero = ({ data }) => {
                           onChange={handleChange}
                           required
                           disabled={submissionStatus === 'loading'}
+                          $hasError={!!fieldErrors.fullName}
                         />
+                        {fieldErrors.fullName && <FieldError>{fieldErrors.fullName}</FieldError>}
                       </FormGroup>
                     </FormRow>
 
@@ -154,7 +214,9 @@ const CancerTreatmentHero = ({ data }) => {
                           onChange={handleChange}
                           required
                           disabled={submissionStatus === 'loading'}
+                          $hasError={!!fieldErrors.email}
                         />
+                        {fieldErrors.email && <FieldError>{fieldErrors.email}</FieldError>}
                       </FormGroup>
                     </FormRow>
 
@@ -169,7 +231,9 @@ const CancerTreatmentHero = ({ data }) => {
                           onChange={handleChange}
                           required
                           disabled={submissionStatus === 'loading'}
+                          $hasError={!!fieldErrors.phone}
                         />
+                        {fieldErrors.phone && <FieldError>{fieldErrors.phone}</FieldError>}
                       </FormGroup>
                     </FormRow>
 
@@ -183,7 +247,9 @@ const CancerTreatmentHero = ({ data }) => {
                         rows="5"
                         required
                         disabled={submissionStatus === 'loading'}
+                        $hasError={!!fieldErrors.message}
                       />
+                      {fieldErrors.message && <FieldError>{fieldErrors.message}</FieldError>}
                     </FormGroup>
 
                     <SubmitButton className='btn btn-pink-solid btn-md' type="submit" disabled={submissionStatus === 'loading'}>
@@ -299,6 +365,14 @@ const ErrorMessage = styled.div`
   margin-bottom: 4px;
 `;
 
+const FieldError = styled.span`
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 12px;
+  color: #721C24;
+  margin-top: 4px;
+  display: block;
+`;
+
 const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
@@ -335,7 +409,7 @@ const Input = styled.input`
   font-family: 'Be Vietnam Pro', sans-serif;
   padding: 12px 16px;
   background: #FFFFFF;
-  border: 1px solid #E9E9E9;
+  border: 1px solid ${props => props.$hasError ? '#F5C6CB' : '#E9E9E9'};
   border-radius: 13.5px;
   font-size: 12px;
   color: #36454F;
@@ -348,7 +422,7 @@ const Input = styled.input`
   
   &:focus {
     outline: none;
-    border-color: #36454F;
+    border-color: ${props => props.$hasError ? '#721C24' : '#36454F'};
   }
   
   &:disabled {
@@ -361,7 +435,7 @@ const TextArea = styled.textarea`
   font-family: 'Be Vietnam Pro', sans-serif;
   padding: 16px;
   background: #FFFFFF;
-  border: 1px solid #E9E9E9;
+  border: 1px solid ${props => props.$hasError ? '#F5C6CB' : '#E9E9E9'};
   border-radius: 16px;
   font-size: 12px;
   color: #36454F;
@@ -376,7 +450,7 @@ const TextArea = styled.textarea`
   
   &:focus {
     outline: none;
-    border-color: #36454F;
+    border-color: ${props => props.$hasError ? '#721C24' : '#36454F'};
   }
   
   &:disabled {

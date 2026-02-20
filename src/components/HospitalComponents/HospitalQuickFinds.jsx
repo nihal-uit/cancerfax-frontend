@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import HospitalGrid from './HospitalGrid';
@@ -18,10 +18,25 @@ const HospitalQuickFinds = ({ componentData, data }) => {
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [selectedTreatment, setSelectedTreatment] = useState('');
   const [selectedSorting, setSelectedSorting] = useState('');
+  const prevSearchTermRef = useRef('');
 
   useEffect(() => {
     dispatch(fetchHospitals({ limit: HOSPITALS_PAGE_SIZE, start: 0, sorting: selectedSorting || '' }));
   }, [dispatch, selectedSorting]);
+
+  // Reset search when field is cleared
+  useEffect(() => {
+    // Only trigger if search term was previously non-empty and is now empty
+    if (prevSearchTermRef.current && !searchTerm) {
+      dispatch(fetchHospitals({ 
+        limit: HOSPITALS_PAGE_SIZE, 
+        start: 0, 
+        query: '',
+        sorting: selectedSorting || ''
+      }));
+    }
+    prevSearchTermRef.current = searchTerm;
+  }, [searchTerm, dispatch, selectedSorting]);
 
   if (!quickFindsData) {
     return null;
@@ -397,7 +412,7 @@ const Select = styled.select`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color:rgba(54, 69, 79, 0.5);
+  color: transparent;
   background: transparent;
   cursor: pointer;
   appearance: none;
@@ -406,7 +421,8 @@ const Select = styled.select`
   padding: 17px 20px;
   border-radius: 50px;
   z-index: 2;
-  
+  caret-color: transparent;
+
   option {
     font-family: 'Be Vietnam Pro', sans-serif;
     padding: 12px;

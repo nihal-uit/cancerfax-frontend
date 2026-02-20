@@ -1163,7 +1163,7 @@ p {
 
 .clinical__partner__sec {
   .commContent_new {
-    width: 927px;
+    width: min(927px, 100%);
   }
 
   .partner__list__holder {
@@ -1604,7 +1604,7 @@ p {
             }
                 */
 
-.subscribe_wrap{
+.subscribe_wrap {
   position: relative;
   background: #FFFFFF;
   padding: 16px;
@@ -1616,7 +1616,8 @@ p {
   height: 56px;
   width: 100%;
   margin-top: 10px;
-  input{
+
+  input {
     flex: 1;
     height: 100%;
     border: none;
@@ -1628,21 +1629,72 @@ p {
     font-weight: 500;
     color: #36454F;
     width: 100%;
-    &:focus{
+
+    &:focus {
       outline: none;
       box-shadow: none;
     }
   }
-.btn-subscribe{
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 36px;
-  font-size: 12px;
-  background-color: #FF69B4;
-  color: #ffffff;
-  border-radius: 14px;
-  padding: 10px 20px;
+
+  .btn-subscribe {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 36px;
+    font-size: 12px;
+    background-color: #FF69B4;
+    color: #ffffff;
+    border-radius: 14px;
+    padding: 10px 20px;
+  }
 }
+
+.hospitalDetailsInfo_sec {
+  &.disease__details__info__sec {
+    .commContent_wrap {
+      .title-3 {
+        font-size: 36px;
+        line-height: calc(48/36);
+
+        @media (max-width: 1199.98px) {
+          font-size: 34px;
+        }
+
+        @media (max-width: 767.98px) {
+          font-size: 30px;
+        }
+
+        @media (max-width: 575.98px) {
+          font-size: 24px;
+        }
+      }
+    }
+  }
+
+  &.drug__details__info__sec {
+    .commContent_wrap {
+      .title-3 {
+        font-size: 36px;
+        line-height: calc(48/36);
+
+        @media (max-width: 1199.98px) {
+          font-size: 34px;
+        }
+
+        @media (max-width: 767.98px) {
+          font-size: 30px;
+        }
+
+        @media (max-width: 575.98px) {
+          font-size: 24px;
+        }
+      }
+
+      .text-16,
+      p {
+        font-size: 14px;
+      }
+    }
+  }
 }

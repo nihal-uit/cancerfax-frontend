@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import { fetchGlobalData } from '../store/slices/globalSlice';
 import store from '../store';
+import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
+import { Link } from 'react-router-dom';
+
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -89,7 +92,7 @@ const SubText = styled.p`
   }
 `;
 
-const ActionButton = styled.a`
+const ActionButton = styled(Link)`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -114,7 +117,7 @@ const ActionButton = styled.a`
   }
 `;
 
-const SupportLink = styled.a`
+const SupportLink = styled(Link)`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   color: #FF69B4;
@@ -140,6 +143,16 @@ const NotFound = ({ message = "The page you're looking for isn't available right
   const globalData = useSelector(state => state.global?.data);
   const globalLoading = useSelector(state => state.global?.loading);
 
+  const [showPage, setShowPage] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPage(true);
+    }, 2000);
+
+    return () => clearTimeout(timer); // Prevent memory leak
+  }, []);
+
   // Fetch global data for navbar and footer
   useEffect(() => {
     const currentState = store.getState();
@@ -150,8 +163,7 @@ const NotFound = ({ message = "The page you're looking for isn't available right
     }
   }, [dispatch]);
 
-  // Only render footer when data is ready
-  const shouldShowFooter = !globalLoading && globalData;
+  if (!showPage) return <LoadingSpinner />;
 
   return (
     <PageWrapper>
@@ -163,14 +175,12 @@ const NotFound = ({ message = "The page you're looking for isn't available right
         />
         <MainHeading>Oops! Page not found.</MainHeading>
         <SubText>Sorry, the page you're looking for doesn't exist or has been moved. Check the URL.</SubText>
-        <ActionButton href="/">Return To Homepage</ActionButton>
-        <SupportLink href="/contact">Contact Support if you need further assistance.</SupportLink>
+        <ActionButton to="/">Return To Homepage</ActionButton>
+        <div>
+          <SupportLink to="/contact-us">Contact Support</SupportLink>
+          <span> if you need further assistance.</span>
+        </div>
       </Content>
-      {/* {shouldShowFooter && (
-        <FooterWrapper>
-          <Footer />
-        </FooterWrapper>
-      )} */}
     </PageWrapper>
   );
 };

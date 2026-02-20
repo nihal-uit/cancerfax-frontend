@@ -124,4 +124,7 @@ export const componentMap = {
   
   // Reusable
   "dynamic-zone.supporting-life-component": lazy(() => import("@/components/reusable/SupportingLifeComponent.jsx")),
+
+  // Terms of Service
+  "information.default-page": lazy(() => import("@/components/reusable/TermsComponent.jsx")),
 };

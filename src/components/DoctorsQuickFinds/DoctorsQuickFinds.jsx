@@ -350,7 +350,7 @@ const Select = styled.select`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color:rgba(54, 69, 79, 0.5);
+  color: transparent;
   background: transparent;
   cursor: pointer;
   appearance: none;
@@ -359,6 +359,7 @@ const Select = styled.select`
   padding: 17px 20px;
   border-radius: 50px;
   z-index: 2;
+  caret-color: transparent;
   
   option {
     font-family: 'Be Vietnam Pro', sans-serif;

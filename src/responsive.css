@@ -224,7 +224,8 @@
     .ourstory_image_wrap img,
     .ourstory_image_wrap video {
         height: 100%;
-        max-height: 434px;
+        /* max-height: 434px; */
+        aspect-ratio: calc(520/484);
     }
     .builtExperience_sec .builtExperience_row {
       grid-template-columns: 1fr;
@@ -278,13 +279,14 @@
       font-size: 14px;
     }
     .clinicalTrials_sec {
-      min-height: 600px;
-      max-height: 600px;
+      min-height: 650px;
+      max-height: 650px;
       overflow: hidden;
       position: relative;
     }
-    .clinicalTrials_slide::before {
+    .clinicalTrials_sec .clinicalTrials_slide::before {
       background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
+      height: 100%;
     }
     .clinicalTrials_slide .slider-nav-wrap {
         gap: 20px;
@@ -331,11 +333,19 @@
     }
     .commCircle_navigation .customPrev,
     .commCircle_navigation .customNext {
-      width: 40px;
-      height: 40px;
+      width: 35px;
+      height: 35px;
+    }
+     .commCircle_navigation .customPrev svg,
+    .commCircle_navigation .customNext svg{
+      width: calc(24/40*100%);
+      height: auto;
     }
     .homeHero_sec.faqHero_sec {
       height: 400px;
+    }
+    .homeHero_sec .btn{
+      height: auto;
     }
     .certificate_grid {
       gap: 30px;
@@ -373,6 +383,43 @@
     }
     .treatment_location_wrap {
       grid-template-columns: repeat(4, 1fr);
+    }
+    /* .doctorsDetails_info .section{
+      padding-inline: 0px;
+    } */
+    .procedures_performed_nav {
+      margin-inline: 0;
+      gap: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .procedures_performed_nav .nav-item {
+      flex-basis: 100%;
+      padding-inline: 0;
+    }
+    .research-nav{
+      flex-wrap: nowrap;
+        overflow-y: hidden;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        margin-inline: 0;
+        gap: 24px;
+    }
+     .research-nav::-webkit-scrollbar {
+       height: 4px;
+    }
+    .research-nav::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .research-nav::-webkit-scrollbar-thumb {
+        background-color: rgba(54, 69, 79, 0.252);
+        border-radius: 8px;
+        border: 0px solid #ffffff;
+    }
+    .research-nav .nav-item{
+      white-space: nowrap;
+      padding-inline: 0px;
+      flex-basis: auto;
     }
   }
   
@@ -438,7 +485,7 @@
       background: transparent;
     }
     .ourstory_card {
-        padding: 20px;
+        padding: 25px;
     }
     .treatment_location_wrap {
       grid-template-columns: repeat(3, 1fr);
@@ -454,7 +501,8 @@
       line-height: 14px;
     }
     .testimonials_single_sec {
-      background-position: -500px center;
+      background-position: calc(100% + 200px) center;
+      min-height: 600px;
     }
     .hospitalDetailsInfo_wrap .sidebar {
       top: 62px;
@@ -465,9 +513,29 @@
     .treatment_location_wrap {
       grid-template-columns: repeat(2, 1fr);
     }
+    .innovativeCare_sec .swiper .customPrev, 
+    .innovativeCare_sec .swiper .customNext{
+      width: 30px;
+      height: 30px;
+    }
+    .commCircle_navigation .customPrev,
+    .commCircle_navigation .customNext {
+      width: 30px;
+      height: 30px;
+    }
+    .commCircle_navigation .customPrev{
+      left: -15px;
+    }
+    .commCircle_navigation .customNext {
+      right: -15px;
+    }
   }
 
   @media (max-width: 400px) {
+    .clinicalTrials_sec {
+      min-height: 700px;
+      max-height: 700px;
+    }
     .cancer_hero_sec .home-hero-banner .ratio::before {
         min-height: calc(100vh + 140px);
     }

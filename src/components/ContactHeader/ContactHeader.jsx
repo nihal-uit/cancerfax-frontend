@@ -75,7 +75,7 @@ const ContactHeader = () => {
 
         <MenuItems>
           {navigationLinks.map((item, index) => (
-            <MenuItem key={index} href={item.link}>
+            <MenuItem key={index} to={item.link}>
               {item.label}
             </MenuItem>
           ))}
@@ -114,7 +114,7 @@ const ContactHeader = () => {
 
       <MobileMenu isOpen={mobileMenuOpen}>
         {navigationLinks.map((item, index) => (
-          <MobileMenuItem key={index} href={item.link} onClick={() => setMobileMenuOpen(false)}>
+          <MobileMenuItem key={index} to={item.link} onClick={() => setMobileMenuOpen(false)}>
             {item.label}
           </MobileMenuItem>
         ))}
@@ -276,7 +276,7 @@ const MenuItems = styled.div`
   }
 `;
 
-const MenuItem = styled.a`
+const MenuItem = styled(Link)`
   font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   font-weight: 500;
@@ -561,7 +561,7 @@ const MobileMenu = styled.div`
   }
 `;
 
-const MobileMenuItem = styled.a`
+const MobileMenuItem = styled(Link)`
   font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   font-weight: 500;

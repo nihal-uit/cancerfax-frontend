@@ -77,8 +77,10 @@ const WhatWeDo = ( { data } ) => {
                         </PlusIcon>
                       </CardOverlay>
                       <CardHoverContent className="card-hover-content">
+                        <Link to={item?.url || '#'}>
                         <HoverTitle>{item?.title || ''}</HoverTitle>
                         <HoverDescription>{renderRichTextWithImages(item?.description_block) || item?.description_text || ''}</HoverDescription>
+                        </Link>
                       </CardHoverContent>
                     </CardImage>
                   </TherapyCard>

@@ -48,6 +48,7 @@ const ClinicalPhases = ({ componentData, data }) => {
   }, [phases]);
 
   const handleClick = (id) => {
+    setActiveId(id);
     const el = sectionRefs.current[id];
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });

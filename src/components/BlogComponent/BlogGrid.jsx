@@ -73,7 +73,7 @@ const BlogGrid = ({ data, loading }) => {
             documentId: blog?.documentId || blog?.id,
             slug: blogData?.slug || blog?.slug || '',
             title: blogData?.title || blog?.title || '',
-            description: blogData?.description_block || blog?.description_block || blogData?.description || blog?.description || '',
+            description: blogData?.content[0]?.description_block || blogData?.description_block || blog?.description_block || blogData?.description || blog?.description || '',
             author: {
               name: `${
                 blogData?.author?.firstName || blog?.author?.firstName || ''
@@ -156,7 +156,7 @@ const BlogGrid = ({ data, loading }) => {
                 )}
               </BlogImage>
 
-              <BlogMeta>
+              {blog.readTime && <BlogMeta>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   width='14'
@@ -176,7 +176,7 @@ const BlogGrid = ({ data, loading }) => {
                   />
                 </svg>
                 {blog.readTime} min read
-              </BlogMeta>
+              </BlogMeta>}
 
               <BlogContent>
                 <div>

@@ -57,6 +57,10 @@ export const fetchInquiryTypes = createAsyncThunk(
 export const submitContactForm = createAsyncThunk(
   'contactForm/submitContactForm',
   async (formData, { rejectWithValue }) => {
+    const lastName = (formData?.last_name ?? '').toString().trim();
+    if (!lastName) {
+      return rejectWithValue('Enter your last name');
+    }
     try {
       const response = await api.post('/contact-submissions', {
         data: formData
@@ -86,6 +90,7 @@ const contactFormSlice = createSlice({
     },
     resetSubmissionStatus: (state) => {
       state.submissionStatus = 'idle';
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -125,13 +130,17 @@ const contactFormSlice = createSlice({
       // Submit contact form
       .addCase(submitContactForm.pending, (state) => {
         state.submissionStatus = 'loading';
+        state.error = null;
       })
       .addCase(submitContactForm.fulfilled, (state) => {
         state.submissionStatus = 'succeeded';
       })
       .addCase(submitContactForm.rejected, (state, action) => {
         state.submissionStatus = 'failed';
-        state.error = action.error.message;
+        const payload = action.payload;
+        state.error = typeof payload === 'string'
+          ? payload
+          : (payload?.error?.message ?? payload?.message ?? action.error?.message ?? 'Sorry, there was an error sending your message. Please try again.');
       });
   },
 });
