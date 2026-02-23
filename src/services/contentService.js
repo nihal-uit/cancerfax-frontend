@@ -44,6 +44,38 @@ export const aboutAPI = {
   },
 };
 
+// Pages API
+export const pagesAPI = {
+  /**
+   * Fetch a page by slug with optional query params (e.g. populate) passed by the caller.
+   * @param {string} slug - Page slug
+   * @param {Object} [queryParams={}] - Additional query params as key-value pairs (e.g. populate options from component)
+   */
+  getBySlug: async (slug, queryParams = {}) => {
+    const params = new URLSearchParams();
+    params.append('filters[slug][$eq]', (slug || '').trim());
+    if (queryParams && typeof queryParams === 'object' && !Array.isArray(queryParams)) {
+      Object.entries(queryParams).forEach(([key, value]) => {
+        if (key != null && value != null) params.append(key, String(value));
+      });
+    }
+    // params.append('_t', Date.now().toString());
+    const response = await api.get(`/pages?${params.toString()}`);
+    return response.data?.data?.[0] ?? null;
+  },
+  getByDocumentId: async (documentId) => {
+    if (!documentId) return null;
+    const params = new URLSearchParams();
+    params.append('filters[documentId][$eq]', documentId);
+    params.append('populate[dynamic_zone][populate]', '*');
+    params.append('populate[seo][populate]', '*');
+    
+    params.append('_t', Date.now().toString());
+    const response = await api.get(`/pages?${params.toString()}`);
+    return response.data?.data?.[0] ?? null;
+  },
+};
+
 // Innovative Care API
 export const innovativeCareAPI = {
   getInnovativeCare: async () => {
@@ -459,7 +491,7 @@ export const hospitalNetworkAPI = {
       filterParts.push(`filters[name][$containsi]=${encodeURIComponent(query)}`);
     }
     if (country) {
-      filterParts.push(`filters[country][slug][$eq]=${encodeURIComponent(country)}`);
+      filterParts.push(`filters[address][address][country][$eq]=${encodeURIComponent(country)}`);
     }
     if (treatment) {
       filterParts.push(`filters[treatments][slug][$eq]=${encodeURIComponent(treatment)}`);

@@ -1,9 +1,15 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import SurvivorStoriesVideo from "../SurvivorStoriesVideo/SurvivorStoriesVideo";
+import { fetchPageByDocumentId, selectPageByDocumentId } from "@/store/slices/pageSlice";
 
-const SurvivorStoriesHero = ({ componentData, data, sectionClass }) => {
+const SurvivorStoriesHero = ({ componentData, data, sectionClass, pageData, pageDocumentId }) => {
+  const dispatch = useDispatch();
   const heroData = componentData || data;
+
+
 
   if (!heroData) {
     return null;

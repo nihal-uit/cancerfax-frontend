@@ -48,9 +48,9 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
     !Array.isArray(dynamicZone) ||
     dynamicZone.length === 0
   ) {
-    const isClinicalTrials = location.pathname === '/clinical-trials' || location.pathname.startsWith('/clinical-trials/');
+    const isClinicalTrialsPath = location.pathname === '/clinical-trials' || location.pathname.startsWith('/clinical-trials/');
     return (
-      <PageWrapper $disableOverflowX={isClinicalTrials}>
+      <PageWrapper $disableOverflowX={isClinicalTrialsPath}>
         {showHeader && <Header darkText={true} />}
         <SEO />
         {/* <div>No components available</div> */}
@@ -66,9 +66,11 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
   }) || [];
 
   const isClinicalTrials = location.pathname === '/clinical-trials' || location.pathname.startsWith('/clinical-trials/');
+  const hasClinicalPhases = activeComponents.some((block) => block.__component === 'clinical-trial-listing.phases-section');
+  const disableOverflowX = isClinicalTrials || hasClinicalPhases;
 
   return (
-    <PageWrapper $disableOverflowX={isClinicalTrials}>
+    <PageWrapper $disableOverflowX={disableOverflowX}>
       {showHeader && <Header darkText={darkText} />}
       <SEO />
       <Suspense fallback={<LoadingSpinner />}>
@@ -79,7 +81,12 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
             console.warn("No component mapped for →", key);
             return null;
           }
-          const componentProps = { componentData: block, data: block };
+          const componentProps = {
+            componentData: block,
+            data: block,
+            pageData,
+            pageDocumentId: pageData?.documentId ?? pageData?.pageId ?? null,
+          };
           // First section (e.g. hero) renders immediately for fast LCP; rest are viewport-gated
           if (idx === 0) {
             return <Component key={`${key}-${idx}`} {...componentProps} />;

@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { withDedupe } from "../utils/dedupeInFlight";
+import { pagesAPI } from "../../services/contentService";
 
 const API_URL = process.env.REACT_APP_STRAPI_URL || 'https://cancerfax.unifiedinfotechonline.com';
 
@@ -146,6 +147,7 @@ export const fetchPageBySlug = createAsyncThunk(
           seo: pageAttributes.seo || null,
           slug: pageAttributes.slug || normalizedSlug,
           pageId: page.id || null,
+          documentId: page.documentId || page.id || null,
           dark_header: pageAttributes.dark_header || false,
         };
       });
@@ -154,6 +156,41 @@ export const fetchPageBySlug = createAsyncThunk(
       if (err?.status === 404) return rejectWithValue({ status: 404, message: "Page not found" });
       if (err.response?.status === 404) return rejectWithValue({ status: 404, message: "Page not found" });
       return rejectWithValue(err.response?.data || err.message || err || "Failed to fetch page");
+    }
+  }
+);
+
+/** Normalize raw Strapi page to store payload shape */
+const normalizePagePayload = (page) => {
+  if (!page) return null;
+  const pageAttributes = page.attributes || page;
+  const dynamicZone = Array.isArray(pageAttributes.dynamic_zone) ? [...pageAttributes.dynamic_zone] : [];
+  return {
+    dynamicZone,
+    seo: pageAttributes.seo || null,
+    slug: pageAttributes.slug || null,
+    pageId: page.id || null,
+    documentId: page.documentId || page.id || null,
+    dark_header: pageAttributes.dark_header || false,
+  };
+};
+
+/** Fetch a single page by documentId via /api/pages and store in state */
+export const fetchPageByDocumentId = createAsyncThunk(
+  "page/fetchPageByDocumentId",
+  async (documentId, { rejectWithValue }) => {
+    const id = documentId ?? "";
+    const key = `pageDoc:${id}`;
+    try {
+      const page = await withDedupe(key, () => pagesAPI.getByDocumentId(id));
+      if (!page) {
+        throw { status: 404, message: `Page with documentId "${id}" not found` };
+      }
+      return normalizePagePayload(page);
+    } catch (err) {
+      if (err?.status === 404) return rejectWithValue({ status: 404, message: "Page not found" });
+      if (err?.response?.status === 404) return rejectWithValue({ status: 404, message: "Page not found" });
+      return rejectWithValue(err?.response?.data || err?.message || err || "Failed to fetch page");
     }
   }
 );
@@ -167,6 +204,12 @@ const pageSlice = createSlice({
     loadingSlugs: {},
     /** Last fetch error per slug */
     errorsBySlug: {},
+    /** Cached page payloads keyed by documentId (from fetchPageByDocumentId) */
+    pageByDocumentId: {},
+    /** DocumentIds currently being fetched */
+    loadingByDocumentId: {},
+    /** Last fetch error per documentId */
+    errorsByDocumentId: {},
   },
   reducers: {
     clearPageData(state, action) {
@@ -179,6 +222,9 @@ const pageSlice = createSlice({
         state.pagesBySlug = {};
         state.loadingSlugs = {};
         state.errorsBySlug = {};
+        state.pageByDocumentId = {};
+        state.loadingByDocumentId = {};
+        state.errorsByDocumentId = {};
       }
     },
   },
@@ -205,6 +251,29 @@ const pageSlice = createSlice({
           state.errorsBySlug[slug] = action.payload;
           delete state.loadingSlugs[slug];
         }
+      })
+      .addCase(fetchPageByDocumentId.pending, (state, action) => {
+        const docId = action.meta.arg ?? "";
+        if (docId) {
+          state.loadingByDocumentId[docId] = true;
+          delete state.errorsByDocumentId[docId];
+        }
+      })
+      .addCase(fetchPageByDocumentId.fulfilled, (state, action) => {
+        const payload = action.payload;
+        const docId = payload?.documentId ?? action.meta.arg ?? "";
+        if (docId) {
+          state.pageByDocumentId[docId] = payload;
+          delete state.loadingByDocumentId[docId];
+          delete state.errorsByDocumentId[docId];
+        }
+      })
+      .addCase(fetchPageByDocumentId.rejected, (state, action) => {
+        const docId = action.meta.arg ?? "";
+        if (docId) {
+          state.errorsByDocumentId[docId] = action.payload;
+          delete state.loadingByDocumentId[docId];
+        }
       });
   },
 });
@@ -216,6 +285,16 @@ export const selectPageBySlug = (state, slug) => {
     pageData: state.page?.pagesBySlug?.[normalizedSlug] ?? null,
     pageLoading: !!state.page?.loadingSlugs?.[normalizedSlug],
     pageError: state.page?.errorsBySlug?.[normalizedSlug] ?? null,
+  };
+};
+
+/** Select page data, loading, and error for a given documentId */
+export const selectPageByDocumentId = (state, documentId) => {
+  const id = documentId ?? "";
+  return {
+    pageData: state.page?.pageByDocumentId?.[id] ?? null,
+    pageLoading: !!state.page?.loadingByDocumentId?.[id],
+    pageError: state.page?.errorsByDocumentId?.[id] ?? null,
   };
 };
 

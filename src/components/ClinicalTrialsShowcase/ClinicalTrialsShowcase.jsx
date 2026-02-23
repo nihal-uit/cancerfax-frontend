@@ -57,17 +57,47 @@ const resolveSlideBackgroundImage = (slide, section, defaultSlides, index) => {
   return fallbackImage;
 };
 
-const SLIDE_DURATION_MS = 6000;
+const SLIDE_DURATION_MS = 7000;
+const SLIDE_TRANSITION_MS = 600;
 
 const ClinicalTrialsShowcase = ({ componentData, data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const sliderSection = componentData || data;
   const slidesCountRef = useRef(0);
   const intervalRef = useRef(null);
-  
+  const timeoutRef = useRef(null);
+
+  const clearAutoplay = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  const advance = () => {
+    setActiveIndex((prev) => {
+      const count = slidesCountRef.current;
+      return prev >= count - 1 ? 0 : prev + 1;
+    });
+  };
+
+  const startAutoplay = () => {
+    clearAutoplay();
+    if (slidesCountRef.current <= 1) return;
+    timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = null;
+      advance();
+      intervalRef.current = setInterval(advance, SLIDE_DURATION_MS);
+    }, SLIDE_DURATION_MS);
+  };
+
   // Extract slides from the Slide array in slider-section component
   const globalSlides = sliderSection?.Slide || [];
-  
+
   // Format global slides if available
   const formattedGlobalSlides =
     globalSlides.length > 0
@@ -106,30 +136,10 @@ const ClinicalTrialsShowcase = ({ componentData, data }) => {
   const slidesData = formattedGlobalSlides;
   slidesCountRef.current = slidesData.length;
 
-  // Auto-play: start first advance after full duration, then repeat every SLIDE_DURATION_MS.
-  // This avoids the first slide changing too soon when the effect re-runs (e.g. data load, Strict Mode).
   useEffect(() => {
     if (slidesData.length <= 1) return;
-
-    const advance = () => {
-      setActiveIndex((prev) => {
-        const count = slidesCountRef.current;
-        return prev >= count - 1 ? 0 : prev + 1;
-      });
-    };
-
-    const initialTimeout = setTimeout(() => {
-      advance();
-      intervalRef.current = setInterval(advance, SLIDE_DURATION_MS);
-    }, SLIDE_DURATION_MS);
-
-    return () => {
-      clearTimeout(initialTimeout);
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
+    startAutoplay();
+    return clearAutoplay;
   }, [slidesData.length]);
 
   if (!sliderSection || slidesData.length === 0) {
@@ -141,6 +151,7 @@ const ClinicalTrialsShowcase = ({ componentData, data }) => {
     e.stopPropagation();
     if (slidesData.length <= 1) return;
     setActiveIndex((prev) => (prev === 0 ? slidesData.length - 1 : prev - 1));
+    startAutoplay();
   };
 
   const handleNext = (e) => {
@@ -148,10 +159,12 @@ const ClinicalTrialsShowcase = ({ componentData, data }) => {
     e.stopPropagation();
     if (slidesData.length <= 1) return;
     setActiveIndex((prev) => (prev === slidesData.length - 1 ? 0 : prev + 1));
+    startAutoplay();
   };
 
   const handleDotClick = (index) => {
     setActiveIndex(index);
+    startAutoplay();
   };
 
   const fadeIn = {
@@ -161,7 +174,7 @@ const ClinicalTrialsShowcase = ({ componentData, data }) => {
 
   return (
     <section className='clinicalTrials_sec'>
-      <SlideContainer className='clinicalTrials_sliderWrap' activeIndex={activeIndex}>
+      <SlideContainer className='clinicalTrials_sliderWrap' activeIndex={activeIndex} transitionMs={SLIDE_TRANSITION_MS}>
         {slidesData.map((slide, index) => {
           const backgroundImage = slide?.backgroundImage || formatMedia(slide?.featuredImage) || resolveSlideBackgroundImage(slide, sliderSection, [], index);
             return (
@@ -237,6 +250,7 @@ const ClinicalTrialsShowcase = ({ componentData, data }) => {
 
 const SlideContainer = styled.div`
   transform: translateX(${props => -props.activeIndex * 100}%);
+  transition: transform ${props => (props.transitionMs ?? 400) / 1000}s ease-in-out;
 `;
 
 const Slide = styled.div`

@@ -318,7 +318,10 @@ const BlogKnowledgeChest = ({ data, loading }) => {
               <Select value={getFilterValue()} onChange={handleFilterChange}>
                 <option value=''>FilterBy</option>
                 {categories.length > 0 && (
-                  <optgroup label='Categories'>
+                  <>
+                    <option disabled value='__header__'>
+                      — Categories —
+                    </option>
                     {categories.map((category) => (
                       <option
                         key={`category-${category.id || category.documentId}`}
@@ -327,10 +330,13 @@ const BlogKnowledgeChest = ({ data, loading }) => {
                         {category.name}
                       </option>
                     ))}
-                  </optgroup>
+                  </>
                 )}
                 {allSubcategories.length > 0 && (
-                  <optgroup label='Subcategories'>
+                  <>
+                    <option disabled value='__header__'>
+                      — Subcategories —
+                    </option>
                     {allSubcategories.map((subcategory) => (
                       <option
                         key={`subcategory-${
@@ -341,7 +347,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
                         {subcategory.name}
                       </option>
                     ))}
-                  </optgroup>
+                  </>
                 )}
               </Select>
               <SelectDisplay

@@ -263,7 +263,7 @@ const BlogDetailsHero = ({ data, loading }) => {
                     </div>
                   </AuthorInfo>
                   <PostDate>
-                    {content.publishedDate} | {content.readTime ? `${content.readTime} min read` : ''}
+                    {content.publishedDate} {content.readTime ? `| ${content.readTime} min read` : ''}
                   </PostDate>
                 </TopRow>
               </HeroContentGrid>
