@@ -41,15 +41,77 @@ const ContactFormSection = ({ data }) => {
     consent: false,
   });
 
-  // useEffect(() => {
-  //   dispatch(fetchContactFormSection());
-  //   dispatch(fetchTestimonials());
-  //   dispatch(fetchInquiryTypes());
-  // }, [dispatch]);
+  const [errors, setErrors] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    zip_code: '',
+    inquiry_type: '',
+    message: '',
+    consent: '',
+  });
+
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const PHONE_REGEX = /^[\d\s\-+()]{10,20}$/;
+  const ZIP_REGEX = /^[a-zA-Z0-9\s\-]{3,12}$/;
+  const NAME_REGEX = /^[a-zA-Z\s\-']{2,50}$/;
+
+  const validateField = (name, value, consent = formData.consent) => {
+    const trimmed = typeof value === 'string' ? value.trim() : value;
+    switch (name) {
+      case 'first_name':
+        if (!trimmed) return 'First name is required';
+        if (!NAME_REGEX.test(trimmed)) return 'Please enter a valid first name (2–50 characters, letters only)';
+        return '';
+      case 'last_name':
+        if (!trimmed) return 'Last name is required';
+        if (!NAME_REGEX.test(trimmed)) return 'Please enter a valid last name (2–50 characters, letters only)';
+        return '';
+      case 'email':
+        if (!trimmed) return 'Email is required';
+        if (!EMAIL_REGEX.test(trimmed)) return 'Please enter a valid email address';
+        return '';
+      case 'phone':
+        if (!trimmed) return 'Phone number is required';
+        const digitsOnly = (trimmed || '').replace(/\D/g, '');
+        if (digitsOnly.length < 10) return 'Please enter a valid phone number (at least 10 digits)';
+        if (!PHONE_REGEX.test(trimmed)) return 'Please enter a valid phone number';
+        return '';
+      case 'zip_code':
+        if (!trimmed) return 'Zip code is required';
+        if (!ZIP_REGEX.test(trimmed)) return 'Please enter a valid zip code (3–12 characters)';
+        return '';
+      case 'inquiry_type':
+        return !trimmed ? 'Please select an inquiry type' : '';
+      case 'message':
+        if (!trimmed) return 'Message is required';
+        if (trimmed.length < 10) return 'Message must be at least 10 characters';
+        return '';
+      case 'consent':
+        return consent ? '' : 'You must agree to the terms to continue';
+      default:
+        return '';
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      first_name: validateField('first_name', formData.first_name),
+      last_name: validateField('last_name', formData.last_name),
+      email: validateField('email', formData.email),
+      phone: validateField('phone', formData.phone),
+      zip_code: validateField('zip_code', formData.zip_code),
+      inquiry_type: validateField('inquiry_type', formData.inquiry_type),
+      message: validateField('message', formData.message),
+      consent: validateField('consent', formData.consent, formData.consent),
+    };
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(Boolean);
+  };
 
   useEffect(() => {
     if (submissionStatus === 'succeeded') {
-      // Reset form after successful submission
       setFormData({
         first_name: '',
         last_name: '',
@@ -60,8 +122,17 @@ const ContactFormSection = ({ data }) => {
         message: '',
         consent: false,
       });
+      setErrors({
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        zip_code: '',
+        inquiry_type: '',
+        message: '',
+        consent: '',
+      });
       navigate('/thank-you');
-      // Show success message and reset after 3 seconds
       setTimeout(() => {
         dispatch(resetSubmissionStatus());
       }, 3000);
@@ -70,14 +141,29 @@ const ContactFormSection = ({ data }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: newValue
     }));
+    const error = type === 'checkbox'
+      ? validateField('consent', '', newValue)
+      : validateField(name, newValue);
+    setErrors(prev => ({ ...prev, [name]: error }));
+  };
+
+  const handleBlur = (e) => {
+    const { name, value, type, checked } = e.target;
+    const val = type === 'checkbox' ? checked : value;
+    const error = type === 'checkbox'
+      ? validateField('consent', '', checked)
+      : validateField(name, val);
+    setErrors(prev => ({ ...prev, [name]: error }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
     dispatch(submitContactForm(formData));
   };
 
@@ -188,9 +274,14 @@ const ContactFormSection = ({ data }) => {
                     placeholder={formFields.firstNamePlaceholder || 'Enter first name'}
                     value={formData.first_name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     disabled={submissionStatus === 'loading'}
+                    $hasError={!!errors.first_name}
+                    aria-invalid={!!errors.first_name}
+                    aria-describedby={errors.first_name ? 'first_name-error' : undefined}
                   />
+                  {errors.first_name && <FieldError id="first_name-error">{errors.first_name}</FieldError>}
                 </FormGroup>
                 <FormGroup>
                   <Label>{formFields.lastNameLabel || 'Last Name*'}</Label>
@@ -200,9 +291,14 @@ const ContactFormSection = ({ data }) => {
                     placeholder={formFields.lastNamePlaceholder || 'Enter last name'}
                     value={formData.last_name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     disabled={submissionStatus === 'loading'}
+                    $hasError={!!errors.last_name}
+                    aria-invalid={!!errors.last_name}
+                    aria-describedby={errors.last_name ? 'last_name-error' : undefined}
                   />
+                  {errors.last_name && <FieldError id="last_name-error">{errors.last_name}</FieldError>}
                 </FormGroup>
               </FormRow>
 
@@ -215,9 +311,14 @@ const ContactFormSection = ({ data }) => {
                     placeholder={formFields.emailPlaceholder || 'Enter email address'}
                     value={formData.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     disabled={submissionStatus === 'loading'}
+                    $hasError={!!errors.email}
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
                   />
+                  {errors.email && <FieldError id="email-error">{errors.email}</FieldError>}
                 </FormGroup>
                 <FormGroup>
                   <Label>{formFields.phoneLabel || 'Phone Number*'}</Label>
@@ -227,9 +328,14 @@ const ContactFormSection = ({ data }) => {
                     placeholder={formFields.phonePlaceholder || 'Enter phone number'}
                     value={formData.phone}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     disabled={submissionStatus === 'loading'}
+                    $hasError={!!errors.phone}
+                    aria-invalid={!!errors.phone}
+                    aria-describedby={errors.phone ? 'phone-error' : undefined}
                   />
+                  {errors.phone && <FieldError id="phone-error">{errors.phone}</FieldError>}
                 </FormGroup>
               </FormRow>
 
@@ -242,9 +348,14 @@ const ContactFormSection = ({ data }) => {
                     placeholder={formFields.zipCodePlaceholder || 'Enter zip code'}
                     value={formData.zip_code}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     disabled={submissionStatus === 'loading'}
+                    $hasError={!!errors.zip_code}
+                    aria-invalid={!!errors.zip_code}
+                    aria-describedby={errors.zip_code ? 'zip_code-error' : undefined}
                   />
+                  {errors.zip_code && <FieldError id="zip_code-error">{errors.zip_code}</FieldError>}
                 </FormGroup>
                 <FormGroup>
                   <Label>{formFields.inquiryTypeLabel || 'Inquiry type*'}</Label>
@@ -252,8 +363,12 @@ const ContactFormSection = ({ data }) => {
                     name="inquiry_type"
                     value={formData.inquiry_type}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     disabled={submissionStatus === 'loading'}
+                    $hasError={!!errors.inquiry_type}
+                    aria-invalid={!!errors.inquiry_type}
+                    aria-describedby={errors.inquiry_type ? 'inquiry_type-error' : undefined}
                   >
                     <option value="" disabled>{formFields.inquiryTypePlaceholder || 'Select Inquiry type'}</option>
                     {availableInquiryTypes.map((type) => (
@@ -262,6 +377,7 @@ const ContactFormSection = ({ data }) => {
                       </option>
                     ))}
                   </Select>
+                  {errors.inquiry_type && <FieldError id="inquiry_type-error">{errors.inquiry_type}</FieldError>}
                 </FormGroup>
               </FormRow>
 
@@ -272,10 +388,15 @@ const ContactFormSection = ({ data }) => {
                   placeholder={formFields.messagePlaceholder || 'Write your message'}
                   value={formData.message}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   rows="5"
                   required
                   disabled={submissionStatus === 'loading'}
+                  $hasError={!!errors.message}
+                  aria-invalid={!!errors.message}
+                  aria-describedby={errors.message ? 'message-error' : undefined}
                 />
+                {errors.message && <FieldError id="message-error">{errors.message}</FieldError>}
               </FormGroup>
 
               <CheckboxWrapper>
@@ -285,19 +406,23 @@ const ContactFormSection = ({ data }) => {
                   id="agreeToTerms"
                   checked={formData.consent}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   disabled={submissionStatus === 'loading'}
+                  aria-invalid={!!errors.consent}
+                  aria-describedby={errors.consent ? 'consent-error' : undefined}
                 />
-                <CheckboxLabel htmlFor="consent">
+                <CheckboxLabel htmlFor="agreeToTerms">
                   {data?.consent_message || ''}
                   <TermsLink to={formFields.termsLink || '#'}>
                     {formFields.termsLinkText || 'Terms & Condition'}
                   </TermsLink>
                 </CheckboxLabel>
               </CheckboxWrapper>
+              {errors.consent && <FieldError id="consent-error">{errors.consent}</FieldError>}
 
               <SubmitButton className='btn btn-pink-solid' type="submit" disabled={submissionStatus === 'loading'}>
-                {submissionStatus === 'loading' ? 'Sending...' : (formFields.buttonText || 'Send Message')}
+                {submissionStatus === 'loading' ? 'Sending...' : (data?.submitButtonText || formFields.buttonText || 'Send Message')}
               </SubmitButton>
             </FormContainer>
           </RightBox>
@@ -523,11 +648,21 @@ const Label = styled.label`
   line-height: 20px;
 `;
 
+const FieldError = styled.span`
+  display: block;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #b91c1c;
+  margin-top: 4px;
+  line-height: 1.4;
+`;
+
 const Input = styled.input`
   font-family: 'Be Vietnam Pro', sans-serif;
   padding: 14px 16px;
   background: #FFFFFF;
-  border: 1px solid #E9E9E9;
+  border: 1px solid ${props => props.$hasError ? '#b91c1c' : '#E9E9E9'};
   border-radius: 16px;
   font-size: 12px;
   color: #36454F;
@@ -540,7 +675,7 @@ const Input = styled.input`
   
   &:focus {
     outline: none;
-    border-color: #36454F;
+    border-color: ${props => props.$hasError ? '#b91c1c' : '#36454F'};
   }
   
   &:disabled {
@@ -553,7 +688,7 @@ const Select = styled.select`
   font-family: 'Be Vietnam Pro', sans-serif;
   padding: 14px 16px;
   background: #FFFFFF;
-  border: 1px solid #E9E9E9;
+  border: 1px solid ${props => props.$hasError ? '#b91c1c' : '#E9E9E9'};
   border-radius: 16px;
   font-size: 12px;
   color: #36454F;
@@ -572,7 +707,7 @@ const Select = styled.select`
   }
   &:focus {
     outline: none;
-    border-color: #36454F;
+    border-color: ${props => props.$hasError ? '#b91c1c' : '#36454F'};
   }
 
   option {
@@ -592,7 +727,7 @@ const TextArea = styled.textarea`
   font-family: 'Be Vietnam Pro', sans-serif;
   padding: 16px;
   background: #FFFFFF;
-  border: 1px solid #E9E9E9;
+  border: 1px solid ${props => props.$hasError ? '#b91c1c' : '#E9E9E9'};
   border-radius: 16px;
   font-size: 12px;
   color: #36454F;
@@ -607,7 +742,7 @@ const TextArea = styled.textarea`
   
   &:focus {
     outline: none;
-    border-color: #36454F;
+    border-color: ${props => props.$hasError ? '#b91c1c' : '#36454F'};
   }
   
   &:disabled {

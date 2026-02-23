@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import HospitalGrid from './HospitalGrid';
 import { fetchHospitals } from '../../store/slices/hospitalNetworkSlice';
+import { fetchCountries, fetchTreatments } from '../../store/slices/quickFindsSlice';
 import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const HOSPITALS_PAGE_SIZE = 6;
@@ -10,41 +11,56 @@ const HOSPITALS_PAGE_SIZE = 6;
 const HospitalQuickFinds = ({ componentData, data }) => {
   const dispatch = useDispatch();
   const quickFindsData = componentData || data;
-  const { countries, specialties, treatments } = useSelector((state) => state.quickFinds);
+  const { countries, treatments } = useSelector((state) => state.quickFinds);
   const { hospitals, hospitalsLoading, hospitalsHasMore } = useSelector(state => state.hospitalNetwork)
   
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
-  const [selectedTreatment, setSelectedTreatment] = useState('');
   const [selectedSorting, setSelectedSorting] = useState('');
   const prevSearchTermRef = useRef('');
 
+  const trimmedQuery = (searchTerm || '').trim();
+
+  // Fetch filter options from /countries and /treatments on mount
   useEffect(() => {
-    dispatch(fetchHospitals({ limit: HOSPITALS_PAGE_SIZE, start: 0, sorting: selectedSorting || '' }));
-  }, [dispatch, selectedSorting]);
+    dispatch(fetchCountries());
+    dispatch(fetchTreatments());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchHospitals({
+      limit: HOSPITALS_PAGE_SIZE,
+      start: 0,
+      query: trimmedQuery,
+      sorting: selectedSorting || '',
+      country: selectedCountry || '',
+      treatment: selectedSpecialty || '',
+    }));
+  }, [dispatch, selectedSorting, selectedCountry, selectedSpecialty]);
 
   // Reset search when field is cleared
   useEffect(() => {
-    // Only trigger if search term was previously non-empty and is now empty
     if (prevSearchTermRef.current && !searchTerm) {
-      dispatch(fetchHospitals({ 
-        limit: HOSPITALS_PAGE_SIZE, 
-        start: 0, 
+      dispatch(fetchHospitals({
+        limit: HOSPITALS_PAGE_SIZE,
+        start: 0,
         query: '',
-        sorting: selectedSorting || ''
+        sorting: selectedSorting || '',
+        country: selectedCountry || '',
+        treatment: selectedSpecialty || '',
       }));
     }
     prevSearchTermRef.current = searchTerm;
-  }, [searchTerm, dispatch, selectedSorting]);
+  }, [searchTerm, dispatch, selectedSorting, selectedCountry, selectedSpecialty]);
 
   if (!quickFindsData) {
     return null;
   }
 
+  // Country filter from /countries, specialty filter from /treatments
   const countryOptions = Array.isArray(countries) && countries.length > 0 ? countries : [];
-  const specialtyOptions = Array.isArray(specialties) && specialties.length > 0 ? specialties : [];
-  const treatmentOptions = Array.isArray(treatments) && treatments.length > 0 ? treatments : [];
+  const specialtyOptions = Array.isArray(treatments) && treatments.length > 0 ? treatments : [];
 
   const sortingOptions = [
     { id: 1, name: 'Name A-Z', value: 'a-z' },
@@ -57,8 +73,10 @@ const HospitalQuickFinds = ({ componentData, data }) => {
     dispatch(fetchHospitals({ 
       limit: HOSPITALS_PAGE_SIZE, 
       start: 0, 
-      query: searchTerm,
-      sorting: selectedSorting || ''
+      query: trimmedQuery,
+      sorting: selectedSorting || '',
+      country: selectedCountry || '',
+      treatment: selectedSpecialty || '',
     }));
   };
 
@@ -74,8 +92,10 @@ const HospitalQuickFinds = ({ componentData, data }) => {
     dispatch(fetchHospitals({ 
       limit: HOSPITALS_PAGE_SIZE, 
       start: 0, 
-      query: searchTerm,
-      sorting: newSorting || ''
+      query: trimmedQuery,
+      sorting: newSorting || '',
+      country: selectedCountry || '',
+      treatment: selectedSpecialty || '',
     }));
   };
 
@@ -123,14 +143,14 @@ const HospitalQuickFinds = ({ componentData, data }) => {
             >
               <option value="">Select country</option>
               {countryOptions.map((country) => (
-                <option key={country?.id || country?.value} value={country?.value || ''}>
-                  {country?.name || ''}
+                <option key={country?.id || country?.documentId} value={country?.country ?? ''}>
+                  {country?.country || ''}
                 </option>
               ))}
             </Select>
             <SelectDisplay className={!selectedCountry ? 'placeholder' : ''}>
               {selectedCountry 
-                ? countryOptions.find(c => c.value === selectedCountry)?.name || 'Select country'
+                ? countryOptions.find(c => c?.country === selectedCountry)?.country || 'Select country'
                 : 'Select country'}
             </SelectDisplay>
             <DropdownIcon>
@@ -145,16 +165,16 @@ const HospitalQuickFinds = ({ componentData, data }) => {
               value={selectedSpecialty}
               onChange={(e) => setSelectedSpecialty(e.target.value)}
             >
-              <option value="">Select specialty</option>
+              <option value="">Select treatment</option>
               {specialtyOptions.map((specialty) => (
-                <option key={specialty?.id || specialty?.value} value={specialty?.value || ''}>
+                <option key={specialty?.id || specialty?.documentId} value={specialty?.slug ?? ''}>
                   {specialty?.name || ''}
                 </option>
               ))}
             </Select>
             <SelectDisplay className={!selectedSpecialty ? 'placeholder' : ''}>
               {selectedSpecialty 
-                ? specialtyOptions.find(s => s.value === selectedSpecialty)?.name || 'Select specialty'
+                ? specialtyOptions.find(s => s?.slug === selectedSpecialty)?.name || 'Select specialty'
                 : 'Select specialty'}
             </SelectDisplay>
             <DropdownIcon>
@@ -163,32 +183,6 @@ const HospitalQuickFinds = ({ componentData, data }) => {
               </svg>
             </DropdownIcon>
           </SelectWrapper>
-
-          {treatmentOptions.length > 0 && (
-          <SelectWrapper>
-            <Select
-              value={selectedTreatment}
-              onChange={(e) => setSelectedTreatment(e.target.value)}
-            >
-              <option value="">Select treatment</option>
-              {treatmentOptions.map((treatment) => (
-                <option key={treatment?.id || treatment?.value} value={treatment?.value || ''}>
-                  {treatment?.name || ''}
-                </option>
-              ))}
-            </Select>
-            <SelectDisplay className={!selectedTreatment ? 'placeholder' : ''}>
-              {selectedTreatment 
-                ? treatmentOptions.find(t => t.value === selectedTreatment)?.name || 'Select treatment'
-                : 'Select treatment'}
-            </SelectDisplay>
-            <DropdownIcon>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </DropdownIcon>
-          </SelectWrapper>
-          )}
 
           <SortSelectWrapper>
             <Select
@@ -225,8 +219,10 @@ const HospitalQuickFinds = ({ componentData, data }) => {
                 dispatch(fetchHospitals({ 
                   limit: HOSPITALS_PAGE_SIZE, 
                   start: hospitals.length,
-                  query: searchTerm,
-                  sorting: selectedSorting || ''
+                  query: trimmedQuery,
+                  sorting: selectedSorting || '',
+                  country: selectedCountry || '',
+                  treatment: selectedSpecialty || '',
                 }))
               }
               disabled={hospitalsLoading}

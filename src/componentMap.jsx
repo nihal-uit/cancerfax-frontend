@@ -78,9 +78,7 @@ export const componentMap = {
 
   "about.slider-section": lazy(() => import("@/components/aboutComponent/AboutSlider.jsx")),
   "about.certification-section": lazy(() => import("@/components/aboutComponent/AboutCerticication.jsx")),
-
   // "about.slider-section": lazy(() => import("@/components/aboutComponent/AboutHeroBanner/AboutHeroBanner.jsx")),
-
   "about.vision-section": lazy(() => import("@/components/aboutComponent/MissionVision/MissionVision.jsx")),
   "about.our-story-section": lazy(() => import("@/components/aboutComponent/OurStory/OurStory.jsx")),
   "about.mile-stone-section": lazy(() => import("@/components/aboutComponent/OurJourney/OurJourney.jsx")),
@@ -111,7 +109,7 @@ export const componentMap = {
 
   // Ongoing Trials
   "on-going-clinical-trial-listing.hero-section": lazy(() => import("@/components/ClinicalComponents/OngoingClinicalHero.jsx")),
-  // "on-going-clinical-trial-listing.listing-section": lazy(() => import("@/components/ClinicalComponents/OngoingQuickFinds.jsx")),
+  "on-going-clinical-trial-listing.listing-section": lazy(() => import("@/components/ClinicalComponents/OngoingQuickFinds.jsx")),
   "on-going-clinical-trial-listing.slider-section": lazy(() => import("@/components/ClinicalComponents/ClinicalSafety.jsx")),
   "on-going-clinical-trial-listing.expert-section": lazy(() => import("@/components/ClinicalComponents/ClinicalGuidance.jsx")),
 

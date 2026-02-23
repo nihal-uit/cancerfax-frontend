@@ -16,7 +16,7 @@ export const fetchPartners = createAsyncThunk(
   'partnerHospitals/fetchPartners',
   async () => {
     const API_URL = process.env.REACT_APP_STRAPI_URL || 'https://cancerfax.unifiedinfotechonline.com';
-    const response = await fetch(`${API_URL}/api/partners?populate=*&sort=order:asc`);
+    const response = await fetch(`${API_URL}/api/partners?populate=*&sort=name:asc`);
     const data = await response.json();
     return data.data;
   }
@@ -50,10 +50,15 @@ const partnerHospitalsSlice = createSlice({
         state.error = action.error.message;
       })
       // Fetch partners separately
+      .addCase(fetchPartners.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(fetchPartners.fulfilled, (state, action) => {
-        state.partners = action.payload;
+        state.loading = false;
+        state.partners = Array.isArray(action.payload) ? action.payload : [];
       })
       .addCase(fetchPartners.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.error.message;
       });
   },

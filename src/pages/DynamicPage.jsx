@@ -225,8 +225,14 @@ const DynamicPage = () => {
     return null;
   }
 
-  // Loading state
-  if (pageLoading) {
+  // Loading state: show when actually loading OR when we have a slug but no data yet
+  // (initial paint before useEffect dispatches fetch — otherwise we'd flash 404 first)
+  const hasValidSlugToLoad =
+    normalizedSlugForSelect &&
+    !RESERVED_ROUTES.includes(normalizedSlugForSelect.toLowerCase());
+  const isInitialLoad = hasValidSlugToLoad && !pageData && !pageError && !pageLoading;
+
+  if (pageLoading || isInitialLoad) {
     return (
       <PageWrapper>
         <Header />

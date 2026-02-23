@@ -16,6 +16,7 @@ const sideRight = {
 };
 
 const ClinicalGuidance = ({data}) => {
+  console.log(data);
   return (
     <>
       <section className="clinical__guidance__sec py-120 bg-white">

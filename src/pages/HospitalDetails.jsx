@@ -56,7 +56,7 @@ const HospitalDetails = () => {
       <Header/>
       <HospitalDetailsHero data={hospital?.[0]?.hero} loading={loading} hospitalImage={hospital?.[0]?.hospitalImage}/>
       <HospitalDetailsInfo data={hospital?.[0]} loading={loading} />
-      {hospital?.[0]?.testimonial?.testimonial_card && (
+      {(hospital?.[0]?.testimonial?.testimonial_card || hospital?.[0]?.testimonial?.testimonial) && (
         <HospitalDetailsTestimonials data={hospital?.[0]} loading={loading} />
       )}
       {hospital?.[0]?.related && (

@@ -29,9 +29,10 @@ const BlogDetails = () => {
   const { data: globalData, loading: globalLoading } = useSelector(
     (state) => state.global
   );
-  const { singleBlog, loading, blogs, error } = useSelector(
+  const { singleBlog, loading, loadingSingleBlog, blogs, error } = useSelector(
     (state) => state.resources
   );
+  const resourceLoading = loading || loadingSingleBlog;
   const hasFetchedRef = useRef(false);
   const currentDocumentIdRef = useRef(null);
   const prevLoadingRef = useRef(false);
@@ -43,11 +44,11 @@ const BlogDetails = () => {
 
   // Scroll to top when data finishes loading
   useEffect(() => {
-    if (prevLoadingRef.current && !loading && !globalLoading && singleBlog) {
+    if (prevLoadingRef.current && !resourceLoading && !globalLoading && singleBlog) {
       window.scrollTo(0, 0);
     }
-    prevLoadingRef.current = loading || globalLoading;
-  }, [loading, globalLoading, singleBlog]);
+    prevLoadingRef.current = resourceLoading || globalLoading;
+  }, [resourceLoading, globalLoading, singleBlog]);
 
   useEffect(() => {
     if (!globalData && !globalLoading) {
@@ -65,7 +66,7 @@ const BlogDetails = () => {
         // slug is always the last parameter in the URL and is the permanent identifier
         if (!slug) {
           console.error('No slug found in URL params');
-          navigate('/404');
+          // navigate('/404');
           return;
         }
 
@@ -111,7 +112,7 @@ const BlogDetails = () => {
               (Array.isArray(slugResponse) && slugResponse.length === 0)
             ) {
               console.error('Resource not found for slug:', slug);
-              navigate('/404');
+              // navigate('/404');
               return;
             }
 
@@ -122,7 +123,7 @@ const BlogDetails = () => {
 
             if (!documentId) {
               console.error('Could not find documentId after fetching by slug');
-              navigate('/404');
+              // navigate('/404');
               return;
             }
 
@@ -139,7 +140,7 @@ const BlogDetails = () => {
             return;
           } catch (error) {
             console.error('Error fetching by slug:', error);
-            navigate('/404');
+            // navigate('/404');
             return;
           }
         }
@@ -164,7 +165,7 @@ const BlogDetails = () => {
         }
       } catch (error) {
         console.error('Error fetching resource:', error);
-        navigate('/404');
+        // navigate('/404');
       }
     };
 
@@ -182,7 +183,7 @@ const BlogDetails = () => {
   }, [slug, dispatch, location.state, navigate]);
 
   // Show 404 if there's an error or if loading is complete but no blog found
-  if (error || (!loading && !singleBlog)) {
+  if (error || (!resourceLoading && !singleBlog)) {
     return (
       <PageContainer>
         <Header darkText={true} />
@@ -193,7 +194,7 @@ const BlogDetails = () => {
     );
   }
 
-  if (globalLoading || loading || !singleBlog) {
+  if (globalLoading || resourceLoading || !singleBlog) {
     return <LoadingSpinner />;
   }
 
@@ -215,14 +216,8 @@ const BlogDetails = () => {
 
   const supportContent = blogData?.expert
     ? {
-        label: blogData?.expert?.heading,
-        title: blogData?.expert?.subHeading,
-        description: renderRichTextWithImages(blogData?.expert?.description_block),
-        buttonText: blogData?.expert?.cta?.text,
-        buttonLink: blogData?.expert?.cta?.URL,
-        buttonTarget: blogData?.expert?.cta?.target,
-        image: formatMedia(blogData?.expert?.media),
-        darkText: blogData?.gradient_shadow ? true : false,
+        ...blogData?.expert,
+        isActive: blogData?.expert ? true : false,
       }
     : null;
 
@@ -230,26 +225,29 @@ const BlogDetails = () => {
     <PageContainer>
       {/* <Header darkText={blogData?.gradient_shadow} /> */}
       <Header darkText={false} />
-      <BlogDetailsHero data={blogData} loading={loading} />
-      <BlogDetailsInfo data={blogData} loading={loading} />
-      {blogData?.related_posts?.length > 0 && (
+      <BlogDetailsHero data={blogData} loading={resourceLoading} />
+      <BlogDetailsInfo data={blogData} loading={resourceLoading} />
+      {blogData?.related_posts && (
         <section className='relatedBlog_sec bg_light_blue py-120'>
           <div className='containerWrapper' style={{ overflow: 'hidden' }}>
-            <RelatedBlogComponent data={blogData?.related_posts} />
+            <RelatedBlogComponent
+              data={blogData?.related_posts}
+              resourceId={blog?.documentId ?? blog?.slug}
+            />
           </div>
         </section>
       )}
       <section className='supporting_life_sec py-120'>
         <div className='containerWrapper'>
           <SupportingLifeComponent
-            supportContent={supportContent}
-            loading={loading}
+            data={supportContent}
+            loading={resourceLoading}
           />
         </div>
       </section>
       <DynamicComponents
         pageData={blogData}
-        pageLoading={loading}
+        pageLoading={resourceLoading}
         showFooter={false}
         showHeader={false}
       />

@@ -1,9 +1,8 @@
-import React, { useRef, useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
 import { formatDate, renderRichTextWithImages } from '../../utils/strapiHelpers';
-import { useLoadMore } from '../../utils/useLoadMore';
 import SkeletonBlogCard from '../reusable/SkeletonBlogCard';
 import { getMediaUrl } from '../../services/api';
 
@@ -98,33 +97,7 @@ const BlogGrid = ({ data, loading }) => {
       : [];
   }, [data, getResourceUrl]);
 
-  const { visibleItems, loadMore, hasMore, isLoadingMore } = useLoadMore(
-    blogContent,
-    6,
-    3
-  );
-
-  const loaderRef = useRef(null);
-
-  //INFINITE SCROLL
-  // useEffect(() => {
-  //   if (!loaderRef.current) return;
-
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       if (entries[0].isIntersecting && hasMore) {
-  //         loadMore();
-  //       }
-  //     },
-  //     { threshold: 1.0 }
-  //   );
-
-  //   observer.observe(loaderRef.current);
-
-  //   return () => observer.disconnect();
-  // }, [hasMore]);
-
-  if (loading) {
+  if (loading && !blogContent?.length) {
     return (
       <Grid>
         {Array.from({ length: 6 }).map((_, i) => (
@@ -135,9 +108,8 @@ const BlogGrid = ({ data, loading }) => {
   }
 
   return (
-    <>
-      <Grid>
-        {visibleItems.map((blog) => (
+    <Grid>
+      {blogContent.map((blog) => (
           <ScrollAnimationComponent key={blog.id} animationVariants={fadeIn}>
             <BlogCard
               as='div'
@@ -208,23 +180,7 @@ const BlogGrid = ({ data, loading }) => {
             </BlogCard>
           </ScrollAnimationComponent>
         ))}
-      </Grid>
-
-      {/* Invisible div for infinite-scroll trigger */}
-      <div ref={loaderRef} style={{ height: '1px' }} />
-
-      {hasMore && (
-        <LoadMoreWrapper>
-          <button
-            className='load-more-btn'
-            onClick={loadMore}
-            disabled={isLoadingMore}
-          >
-            {isLoadingMore ? 'Loading...' : 'Load More'}
-          </button>
-        </LoadMoreWrapper>
-      )}
-    </>
+    </Grid>
   );
 };
 
@@ -400,31 +356,6 @@ const PostDate = styled.span`
   color: #36454f;
   white-space: nowrap;
   opacity: 0.5;
-`;
-
-const LoadMoreWrapper = styled.div`
-  text-align: center;
-  margin-top: 40px;
-
-  .load-more-btn {
-    background: #36454f;
-    color: #fff;
-    padding: 14px 30px;
-    border-radius: 8px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    transition: 0.25s ease;
-
-    &:hover {
-      background: #000;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  }
 `;
 
 const fadeIn = {

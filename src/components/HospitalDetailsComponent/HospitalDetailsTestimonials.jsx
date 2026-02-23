@@ -1,6 +1,7 @@
 import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 import VideoTestimonialComponents from '../reusable/VideoTestimonialComponent';
 import styled from 'styled-components';
+import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
 
 const TopSection = styled.div`
   display: flex;
@@ -53,11 +54,15 @@ const Description = styled.p`
 `;
 
 const HospitalDetailsTestimonials = ({data, loading}) => {
-  if (loading || !data?.testimonial?.testimonial_card) {
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!data?.testimonial?.testimonial_card && !data?.testimonial?.testimonial?.testimonial_card) {
     return null;
   }
-  
-  const testimonial = data?.testimonial?.testimonial_card;
+
+  const testimonial = data?.testimonial;
   
   return (
     <section className='joyOffSuccess_sec'>
@@ -73,7 +78,7 @@ const HospitalDetailsTestimonials = ({data, loading}) => {
             </RightContent>
           </TopSection>
 
-          <VideoTestimonialComponents data={data?.testimonial} />
+          <VideoTestimonialComponents data={testimonial?.testimonial_card || testimonial?.testimonial} />
         </div>
       </section>
   );

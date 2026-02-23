@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
 import { formatMedia, renderRichTextWithImages } from "../../utils/strapiHelpers";
 
@@ -37,7 +38,7 @@ const ClinicalCenter = ({ componentData, data }) => {
         </ScrollAnimationComponent>
         <div className="center__list__holder">
           <div className="center__list">
-            {cards.map((card) => {
+            {cards.length > 0 && cards.map((card) => {
               const imageUrl = formatMedia(card?.image);
               return (
               <ScrollAnimationComponent
@@ -46,14 +47,16 @@ const ClinicalCenter = ({ componentData, data }) => {
               >
                 <div className="center__card">
                   <div className="center__card__body">
-                      {imageUrl && (
                     <div className="ratio">
-                      <img
-                            src={imageUrl}
-                            alt={card?.image?.alternativeText || card?.title || "Center Thumb"}
-                      />
-                    </div>
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={card?.image?.alternativeText || card?.title || "Center Thumb"}
+                        />
+                      ) : (
+                        <GradientPlaceholder aria-hidden="true" />
                       )}
+                    </div>
 
                     <div className="center__card__overlay">
                       <div className="center__card__overlay__content">
@@ -91,5 +94,19 @@ const ClinicalCenter = ({ componentData, data }) => {
     </section>
   );
 };
+
+const GradientPlaceholder = styled.div`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(54, 69, 79, 0.25) 0%,
+    rgba(54, 69, 79, 0.08) 50%,
+    rgba(54, 69, 79, 0.15) 100%
+  );
+  background-color: #e8eaec;
+`;
 
 export default ClinicalCenter;

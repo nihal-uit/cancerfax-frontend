@@ -43,10 +43,12 @@ const SECTION_LABELS = {
 };
 
 
+const SCROLL_SPY_IGNORE_MS = 800;
+
 const DrugsDetailsInfo = ({ data }) => {
-  // All hooks must be called before any conditional returns
   const [activeId, setActiveId] = useState(null);
   const sectionRefs = useRef({});
+  const ignoreScrollSpyUntilRef = useRef(0);
 
   // Build available sections from API data
   const availableSections = useMemo(() => {
@@ -71,22 +73,31 @@ const DrugsDetailsInfo = ({ data }) => {
     }
   }, [availableSections, activeId]);
 
-  // Scroll spy – highlight active section
+  // Scroll spy – highlight section with most visibility (avoid wrong highlight during scroll)
+  const intersectionRatiosRef = useRef({});
   useEffect(() => {
     if (availableSections.length === 0) return;
 
     const options = {
       root: null,
-      rootMargin: "-45% 0px -45% 0px",
-      threshold: 0,
+      rootMargin: '-20% 0px -20% 0px',
+      threshold: [0, 0.25, 0.5, 0.75, 1],
     };
 
     const observer = new IntersectionObserver((entries) => {
+      if (Date.now() < ignoreScrollSpyUntilRef.current) return;
+
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveId(entry.target.id);
-        }
+        intersectionRatiosRef.current[entry.target.id] = entry.intersectionRatio;
       });
+
+      const ratios = intersectionRatiosRef.current;
+      const visible = availableSections
+        .map((id) => [id, ratios[id] ?? 0])
+        .filter(([, r]) => r > 0);
+      if (visible.length === 0) return;
+      const [bestId] = visible.reduce((best, curr) => (curr[1] > best[1] ? curr : best));
+      setActiveId(bestId);
     }, options);
 
     availableSections.forEach((id) => {
@@ -102,9 +113,11 @@ const DrugsDetailsInfo = ({ data }) => {
   }
 
   const handleClick = (id) => {
+    setActiveId(id);
+    ignoreScrollSpyUntilRef.current = Date.now() + SCROLL_SPY_IGNORE_MS;
     const el = sectionRefs.current[id];
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 

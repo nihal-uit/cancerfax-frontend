@@ -73,6 +73,23 @@ export const fetchRelatedBlogs = createAsyncThunk(
   }
 );
 
+export const fetchPreviousNextResources = createAsyncThunk(
+  'resources/fetchPreviousNextResources',
+  async (id, { rejectWithValue }) => {
+    try {
+      const data = await resourcesAPI.getPreviousNextActiveResources(id);
+      return {
+        previous: data?.previous ?? null,
+        next: data?.next ?? null,
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || 'Failed to fetch previous/next resources'
+      );
+    }
+  }
+);
+
 const resourcesSlice = createSlice({
   name: 'resources',
   initialState: {
@@ -83,10 +100,13 @@ const resourcesSlice = createSlice({
     blogsLoading: false,
     singleBlog: null,
     relatedBlogs: null,
+    previousResource: null,
+    nextResource: null,
     loading: false,
     loadingBlogs: false,
     loadingSingleBlog: false,
     loadingRelatedBlogs: false,
+    loadingActiveResources: false,
     error: null,
   },
   reducers: {},
@@ -136,15 +156,18 @@ const resourcesSlice = createSlice({
       })
       .addCase(fetchBlogById.pending, (state) => {
         state.loadingSingleBlog = true;
+        state.loading = true;
         state.error = null;
         state.singleBlog = null;
       })
       .addCase(fetchBlogById.fulfilled, (state, action) => {
         state.loadingSingleBlog = false;
+        state.loading = false;
         state.singleBlog = action.payload;
       })
       .addCase(fetchBlogById.rejected, (state, action) => {
         state.loadingSingleBlog = false;
+        state.loading = false;
         state.error = action.payload;
       })
       .addCase(fetchBlogBySlug.pending, (state) => {
@@ -176,6 +199,21 @@ const resourcesSlice = createSlice({
       })
       .addCase(fetchRelatedBlogs.rejected, (state, action) => {
         state.loadingRelatedBlogs = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchPreviousNextResources.pending, (state) => {
+        state.loadingActiveResources = true;
+        state.error = null;
+      })
+      .addCase(fetchPreviousNextResources.fulfilled, (state, action) => {
+        state.loadingActiveResources = false;
+        state.previousResource = action.payload.previous;
+        state.nextResource = action.payload.next;
+      })
+      .addCase(fetchPreviousNextResources.rejected, (state, action) => {
+        state.loadingActiveResources = false;
+        state.previousResource = null;
+        state.nextResource = null;
         state.error = action.payload;
       });
   },

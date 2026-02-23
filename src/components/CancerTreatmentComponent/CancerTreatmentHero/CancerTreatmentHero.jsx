@@ -86,13 +86,38 @@ const CancerTreatmentHero = ({ data }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let nextValue = type === 'checkbox' ? checked : value;
+    if (name === 'phone') {
+      nextValue = (nextValue || '').replace(/\D/g, '');
+    }
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: nextValue
     }));
     if (fieldErrors[name]) {
       setFieldErrors(prev => ({ ...prev, [name]: '' }));
     }
+  };
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'fullName':
+        return validateFullName(value);
+      case 'email':
+        return validateEmail(value);
+      case 'phone':
+        return validatePhone(value, PLACEHOLDER_PHONE);
+      case 'message':
+        return validateMessage(value);
+      default:
+        return '';
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+    setFieldErrors(prev => ({ ...prev, [name]: error }));
   };
 
   const handleSubmit = (e) => {
@@ -102,15 +127,16 @@ const CancerTreatmentHero = ({ data }) => {
     const phoneError = validatePhone(formData.phone, PLACEHOLDER_PHONE);
     const messageError = validateMessage(formData.message);
 
-    const errors = {
+    const allErrors = {
       fullName: fullNameError,
       email: emailError,
       phone: phoneError,
       message: messageError,
     };
-    setFieldErrors(errors);
+    setFieldErrors(allErrors);
 
-    if (fullNameError || emailError || phoneError || messageError) {
+    const hasAnyError = fullNameError || emailError || phoneError || messageError;
+    if (hasAnyError) {
       return;
     }
 
@@ -195,6 +221,7 @@ const CancerTreatmentHero = ({ data }) => {
                           placeholder={formFields.fullNamePlaceholder || 'Enter full name'}
                           value={formData.fullName}
                           onChange={handleChange}
+                          onBlur={handleBlur}
                           required
                           disabled={submissionStatus === 'loading'}
                           $hasError={!!fieldErrors.fullName}
@@ -212,6 +239,7 @@ const CancerTreatmentHero = ({ data }) => {
                           placeholder={formFields.emailPlaceholder || 'Enter email address'}
                           value={formData.email}
                           onChange={handleChange}
+                          onBlur={handleBlur}
                           required
                           disabled={submissionStatus === 'loading'}
                           $hasError={!!fieldErrors.email}
@@ -229,6 +257,9 @@ const CancerTreatmentHero = ({ data }) => {
                           placeholder={formFields.phonePlaceholder || 'Enter phone number'}
                           value={formData.phone}
                           onChange={handleChange}
+                          onBlur={handleBlur}
+                          inputMode="numeric"
+                          autoComplete="tel"
                           required
                           disabled={submissionStatus === 'loading'}
                           $hasError={!!fieldErrors.phone}
@@ -244,6 +275,7 @@ const CancerTreatmentHero = ({ data }) => {
                         placeholder={formFields.messagePlaceholder || 'Write your message'}
                         value={formData.message}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         rows="5"
                         required
                         disabled={submissionStatus === 'loading'}

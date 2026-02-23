@@ -15,10 +15,14 @@ export const fetchDrugBySlug = createAsyncThunk(
 
 export const fetchDrugs = createAsyncThunk(
   'drug/fetchDrugs',
-  async ({ limit = 3, start = 0, query = '', sorting = '' } = {}, { rejectWithValue }) => {
+  async ({ limit = 3, start = 0, query = '', sorting = '', country = '', treatment = '' } = {}, { rejectWithValue }) => {
     try {
-      const data = await drugAPI.getDrugs({ limit, start, query, sorting });
-      return data;
+      const response = await drugAPI.getDrugs({ limit, start, query, sorting, country, treatment });
+      return {
+        data: response.data ?? [],
+        meta: response.meta,
+        start,
+      };
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch drugs');
     }
@@ -56,10 +60,22 @@ const drugSlice = createSlice({
       })
       .addCase(fetchDrugs.fulfilled, (state, action) => {
         state.drugsLoading = false;
-        state.drugs = action.payload.data ?? [];
-        const meta = action.payload.meta?.pagination;
-        state.drugsHasMore = meta
-          ? (meta.start + meta.limit) < meta.total
+        const { data, meta, start } = action.payload;
+        if (start === 0) {
+          state.drugs = data ?? [];
+        } else {
+          const existingIds = new Set(
+            state.drugs.map((drug) => drug?.documentId || drug?.id)
+          );
+          const newItems = (data ?? []).filter((drug) => {
+            const identifier = drug?.documentId || drug?.id;
+            return identifier ? !existingIds.has(identifier) : true;
+          });
+          state.drugs = [...state.drugs, ...newItems];
+        }
+        const pagination = meta?.pagination;
+        state.drugsHasMore = pagination
+          ? (pagination.start + pagination.limit) < pagination.total
           : false;
       })
       .addCase(fetchDrugs.rejected, (state, action) => {

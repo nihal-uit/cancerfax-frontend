@@ -46,8 +46,8 @@ const TherapyInfo = ({ data }) => {
                 <TherapyInfoCard>
                   <StepContent>
                     {card?.title && <StepTitle>{card.title}</StepTitle>}
-                    {card?.details && (
-                      <StepDescription>{card.details}</StepDescription>
+                    {card?.points && (
+                      <StepDescription>{card.points}</StepDescription>
                     )}
                   </StepContent>
                 </TherapyInfoCard>

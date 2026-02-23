@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { renderRichTextWithImages } from '../../utils/strapiHelpers';
 import { getMediaUrl } from '../../services/api';
+import { fetchPreviousNextResources } from '../../store/slices/resourcesSlice';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -12,9 +14,44 @@ const FIXED_SECTIONS = [
 const getSectionId = (value) =>
   typeof value === 'number' ? `section-${value}` : String(value);
 
+/** Build resource detail URL from slug (so route and API match); fallback to documentId for path. */
+function getResourceUrl(item) {
+  if (!item) return '#';
+  const attrs = item?.attributes ?? item;
+  const documentId = item?.documentId ?? item?.id ?? attrs?.documentId ?? attrs?.id;
+  const slug = attrs?.slug ?? item?.slug;
+  const category = attrs?.resource_category?.data?.attributes ?? attrs?.resource_category?.data ?? attrs?.resource_category?.attributes ?? attrs?.resource_category;
+  const subcategory = attrs?.resource_subcategory?.data?.attributes ?? attrs?.resource_subcategory?.data ?? attrs?.resource_subcategory?.attributes ?? attrs?.resource_subcategory;
+  const categorySlug = category?.slug ?? category?.attributes?.slug ?? '';
+  const subcategorySlug = subcategory?.slug ?? subcategory?.attributes?.slug ?? '';
+  const pathSlug = slug || documentId;
+  if (!pathSlug) return '#';
+  if (categorySlug && subcategorySlug) return `/resource/${categorySlug}/${subcategorySlug}/${pathSlug}`;
+  if (categorySlug) return `/resource/${categorySlug}/${pathSlug}`;
+  return `/resource/${pathSlug}`;
+}
+
+/** Pass documentId in state so BlogDetails can fetch by ID when available. */
+function getResourceState(item) {
+  if (!item) return undefined;
+  const documentId = item?.documentId ?? item?.id ?? item?.attributes?.documentId ?? item?.attributes?.id;
+  return documentId ? { documentId } : undefined;
+}
+
 const BlogDetailsInfo = ({ data }) => {
   const [activeId, setActiveId] = useState('about');
   const sectionRefs = useRef({});
+  const dispatch = useDispatch();
+  const previousResource = useSelector((state) => state.resources?.previousResource ?? null);
+  const nextResource = useSelector((state) => state.resources?.nextResource ?? null);
+  const resourcesLoading = useSelector((state) => state.resources?.loadingActiveResources ?? false);
+
+  const currentId = data?.id ?? data?.documentId;
+  useEffect(() => {
+    if (currentId != null) {
+      dispatch(fetchPreviousNextResources(currentId));
+    }
+  }, [dispatch, currentId]);
 
   const sections = useMemo(() => {
     const contentArray = Array.isArray(data?.content) ? [...data.content] : [];
@@ -106,9 +143,8 @@ const BlogDetailsInfo = ({ data }) => {
 
             {sections.map((section) => {
               if (section.id === 'author') {
-                const authorName = `${data.author?.firstName || ''} ${
-                  data.author?.lastName || ''
-                }`.trim();
+                const authorName = `${data.author?.firstName || ''} ${data.author?.lastName || ''
+                  }`.trim();
                 const authorAvatar = getMediaUrl(data.author?.profilePicture);
                 const firstInitial = authorName.charAt(0).toUpperCase();
                 const hasAvatar = !!authorAvatar;
@@ -189,63 +225,27 @@ const BlogDetailsInfo = ({ data }) => {
                     </div>
 
                     <div className='blog-arrow-wrap'>
-                      {data?.content?.length > 0 &&
-                        data?.content?.length === 1 && (
-                          <>
-                            <div className='blog-arrow-left'></div>
-
-                            <div className='blog-arrow-right'>
-                              <p>{data.content[0].heading}</p>
-                              {data.content[0].heading ? (
-                                <Link
-                                  className='arrow-btn'
-                                  to={
-                                    data?.content?.[0]?.documentId
-                                      ? `/resources/${data.content[0].documentId}`
-                                      : '#'
-                                  }
-                                >
-                                  <ArrowRight />
-                                </Link>
-                              ) : null}
-                            </div>
-                          </>
-                        )}
-
-                      {data?.content?.length >= 2 && (
-                        <>
-                          <div className='blog-arrow-left'>
-                            {data.content[0].heading ? (
-                              <Link
-                                className='arrow-btn'
-                                to={
-                                  data?.content?.[0]?.documentId
-                                    ? `/resources/${data.content[0].documentId}`
-                                    : '#'
-                                }
-                              >
-                                <ArrowLeft />
-                              </Link>
-                            ) : null}
-                            <p>{data.content[0].heading}</p>
-                          </div>
-
-                          <div className='blog-arrow-right'>
-                            <p>{data.content[1].heading}</p>
-                            {data.content[1].heading ? (
-                              <Link
-                                className='arrow-btn'
-                                to={
-                                  data?.content?.[1]?.documentId
-                                    ? `/resources/${data.content[1].documentId}`
-                                    : '#'
-                                }
-                              >
-                                <ArrowRight />
-                              </Link>
-                            ) : null}
-                          </div>
-                        </>
+                      {previousResource && previousResource.title && (
+                        <div className='blog-arrow-left'>
+                          <Link
+                            className='arrow-btn'
+                            to={`/resource/${previousResource.slug}`}
+                          >
+                            <ArrowLeft />
+                          </Link>
+                          <p>{previousResource.title}</p>
+                        </div>
+                      )}
+                      {nextResource && nextResource.title && (
+                        <div className='blog-arrow-right'>
+                          <p>{nextResource.title}</p>
+                          <Link
+                            className='arrow-btn'
+                            to={`/resource/${nextResource.slug}`}
+                          >
+                            <ArrowRight />
+                          </Link>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -266,11 +266,11 @@ const BlogDetailsInfo = ({ data }) => {
                           <h4 className='f-w-600'>
                             {section.label
                               ? section.label[0].toUpperCase() +
-                                section.label.slice(1)
+                              section.label.slice(1)
                               : ''}
                           </h4>
                           {section?.content?.cta?.text &&
-                          section?.content?.cta?.URL ? (
+                            section?.content?.cta?.URL ? (
                             <CTAButton
                               to={section?.content?.cta?.URL}
                               target={section?.content?.cta?.target}

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from "react";
 import styled from 'styled-components';
 import "./CostOfCancerTreatment.scss";
 import { renderRichTextWithImages } from "@/utils/strapiHelpers";
+import { getMediaUrl } from "../../../services/api";
 
 const CostOfCancerTreatment = ({ data }) => {
   const section = data;
@@ -90,7 +91,11 @@ const CostOfCancerTreatment = ({ data }) => {
             {sections.map((item) => {
               const id = `CostOfTreatment_${item.id}`;
               const hasHeading = item.heading || item.section_name;
+              const hasSubHeading = item?.subHeading;
+              const hasFeaturedImage = item?.featured_image;
+              const hasFeaturedVideo = item?.featured_video;
               const hasDescription = Array.isArray(item.description_block);
+              const featuredMedia = hasFeaturedVideo ? getMediaUrl(item.featured_video) : hasFeaturedImage ? getMediaUrl(item.featured_image) : null;
 
               if (!hasHeading && !hasDescription) return null;
 
@@ -108,6 +113,16 @@ const CostOfCancerTreatment = ({ data }) => {
                       <h3 className="title-size-36">
                         {item.heading || item.section_name}
                       </h3>
+                    )}
+                    {hasSubHeading && (
+                      <h4 className="f-w-600">
+                        {item.subHeading}
+                      </h4>
+                    )}
+                    {featuredMedia && (
+                      <div className="details-img">
+                        <img src={featuredMedia} alt={item.featured_image?.alternativeText || item.featured_video?.alternativeText} />
+                      </div>
                     )}
                     {hasDescription &&
                       renderRichTextWithImages(item.description_block)}

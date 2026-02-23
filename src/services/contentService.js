@@ -192,9 +192,10 @@ export const resourcesAPI = {
     
     // Use populate=* for resources endpoint (works fine, as confirmed by API response)
     // The error was only when trying to populate subcategories on resource_category directly
-    const response = await api.get(
-      `/resources?${filters}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`
-    );
+    // const response = await api.get(`/resources?${filters}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
+    
+    const response = await api.get(`/resources?${filters}&fields[0]=title&fields[1]=slug&fields[2]=publishedDate&fields[3]=readTime&populate[featuredImage][fields][0]=url&populate[resource_category][fields][0]=name&populate[author][fields][0]=firstName&populate[author][fields][1]=lastName&populate[author][populate][profilePicture][fields][0]=url&populate[content][fields][0]=description_block&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
+    
     return response.data;
   },
 
@@ -204,17 +205,40 @@ export const resourcesAPI = {
   },
 
   getRelatedBlogs: async (id) => {
-    const response = await api.get(`/resources/${id}?filters[isActive][$eq]=true&populate[related_posts][populate][related_posts][populate]=*&sort=publishedDate:desc`);
+    // const response = await api.get(`/resources/${id}?populate[related_posts][populate][related_posts][populate][featuredImage]=true`);
+    const response = await api.get(`/resources/${id}?populate[related_posts][populate][related_posts][fields][0]=title&populate[related_posts][populate][related_posts][fields][1]=slug&populate[related_posts][populate][related_posts][fields][2]=excerpt&populate[related_posts][populate][related_posts][fields][3]=readTime&populate[related_posts][populate][related_posts][fields][4]=publishedDate&populate[related_posts][populate][related_posts][populate][featuredImage][fields][0]=url&populate[related_posts][populate][related_posts][populate][resource_category][fields][0]=name&populate[related_posts][populate][related_posts][populate][resource_category][fields][1]=slug&populate[related_posts][populate][related_posts][populate][resource_subcategory][fields][0]=name&populate[related_posts][populate][related_posts][populate][resource_subcategory][fields][1]=slug&populate[related_posts][populate][related_posts][populate][author][fields][0]=firstName&populate[related_posts][populate][related_posts][populate][author][fields][1]=lastName&populate[related_posts][populate][related_posts][populate][author][populate][profilePicture][fields][0]=url`);
     return response.data.data;
   },
 
   getBlogBySlug: async (slug) => {
     // Use populate=* for resources endpoint (works fine)
-    // The error was only when trying to populate subcategories on resource_category directly
+    // Encode slug so special characters in URL don't break the request
     const response = await api.get(
-      `/resources?filters[slug][$eq]=${slug}&populate=*`
+      `/resources?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`
     );
     return response.data.data;
+  },
+
+  /**
+   * Fetch previous and next active resources by id (for prev/next navigation).
+   * @param {number|string} id - Current resource id (data.id)
+   * @returns {{ previous: object|null, next: object|null }}
+   */
+  getPreviousNextActiveResources: async (id) => {
+    if (id == null || id === '') {
+      return { previous: null, next: null };
+    }
+    const [prevRes, nextRes] = await Promise.all([
+      api.get(
+        `/resources?filters[isActive][$eq]=true&filters[id][$lt]=${id}&sort=id:desc&pagination[limit]=1`
+      ),
+      api.get(
+        `/resources?filters[isActive][$eq]=true&filters[id][$gt]=${id}&sort=id:asc&pagination[limit]=1`
+      ),
+    ]);
+    const previous = prevRes.data.data?.[0] ?? null;
+    const next = nextRes.data.data?.[0] ?? null;
+    return { previous, next };
   },
 
 };
@@ -428,13 +452,21 @@ export const hospitalNetworkAPI = {
     return formatStrapiResponse(response.data.data);
   },
 
-  getHospitals: async ({ limit = 3, start = 0, query = '', sorting = '' } = {}) => {
-    let filters = '';
-    
+  getHospitals: async ({ limit = 3, start = 0, query = '', sorting = '', country = '', treatment = '' } = {}) => {
+    const filterParts = [];
+
     if (query) {
-      filters = `filters[name][$containsi]=${query}`;
+      filterParts.push(`filters[name][$containsi]=${encodeURIComponent(query)}`);
     }
-    
+    if (country) {
+      filterParts.push(`filters[country][slug][$eq]=${encodeURIComponent(country)}`);
+    }
+    if (treatment) {
+      filterParts.push(`filters[treatments][slug][$eq]=${encodeURIComponent(treatment)}`);
+    }
+
+    const filters = filterParts.length ? filterParts.join('&') + '&' : '';
+
     // Convert sorting option to Strapi sort format
     let sortParam = 'sort=name:asc'; // default
     if (sorting) {
@@ -455,9 +487,10 @@ export const hospitalNetworkAPI = {
           sortParam = 'sort=name:asc';
       }
     }
+
+    // const response = await api.get(`/hospitals?${filters}populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
+    const response = await api.get(`/hospitals?${filters}&populate[hospitalImage][fields][0]=url&populate[about][populate][featuredImage][fields][0]=url&populate[doctors][fields][0]=first_name&populate[doctors][fields][1]=last_name&populate[address][populate][address][fields][0]=city&populate[address][populate][address][fields][1]=country&populate[contact_details]=true&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
     
-    const queryString = filters ? `${filters}&` : '';
-    const response = await api.get(`/hospitals?${queryString}populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
     return response.data;
   },
 
@@ -475,18 +508,23 @@ export const quickFindsAPI = {
   },
 
   getCountries: async () => {
-    const response = await api.get('/countries?populate=*&sort=name:asc');
-    return formatStrapiResponse(response.data.data);
+    const response = await api.get('/countries?sort=country:asc');
+    return response.data.data;
   },
 
   getSpecialties: async () => {
-    const response = await api.get('/specialties?populate=*&sort=name:asc');
-    return formatStrapiResponse(response.data.data);
+    const response = await api.get('/specialties?sort=name:asc');
+    return response.data.data;
   },
 
   getTreatments: async () => {
-    const response = await api.get('/treatments?populate=*&sort=name:asc');
-    return formatStrapiResponse(response.data.data);
+    const response = await api.get('/treatments?sort=name:asc');
+    return response.data.data;
+  },
+
+  getTherapies: async () => {
+    const response = await api.get('/therapies?sort=name:asc');
+    return response.data.data;
   },
 };
 
@@ -528,13 +566,41 @@ export const keyFactorsAPI = {
 // Doctor API
 export const doctorAPI = {
 
-  getDoctors: async ({ limit = 3, start = 0, query = '', sorting = '' } = {}) => {
+  getDoctors: async ({ limit = 3, start = 0, query = '', sorting = '', country = '', treatment = '' } = {}) => {
     let filters = 'filters[isActive][$eq]=true';
-    
-    if (query) {
-      filters += `&filters[first_name][$containsi]=${query}`;
+
+    // if (query) {
+    //   filters += `&filters[first_name][$containsi]=${encodeURIComponent(query)}`;
+    // }
+
+    const searchQuery = (query || '').trim();
+    if (searchQuery) {
+      const words = searchQuery.split(/\s+/).filter(Boolean);
+      if (words.length >= 2) {
+        const firstWord = encodeURIComponent(words[0]);
+        const secondWord = encodeURIComponent(words[1]);
+        const fullQuery = encodeURIComponent(searchQuery);
+        // filters += `&filters[$or][0][$and][0][first_name][$containsi]=${firstWord}`;
+        // filters += `&filters[$or][0][$and][1][last_name][$containsi]=${secondWord}`;
+        // filters += `&filters[$or][1][first_name][$containsi]=${fullQuery}`;
+        // filters += `&filters[$or][2][last_name][$containsi]=${fullQuery}`;
+        filters += `&filters[first_name][$containsi]=${firstWord}`;
+        filters += `&filters[last_name][$containsi]=${secondWord}`;
+      } else {
+        const single = encodeURIComponent(words[0] || searchQuery);
+        filters += `&filters[$or][0][first_name][$containsi]=${single}`;
+        filters += `&filters[$or][1][last_name][$containsi]=${single}`;
+        // filters += `&filters[first_name][$containsi]=${single}`;
+        // filters += `&filters[last_name][$containsi]=${single}`;
+      }
     }
-    
+    if (country) {
+      filters += `&filters[country][country][$eq]=${encodeURIComponent(country)}`;
+    }
+    if (treatment) {
+      filters += `&filters[treatments][name][$eq]=${encodeURIComponent(treatment)}`;
+    }
+
     // Convert sorting option to Strapi sort format
     let sortParam = 'sort=first_name:asc'; // default
     if (sorting) {
@@ -555,8 +621,11 @@ export const doctorAPI = {
           sortParam = 'sort=first_name:asc';
       }
     }
+
+    // const response = await api.get(`/doctors?${filters}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
+    const response = await api.get(`/doctors?${filters}&fields[0]=first_name&fields[1]=last_name&fields[2]=slug&populate[about][populate][doctor_image][fields][0]=url&populate[specialization][populate][specialities][populate]=true&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
     
-    const response = await api.get(`/doctors?${filters}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
+    
     return response.data;
   },
 
@@ -627,13 +696,19 @@ export const countryTreatmentAPI = {
 
 // Drug API
 export const drugAPI = {
-  getDrugs: async ({ limit = 3, start = 0, query = '', sorting = '' } = {}) => {
+  getDrugs: async ({ limit = 3, start = 0, query = '', sorting = '', country = '', treatment = '' } = {}) => {
     let filters = 'filters[isActive][$eq]=true';
-    
+
     if (query) {
-      filters += `&filters[name][$containsi]=${query}`;
+      filters += `&filters[name][$containsi]=${encodeURIComponent(query)}`;
     }
-    
+    if (country) {
+      filters += `&filters[country][country][$eq]=${encodeURIComponent(country)}`;
+    }
+    if (treatment) {
+      filters += `&filters[treatments][name][$eq]=${encodeURIComponent(treatment)}`;
+    }
+
     // Convert sorting option to Strapi sort format
     let sortParam = 'sort=name:asc'; // default
     if (sorting) {
@@ -654,8 +729,10 @@ export const drugAPI = {
           sortParam = 'sort=name:asc';
       }
     }
+
+    // const response = await api.get(`/drugs?${filters}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
     
-    const response = await api.get(`/drugs?${filters}&populate=*&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
+    const response = await api.get(`/drugs?${filters}&fields[0]=name&fields[1]=slug&populate[hero][populate][featuredImage][fields][0]=url&pagination[start]=${start}&pagination[limit]=${limit}&${sortParam}`);
     return response.data;
   },
 

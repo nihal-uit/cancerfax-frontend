@@ -17,9 +17,9 @@ export const fetchHospitalHeroSection = createAsyncThunk(
 // Fetch hospitals list
 export const fetchHospitals = createAsyncThunk(
   'hospitalNetwork/fetchHospitals',
-  async ({ limit = 3, start = 0, query = '', sorting = '' } = {}, { rejectWithValue }) => {
+  async ({ limit = 3, start = 0, query = '', sorting = '', country = '', treatment = '' } = {}, { rejectWithValue }) => {
     try {
-      const response = await hospitalNetworkAPI.getHospitals({ limit, start, query, sorting });
+      const response = await hospitalNetworkAPI.getHospitals({ limit, start, query, sorting, country, treatment });
       return {
         data: response.data,
         meta: response.meta,

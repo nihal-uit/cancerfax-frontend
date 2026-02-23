@@ -41,7 +41,7 @@ const CancerFaxServices = ({ data }) => {
               <div className="commContent_wrap">
                 {section?.description_block && (
                   <p>
-                    {renderRichTextWithImages(section.description_text)}
+                    {renderRichTextWithImages(section.description_block)}
                   </p>
                 )}
               </div>
@@ -52,7 +52,7 @@ const CancerFaxServices = ({ data }) => {
           <div className="services-wrap">
             <div className="steps-grid">
               {steps.map((item) => {
-                const text = item?.description_text || "";
+                const text = renderRichTextWithImages(item?.description_block) || "";
                 if (!text) return null;
                 return (
                   <div className="steps-grid__item" key={item.id || text}>

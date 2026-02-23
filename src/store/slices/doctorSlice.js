@@ -15,9 +15,9 @@ export const fetchDoctorBySlug = createAsyncThunk(
 
 export const fetchDoctors = createAsyncThunk(
   'doctor/fetchDoctors',
-  async ({ limit = 3, start = 0, query = '', sorting = '' } = {}, { rejectWithValue }) => {
+  async ({ limit = 3, start = 0, query = '', sorting = '', country = '', treatment = '' } = {}, { rejectWithValue }) => {
     try {
-      const response = await doctorAPI.getDoctors({ limit, start, query, sorting });
+      const response = await doctorAPI.getDoctors({ limit, start, query, sorting, country, treatment });
       return {
         data: response.data,
         meta: response.meta,

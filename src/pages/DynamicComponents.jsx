@@ -48,8 +48,9 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
     !Array.isArray(dynamicZone) ||
     dynamicZone.length === 0
   ) {
+    const isClinicalTrials = location.pathname === '/clinical-trials' || location.pathname.startsWith('/clinical-trials/');
     return (
-      <PageWrapper>
+      <PageWrapper $disableOverflowX={isClinicalTrials}>
         {showHeader && <Header darkText={true} />}
         <SEO />
         {/* <div>No components available</div> */}
@@ -64,8 +65,10 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
     return block.isActive === true || block.isActive === "True" || block.isActive === "true";
   }) || [];
 
+  const isClinicalTrials = location.pathname === '/clinical-trials' || location.pathname.startsWith('/clinical-trials/');
+
   return (
-    <PageWrapper>
+    <PageWrapper $disableOverflowX={isClinicalTrials}>
       {showHeader && <Header darkText={darkText} />}
       <SEO />
       <Suspense fallback={<LoadingSpinner />}>
@@ -100,7 +103,7 @@ const DynamicComponents = ({ pageData, pageLoading, darkText = false, showHeader
 
 const PageWrapper = styled.div`
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: ${(props) => (props.$disableOverflowX ? 'visible' : 'hidden')};
 `;
 
 const SectionPlaceholder = styled.div`

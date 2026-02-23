@@ -11,16 +11,28 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchRelatedBlogs } from '../../store/slices/resourcesSlice';
 import NameAvatar from './NameAvatar';
 
-const RelatedBlogComponent = ({ data }) => {
+const getListFromData = (data) => {
+  if (!data) return null;
+  if (Array.isArray(data)) return data.length > 0 ? data : null;
+  const nested = data?.related_posts?.related_posts ?? data?.related_posts ?? data?.data;
+  if (Array.isArray(nested) && nested.length > 0) return nested;
+  return null;
+};
+
+const RelatedBlogComponent = ({ data, resourceId }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id: idFromParams } = useParams();
+  const id = resourceId ?? idFromParams;
 
   const relatedBlogs = useSelector(state => state.resources.relatedBlogs);
 
   useEffect(() => {
     dispatch(fetchRelatedBlogs(id));
   }, [id, dispatch]);
+
+  // const posts = listFromData ?? relatedBlogs?.related_posts?.related_posts ?? [];
+  const posts = relatedBlogs?.related_posts?.related_posts ?? [];
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
@@ -38,6 +50,7 @@ const RelatedBlogComponent = ({ data }) => {
         </div>
       </ScrollAnimationComponent>
 
+      <SwiperWrap>
       <Swiper
         spaceBetween={24}
         slidesPerView={1}
@@ -56,7 +69,7 @@ const RelatedBlogComponent = ({ data }) => {
         }}
         className="commCircle_navigation"
       >
-        {relatedBlogs?.related_posts?.related_posts && relatedBlogs?.related_posts?.related_posts?.map((blog) => (
+        {posts?.map((blog) => (
           <SwiperSlide key={blog.id}>
               <BlogCard as="div" key={blog.id} onClick={() => {
                 // Generate proper URL with category/subcategory if available
@@ -89,7 +102,7 @@ const RelatedBlogComponent = ({ data }) => {
                     alt='blog_image'
                     loading="lazy"
                   />
-                  {blog?.resource_category && <CategoryBadge className='lg-badge'>{blog.resource_category}</CategoryBadge>}
+                  {blog?.resource_category && <CategoryBadge className='lg-badge'>{blog.resource_category.name}</CategoryBadge>}
                 </BlogImage>
 
                 {blog.readTime && <BlogMeta>
@@ -97,20 +110,16 @@ const RelatedBlogComponent = ({ data }) => {
                     <path d="M7.23294 4.66664C7.23294 4.37669 6.99789 4.14164 6.70794 4.14164C6.41799 4.14164 6.18294 4.37669 6.18294 4.66664V7.29164C6.18294 7.51049 6.31869 7.70638 6.5236 7.78322L8.85694 8.65822C9.12843 8.76002 9.43104 8.62247 9.53285 8.35098C9.63466 8.07949 9.4971 7.77688 9.22562 7.67507L7.23294 6.92782V4.66664Z" fill="#36454F"/>
                     <path fillRule="evenodd" clipRule="evenodd" d="M6.99961 1.22498C3.81016 1.22498 1.22461 3.81053 1.22461 6.99998C1.22461 10.1894 3.81016 12.775 6.99961 12.775C10.1891 12.775 12.7746 10.1894 12.7746 6.99998C12.7746 3.81053 10.1891 1.22498 6.99961 1.22498ZM2.27461 6.99998C2.27461 4.39043 4.39006 2.27498 6.99961 2.27498C9.60916 2.27498 11.7246 4.39043 11.7246 6.99998C11.7246 9.60952 9.60916 11.725 6.99961 11.725C4.39006 11.725 2.27461 9.60952 2.27461 6.99998Z" fill="#36454F"/>
                   </svg> 
-                  {blog.readTime} min read
+                  {blog.readTime ? `${blog.readTime} min read` : ''}
                 </BlogMeta>}
 
                 <BlogContent>
-                  <div>
+                  <BlogContentMain>
                     <BlogTitle>{blog.title}</BlogTitle>
                     <BlogDescription>{blog.excerpt ?? ''}</BlogDescription>
-                  </div>            
+                  </BlogContentMain>
                   <AuthorInfo>
                     <AuthorAvatar>
-                      {/* <img 
-                        src={blog?.author?.avatar ?? 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800'} 
-                        alt={blog?.author?.firstName + ' ' + blog?.author?.lastName || 'Author'} 
-                      /> */}
                       <NameAvatar 
                         src={getMediaUrl(blog?.author?.profilePicture)} 
                         name={blog?.author?.firstName}
@@ -138,6 +147,7 @@ const RelatedBlogComponent = ({ data }) => {
         </NavButton>
 
       </Swiper>
+      </SwiperWrap>
     </>
   );
 };
@@ -173,14 +183,29 @@ const Title = styled.h3`
 `;
 
 
+const SwiperWrap = styled.div`
+  .commCircle_navigation .swiper-wrapper {
+    align-items: stretch;
+  }
+  .commCircle_navigation .swiper-slide {
+    display: flex;
+    height: auto;
+  }
+  .commCircle_navigation .swiper-slide > * {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+`;
+
 const BlogCard = styled.article`
   display: flex;
   flex-direction: column;
   gap: 24px;
   transition: all 0.3s ease;
   cursor: pointer;
-  height: 100%;
-  justify-content: space-around;
+  min-height: 100%;
   background: #fff;
   border-radius: 20px;
   padding: 20px 16px;
@@ -192,6 +217,8 @@ const BlogImage = styled.div`
   justify-content: center;
   width: 100%;
   height: 220px;
+  min-height: 220px;
+  flex-shrink: 0;
   position: relative;
   overflow: hidden;
   border-radius: 20px;
@@ -230,16 +257,27 @@ const BlogContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  flex: 1;
+  min-height: 0;
   
   @media (max-width: 768px) {
     gap: 16px;
   }
 `;
 
+const BlogContentMain = styled.div`
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+
 const AuthorInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 `;
 
 const AuthorAvatar = styled.div`

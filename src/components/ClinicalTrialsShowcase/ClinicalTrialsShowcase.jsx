@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getSectionData, formatMedia, formatRichText, renderRichTextWithImages } from '../../utils/strapiHelpers';
@@ -57,9 +57,13 @@ const resolveSlideBackgroundImage = (slide, section, defaultSlides, index) => {
   return fallbackImage;
 };
 
+const SLIDE_DURATION_MS = 6000;
+
 const ClinicalTrialsShowcase = ({ componentData, data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const sliderSection = componentData || data;
+  const slidesCountRef = useRef(0);
+  const intervalRef = useRef(null);
   
   // Extract slides from the Slide array in slider-section component
   const globalSlides = sliderSection?.Slide || [];
@@ -100,17 +104,32 @@ const ClinicalTrialsShowcase = ({ componentData, data }) => {
       : [];
 
   const slidesData = formattedGlobalSlides;
+  slidesCountRef.current = slidesData.length;
 
-  // IMPORTANT: All hooks must be called before any early returns
-  // Auto-play slider
+  // Auto-play: start first advance after full duration, then repeat every SLIDE_DURATION_MS.
+  // This avoids the first slide changing too soon when the effect re-runs (e.g. data load, Strict Mode).
   useEffect(() => {
-    if (slidesData.length > 1) {
-      const interval = setInterval(() => {
-        setActiveIndex((prev) => (prev === slidesData.length - 1 ? 0 : prev + 1));
-      }, 6000); // Change slide every 6 seconds
+    if (slidesData.length <= 1) return;
 
-      return () => clearInterval(interval);
-    }
+    const advance = () => {
+      setActiveIndex((prev) => {
+        const count = slidesCountRef.current;
+        return prev >= count - 1 ? 0 : prev + 1;
+      });
+    };
+
+    const initialTimeout = setTimeout(() => {
+      advance();
+      intervalRef.current = setInterval(advance, SLIDE_DURATION_MS);
+    }, SLIDE_DURATION_MS);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [slidesData.length]);
 
   if (!sliderSection || slidesData.length === 0) {

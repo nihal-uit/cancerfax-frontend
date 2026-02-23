@@ -134,6 +134,10 @@
             }
         }
 
+        &-item--no-body .accordion-button::after {
+            display: none;
+        }
+
         &-body {
             padding-bottom: 24px;
 

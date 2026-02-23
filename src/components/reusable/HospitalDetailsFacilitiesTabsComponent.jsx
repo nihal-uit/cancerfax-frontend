@@ -3,16 +3,32 @@ import { Nav, Tab, Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
 import { formatMedia } from '@/utils/strapiHelpers';
 
+const hasContent = (facility) => {
+  const hasIcon = !!facility?.icon;
+  const details = (facility?.details ?? '').toString().trim();
+  return hasIcon || details.length > 0;
+};
+
 const HospitalDetailsFacilitiesTabsComponent = ({ data, loading }) => {
   const [key, setKey] = useState(null);
 
-  useEffect(() => {
-    if (data && Array.isArray(data) && data.length > 0 && !key) {
-      setKey(data[0]?.id?.toString() || '0');
-    }
-  }, [data, key]);
+  const categoriesWithContent = React.useMemo(() => {
+    if (!data || !Array.isArray(data)) return [];
+    return data
+      .map((category) => ({
+        ...category,
+        facilities: (category?.facilities || []).filter(hasContent),
+      }))
+      .filter((category) => category.facilities.length > 0);
+  }, [data]);
 
-  if (loading || !data || !Array.isArray(data) || data.length === 0) {
+  useEffect(() => {
+    if (categoriesWithContent.length > 0 && !key) {
+      setKey(categoriesWithContent[0]?.id?.toString() || '0');
+    }
+  }, [categoriesWithContent, key]);
+
+  if (loading || !data || !Array.isArray(data) || categoriesWithContent.length === 0) {
     return null;
   }
 
@@ -25,10 +41,10 @@ const HospitalDetailsFacilitiesTabsComponent = ({ data, loading }) => {
       <Row className='g-4'>
         <Col sm={12}>
           <Nav variant="pills" className="facilities-nav">
-            {data.map((category, index) => (
+            {categoriesWithContent.map((category, index) => (
               <Nav.Item key={category?.id || index}>
                 <Nav.Link eventKey={category?.id?.toString() || index.toString()}>
-                  {category?.category_name || `Category ${index + 1}`}
+                  {(category?.category_name ?? '').trim() || `Category ${index + 1}`}
                 </Nav.Link>
               </Nav.Item>
             ))}
@@ -36,25 +52,31 @@ const HospitalDetailsFacilitiesTabsComponent = ({ data, loading }) => {
         </Col>
         <Col sm={12}>
           <Tab.Content>
-            {data.map((category, categoryIndex) => {
+            {categoriesWithContent.map((category, categoryIndex) => {
               const categoryKey = category?.id?.toString() || categoryIndex.toString();
-              const facilities = category?.facilities || [];
-              
+              const facilities = category.facilities;
+
               return (
                 <Tab.Pane key={categoryKey} eventKey={categoryKey}>
                   <GridWrapper>
-                    {facilities.map((facility, facilityIndex) => (
-                      <StepCard key={facility?.id || facilityIndex}>
-                        {facility?.icon && (
-                          <IconWrapper>
-                            <img src={formatMedia(facility.icon)} alt={facility?.icon?.alternativeText || facility?.details || ''} loading="lazy" />
-                          </IconWrapper>
-                        )}
-                        <StepContent>
-                          {facility?.details && <StepDescription>{facility.details}</StepDescription>}
-                        </StepContent>
-                      </StepCard>
-                    ))}
+                    {facilities.map((facility, facilityIndex) => {
+                      const details = (facility?.details ?? '').toString().trim();
+                      const iconUrl = facility?.icon ? formatMedia(facility.icon) : null;
+                      if (!iconUrl && !details) return null;
+
+                      return (
+                        <StepCard key={facility?.id || facilityIndex}>
+                          {iconUrl && (
+                            <IconWrapper>
+                              <img src={iconUrl} alt={facility?.icon?.alternativeText || details || ''} loading="lazy" />
+                            </IconWrapper>
+                          )}
+                          <StepContent>
+                            {details && <StepDescription>{details}</StepDescription>}
+                          </StepContent>
+                        </StepCard>
+                      );
+                    })}
                   </GridWrapper>
                 </Tab.Pane>
               );
@@ -62,43 +84,23 @@ const HospitalDetailsFacilitiesTabsComponent = ({ data, loading }) => {
           </Tab.Content>
         </Col>
       </Row>
-    </Tab.Container>  
+    </Tab.Container>
   );
 };
 
 const GridWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 0;
+  display: flex;
+  flex-wrap: wrap;
   width: 100%;
   border: 1px solid #E9E9E9;
   border-radius: 18px;
   overflow: hidden;
   background-color: #fff;
-  @media (max-width: 1024px) {
-      .services-grid {
-          grid-template-columns: repeat(3, 1fr);
-          grid-template-rows: repeat(4, auto);
-      }
-  }
-
-  @media (max-width: 768px) {
-      .services-grid {
-          grid-template-columns: repeat(2, 1fr);
-          grid-template-rows: repeat(5, auto);
-      }
-  }
-
-  @media (max-width: 480px) {
-      .services-grid {
-          grid-template-columns: 1fr;
-          grid-template-rows: repeat(10, auto);
-      }
-  }
 `;
 
 const StepCard = styled.div`
+  flex: 1 1 20%;
+  min-width: 180px;
   padding: 20px 15px;
   display: flex;
   flex-direction: column;
@@ -107,6 +109,22 @@ const StepCard = styled.div`
   justify-content: space-between;
   border: 1px solid #E9E9E9;
   min-height: 134px;
+  box-sizing: border-box;
+
+  @media (max-width: 1024px) {
+    flex: 1 1 33.333%;
+    min-width: 160px;
+  }
+
+  @media (max-width: 768px) {
+    flex: 1 1 50%;
+    min-width: 140px;
+  }
+
+  @media (max-width: 480px) {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
 `;
 
 const IconWrapper = styled.div`

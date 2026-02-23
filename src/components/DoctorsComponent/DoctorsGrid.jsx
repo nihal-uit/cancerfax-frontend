@@ -1,66 +1,84 @@
 import { formatMedia } from '../../utils/strapiHelpers';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { useLoadMore } from '../../utils/useLoadMore';
 import SkeletonBlogCard from '../reusable/SkeletonBlogCard';
-import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
 
 const DoctorsGrid = ( { doctors, loading }) => {
   const navigate = useNavigate();
+  const list = doctors ?? [];
 
   const handleCardClick = (doctor) => {
+    console.log('doctor 09 -> ', doctor);
     if (!doctor?.slug) return;
     navigate(`/doctor/${doctor?.slug}`);
   };
 
+  // const getSpecializationText = (specialization) => {
+  //   if (!specialization) return '';
+    
+  //   // Handle string specialization
+  //   if (typeof specialization === 'string') {
+  //     // Remove A., B., C. prefixes if present
+  //     return specialization.replace(/^[A-Z]\.\s*/g, '');
+  //   }
+    
+  //   // Handle object specialization - extract titles from specialities
+  //   if (specialization?.specialities && Array.isArray(specialization.specialities)) {
+  //     const titles = specialization.specialities
+  //       .flatMap((speciality) => 
+  //         speciality?.specialties?.map((item) => {
+  //           if (!item?.title) return null;
+  //           // Remove A., B., C. prefixes from titles
+  //           return item.title.replace(/^[A-Z]\.\s*/, '');
+  //         }).filter(Boolean) || []
+  //       )
+  //       .filter(Boolean);
+      
+  //     return titles.length > 0 ? titles.join(', ') : '';
+  //   }
+    
+  //   return '';
+  // };
+
   const getSpecializationText = (specialization) => {
     if (!specialization) return '';
-    
-    // Handle string specialization
+  
+    // If specialization is string
     if (typeof specialization === 'string') {
-      // Remove A., B., C. prefixes if present
-      return specialization.replace(/^[A-Z]\.\s*/g, '');
+      return specialization.replace(/^[A-Z]\.\s*/, '');
     }
-    
-    // Handle object specialization - extract titles from specialities
-    if (specialization?.specialities && Array.isArray(specialization.specialities)) {
-      const titles = specialization.specialities
-        .flatMap((speciality) => 
-          speciality?.specialties?.map((item) => {
-            if (!item?.title) return null;
-            // Remove A., B., C. prefixes from titles
-            return item.title.replace(/^[A-Z]\.\s*/, '');
-          }).filter(Boolean) || []
-        )
+  
+    // If specialization has specialities array
+    if (
+      specialization?.specialities &&
+      Array.isArray(specialization.specialities)
+    ) {
+      const headings = specialization.specialities
+        .map((item) => {
+          if (!item?.heading) return null;
+  
+          // Remove A., B., C. prefix if exists
+          return item.heading.replace(/^[A-Z]\.\s*/, '');
+        })
         .filter(Boolean);
-      
-      return titles.length > 0 ? titles.join(', ') : '';
+  
+      return headings.length > 0 ? headings.join(', ') : '';
     }
-    
+  
     return '';
   };
 
-  const { visibleItems, loadMore, hasMore, isLoadingMore } = useLoadMore(
-    doctors,
-    6,
-    3
-  );
-
-  // if (loading) {
-  //   return (
-  //     <Grid>
-  //       {Array.from({ length: 3 }).map((_, i) => (
-  //         <SkeletonBlogCard key={i} />
-  //       ))}
-  //     </Grid>
-  //   );
-  // }
-
-  if(loading) {
-    return <LoadingSpinner />;
+  if (loading && !list.length) {
+    return (
+      <Grid>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <SkeletonBlogCard key={i} />
+        ))}
+      </Grid>
+    );
   }
 
-  if(!loading && doctors.length === 0) {
+  if (!loading && list.length === 0) {
     return (
       <Grid>
         <EmptyState>No doctors found</EmptyState>
@@ -69,40 +87,24 @@ const DoctorsGrid = ( { doctors, loading }) => {
   }
 
   return (
-    <>
-        <Grid>
-          {visibleItems.map((doctor) => {
-            return (
-              <Card key={doctor.id} onClick={() => handleCardClick(doctor)}>
-                <CardImage bgImage={formatMedia(doctor?.about?.doctor_image)} />
-                <CardContent>
-                  <div className='doctors-text'>
-                    <DoctorName>{doctor?.first_name ?? ''} {doctor?.last_name ?? ''}</DoctorName>
-                    <SpecializationText>{getSpecializationText(doctor?.specialization)}</SpecializationText>
-                  </div>
-                  <ArrowIcon>
-                    <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                  </ArrowIcon>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </Grid>
-
-        {hasMore && (
-        <LoadMoreWrapper>
-          <button
-            className="load-more-btn"
-            onClick={loadMore}
-            disabled={isLoadingMore}
-          >
-            {isLoadingMore ? "Loading..." : "Load More"}
-          </button>
-        </LoadMoreWrapper>
-      )}
-    </>
+    <Grid>
+      {list.map((doctor) => (
+        <Card key={doctor.id} onClick={() => handleCardClick(doctor)}>
+          <CardImage bgImage={formatMedia(doctor?.about?.doctor_image)} />
+          <CardContent>
+            <div className='doctors-text'>
+              <DoctorName>{doctor?.first_name ?? ''} {doctor?.last_name ?? ''}</DoctorName>
+              <SpecializationText>{getSpecializationText(doctor?.specialization)}</SpecializationText>
+            </div>
+            <ArrowIcon>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </ArrowIcon>
+          </CardContent>
+        </Card>
+      ))}
+    </Grid>
   );
 };
 
@@ -251,31 +253,6 @@ const ArrowIcon = styled.div`
     height: 20px;
     stroke: #36454F;
     transition: all 0.3s ease;
-  }
-`;
-
-const LoadMoreWrapper = styled.div`
-  text-align: center;
-  margin-top: 40px;
-
-  .load-more-btn {
-    background: #36454f;
-    color: #fff;
-    padding: 14px 30px;
-    border-radius: 8px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    transition: 0.25s ease;
-
-    &:hover {
-      background: #000;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
   }
 `;
 

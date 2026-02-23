@@ -47,7 +47,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
   // Extract category slug from URL pathname (for legacy routes or when not using DynamicPage params)
   // Pattern: /resources/:category
   const extractCategoryFromPath = (pathname) => {
-    if (!pathname.startsWith('/resources/')) return '';
+    if (!pathname.startsWith('/resource/')) return '';
     if (pathname === '/resources') return '';
 
     // Check if it's a detail page (has 2+ segments after /resources/)

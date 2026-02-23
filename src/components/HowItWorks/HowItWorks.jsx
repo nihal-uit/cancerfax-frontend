@@ -277,30 +277,69 @@ const HowItWorks = ({ componentData, data }) => {
     visible: { opacity: 1, y: 0 },
   };
 
+  // const getStepPositioning = (index, total) => {
+  //   let gridRow, gridColumn;
+
+  //   if (index === 0 || index === 1) {
+  //     // First row cards (positions 1,2)
+  //     gridRow = '1';
+  //     gridColumn = (index + 2).toString(); // columns 2, 3
+  //   } else {
+  //     // Second row cards (positions 3,4,5)
+  //     gridRow = '2';
+  //     gridColumn = (index - 2 + 1).toString(); // columns 1, 2, 3
+  //   }
+
+  //   return {
+  //     gridRow,
+  //     gridColumn,
+  //     showLeftBorder:
+  //       gridColumn === '2' || (gridRow === '2' && gridColumn === '1'),
+  //     showRightBorder: gridColumn === '2',
+  //     showBottomBorder: gridRow === '1',
+  //     topRightCorner: index === 1, // Step 2
+  //     bottomLeftCorner: index === 2, // Step 3
+  //     bottomRightCorner:
+  //       index === total - 1 && gridRow === '2' && gridColumn === '3', // Last step in row 2, col 3
+  //   };
+  // };
+
   const getStepPositioning = (index, total) => {
-    let gridRow, gridColumn;
-
-    if (index === 0 || index === 1) {
-      // First row cards (positions 1,2)
-      gridRow = '1';
-      gridColumn = (index + 2).toString(); // columns 2, 3
+    const columnsPerRow = 3;
+    let row, column;
+  
+    if (index < 2) {
+      row = 1;
+      column = index + 2;
     } else {
-      // Second row cards (positions 3,4,5)
-      gridRow = '2';
-      gridColumn = (index - 2 + 1).toString(); // columns 1, 2, 3
+      const adjustedIndex = index - 2;
+      row = Math.floor(adjustedIndex / columnsPerRow) + 2;
+      column = (adjustedIndex % columnsPerRow) + 1;
     }
-
+  
+    const gridRow = row.toString();
+    const gridColumn = column.toString();
+  
+    const totalAfterFirstRow = Math.max(total - 2, 0);
+    const lastRow =
+      total > 2
+        ? Math.ceil(totalAfterFirstRow / columnsPerRow) + 1
+        : 1;
+  
+    const isLastRow = row === lastRow;
+    const isLastColumn = column === columnsPerRow;
+  
     return {
       gridRow,
       gridColumn,
-      showLeftBorder:
-        gridColumn === '2' || (gridRow === '2' && gridColumn === '1'),
-      showRightBorder: gridColumn === '2',
-      showBottomBorder: gridRow === '1',
-      topRightCorner: index === 1, // Step 2
-      bottomLeftCorner: index === 2, // Step 3
-      bottomRightCorner:
-        index === total - 1 && gridRow === '2' && gridColumn === '3', // Last step in row 2, col 3
+  
+      showLeftBorder: column !== 1,
+      showRightBorder: column === 2,
+      showBottomBorder: !isLastRow,
+  
+      topRightCorner: index === 1,
+      bottomLeftCorner: index === 2,
+      bottomRightCorner: index === total - 1 && isLastColumn,
     };
   };
 

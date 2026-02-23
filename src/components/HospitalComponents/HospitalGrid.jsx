@@ -1,15 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
-import { getMediaUrl } from '../../services/api';
-import { formatMedia, formatRichText } from '../../utils/strapiHelpers';
+import { formatMedia } from '../../utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { useNavigate } from 'react-router-dom';
-import { useLoadMore } from '../../utils/useLoadMore';
 import SkeletonBlogCard from '../reusable/SkeletonBlogCard';
-import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
 
 const HospitalGrid = ( { data, loading }) => {
   const navigate = useNavigate();
+  const list = data ?? [];
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
@@ -36,27 +34,17 @@ const HospitalGrid = ( { data, loading }) => {
     }
   };
 
-  const { visibleItems, loadMore, hasMore, isLoadingMore } = useLoadMore(
-    data,
-    6,
-    3
-  );
-
-  // if (loading) {
-  //   return (
-  //     <Grid>
-  //       {Array.from({ length: 3 }).map((_, i) => (
-  //         <SkeletonBlogCard key={i} />
-  //       ))}
-  //     </Grid>
-  //   );  
-  // }
-
-  if(loading) {
-    return <LoadingSpinner />;
+  if (loading && !list.length) {
+    return (
+      <Grid>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <SkeletonBlogCard key={i} />
+        ))}
+      </Grid>
+    );
   }
 
-  if(!loading && data?.length === 0) {
+  if (!loading && list.length === 0) {
     return (
       <Grid>
         <EmptyState>No hospitals found</EmptyState>
@@ -65,12 +53,10 @@ const HospitalGrid = ( { data, loading }) => {
   }
 
   return (
-    <>
-        <Grid>
-          {visibleItems.map((hospital) => {
-            return (
-              <ScrollAnimationComponent animationVariants={fadeIn}>
-              <Card key={hospital?.id} onClick={() => handleCardClick(hospital)}>
+    <Grid>
+      {list.map((hospital) => (
+        <ScrollAnimationComponent key={hospital?.id} animationVariants={fadeIn}>
+          <Card onClick={() => handleCardClick(hospital)}>
                 <CardImage bgImage={formatMedia(hospital?.hospitalImage || hospital?.about?.featuredImage)} />
                 <CardContent>
                   <HospitalName>{hospital?.name}</HospitalName>
@@ -105,25 +91,10 @@ const HospitalGrid = ( { data, loading }) => {
                     </ActionsRow>
                   </HoverContent>
                 </CardContent>
-              </Card>
-              </ScrollAnimationComponent>
-            );
-          })}
-        </Grid>
-
-        {hasMore && (
-        <LoadMoreWrapper>
-          <button
-            className="load-more-btn"
-            onClick={loadMore}
-            disabled={isLoadingMore}
-          >
-            {isLoadingMore ? "Loading..." : "Load More"}
-          </button>
-        </LoadMoreWrapper>
-      )}
-
-    </>
+          </Card>
+        </ScrollAnimationComponent>
+      ))}
+    </Grid>
   );
 };
 
@@ -350,31 +321,6 @@ const ArrowIcon = styled.div`
   
   ${Card}:hover & {
     display: none;
-  }
-`;
-
-const LoadMoreWrapper = styled.div`
-  text-align: center;
-  margin-top: 40px;
-
-  .load-more-btn {
-    background: #36454f;
-    color: #fff;
-    padding: 14px 30px;
-    border-radius: 8px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    transition: 0.25s ease;
-
-    &:hover {
-      background: #000;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
   }
 `;
 

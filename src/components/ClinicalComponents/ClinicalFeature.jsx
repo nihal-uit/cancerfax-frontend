@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -26,19 +26,20 @@ const ClinicalFeature = ({ componentData, data }) => {
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [selectedTreatment, setSelectedTreatment] = useState('');
+  const prevSearchTermRef = useRef('');
 
-  // Load filter options
-  // useEffect(() => {
-  //   dispatch(fetchCountries());
-  //   dispatch(fetchSpecialties());
-  //   dispatch(fetchTreatments());
-  // }, [dispatch]);
+  const trimmedQuery = (searchTerm || '').trim();
 
-  // Fetch trials when search or filters change
+  useEffect(() => {
+    dispatch(fetchCountries());
+    dispatch(fetchSpecialties());
+    dispatch(fetchTreatments());
+  }, [dispatch]);
+
   useEffect(() => {
     dispatch(
       fetchClinicalTrialsList({
-        search: searchQuery,
+        search: trimmedQuery,
         country: selectedCountry,
         specialty: selectedSpecialty,
         treatment: selectedTreatment,
@@ -46,9 +47,25 @@ const ClinicalFeature = ({ componentData, data }) => {
         limit: 24,
       })
     );
+  }, [dispatch, selectedCountry, selectedSpecialty, selectedTreatment]);
+
+  useEffect(() => {
+    if (prevSearchTermRef.current && !searchTerm) {
+      dispatch(
+        fetchClinicalTrialsList({
+          search: '',
+          country: selectedCountry,
+          specialty: selectedSpecialty,
+          treatment: selectedTreatment,
+          start: 0,
+          limit: 24,
+        })
+      );
+    }
+    prevSearchTermRef.current = searchTerm;
   }, [
+    searchTerm,
     dispatch,
-    searchQuery,
     selectedCountry,
     selectedSpecialty,
     selectedTreatment,
@@ -62,7 +79,16 @@ const ClinicalFeature = ({ componentData, data }) => {
     Array.isArray(treatments) && treatments.length > 0 ? treatments : [];
 
   const handleSearch = () => {
-    setSearchQuery(searchTerm.trim());
+    dispatch(
+      fetchClinicalTrialsList({
+        search: trimmedQuery,
+        country: selectedCountry,
+        specialty: selectedSpecialty,
+        treatment: selectedTreatment,
+        start: 0,
+        limit: 24,
+      })
+    );
   };
 
   const handleKeyPress = (e) => {
@@ -72,15 +98,15 @@ const ClinicalFeature = ({ componentData, data }) => {
   };
 
   const trials = Array.isArray(trialsList) ? trialsList : [];
-  const getOptionValue = (item) => item?.slug ?? item?.value ?? item?.id ?? '';
-  const getOptionName = (item) => item?.name ?? item?.label ?? '';
+  const getOptionValue = (item) =>
+    item?.slug ?? item?.value ?? item?.country ?? item?.id ?? '';
+  const getOptionName = (item) =>
+    item?.name ?? item?.country ?? item?.label ?? '';
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
   };
-
-  console.log(trials);
 
   return (
     <section className='quickFinds_sec py-120'>

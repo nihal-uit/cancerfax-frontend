@@ -42,7 +42,7 @@ const TherapyInfo = ({ data }) => {
               {steps.map((step) => {
                 const title = step?.title;
                 const description = step?.heading || step?.description_text || step?.description_block;
-
+                console.log(step);
                 if (!title && !description) return null;
 
                 return (
@@ -54,7 +54,7 @@ const TherapyInfo = ({ data }) => {
                       <StepContent>
                         {title && <StepTitle>{title}</StepTitle>}
                         {description && (
-                          <StepDescription>{renderRichTextWithImages(description)}</StepDescription>
+                          <StepDescription>{renderRichTextWithImages(description) || description}</StepDescription>
                         )}
                       </StepContent>
                     </TherapyInfoCard>

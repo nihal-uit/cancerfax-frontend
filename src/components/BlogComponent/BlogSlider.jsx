@@ -30,7 +30,7 @@ const BlogSlider = ({ data, loading }) => {
     image: getMediaUrl(resource?.featuredImage) ?? '',
     tags:  resource?.resource_tags || '',
     buttonText: "Know more",
-    buttonLink: `/resources/${resource?.documentId}`,
+    buttonLink: `/resource/${resource?.documentId}`,
     buttonTarget: '_self',
   })) : [];
 

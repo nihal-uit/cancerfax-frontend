@@ -101,7 +101,7 @@ const WhyOpt = ({ sectionClass, data }) => {
                     )}
                     {activeCard === item?.id && (
                       <motion.div className='h-100'>
-                        {item?.image && (
+                        {item?.image ? (
                           <div className='ratio__holder position-relative'>
                             <div className='ratio h-100'>
                               <img
@@ -110,6 +110,12 @@ const WhyOpt = ({ sectionClass, data }) => {
                                 width={100}
                                 height={100}
                               />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="ratio__holder position-relative">
+                            <div className="ratio h-100">
+                              <GradientPlaceholder aria-hidden="true" />
                             </div>
                           </div>
                         )}
@@ -141,6 +147,20 @@ const fadeIn = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0 },
 };
+
+const GradientPlaceholder = styled.div`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(54, 69, 79, 0.25) 0%,
+    rgba(54, 69, 79, 0.08) 50%,
+    rgba(54, 69, 79, 0.15) 100%
+  );
+  background-color: #e8eaec;
+`;
 
 const Section = styled.section`
   overflow: hidden;

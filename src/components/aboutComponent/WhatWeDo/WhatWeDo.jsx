@@ -57,7 +57,7 @@ const WhatWeDo = ( { data } ) => {
                 <SwiperSlide
                   key={item.id}
                 >
-                  <TherapyCard>
+                  <TherapyCard $hasUrl={!!item?.url}>
                     <CardImage image={formatMedia(item.image)}>
                       <CardOverlay className="card-overlay">
                         <CardTitle>{item.title}</CardTitle>
@@ -77,10 +77,10 @@ const WhatWeDo = ( { data } ) => {
                         </PlusIcon>
                       </CardOverlay>
                       <CardHoverContent className="card-hover-content">
-                        <Link to={item?.url || '#'}>
-                        <HoverTitle>{item?.title || ''}</HoverTitle>
-                        <HoverDescription>{renderRichTextWithImages(item?.description_block) || item?.description_text || ''}</HoverDescription>
-                        </Link>
+                        <CardLink to={item?.url || '#'} $hasUrl={!!item?.url}>
+                          <HoverTitle>{item?.title || ''}</HoverTitle>
+                          <HoverDescription>{renderRichTextWithImages(item?.description_block) || item?.description_text || ''}</HoverDescription>
+                        </CardLink>
                       </CardHoverContent>
                     </CardImage>
                   </TherapyCard>
@@ -172,7 +172,7 @@ const TherapyCard = styled.div`
   background: #ffffff;
   border-radius: 40px;
   overflow: hidden;
-  cursor: pointer;
+  cursor: ${(props) => (props.$hasUrl ? 'pointer' : 'default')};
   transition: transform 0.3s ease;
   flex-shrink: 0;
   scroll-snap-align: start;
@@ -240,6 +240,12 @@ const CardOverlay = styled.div`
     border-radius: 16px;
     padding: 12px 16px;
   }
+`;
+
+const CardLink = styled(Link)`
+  cursor: ${(props) => (props.$hasUrl ? 'pointer' : 'default')};
+  text-decoration: none;
+  color: inherit;
 `;
 
 const CardHoverContent = styled.div`

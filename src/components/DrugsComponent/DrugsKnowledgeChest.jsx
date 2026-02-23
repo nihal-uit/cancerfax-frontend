@@ -1,57 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import {  useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import DrugsGrid from './DrugsGrid';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
 import { fetchDrugs } from '@/store/slices/drugSlice';
+import { fetchCountries, fetchTreatments } from '@/store/slices/quickFindsSlice';
 import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const DRUGS_PAGE_SIZE = 6;
 
 const DrugKnowledgeChest = ({ data }) => {
   const dispatch = useDispatch();
-  const { drugs, drugsLoading, drugsHasMore } = useSelector(state => state.drug)
-  
-  const { countries, specialties } = useSelector((state) => state.quickFinds);
+  const { drugs, drugsLoading, drugsHasMore } = useSelector(state => state.drug);
+  const { countries, treatments } = useSelector((state) => state.quickFinds);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
-  const [selectedTreatment, setSelectedTreatment] = useState('');
   const [selectedSorting, setSelectedSorting] = useState('');
+  const prevSearchTermRef = useRef('');
+
+  const trimmedQuery = (searchTerm || '').trim();
+
+  useEffect(() => {
+    dispatch(fetchCountries());
+    dispatch(fetchTreatments());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchDrugs({
       limit: DRUGS_PAGE_SIZE,
       start: 0,
-      query: searchTerm.trim(),
-      sorting: selectedSorting || ''
+      query: trimmedQuery,
+      sorting: selectedSorting || '',
+      country: selectedCountry || '',
+      treatment: selectedSpecialty || '',
     }));
-  }, [dispatch, selectedSorting]);
+  }, [dispatch, selectedSorting, selectedCountry, selectedSpecialty]);
 
-  const defaultCountries = [
-    { id: 1, name: 'United States', value: 'us' },
-    { id: 2, name: 'United Kingdom', value: 'uk' },
-    { id: 3, name: 'Canada', value: 'ca' },
-    { id: 4, name: 'Germany', value: 'de' },
-    { id: 5, name: 'France', value: 'fr' },
-  ];
+  useEffect(() => {
+    if (prevSearchTermRef.current && !searchTerm) {
+      dispatch(fetchDrugs({
+        limit: DRUGS_PAGE_SIZE,
+        start: 0,
+        query: '',
+        sorting: selectedSorting || '',
+        country: selectedCountry || '',
+        treatment: selectedSpecialty || '',
+      }));
+    }
+    prevSearchTermRef.current = searchTerm;
+  }, [searchTerm, dispatch, selectedSorting, selectedCountry, selectedSpecialty]);
 
-  const defaultSpecialties = [
-    { id: 1, name: 'Oncology', value: 'oncology' },
-    { id: 2, name: 'Cardiology', value: 'cardiology' },
-    { id: 3, name: 'Neurology', value: 'neurology' },
-    { id: 4, name: 'Immunotherapy', value: 'immunotherapy' },
-  ];
-
-  const defaultTreatments = [
-    { id: 1, name: 'Chemotherapy', value: 'chemotherapy' },
-    { id: 2, name: 'Radiation Therapy', value: 'radiation' },
-    { id: 3, name: 'Immunotherapy', value: 'immunotherapy' },
-    { id: 4, name: 'Surgery', value: 'surgery' },
-  ];
-
-  const countryOptions = Array.isArray(countries) && countries.length > 0 ? countries : defaultCountries;
-  const specialtyOptions = Array.isArray(specialties) && specialties.length > 0 ? specialties : defaultSpecialties;
+  const countryOptions = Array.isArray(countries) && countries.length > 0 ? countries : [];
+  const specialtyOptions = Array.isArray(treatments) && treatments.length > 0 ? treatments : [];
 
   const sortingOptions = [
     { id: 1, name: 'Name A-Z', value: 'a-z' },
@@ -61,11 +62,13 @@ const DrugKnowledgeChest = ({ data }) => {
   ];
 
   const handleSearch = () => {
-    dispatch(fetchDrugs({ 
-      limit: DRUGS_PAGE_SIZE, 
-      start: 0, 
-      query: searchTerm.trim(),
-      sorting: selectedSorting || ''
+    dispatch(fetchDrugs({
+      limit: DRUGS_PAGE_SIZE,
+      start: 0,
+      query: trimmedQuery,
+      sorting: selectedSorting || '',
+      country: selectedCountry || '',
+      treatment: selectedSpecialty || '',
     }));
   };
 
@@ -76,8 +79,16 @@ const DrugKnowledgeChest = ({ data }) => {
   };
 
   const handleSortingChange = (e) => {
-    setSelectedSorting(e.target.value);
-    // useEffect will refetch with new sorting and current searchTerm
+    const newSorting = e.target.value;
+    setSelectedSorting(newSorting);
+    dispatch(fetchDrugs({
+      limit: DRUGS_PAGE_SIZE,
+      start: 0,
+      query: trimmedQuery,
+      sorting: newSorting || '',
+      country: selectedCountry || '',
+      treatment: selectedSpecialty || '',
+    }));
   };
 
   return (
@@ -101,18 +112,7 @@ const DrugKnowledgeChest = ({ data }) => {
               type="text"
               placeholder="Search with keywords"
               value={searchTerm}
-              onChange={(e) => {
-                const value = e.target.value;
-                setSearchTerm(value);
-                if (value === '') {
-                  dispatch(fetchDrugs({
-                    limit: DRUGS_PAGE_SIZE,
-                    start: 0,
-                    query: '',
-                    sorting: selectedSorting || ''
-                  }));
-                }
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleKeyPress}
             />
             <SearchIcon onClick={handleSearch}>
@@ -123,6 +123,7 @@ const DrugKnowledgeChest = ({ data }) => {
             </SearchIcon>
           </SearchInput>
 
+          {countryOptions.length > 0 && (
           <SelectWrapper>
             <Select
               value={selectedCountry}
@@ -130,14 +131,14 @@ const DrugKnowledgeChest = ({ data }) => {
             >
               <option value="">Filter</option>
               {countryOptions.map((country) => (
-                <option key={country.id} value={country.value}>
-                  {country.name}
+                <option key={country?.id || country?.documentId} value={country?.country ?? ''}>
+                  {country?.country || ''}
                 </option>
               ))}
             </Select>
             <SelectDisplay className={!selectedCountry ? 'placeholder' : ''}>
-              {selectedCountry 
-                ? countryOptions.find(c => c.value === selectedCountry)?.name || 'Filter'
+              {selectedCountry
+                ? countryOptions.find(c => c?.country === selectedCountry)?.country || 'Filter'
                 : 'Filter'}
             </SelectDisplay>
             <DropdownIcon>
@@ -146,6 +147,33 @@ const DrugKnowledgeChest = ({ data }) => {
               </svg>
             </DropdownIcon>
           </SelectWrapper>
+          )}
+
+          {specialtyOptions.length > 0 && (
+          <SelectWrapper>
+            <Select
+              value={selectedSpecialty}
+              onChange={(e) => setSelectedSpecialty(e.target.value)}
+            >
+              <option value="">Select specialty</option>
+              {specialtyOptions.map((specialty) => (
+                <option key={specialty?.id || specialty?.documentId} value={specialty?.name ?? ''}>
+                  {specialty?.name || ''}
+                </option>
+              ))}
+            </Select>
+            <SelectDisplay className={!selectedSpecialty ? 'placeholder' : ''}>
+              {selectedSpecialty
+                ? specialtyOptions.find(s => s?.name === selectedSpecialty)?.name || 'Select specialty'
+                : 'Select specialty'}
+            </SelectDisplay>
+            <DropdownIcon>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </DropdownIcon>
+          </SelectWrapper>
+          )}
 
           <SortSelectWrapper>
             <Select
@@ -180,11 +208,13 @@ const DrugKnowledgeChest = ({ data }) => {
             <LoadMoreButton
               type='button'
               onClick={() =>
-                dispatch(fetchDrugs({ 
-                  limit: DRUGS_PAGE_SIZE, 
+                dispatch(fetchDrugs({
+                  limit: DRUGS_PAGE_SIZE,
                   start: drugs.length,
-                  query: searchTerm.trim(),
-                  sorting: selectedSorting || ''
+                  query: trimmedQuery,
+                  sorting: selectedSorting || '',
+                  country: selectedCountry || '',
+                  treatment: selectedSpecialty || '',
                 }))
               }
               disabled={drugsLoading}

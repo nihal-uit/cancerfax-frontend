@@ -81,12 +81,17 @@ const TreatmentRisk = ({ data, loading }) => {
                 <ScrollAnimationComponent animationVariants={fadeIn}>
                   <Accordion defaultActiveKey={0} flush>
                     {data?.side_effects.map((item, index) => {
+                      const hasDescription = !!(item?.description_text || item?.description_block);
                       return (
-                        <Accordion.Item eventKey={index} key={item?.id || index}>
+                        <Accordion.Item
+                          eventKey={index}
+                          key={item?.id || index}
+                          className={!hasDescription ? 'accordion-item--no-body' : ''}
+                        >
                           {item?.title && (
                             <Accordion.Header>{item?.title}</Accordion.Header>
                           )}
-                          {(item?.description_text || item?.description_block) && (
+                          {hasDescription && (
                             <Accordion.Body>
                               <p>
                                 {renderRichTextWithImages(item?.description_block) || item?.description_text}

@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { getMediaUrl } from '../../services/api';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
-import { useLoadMore } from '@/utils/useLoadMore';
 import SkeletonBlogCard from '../reusable/SkeletonBlogCard';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,13 +22,7 @@ const DrugsGrid = ( { drugs, loading }) => {
     slug: drug?.slug,
   })) : [];
 
-  const { visibleItems, loadMore, hasMore, isLoadingMore } = useLoadMore(
-    medicines,
-    6,
-    3
-  );
-
-  if (loading) {
+  if (loading && !medicines?.length) {
     return (
       <Grid>
         {Array.from({ length: 6 }).map((_, i) => (
@@ -52,47 +45,33 @@ const DrugsGrid = ( { drugs, loading }) => {
   };
 
   return (
-    <>
-        <Grid>
-          {visibleItems.map((medicine) => {
-            const drugImage = medicine?.image?.data?.attributes?.url 
-              ? getMediaUrl(medicine.image.data.attributes.url) 
-              : medicine?.image;
-            const medicineName = medicine?.name;
-            const medicineQuantity = `Box of ${medicine?.medicine_quantity || ''} ml medicine`;
-            return (
-              <ScrollAnimationComponent animationVariants={fadeIn}>
-              <Card key={medicine.id} onClick={() => handleCardClick(medicine)}>
-                <CardImage bgImage={drugImage} />
-                <CardContent>
-                  <div className='doctors-text'>
-                    <DrugName>{medicineName}</DrugName>
-                    <span>{medicineQuantity}</span>
-                  </div>
-                  <ArrowIcon>
-                    <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                  </ArrowIcon>
-                </CardContent>
-              </Card>
-              </ScrollAnimationComponent>
-            );
-          })}
-        </Grid>
-
-        {hasMore && (
-        <LoadMoreWrapper>
-          <button
-            className="load-more-btn"
-            onClick={loadMore}
-            disabled={isLoadingMore}
-          >
-            {isLoadingMore ? "Loading..." : "Load More"}
-          </button>
-        </LoadMoreWrapper>
-      )}
-    </>
+    <Grid>
+      {medicines.map((medicine) => {
+        const drugImage = medicine?.image?.data?.attributes?.url
+          ? getMediaUrl(medicine.image.data.attributes.url)
+          : medicine?.image;
+        const medicineName = medicine?.name;
+        const medicineQuantity = `Box of ${medicine?.medicine_quantity || ''} ml medicine`;
+        return (
+          <ScrollAnimationComponent key={medicine.id} animationVariants={fadeIn}>
+            <Card onClick={() => handleCardClick(medicine)}>
+              <CardImage bgImage={drugImage} />
+              <CardContent>
+                <div className='doctors-text'>
+                  <DrugName>{medicineName}</DrugName>
+                  <span>{medicineQuantity}</span>
+                </div>
+                <ArrowIcon>
+                  <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </ArrowIcon>
+              </CardContent>
+            </Card>
+          </ScrollAnimationComponent>
+        );
+      })}
+    </Grid>
   );
 };
 
@@ -215,31 +194,6 @@ const ArrowIcon = styled.div`
     height: 20px;
     stroke: #36454F;
     transition: all 0.3s ease;
-  }
-`;
-
-const LoadMoreWrapper = styled.div`
-  text-align: center;
-  margin-top: 40px;
-
-  .load-more-btn {
-    background: #36454f;
-    color: #fff;
-    padding: 14px 30px;
-    border-radius: 8px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    transition: 0.25s ease;
-
-    &:hover {
-      background: #000;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
   }
 `;
 

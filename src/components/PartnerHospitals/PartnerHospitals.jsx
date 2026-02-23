@@ -1,42 +1,29 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Marquee from "react-fast-marquee";
 import { renderRichTextWithImages } from '@/utils/strapiHelpers';
-
-const partnersData = [
-  { 
-    id: 1, 
-    name: 'ABInBev',
-    logo: '../images/partner-logo-1.svg',
-  },
-  { 
-    id: 2, 
-    name: 'Nestlé Purina',
-    logo: '../images/partner-logo-3.svg',
-  },
-  { 
-    id: 3, 
-    name: 'Colgate',
-    logo: '../images/partner-logo-4.svg',
-  },
-  { 
-    id: 4, 
-    name: 'Merck',
-    logo: '../images/partner-logo-5.svg',
-  },
-  { 
-    id: 5, 
-    name: 'Sanofi',
-    logo: '../images/partner-logo-6.svg',
-  },
-  { 
-    id: 6, 
-    name: 'Tata Steel',
-    logo: '../images/partner-logo-7.svg',
-  },
-];
+import { formatMedia } from '@/utils/strapiHelpers';
+import { fetchPartners } from '../../store/slices/partnerHospitalsSlice';
 
 const PartnerHospitals = ({ data }) => {
+  const dispatch = useDispatch();
+  const { partners, loading } = useSelector((state) => state.partnerHospitals);
+
+  useEffect(() => {
+    dispatch(fetchPartners());
+  }, [dispatch]);
+
+  const partnersList = Array.isArray(partners) ? partners : [];
+  const getPartnerLogo = (partner) => {
+    const logo = partner?.attributes?.logo ?? partner?.logo;
+    return formatMedia(logo);
+  };
+  const getPartnerName = (partner) =>
+    partner?.attributes?.name ?? partner?.name ?? partner?.attributes?.alternativeText ?? 'Partner';
+  const getPartnerId = (partner, index) =>
+    partner?.id ?? partner?.documentId ?? index;
+
   return (
     <SectionWrapper>
       <ContentWrapper className='containerWrapper'>
@@ -46,31 +33,37 @@ const PartnerHospitals = ({ data }) => {
             <h3 className='title-3'>{data?.subHeading}</h3>
           </LeftColumn>
           <RightColumn>
-            <p className='text-16 line-2-text'>{renderRichTextWithImages(data?.description_block)||data?.description_text}</p>
+            <p className='text-16 line-2-text'>{renderRichTextWithImages(data?.description_block) || data?.description_text}</p>
           </RightColumn>
         </HeaderSection>
 
-      <div className='marquee_wrap'>
-        <Marquee
-          pauseOnHover={true}
-          speed={60}
-          gradient={false}
-          autoFill={true}
-          direction={'left'}
-        >
-            {partnersData.map((partners) => {
-              return (
-                <div key={partners.id} style={{ flex: "0 0 auto", margin: "0 30px" }}>
-                  <img
-                    src={partners.logo}
-                    alt={partners.name}
-                    style={{ height: "24px", objectFit: "contain" }}
-                  />
-                </div>
-              );
-            })}
-        </Marquee>
-      </div>    
+        <div className='marquee_wrap'>
+          {loading ? (
+            <MarqueePlaceholder>Loading partners...</MarqueePlaceholder>
+          ) : partnersList.length > 0 ? (
+            <Marquee
+              pauseOnHover={true}
+              speed={60}
+              gradient={false}
+              autoFill={true}
+              direction="left"
+            >
+              {partnersList.map((partner, index) => {
+                const logoUrl = getPartnerLogo(partner);
+                if (!logoUrl) return null;
+                return (
+                  <LogoItem key={getPartnerId(partner, index)}>
+                    <img
+                      src={logoUrl}
+                      alt={getPartnerName(partner)}
+                      loading="lazy"
+                    />
+                  </LogoItem>
+                );
+              })}
+            </Marquee>
+          ) : null}
+        </div>
       </ContentWrapper>
     </SectionWrapper>
   );
@@ -124,6 +117,29 @@ const RightColumn = styled.div`
   @media (max-width: 768px) {
     padding-top: 0;
   }
+`;
+
+const LogoItem = styled.div`
+  flex: 0 0 auto;
+  margin: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    height: 24px;
+    width: auto;
+    max-width: 120px;
+    object-fit: contain;
+  }
+`;
+
+const MarqueePlaceholder = styled.div`
+  text-align: center;
+  padding: 24px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 14px;
+  color: #36454F;
 `;
 
 export default memo(PartnerHospitals);
