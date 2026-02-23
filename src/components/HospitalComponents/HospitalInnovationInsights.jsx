@@ -223,7 +223,32 @@ const HospitalInnovationInsights = ({ componentData, data }) => {
               const imageUrl = formatMedia(image);
               const shapeClass = shape[index % 3] || "rounded-center";
               return (
-                <ImageCard key={`${image?.id || image?.documentId || index}-${index}`} className={shapeClass}>
+                <ImageCard key={`row1-${image?.id || image?.documentId || index}-${index}`} className={shapeClass}>
+                  {imageUrl ? (
+                    <Image
+                      src={imageUrl}
+                      alt={image?.alternativeText || "Hospital network"}
+                    />
+                  ) : null}
+                </ImageCard>
+              );
+            })}
+          </ImagesGrid>
+        </Marquee>
+        <Marquee
+          pauseOnHover={true}
+          speed={60}
+          gradient={true}
+          autoFill={true}
+          direction={"left"}
+          gradientColor={"#F8F8F8"}
+        >
+          <ImagesGrid>
+            {duplicatedImages.map((image, index) => {
+              const imageUrl = formatMedia(image);
+              const shapeClass = shape[(index + 1) % 3] || "rounded-center";
+              return (
+                <ImageCard key={`row2-${image?.id || image?.documentId || index}-${index}`} className={shapeClass}>
                   {imageUrl ? (
                     <Image
                       src={imageUrl}

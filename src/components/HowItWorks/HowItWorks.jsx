@@ -48,7 +48,9 @@ const ContentWrapper = styled.div`
   gap: 0;
   border: 1px solid #e5e7eb;
   border-bottom: 0;
-  border-radius: 24px 24px 0 0;
+  border-left: 0;
+  border-top: 0;
+  border-radius: 0;
   overflow: hidden;
   min-height: 254px;
 
@@ -64,7 +66,7 @@ const ContentWrapper = styled.div`
 
 const ImageSection = styled.div`
   overflow: hidden;
-  border-radius: 24px 0 0 24px;
+  border-radius: 24px 24px 0 24px;
   min-height: 254px;
 
   img {
@@ -109,14 +111,14 @@ const StepCard = styled.div`
     props.$topRightCorner &&
     `
     border-radius: 0 24px 0 0;
+    border-left: 0;
   `}
   
   /* Bottom-left corner for Step 3 */
   ${(props) =>
     props.$bottomLeftCorner &&
     `
-    border-radius: 0 0 0 24px;
-    border-left: none;
+    border-radius: 0;
   `}
   
   /* Bottom-right corner for Step 5 */
@@ -372,8 +374,9 @@ const HowItWorks = ({ componentData, data }) => {
               )}
             </TopHeader>
           </Header>
-
-          <ContentWrapper>
+        </ScrollAnimationComponent>
+        <ScrollAnimationComponent animationVariants={fadeIn}>
+          <ContentWrapper className='howit-work-list'>
             {howItWorksData?.featuredImage && (
               <ImageSection>
                 <img
@@ -398,6 +401,7 @@ const HowItWorks = ({ componentData, data }) => {
                   $topRightCorner={positioning.topRightCorner}
                   $bottomLeftCorner={positioning.bottomLeftCorner}
                   $bottomRightCorner={positioning.bottomRightCorner}
+                  className='howit-work-card'
                 >
                   <IconWrapper>
                     <StepIcon

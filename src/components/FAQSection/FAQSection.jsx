@@ -1,9 +1,50 @@
 import React, { useState, useEffect, useMemo, memo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Nav, Tab, Accordion } from 'react-bootstrap';
 import styled from 'styled-components';
+import { fetchFAQs } from '../../store/slices/faqSlice';
+
+/** Normalize a single FAQ from API (Strapi shape) to { id, documentId, question, answer, category }. */
+const normalizeFaq = (raw) => {
+  if (!raw) return null;
+  const attrs = raw.attributes || raw;
+  const cat = attrs.category?.data ?? attrs.category;
+  let category = null;
+  if (cat) {
+    if (typeof cat === 'string') {
+      category = { id: null, documentId: null, slug: cat, name: cat };
+    } else {
+      category = {
+        id: cat.id,
+        documentId: cat.documentId,
+        slug: cat.slug ?? cat.attributes?.slug ?? '',
+        name: cat.name ?? cat.attributes?.name ?? '',
+      };
+    }
+  }
+  return {
+    id: raw.id,
+    documentId: raw.documentId,
+    question: attrs.question ?? '',
+    answer: attrs.answer ?? '',
+    category,
+  };
+};
 
 const FAQSection = ({ data }) => {
-  const displayFAQs = data?.faqs?.length > 0 ? data?.faqs : [];
+  const dispatch = useDispatch();
+  const { faqs: apiFaqs, loading: faqLoading } = useSelector((state) => state.faq);
+
+  useEffect(() => {
+    dispatch(fetchFAQs());
+  }, [dispatch]);
+
+  const displayFAQs = useMemo(() => {
+    if (apiFaqs?.length > 0) {
+      return apiFaqs.map(normalizeFaq).filter(Boolean);
+    }
+    return data?.faqs?.length > 0 ? data.faqs : [];
+  }, [apiFaqs, data?.faqs]);
 
   const categories = useMemo(() => {
     const seen = new Set();
@@ -45,6 +86,20 @@ const FAQSection = ({ data }) => {
     setKey(eventKey);
   };
 
+
+  if (faqLoading && displayFAQs.length === 0) {
+    return (
+      <section className='faq_sec py-120'>
+        <div className='containerWrapper'>
+          <HeaderSection className='commContent_wrap'>
+            <span className='contentLabel'>{data?.heading}</span>
+            <h3 className='title-3'>{data?.subHeading}</h3>
+          </HeaderSection>
+          <p className='text-16'>Loading FAQs...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className='faq_sec py-120'>

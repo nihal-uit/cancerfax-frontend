@@ -126,8 +126,12 @@ a:focus-visible {
   z-index: 0;
   background: radial-gradient(49.51% 44.17% at 58.63% 39.76%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.57) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
 }
+/* .home-hero-banner.hospital_details_hero::before{
+  z-index: 3;
+} */
 .home-hero-banner.hospital_details_hero::after {
 background: linear-gradient(180deg, rgba(0, 0, 0, 0) 41.55%, #000000 100%);
+z-index: 2;
 }
 .home-hero-banner::before {
   content: "";
@@ -332,7 +336,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0) 41.55%, #000000 100%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  /* white-space: nowrap; */
+  white-space: nowrap;
   box-sizing: border-box;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -718,7 +722,9 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0) 41.55%, #000000 100%);
 .videoTestimonials_sec .videoTestimonials_wrap,
 .videoTestimonials_wrap {
   position: relative;
-  height: 527px;
+  width: 100%;
+  /* height: 527px; */
+  aspect-ratio: calc(1200/650);
   z-index: 2;
 }
 
@@ -1641,6 +1647,7 @@ section {
   border-radius: 40px;
   overflow: hidden;
   height: 580px;
+  min-height: 100%;
 }
 .mission_left .mission_image_wrap::after {
   content: "";
@@ -1667,6 +1674,9 @@ section {
   width: 100%;
   height: 350px;
   z-index: 0;
+}
+.mission_left .mission_image_wrap .ratio{
+  height: 100%;
 }
 .mission_left .mission_image_wrap img {
   width: 100%;
@@ -1788,10 +1798,12 @@ section {
 }
 
 .OurJourney_sec {
-  overflow: visible;
+  /* overflow: visible; */
   background-color: #FFFFFF;
 }
-
+.OurJourney_sec .milestones-image-section .content-gap-12{
+  margin-top: 30px;
+}
 .ourValues_sec {
   background-color: #F8F8F8;
 }
@@ -2270,4 +2282,8 @@ section {
 .treatment_location_list {
   appearance: none;
   border: 1px solid transparent;
+}
+
+.howit-work-list .howit-work-card:nth-child(2) {
+  border-left: none;
 }

@@ -46,7 +46,9 @@ const ContentWrapper = styled.div`
   gap: 0;
   border: 1px solid #E5E7EB;
   border-bottom: 0;
-  border-radius: 24px 24px 0 0;
+  border-left: 0;
+  border-top: 0;
+  border-radius: 0;
   overflow: hidden;
   min-height: 254px;
 
@@ -62,7 +64,7 @@ const ContentWrapper = styled.div`
 
 const ImageSection = styled.div`
   overflow: hidden;
-  border-radius: 24px 0 0 24px;
+  border-radius: 24px 24px 0 24px;
   min-height: 254px;
 
   img {
@@ -108,8 +110,7 @@ const StepCard = styled.div`
   
   /* Bottom-left corner for Step 3 */
   ${props => props.$bottomLeftCorner && `
-    border-radius: 0 0 0 24px;
-    border-left: none;
+    border-radius: 0;
   `}
   
   /* Bottom-right corner for Step 5 */
@@ -317,7 +318,7 @@ const HospitalKeyFactors = ({ componentData, data }) => {
           </TopHeader>
         </Header>
 
-        <ContentWrapper className='commContent_wrap'>
+        <ContentWrapper className='commContent_wrap howit-work-list'>
           {featuredImageUrl && (
           <ImageSection>
               <img
@@ -342,6 +343,7 @@ const HospitalKeyFactors = ({ componentData, data }) => {
                 $topRightCorner={posConfig.topRightCorner}
                 $bottomLeftCorner={posConfig.bottomLeftCorner}
                 $bottomRightCorner={posConfig.bottomRightCorner}
+                className='howit-work-card'
               >
                 <IconWrapper>
                   <StepIcon

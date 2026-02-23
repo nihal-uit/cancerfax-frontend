@@ -161,7 +161,7 @@ const KeyFactors = () => {
           </TopHeader>
         </Header>
 
-        <ContentWrapper className='commContent_wrap'>
+        <ContentWrapper className='commContent_wrap howit-work-list'>
           <ImageSection>
             <img src={imageUrl} alt={imageAlt} loading="lazy" />
           </ImageSection>
@@ -190,6 +190,7 @@ const KeyFactors = () => {
                 $topRightCorner={posConfig.topRightCorner}
                 $bottomLeftCorner={posConfig.bottomLeftCorner}
                 $bottomRightCorner={posConfig.bottomRightCorner}
+                className='howit-work-card'
               >
                 <IconWrapper>{getIcon(factor.icon)}</IconWrapper>
                 <StepTitle className='title-5 text_theme_dark'>{factor.title}</StepTitle>
@@ -246,9 +247,11 @@ const ContentWrapper = styled.div`
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: 254px;
   gap: 0;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   border-bottom: 0;
-  border-radius: 24px 24px 0 0;
+  border-left: 0;
+  border-top: 0;
+  border-radius: 0;
   overflow: hidden;
   min-height: 254px;
 
@@ -264,7 +267,7 @@ const ContentWrapper = styled.div`
 
 const ImageSection = styled.div`
   overflow: hidden;
-  border-radius: 24px 0 0 24px;
+  border-radius: 24px 24px 0 24px;
   min-height: 254px;
 
   img {
@@ -310,8 +313,7 @@ const StepCard = styled.div`
   
   /* Bottom-left corner for Step 3 */
   ${props => props.$bottomLeftCorner && `
-    border-radius: 0 0 0 24px;
-    border-left: none;
+    border-radius: 0;
   `}
   
   /* Bottom-right corner for Step 5 */

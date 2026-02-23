@@ -74,7 +74,7 @@ const AboutDisease = ({ data }) => {
             )}
           </TopSection>
 
-          <GridWrapper>
+          <GridWrapper className={`list__${cards.length}`}>
             {cards.map((card) => (
               <StepCard key={card.key}>
                 {card.icon && (
@@ -156,7 +156,11 @@ const GridWrapper = styled.div`
   overflow: hidden;
   background-color: #fff;
   @media (max-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(6, 1fr);
+    &>div{
+      grid-column: span 2;
+    }
+      
   }
 
   @media (max-width: 768px) {
@@ -166,6 +170,14 @@ const GridWrapper = styled.div`
   @media (max-width: 480px) {
     grid-template-columns: repeat(1, 1fr);
   }
+    &.list__5, &.list__7, &.list__9, &.list_11{
+      @media (max-width: 1024px) and (min-width: 768px){
+        &>:nth-last-child(2),
+        &> :nth-last-child(1){
+         grid-column: span 3;
+        }
+      }
+    }
 `;
 
 const StepCard = styled.div`

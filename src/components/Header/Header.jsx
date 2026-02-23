@@ -1690,6 +1690,10 @@ const NavLink = styled(Link)`
   @media (max-width: 1200px) {
     font-size: ${(props) => (props.$darkText ? '14px' : '14px')};
   }
+  @media (max-width: 1099.98px) {
+    font-size: 12px;
+  
+  }
 
   @media (max-width: 1024px) {
     font-size: ${(props) => (props.$darkText ? '14px' : '14px')};

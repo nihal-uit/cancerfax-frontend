@@ -197,7 +197,14 @@ const Description = styled.div`
   p {
     margin-bottom: 10px;
     line-height: 28px;
+    margin-bottom: 20px;
+    &:last-child{
+    margin-bottom: 20px;
+    }
   }
+    .btn{
+      margin-top: 20px;
+    }
 `;
 
 export default BuiltExperience;

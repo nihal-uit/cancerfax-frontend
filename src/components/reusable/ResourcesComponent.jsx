@@ -330,7 +330,7 @@ const SmallCard = styled.article`
 
 const SmallImage = styled.div`
   width: 100%;
-  height: 164px;
+  // height: 164px;
   position: relative;
   overflow: hidden;
   border-radius: 12px;
@@ -354,14 +354,14 @@ const SmallImage = styled.div`
 
 const CategoryBadge = styled.div`
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 8px;
   padding: 4px 10px;
   background: rgba(255, 105, 180, 1);
   color: white;
   border-radius: 12px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: capitalize;
   z-index: 2;
   height: 24px;
@@ -373,6 +373,8 @@ const CategoryBadge = styled.div`
     height: 28px;
     padding: 4px 14px;
     line-height: 16px;
+    top: 20px;
+    right: 20px;
   }
 
   @media (max-width: 768px) {

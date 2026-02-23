@@ -93,7 +93,7 @@ const OurJourney = ({ data }) => {
                   </ImageSectionWrapper>
                   <div className="content-gap-12">
                     {selectedMilestone.title && (
-                      <h4 className="title-4">{selectedMilestone.title}</h4>
+                      <h4 className="title-4 text-center" style={{color: "#008080"}}>{selectedMilestone.title}</h4>
                     )}
                     {selectedMilestone.description && (
                       <p className="text-16">{selectedMilestone.description}</p>
