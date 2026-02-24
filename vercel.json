@@ -4,14 +4,6 @@
   "framework": "create-react-app",
   "outputDirectory": "build",
   "devCommand": "npm start",
-
-  "rewrites": [
-    {
-      "source": "/:ip/:port/api/:path*",
-      "destination": "http://45.90.98.37:3008/api/:path*"
-    }
-  ],
-
   "headers": [
     {
       "source": "/(.*)",
