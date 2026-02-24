@@ -3,14 +3,50 @@ import { useDispatch, useSelector } from "react-redux";
 import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 import ScrollAnimationComponent from "../../ScrollAnimation/ScrollAnimationComponent";
 import SurvivorStoriesVideo from "../SurvivorStoriesVideo/SurvivorStoriesVideo";
-import { fetchPageByDocumentId, selectPageByDocumentId } from "@/store/slices/pageSlice";
+import { fetchPageComponentBySlug, selectPageComponentBySlug } from "@/store/slices/pageComponentSlice";
+
+/** Populate for survivor-story-listing hero: hero.cta, hero.featuredImage. Serialized by contentService with qs. */
+const HERO_QUERY_PARAMS = {
+  populate: {
+    dynamic_zone: {
+      on: {
+        "survivor-story-listing.hero-section": {
+          populate: {
+            survivor_story: {
+              fields: ["slug","short_quote"],
+              populate: {
+                hero: {
+                  populate: {
+                    cta: true,
+                    featuredImage: {
+                      fields: ["url"]
+                    },
+                    featuredVideo: {
+                      fields: ["url"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  } 
+};
 
 const SurvivorStoriesHero = ({ componentData, data, sectionClass, pageData, pageDocumentId }) => {
   const dispatch = useDispatch();
-  const heroData = componentData || data;
+  const { data: pageComponentData, loading: pageComponentLoading } = useSelector(selectPageComponentBySlug);
+  const heroData = pageComponentData || componentData || data;
+  
 
-
-
+  useEffect(() => {
+    if (pageData?.slug) {
+      dispatch(fetchPageComponentBySlug({ slug: pageData.slug, queryParams: HERO_QUERY_PARAMS }));
+    }
+  }, [dispatch, pageData?.slug]);
+  
   if (!heroData) {
     return null;
   }

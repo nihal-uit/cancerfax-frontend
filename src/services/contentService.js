@@ -1,3 +1,4 @@
+import qs from 'qs';
 import api, { formatStrapiResponse } from './api';
 
 // Navigation API
@@ -73,6 +74,20 @@ export const pagesAPI = {
     params.append('_t', Date.now().toString());
     const response = await api.get(`/pages?${params.toString()}`);
     return response.data?.data?.[0] ?? null;
+  },
+};
+
+// Page Component API
+export const pageComponentAPI = {
+  /** Fetch page component data for survivor-stories (used by SurvivorStoriesHero). */
+  getPageComponent: async (slug, queryParams = {}) => {
+    const query = {
+      filters: { slug: { $eq: slug } },
+      ...(queryParams && typeof queryParams === 'object' && !Array.isArray(queryParams) ? queryParams : {}),
+    };
+    const queryString = qs.stringify(query, { encodeValuesOnly: true });
+    const response = await api.get(`/pages?${queryString}`);
+    return response.data?.data;
   },
 };
 

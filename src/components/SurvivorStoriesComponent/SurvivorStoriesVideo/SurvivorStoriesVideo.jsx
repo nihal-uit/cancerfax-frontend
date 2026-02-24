@@ -8,6 +8,8 @@ const SurvivorStoriesVideo = ({ story }) => {
     return null;
   }
 
+  console.log(story);
+
   const videoUrl = formatMedia(story?.hero?.featuredVideo);
   const storyTitle = story?.hero?.story_title || story?.patient_name || '';
   const shortQuote = story?.short_quote || '';

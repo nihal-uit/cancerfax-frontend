@@ -5,6 +5,36 @@ import { getSectionData, formatMedia, formatRichText, renderRichTextWithImages }
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 import { hideFallbacks } from '../../utils/config';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { fetchPageComponentBySlug, selectPageComponentBySlug } from '@/store/slices/pageComponentSlice';
+
+const SLIDER_QUERY_PARAMS = {
+  populate: {
+    dynamic_zone: {
+      on: {
+        "dynamic-zone.slider-section": {
+          populate: {
+            Slide: {
+              fields: [
+                "heading",
+                "subHeading",
+                "description_block"
+              ],
+              populate: {
+                cta: {
+                  fields: ["text", "URL", "target", "variant"]
+                },
+                featuredImage: {
+                  fields: ["url", "alternativeText"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
 
 const extractMediaUrl = (media) => {
   if (!media) return null;
@@ -60,12 +90,21 @@ const resolveSlideBackgroundImage = (slide, section, defaultSlides, index) => {
 const SLIDE_DURATION_MS = 7000;
 const SLIDE_TRANSITION_MS = 600;
 
-const ClinicalTrialsShowcase = ({ componentData, data }) => {
+const ClinicalTrialsShowcase = ({ componentData, data, pageData }) => {
+  const dispatch = useDispatch();
   const [activeIndex, setActiveIndex] = useState(0);
-  const sliderSection = componentData || data;
   const slidesCountRef = useRef(0);
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
+  
+  const { data: pageComponentData, loading: pageComponentLoading } = useSelector(selectPageComponentBySlug);
+  const sliderSection = pageComponentData || componentData || data;
+  
+  useEffect(() => {
+    if (pageData?.slug) {
+      dispatch(fetchPageComponentBySlug({ slug: pageData.slug, queryParams: SLIDER_QUERY_PARAMS }));
+    }
+  }, [dispatch, pageData?.slug]);  
 
   const clearAutoplay = () => {
     if (timeoutRef.current) {
