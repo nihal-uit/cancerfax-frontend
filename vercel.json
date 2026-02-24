@@ -7,7 +7,7 @@
 
   "rewrites": [
     {
-      "source": "/api/:path*",
+      "source": "/:ip/:port/api/:path*",
       "destination": "http://45.90.98.37:3008/api/:path*"
     }
   ],
