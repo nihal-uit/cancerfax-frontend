@@ -70,9 +70,9 @@ export const fetchPageBySlug = createAsyncThunk(
         const timestamp = Date.now();
         const pageParams = new URLSearchParams();
         pageParams.append("filters[slug][$eq]", normalizedSlug);
-        pageParams.append("populate[dynamic_zone][populate]", "*");
-        pageParams.append("populate[seo][populate]", "*");
-        // pageParams.append("populate", "*");
+        // pageParams.append("populate[dynamic_zone][populate]", "*");
+        // pageParams.append("populate[seo][populate]", "*");
+        pageParams.append("populate", "*");
         pageParams.append("_t", timestamp.toString());
 
         const apiUrl = `${API_URL}/api/pages?${pageParams.toString()}`;
