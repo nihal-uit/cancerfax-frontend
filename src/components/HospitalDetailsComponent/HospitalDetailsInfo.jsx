@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import 'swiper/css';
 import { formatMedia, renderRichTextWithImages, formatRichText } from '@/utils/strapiHelpers';
+import SectionMediaBlock from '../reusable/SectionMediaBlock';
 
 // Map section IDs to API field names
 const SECTION_MAP = {
@@ -186,28 +187,7 @@ const HospitalDetailsInfo = ({ data, loading }) => {
                   >
                     <div className="commContent_wrap content-gap-24">
                       {aboutData?.heading && <h3 className="title-3">{aboutData.heading}</h3>}
-                      {aboutData?.featuredImage && (
-                        <div className="details-img">
-                          <img
-                            src={formatMedia(aboutData.featuredImage)}
-                            alt={aboutData?.featuredImage?.alternativeText || aboutData?.heading || 'Hospital'}
-                          />
-                        </div>
-                      )}
-                      {aboutData?.featuredVideo && (
-                        <div className="details-img">
-                          <video
-                            preload="none"
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            style={{ width: '100%', borderRadius: '8px' }}
-                          >
-                            <source src={formatMedia(aboutData.featuredVideo)} type="video/mp4" />
-                          </video>
-                        </div>
-                      )}
+                      <SectionMediaBlock sectionData={aboutData} title={aboutData?.heading || 'Hospital'} />
                       {aboutData?.description_block && (
                         <div className="text-14">
                           {Array.isArray(aboutData.description_block) 
@@ -516,8 +496,6 @@ const HospitalDetailsInfo = ({ data, loading }) => {
               const heading = sectionData?.heading || '';
               const subHeading = sectionData?.subHeading || '';
               const descriptionBlock = sectionData?.description_block || [];
-              const imageUrl = formatMedia(sectionData?.featuredImage);
-              const videoUrl = formatMedia(sectionData?.featuredVideo);
 
               return (
                 <div
@@ -529,30 +507,8 @@ const HospitalDetailsInfo = ({ data, loading }) => {
                   <div className="commContent_wrap content-gap-24">
                     {heading && <h3 className="title-3">{heading}</h3>}
                     {subHeading && <h4 className="f-w-600">{subHeading}</h4>}
-                    
-                    {imageUrl && (
-                      <div className="details-img">
-                        <img
-                          src={imageUrl}
-                          alt={sectionData?.featuredImage?.alternativeText || heading || SECTION_LABELS[sectionId]}
-                        />
-                      </div>
-                    )}
 
-                    {videoUrl && (
-                      <div className="details-img">
-                        <video
-                          preload="none"
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                          style={{ width: '100%', borderRadius: '8px' }}
-                        >
-                          <source src={videoUrl} type="video/mp4" />
-                        </video>
-                      </div>
-                    )}
+                    <SectionMediaBlock sectionData={sectionData} title={heading || SECTION_LABELS[sectionId]} />
 
                     {descriptionBlock && descriptionBlock.length > 0 && (
                       <div className="content-gap-20">

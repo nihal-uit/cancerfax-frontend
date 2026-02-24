@@ -1,29 +1,105 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { formatMedia } from '@/utils/strapiHelpers';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
 
+// Helper function to convert YouTube URL to embed format
+const getYouTubeEmbedUrl = (url) => {
+  if (!url) return null;
+
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return `https://www.youtube.com/embed/${match[1]}`;
+    }
+  }
+
+  if (url.includes('youtube.com/embed/')) {
+    return url;
+  }
+
+  return null;
+};
+
+// Helper function to get YouTube thumbnail URL
+const getYouTubeThumbnailUrl = (url) => {
+  if (!url) return null;
+
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return `https://img.youtube.com/vi/${match[1]}/maxresdefault.jpg`;
+    }
+  }
+
+  return null;
+};
+
+// Helper function to check if URL is YouTube
+const isYouTubeUrl = (url) => {
+  if (!url) return false;
+  return /youtube\.com|youtu\.be/.test(url);
+};
+
 const VideoTestimonialComponents = ({ data }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
 
-  // Get video URL for background video
-  const getVideoUrl = () => {
-    if (!data) return null;
-
-    // Try testimonial_card.featuredVideo first
-    if (data?.testimonial_card?.featuredVideo) {
-        return formatMedia(data?.testimonial_card?.featuredVideo);
+  const videoContent = useMemo(() => {
+    if (!data) {
+      return {
+        videoUrl: null,
+        isYouTube: false,
+        thumbnailUrl: null,
+        title: '',
+      };
     }
 
-    // Fallback to featuredVideo
-    if (data?.featuredVideo) {
-        return formatMedia(data?.featuredVideo);
+    // Priority: external video (e.g. YouTube) || uploaded video
+    const externalVideo =
+      data?.testimonial_card?.featuredVideoExternal || data?.featuredVideoExternal || '';
+
+    const uploadedVideo =
+      (data?.testimonial_card?.featuredVideo &&
+        formatMedia(data?.testimonial_card?.featuredVideo)) ||
+      (data?.featuredVideo && formatMedia(data?.featuredVideo)) ||
+      '';
+
+    let videoUrl = '';
+    let isYouTube = false;
+    let thumbnailUrl = null;
+
+    if (externalVideo) {
+      videoUrl = externalVideo;
+      isYouTube = isYouTubeUrl(externalVideo);
+      if (isYouTube) {
+        thumbnailUrl = getYouTubeThumbnailUrl(externalVideo);
+      }
+    } else if (uploadedVideo) {
+      videoUrl = uploadedVideo;
     }
 
-    return null;
-  };
+    return {
+      videoUrl: videoUrl || null,
+      isYouTube,
+      thumbnailUrl,
+      title:
+        data?.testimonial_card?.heading ||
+        data?.heading ||
+        '',
+    };
+  }, [data]);
 
   const handlePlayVideo = () => {
     setIsPlaying(true);
@@ -52,33 +128,52 @@ const VideoTestimonialComponents = ({ data }) => {
     return () => window.removeEventListener('keydown', handleEscape);
   }, [isPlaying]);
 
-  // Auto-play video when modal opens
+  // Auto-play video when modal opens (for non-YouTube videos)
   useEffect(() => {
-    if (isPlaying && videoRef.current) {
+    if (isPlaying && videoRef.current && !videoContent.isYouTube) {
       videoRef.current.play().catch((err) => {
         console.error('Error playing video:', err);
       });
     }
-  }, [isPlaying]);
+  }, [isPlaying, videoContent.isYouTube]);
 
-  const videoUrl = getVideoUrl();
+  const videoUrl = videoContent.videoUrl;
+
+  const renderMedia = () => {
+    if (!videoUrl) return null;
+
+    if (videoContent.isYouTube) {
+      return (
+        <BackgroundVideoWrapper>
+          {videoContent.thumbnailUrl && (
+            <BackgroundImage
+              src={videoContent.thumbnailUrl}
+              alt={videoContent.title || 'Video testimonial'}
+            />
+          )}
+        </BackgroundVideoWrapper>
+      );
+    }
+
+    return (
+      <BackgroundVideoWrapper>
+        <BackgroundVideo
+          preload="none"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src={videoUrl} type="video/mp4" />
+        </BackgroundVideo>
+      </BackgroundVideoWrapper>
+    );
+  };
 
   return (
     <>
       <div className='videoTestimonials_wrap'>
-        {videoUrl && (
-          <BackgroundVideoWrapper>
-            <BackgroundVideo
-              preload="none"
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              <source src={videoUrl} type="video/mp4" />
-            </BackgroundVideo>
-          </BackgroundVideoWrapper>
-        )}
+        {renderMedia()}
         <ScrollAnimationComponent animationVariants={slideLeft}>
           <Content className='commContent_wrap'>
             <Label className='contentLabel' style={{color:videoUrl ? 'white' : '#36454F'}}>
@@ -130,13 +225,22 @@ const VideoTestimonialComponents = ({ data }) => {
                 />
               </CloseIcon>
             </CloseButton>
-            <VideoPlayer
-              ref={videoRef}
-              src={videoUrl}
-              controls
-              autoPlay
-              playsInline
-            />
+            {videoContent.isYouTube ? (
+              <YouTubeIframe
+                src={getYouTubeEmbedUrl(videoUrl)}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <VideoPlayer
+                ref={videoRef}
+                src={videoUrl}
+                controls
+                autoPlay
+                playsInline
+              />
+            )}
           </VideoModalContent>
         </VideoModal>
       )}
@@ -442,6 +546,19 @@ const VideoPlayer = styled.video`
   }
 `;
 
+const YouTubeIframe = styled.iframe`
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 400px;
+  border-radius: 8px;
+  outline: none;
+  border: none;
+
+  @media (max-width: 768px) {
+    min-height: 300px;
+  }
+`;
+
 const CloseButton = styled.button`
   position: absolute;
   top: -50px;
@@ -479,6 +596,24 @@ const CloseIcon = styled.svg`
   @media (max-width: 768px) {
     width: 20px;
     height: 20px;
+  }
+`;
+
+const BackgroundImage = styled.img`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 24px;
+
+  @media (max-width: 768px) {
+    border-radius: 20px;
+  }
+
+  @media (max-width: 480px) {
+    border-radius: 16px;
   }
 `;
 

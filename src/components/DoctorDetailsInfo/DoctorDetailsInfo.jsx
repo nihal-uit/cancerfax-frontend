@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import styled from 'styled-components';
 import { formatMedia, formatDate, renderRichTextWithImages, formatRichText } from "@/utils/strapiHelpers";
+import SectionMediaBlock from '../reusable/SectionMediaBlock';
 import { Row, Col } from 'react-bootstrap';
 import HospitalDetailsFacilitiesTabsComponent from '../reusable/HospitalDetailsFacilitiesTabsComponent';
 import DoctorsDetailsProceduresPerformedTabsComponent from '../reusable/DoctorsDetailsProceduresPerformedTabsComponent';
@@ -135,8 +136,6 @@ const DoctorsDetailsInfo = ({ data, loading }) => {
               const heading = sectionData?.heading || '';
               const subHeading = sectionData?.subHeading || '';
               const descriptionBlock = sectionData?.description_block || [];
-              const imageUrl = formatMedia(sectionData?.featuredImage);
-              const videoUrl = formatMedia(sectionData?.featuredVideo);
 
               // Determine section-specific className
               const sectionClassName = sectionId === 'procedures_performed'
@@ -385,29 +384,7 @@ const DoctorsDetailsInfo = ({ data, loading }) => {
                     {heading && <span className="contentLabel">{heading}</span>}
                     {subHeading && <h3 className="title-size-36">{subHeading}</h3>}
 
-                    {imageUrl && (
-                      <div className="details-img">
-                        <img
-                          src={imageUrl}
-                          alt={sectionData?.featuredImage?.alternativeText || heading || SECTION_LABELS[sectionId]}
-                        />
-                      </div>
-                    )}
-
-                    {videoUrl && (
-                      <div className="details-img">
-                        <video
-                          preload="none"
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                          style={{ width: '100%', borderRadius: '8px' }}
-                        >
-                          <source src={videoUrl} type="video/mp4" />
-                        </video>
-                      </div>
-                    )}
+                    <SectionMediaBlock sectionData={sectionData} title={heading || SECTION_LABELS[sectionId]} />
 
                     {descriptionBlock && descriptionBlock.length > 0 && (
                       <div className="content-gap-20">
