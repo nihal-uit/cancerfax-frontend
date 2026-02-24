@@ -27,15 +27,21 @@ const ClinicalPhases = ({ componentData, data }) => {
     const options = {
       root: null,
       rootMargin: "10% 0px -90% 0px",
-      threshold: 0,
+      threshold: 0.3,
     };
 
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveId(entry.target.id);
-        }
-      });
+      // Pick the section with the highest visibility as the active one
+      const visibleEntries = entries.filter((entry) => entry.isIntersecting);
+      if (visibleEntries.length === 0) return;
+
+      const mostVisible = visibleEntries.reduce((maxEntry, current) =>
+        current.intersectionRatio > maxEntry.intersectionRatio ? current : maxEntry
+      );
+
+      if (mostVisible?.target?.id) {
+        setActiveId(mostVisible.target.id);
+      }
     }, options);
 
     phases.forEach((phase) => {
@@ -51,7 +57,7 @@ const ClinicalPhases = ({ componentData, data }) => {
     setActiveId(id);
     const el = sectionRefs.current[id];
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      el.scrollIntoView({ behavior: "auto", block: "start" });
     }
   };
 

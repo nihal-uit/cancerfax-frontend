@@ -24,11 +24,11 @@ const BlogSlider = ({ data, loading }) => {
     publishedDate: formatDate(resource?.publishedDate) || '',
     readTime: resource?.readTime || '',
     author: {
-      name: `${resource?.author?.firstName ?? ''} ${resource?.author?.lastName ? resource?.author?.lastName : ''}` || '',
+      name: `${resource?.author?.firstName.trim() ?? ''} ${resource?.author?.lastName ? resource?.author?.lastName : ''}` || '',
       avatar: getMediaUrl(resource?.author?.profilePicture) || null,
     },
     image: getMediaUrl(resource?.featuredImage) ?? '',
-    tags:  resource?.resource_tags || '',
+    tags:  resource?.resource_category?.name || '',
     buttonText: "Know more",
     buttonLink: `/resource/${resource?.documentId}`,
     buttonTarget: '_self',
@@ -58,9 +58,10 @@ const BlogSlider = ({ data, loading }) => {
                     <ScrollAnimationComponent animationVariants={fadeIn}>
                       <div className="commContent_wrap">
                         <SmallCardContent>
-                          {slide?.resource_tags?.map((tag, index) => (
+                          {/* {slide?.resource_tags?.map((tag, index) => (
                             <Tag key={index}>{tag.name}</Tag>
-                          ))}
+                          ))} */}
+                           <Tag>{slide?.tags}</Tag>
                           <AuthorInfo>
                             <AuthorAvatar>
                               <NameAvatar 
@@ -186,7 +187,7 @@ const SmallCardContent = styled.div`
 
 const Tag = styled.span`
   font-family: "Be Vietnam Pro", sans-serif;
-  background: #36454f;
+  background: rgb(255, 105, 180);
   font-size: 16px;
   font-weight: 500;
   color: #fff;

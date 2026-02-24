@@ -274,7 +274,7 @@ const Title = styled.h4`
   `;
 
 const ExploreButton = styled(Link)`
-    max-width: 178px;
+    max-width: 180px;
     @media (max-width: 575px) {
      max-width: 100%;
     }

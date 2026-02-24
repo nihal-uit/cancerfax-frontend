@@ -207,7 +207,7 @@ const CancerTreatmentHero = ({ data }) => {
               </HeaderLeft>
               <HeaderRight>
                 <RightBox>
-                  <FormContainer onSubmit={handleSubmit}>
+                  <FormContainer onSubmit={handleSubmit} noValidate>
                     {submissionStatus === 'failed' && (
                       <ErrorMessage>{submissionError || 'Sorry, there was an error sending your message. Please try again.'}</ErrorMessage>
                     )}
