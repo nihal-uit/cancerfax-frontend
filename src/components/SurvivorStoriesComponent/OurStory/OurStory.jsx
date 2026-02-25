@@ -48,8 +48,6 @@ const OurStory = ({ componentData, data }) => {
   const stories = sliderData?.stories || sliderData?.related_stories?.stories || [];
   const backgroundImageUrl = formatMedia(sliderData?.backgroundImage);
 
-  console.log('nestedSurvivorStoryData->', nestedSurvivorStoryData);
-
   return (
     <section
       className='ourstory_sec ourStory_slider_sec py-120'
@@ -93,10 +91,18 @@ const OurStory = ({ componentData, data }) => {
             className='commCircle_navigation'
           >
             {stories.map((story,index) => {
-              const storyImageUrl = formatMedia(nestedSurvivorStoryData[index]?.hero?.featuredImage || story?.hero?.featuredImage);
-              const storyVideoUrl = formatMedia(nestedSurvivorStoryData[index]?.hero?.featuredVideo || story?.hero?.featuredVideo);
-              const hasMedia = storyVideoUrl ? storyVideoUrl : storyImageUrl ? storyImageUrl : null;
-              console.log('storyVideoUrl->', storyVideoUrl);
+              const nestedStory = nestedSurvivorStoryData.find(
+                (item) => item.slug === story.slug
+              );
+              const storyImageUrl = formatMedia(
+                nestedStory?.hero?.featuredImage || story?.hero?.featuredImage
+              );
+            
+              const storyVideoUrl = formatMedia(
+                nestedStory?.hero?.featuredVideo || story?.hero?.featuredVideo
+              );
+
+              const hasMedia = storyVideoUrl || storyImageUrl;
 
               return (
                 <SwiperSlide key={story?.id || story?.slug}>

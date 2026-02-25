@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import {
   fetchCountries,
   fetchDiseases,
-  fetchTreatments,
+  fetchTherapies,
 } from '../../store/slices/quickFindsSlice';
 import { fetchClinicalTrialsList } from '../../store/slices/clinicalTrialsSlice';
 import ScrollAnimationComponent from '../../components/ScrollAnimation/ScrollAnimationComponent';
@@ -14,7 +14,7 @@ import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 const ClinicalFeature = ({ componentData, data }) => {
   const dispatch = useDispatch();
   const listingData = componentData || data;
-  const { countries, diseases, treatments } = useSelector(
+  const { countries, diseases, therapies } = useSelector(
     (state) => state.quickFinds
   );
   const { list: trialsList, listLoading: trialsLoading } = useSelector(
@@ -24,7 +24,7 @@ const ClinicalFeature = ({ componentData, data }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedDisease, setSelectedDisease] = useState('');
-  const [selectedTreatment, setSelectedTreatment] = useState('');
+  const [selectedTherapy, setSelectedTherapy] = useState('');
   const prevSearchTermRef = useRef('');
 
   const trimmedQuery = (searchTerm || '').trim();
@@ -32,7 +32,7 @@ const ClinicalFeature = ({ componentData, data }) => {
   useEffect(() => {
     dispatch(fetchCountries());
     dispatch(fetchDiseases());
-    dispatch(fetchTreatments());
+    dispatch(fetchTherapies());
   }, [dispatch]);
 
   useEffect(() => {
@@ -41,12 +41,12 @@ const ClinicalFeature = ({ componentData, data }) => {
         search: trimmedQuery,
         country: selectedCountry,
         disease: selectedDisease,
-        treatment: selectedTreatment,
+        therapy: selectedTherapy,
         start: 0,
         limit: 24,
       })
     );
-  }, [dispatch, selectedCountry, selectedDisease, selectedTreatment]);
+  }, [dispatch, selectedCountry, selectedDisease, selectedTherapy]);
 
   useEffect(() => {
     if (prevSearchTermRef.current && !searchTerm) {
@@ -55,7 +55,7 @@ const ClinicalFeature = ({ componentData, data }) => {
           search: '',
           country: selectedCountry,
           disease: selectedDisease,
-          treatment: selectedTreatment,
+          therapy: selectedTherapy,
           start: 0,
           limit: 24,
         })
@@ -65,17 +65,17 @@ const ClinicalFeature = ({ componentData, data }) => {
   }, [
     searchTerm,
     dispatch,
-    selectedCountry,
+    selectedCountry,  
     selectedDisease,
-    selectedTreatment,
+    selectedTherapy,
   ]);
 
   const countryOptions =
     Array.isArray(countries) && countries.length > 0 ? countries : [];
   const diseaseOptions =
     Array.isArray(diseases) && diseases.length > 0 ? diseases : [];
-  const treatmentOptions =
-    Array.isArray(treatments) && treatments.length > 0 ? treatments : [];
+  const therapyOptions =
+    Array.isArray(therapies) && therapies.length > 0 ? therapies : [];
 
   const handleSearch = () => {
     dispatch(
@@ -83,7 +83,7 @@ const ClinicalFeature = ({ componentData, data }) => {
         search: trimmedQuery,
         country: selectedCountry,
         disease: selectedDisease,
-        treatment: selectedTreatment,
+        therapy: selectedTherapy,
         start: 0,
         limit: 24,
       })
@@ -232,29 +232,29 @@ const ClinicalFeature = ({ componentData, data }) => {
             {/* {treatmentOptions.length > 0 && ( */}
               <SelectWrapper>
                 <Select
-                  value={selectedTreatment}
-                  onChange={(e) => setSelectedTreatment(e.target.value)}
+                  value={selectedTherapy}
+                  onChange={(e) => setSelectedTherapy(e.target.value)}
                 >
                   <option value=''>Select Therapy</option>
-                  {treatmentOptions.map((treatment) => (
+                  {therapyOptions.map((therapy) => (
                     <option
-                      key={treatment?.id ?? treatment?.slug}
-                      value={getOptionValue(treatment)}
+                      key={therapy?.id ?? therapy?.slug}
+                      value={getOptionValue(therapy)}
                     >
-                      {getOptionName(treatment)}
+                      {getOptionName(therapy)}
                     </option>
                   ))}
                 </Select>
                 <SelectDisplay
-                  className={!selectedTreatment ? 'placeholder' : ''}
+                  className={!selectedTherapy ? 'placeholder' : ''}
                 >
-                  {selectedTreatment
+                  {selectedTherapy
                     ? getOptionName(
-                      treatmentOptions.find(
-                        (t) => getOptionValue(t) === selectedTreatment
+                      therapyOptions.find(
+                        (t) => getOptionValue(t) === selectedTherapy
                       )
-                    ) || 'Select treatment'
-                    : 'Select treatment'}
+                    ) || 'Select therapy'
+                    : 'Select therapy'}
                 </SelectDisplay>
                 <DropdownIcon>
                   <svg

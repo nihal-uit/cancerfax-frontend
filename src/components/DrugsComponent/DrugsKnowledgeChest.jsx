@@ -190,7 +190,7 @@ const DrugKnowledgeChest = ({ data }) => {
               value={selectedSpecialty}
               onChange={(e) => setSelectedSpecialty(e.target.value)}
             >
-              <option value="">Select specialty</option>
+              <option value="">Select Treatment</option>
               {specialtyOptions.map((specialty) => (
                 <option key={specialty?.id || specialty?.documentId} value={specialty?.name ?? ''}>
                   {specialty?.name || ''}
@@ -199,8 +199,8 @@ const DrugKnowledgeChest = ({ data }) => {
             </Select>
             <SelectDisplay className={!selectedSpecialty ? 'placeholder' : ''}>
               {selectedSpecialty
-                ? specialtyOptions.find(s => s?.name === selectedSpecialty)?.name || 'Select specialty'
-                : 'Select specialty'}
+                ? specialtyOptions.find(s => s?.name === selectedSpecialty)?.name || 'Select treatment'
+                : 'Select treatment'}
             </SelectDisplay>
             <DropdownIcon>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

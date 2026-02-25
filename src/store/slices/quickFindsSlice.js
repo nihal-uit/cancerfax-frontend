@@ -66,6 +66,19 @@ export const fetchDiseases = createAsyncThunk(
   }
 );
 
+// Fetch countries
+export const fetchTherapies = createAsyncThunk(
+  'quickFinds/fetchTherapies',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await quickFindsAPI.getTherapies();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch therapies');
+    }
+  }
+);
+
 const quickFindsSlice = createSlice({
   name: 'quickFinds',
   initialState: {
@@ -73,6 +86,7 @@ const quickFindsSlice = createSlice({
     countries: [],
     specialties: [],
     treatments: [],
+    therapies: [],
     loading: false,
     error: null,
   },
@@ -107,6 +121,10 @@ const quickFindsSlice = createSlice({
       // Diseases
       .addCase(fetchDiseases.fulfilled, (state, action) => {
         state.diseases = action.payload;
+      })
+      // Therapies
+      .addCase(fetchTherapies.fulfilled, (state, action) => {
+        state.therapies = action.payload;
       });
   },
 });

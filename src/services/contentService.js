@@ -155,14 +155,14 @@ export const clinicalTrialsAPI = {
 
   /**
    * Fetch clinical trials list with optional search and filters.
-   * @param {Object} params - { search, country, disease, treatment, start, limit }
+   * @param {Object} params - { search, country, disease, therapy, start, limit }
    * @returns {Array} List of trial records (same shape as trialData.json).
    */
   getClinicalTrials: async ({
     search = '',
     country = '',
     disease = '',
-    treatment = '',
+    therapy = '',
     start = 0,
     limit = 12,
   } = {}) => {
@@ -184,8 +184,8 @@ export const clinicalTrialsAPI = {
     if (disease) {
       params.append('filters[diseases][slug][$eq]', disease);
     }
-    if (treatment) {
-      params.append('filters[therapies][slug][$eq]', treatment);
+    if (therapy) {
+      params.append('filters[therapies][slug][$eq]', therapy);
     }
 
     const response = await api.get(`/clinical-trials?${params.toString()}`);

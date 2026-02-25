@@ -165,7 +165,7 @@ const HospitalQuickFinds = ({ componentData, data }) => {
               value={selectedSpecialty}
               onChange={(e) => setSelectedSpecialty(e.target.value)}
             >
-              <option value="">Select treatment</option>
+              <option value="">Select Treatment</option>
               {specialtyOptions.map((specialty) => (
                 <option key={specialty?.id || specialty?.documentId} value={specialty?.slug ?? ''}>
                   {specialty?.name || ''}
@@ -174,8 +174,8 @@ const HospitalQuickFinds = ({ componentData, data }) => {
             </Select>
             <SelectDisplay className={!selectedSpecialty ? 'placeholder' : ''}>
               {selectedSpecialty 
-                ? specialtyOptions.find(s => s?.slug === selectedSpecialty)?.name || 'Select specialty'
-                : 'Select specialty'}
+                ? specialtyOptions.find(s => s?.slug === selectedSpecialty)?.name || 'Select treatment'
+                : 'Select treatment'}
             </SelectDisplay>
             <DropdownIcon>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
