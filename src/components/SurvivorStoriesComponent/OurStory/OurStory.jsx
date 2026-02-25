@@ -91,9 +91,9 @@ const OurStory = ({ componentData, data }) => {
             style={{ overflow: 'visible' }}
             className='commCircle_navigation'
           >
-            {stories.map((story) => {
-              const storyImageUrl = formatMedia(nestedSurvivorStoryData[0]?.hero?.featuredImage || story?.hero?.featuredImage);
-              const storyVideoUrl = formatMedia(nestedSurvivorStoryData[0]?.hero?.featuredVideo || story?.hero?.featuredVideo);
+            {stories.map((story,index) => {
+              const storyImageUrl = formatMedia(nestedSurvivorStoryData[index]?.hero?.featuredImage || story?.hero?.featuredImage);
+              const storyVideoUrl = formatMedia(nestedSurvivorStoryData[index]?.hero?.featuredVideo || story?.hero?.featuredVideo);
               const hasMedia = storyImageUrl || storyVideoUrl;
 
               return (

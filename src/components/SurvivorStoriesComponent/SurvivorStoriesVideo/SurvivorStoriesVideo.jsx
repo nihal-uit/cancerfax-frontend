@@ -64,13 +64,12 @@ const SurvivorStoriesVideo = ({ story }) => {
                 preload="metadata"
                 muted
                 playsInline
-                poster={content.mediaUrl && content.mediaUrl !== content.videoUrl ? content.mediaUrl : undefined}
               >
                 <source src={content.videoUrl} type="video/mp4" />
               </BackgroundVideo>
-              {content.mediaUrl && content.mediaUrl !== content.videoUrl && (
+              {/* {content.mediaUrl && content.mediaUrl !== content.videoUrl && (
                 <PosterOverlay src={content.mediaUrl} alt={content.title} />
-              )}
+              )} */}
             </>
           )}
           <PlayButtonWrap>

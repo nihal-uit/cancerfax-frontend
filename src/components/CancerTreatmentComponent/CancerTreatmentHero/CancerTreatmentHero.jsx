@@ -12,13 +12,26 @@ import { formatMedia, renderRichTextWithImages } from '@/utils/strapiHelpers';
 const PLACEHOLDER_PHONE = 'Enter phone number';
 
 // Validation helpers
+// const validateFullName = (value) => {
+//   const trimmed = (value ?? '').toString().trim();
+//   if (!trimmed) return 'Full name is required';
+//   const parts = trimmed.split(/\s+/).filter(Boolean);
+//   if (parts.length < 2) return 'Please enter both first and last name';
+//   const allAlpha = parts.every((part) => /[a-zA-Z]/.test(part) && !/^\d+$/.test(part));
+//   if (!allAlpha) return 'Full name must contain letters (e.g. John Smith)';
+//   return '';
+// };
+
 const validateFullName = (value) => {
   const trimmed = (value ?? '').toString().trim();
   if (!trimmed) return 'Full name is required';
+  if (trimmed.length > 50)
+    return 'Full name must be 50 characters or fewer';
+  if (/\d/.test(trimmed))
+    return 'Full name cannot contain numbers';
   const parts = trimmed.split(/\s+/).filter(Boolean);
-  if (parts.length < 2) return 'Please enter both first and last name';
-  const allAlpha = parts.every((part) => /[a-zA-Z]/.test(part) && !/^\d+$/.test(part));
-  if (!allAlpha) return 'Full name must contain letters (e.g. John Smith)';
+  if (parts.length < 2)
+    return 'Please enter both first and last name';
   return '';
 };
 

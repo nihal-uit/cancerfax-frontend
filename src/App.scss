@@ -899,6 +899,11 @@ p {
     border-radius: 40px;
     overflow: hidden;
 
+    img {
+      object-fit: cover;
+      object-position: 90% 0px;
+    }
+
     &__holder {
       @media (min-width: 992px) {
         margin-right: -12px;

@@ -55,7 +55,7 @@ const ContactFormSection = ({ data }) => {
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const PHONE_REGEX = /^[\d\s\-+()]{10,20}$/;
   const ZIP_REGEX = /^[a-zA-Z0-9\s\-]{3,12}$/;
-  const NAME_REGEX = /^[\p{L}\s\-']{2,50}$/u;
+  const NAME_REGEX = /^(?!.*\d).{1,50}$/;
 
   const validateField = (name, value, consent = formData.consent) => {
     const trimmed = typeof value === 'string' ? value.trim() : value;
