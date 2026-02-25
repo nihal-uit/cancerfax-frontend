@@ -6,10 +6,18 @@ import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 
 import { formatMedia, renderRichTextWithImages } from '@/utils/strapiHelpers';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchHospitalMediaByIds, selectNestedHospitals } from '../../store/slices/nestedDataSlice';
 
 const InnovativeSolutionsComponent = ({ data }) => {
   const carouselRef = useRef(null);
   const swiperContainerRef = useRef(null);
+  const dispatch = useDispatch();
+  const { data: nestedHospitalData = [] } = useSelector(selectNestedHospitals);
+
+  useEffect(() => {
+    dispatch(fetchHospitalMediaByIds(data?.related_hospitals?.map((h) => h?.id ?? h?.documentId).filter(Boolean)));
+  }, [data?.related_hospitals, dispatch]);
 
   const fadeIn = {
     hidden: { opacity: 0, y: 50 },
@@ -38,6 +46,16 @@ const InnovativeSolutionsComponent = ({ data }) => {
       swiperElement.removeEventListener("wheel", handleWheel);
     };
   }, []);
+
+  // Dispatch nested data fetch for related hospitals when component mounts or data changes
+  useEffect(() => {
+    const related = data?.related_hospitals;
+    if (!Array.isArray(related) || related.length === 0) return;
+    const ids = related.map((h) => h?.id ?? h?.documentId).filter(Boolean);
+    if (ids.length > 0) {
+      dispatch(fetchHospitalMediaByIds(ids));
+    }
+  }, [data?.related_hospitals, dispatch]);
 
   return (
     <>
@@ -74,7 +92,7 @@ const InnovativeSolutionsComponent = ({ data }) => {
           style={{ overflow: "visible" }}
         >
           {data?.related_hospitals && Array.isArray(data.related_hospitals) && data.related_hospitals.length > 0 && data.related_hospitals.map((hospital, index) => {
-          const hospitalImage = formatMedia(hospital?.hospitalImage || hospital?.featuredImage);
+          const hospitalImage = formatMedia(nestedHospitalData[index]?.hospitalImage?.url || hospital?.hospitalImage || hospital?.featuredImage);
           return (
             <SwiperSlide key={hospital?.id || hospital?.documentId || index}>
               <TherapyCard>

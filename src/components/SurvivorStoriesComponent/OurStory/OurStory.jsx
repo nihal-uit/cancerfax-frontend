@@ -1,14 +1,28 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import ScrollAnimationComponent from '../../ScrollAnimation/ScrollAnimationComponent';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { Link } from 'react-router-dom';
 import { formatMedia, formatRichText, renderRichTextWithImages } from '../../../utils/strapiHelpers';
+import { selectNestedSurvivorStories } from '../../../store/slices/nestedDataSlice';
+import { fetchSurvivorStoryMediaByIds } from '../../../store/slices/nestedDataSlice';
 import 'swiper/css';
 
 const OurStory = ({ componentData, data }) => {
   const sliderData = componentData || data;
+  const dispatch = useDispatch();
+  const { data: nestedSurvivorStoryData = [], loading: nestedLoading, error: nestedError } = useSelector(selectNestedSurvivorStories);
+
+  useEffect(() => {
+    const storiesSource = sliderData?.stories || sliderData?.related_stories?.stories || [];
+    const ids = (storiesSource || []).map((s) => s?.id ?? s?.documentId).filter(Boolean);
+    console.log('OurStory -> fetch ids:', ids);
+    if (ids.length > 0) {
+      dispatch(fetchSurvivorStoryMediaByIds(ids));
+    }
+  }, [sliderData?.stories, sliderData?.related_stories, dispatch]);
 
   // Hooks must be called before any early returns
   const carouselRef = useRef(null);
@@ -78,8 +92,8 @@ const OurStory = ({ componentData, data }) => {
             className='commCircle_navigation'
           >
             {stories.map((story) => {
-              const storyImageUrl = formatMedia(story?.hero?.featuredImage);
-              const storyVideoUrl = formatMedia(story?.hero?.featuredVideo);
+              const storyImageUrl = formatMedia(nestedSurvivorStoryData[0]?.hero?.featuredImage || story?.hero?.featuredImage);
+              const storyVideoUrl = formatMedia(nestedSurvivorStoryData[0]?.hero?.featuredVideo || story?.hero?.featuredVideo);
               const hasMedia = storyImageUrl || storyVideoUrl;
 
               return (

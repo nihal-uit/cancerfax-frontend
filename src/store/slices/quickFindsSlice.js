@@ -53,6 +53,19 @@ export const fetchTreatments = createAsyncThunk(
   }
 );
 
+// Fetch diseases (general list)
+export const fetchDiseases = createAsyncThunk(
+  'quickFinds/fetchDiseases',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await quickFindsAPI.getDiseases();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch diseases');
+    }
+  }
+);
+
 const quickFindsSlice = createSlice({
   name: 'quickFinds',
   initialState: {
@@ -90,6 +103,10 @@ const quickFindsSlice = createSlice({
       // Treatments
       .addCase(fetchTreatments.fulfilled, (state, action) => {
         state.treatments = action.payload;
+      })
+      // Diseases
+      .addCase(fetchDiseases.fulfilled, (state, action) => {
+        state.diseases = action.payload;
       });
   },
 });

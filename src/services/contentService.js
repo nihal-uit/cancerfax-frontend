@@ -89,6 +89,17 @@ export const pageComponentAPI = {
     const response = await api.get(`/pages?${queryString}`);
     return response.data?.data;
   },
+
+  getSurvivorStoryMediaByIds: async (ids = []) => {
+    if (!Array.isArray(ids) || ids.length === 0) return [];
+    // Build filters for Strapi: filters[id][$in][0]=id1&filters[id][$in][1]=id2...
+    const idFilters = ids
+      .map((id, idx) => `filters[id][$in][${idx}]=${encodeURIComponent(id)}`)
+      .join('&');
+
+    const response = await api.get(`/survivor-stories?${idFilters}&populate[hero][populate][featuredImage][fields][0]=url&populate[hero][populate][featuredVideo][fields][0]=url`);
+    return response.data.data || [];
+  },
 };
 
 // Innovative Care API
@@ -461,6 +472,25 @@ export const locationNetworkAPI = {
     const response = await api.get(`/hospitals?filters[slug][$eq]=${slug}&populate=*`);
     return response.data.data;
   },
+  
+  /**
+   * Fetch hospital media (hospitalImage / featuredImage) for a list of hospital ids.
+   * Useful for populating deep-nested image fields when the parent payload doesn't include media.
+   * @param {Array<number|string>} ids
+   * @returns {Array} Array of hospital objects (may be flattened based on Strapi response)
+   */
+  getHospitalMediaByIds: async (ids = []) => {
+    if (!Array.isArray(ids) || ids.length === 0) return [];
+    // Build filters for Strapi: filters[id][$in][0]=id1&filters[id][$in][1]=id2...
+    const idFilters = ids
+      .map((id, idx) => `filters[id][$in][${idx}]=${encodeURIComponent(id)}`)
+      .join('&');
+
+    const response = await api.get(
+      `/hospitals?${idFilters}&populate[hospitalImage][fields][0]=url&populate[related][populate][related_hospitals][populate]=hospitalImage`
+    );
+    return response.data.data || [];
+  },
 };
 
 // Clinical Trials About API
@@ -566,6 +596,10 @@ export const quickFindsAPI = {
 
   getTreatments: async () => {
     const response = await api.get('/treatments?sort=name:asc');
+    return response.data.data;
+  },
+  getDiseases: async () => {
+    const response = await api.get('/diseases?sort=name:asc');
     return response.data.data;
   },
 
@@ -680,6 +714,19 @@ export const doctorAPI = {
     const response = await api.get(`/doctors?filters[slug][$eq]=${slug}&populate=*`);
     return response.data.data;
   },
+
+  getDoctorMediaByIds: async (ids = []) => {
+    if (!Array.isArray(ids) || ids.length === 0) return [];
+    // Build filters for Strapi: filters[id][$in][0]=id1&filters[id][$in][1]=id2...
+    const idFilters = ids
+      .map((id, idx) => `filters[id][$in][${idx}]=${encodeURIComponent(id)}`)
+      .join('&');
+
+    const response = await api.get(
+      `/doctors?${idFilters}&populate[hero][populate][doctor_image][fields][0]=url`
+    );
+    return response.data.data || [];
+  },
 };
 
 // Categories API
@@ -743,7 +790,7 @@ export const countryTreatmentAPI = {
 
 // Drug API
 export const drugAPI = {
-  getDrugs: async ({ limit = 3, start = 0, query = '', sorting = '', country = '', treatment = '' } = {}) => {
+  getDrugs: async ({ limit = 3, start = 0, query = '', sorting = '', country = '', treatment = '', disease = '' } = {}) => {
     let filters = 'filters[isActive][$eq]=true';
 
     if (query) {
@@ -754,6 +801,9 @@ export const drugAPI = {
     }
     if (treatment) {
       filters += `&filters[treatments][name][$eq]=${encodeURIComponent(treatment)}`;
+    }
+    if (disease) {
+      filters += `&filters[diseases][slug][$eq]=${encodeURIComponent(disease)}`;
     }
 
     // Convert sorting option to Strapi sort format

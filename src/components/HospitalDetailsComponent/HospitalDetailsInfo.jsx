@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Row, Col } from 'react-bootstrap';
 import HospitalDetailsFacilitiesTabsComponent from '../reusable/HospitalDetailsFacilitiesTabsComponent';
@@ -8,6 +9,7 @@ import { Navigation } from "swiper/modules";
 import 'swiper/css';
 import { formatMedia, renderRichTextWithImages, formatRichText } from '@/utils/strapiHelpers';
 import SectionMediaBlock from '../reusable/SectionMediaBlock';
+import { fetchDoctorMediaByIds, selectNestedDoctors } from '../../store/slices/nestedDataSlice';
 
 // Map section IDs to API field names
 const SECTION_MAP = {
@@ -46,6 +48,12 @@ const HospitalDetailsInfo = ({ data, loading }) => {
   // All hooks must be called before any conditional returns
   const [activeId, setActiveId] = useState(null);
   const sectionRefs = useRef({});
+  const dispatch = useDispatch();
+  const { data: nestedDoctorData = [] } = useSelector(selectNestedDoctors);
+
+  useEffect(() => {
+    dispatch(fetchDoctorMediaByIds(data?.team?.doctors?.map((d) => d?.id ?? d?.documentId).filter(Boolean)));
+  }, [data?.team?.doctors, dispatch]);
 
   // Build available sections from API data
   const availableSections = useMemo(() => {
@@ -426,8 +434,8 @@ const HospitalDetailsInfo = ({ data, loading }) => {
                           {teamData.doctors.map((doctor, index) => (
                             <Col key={doctor?.id || doctor?.documentId || index} xl={4} lg={6} md={6} sm={6}>
                               <TeamSpecialtiesCard>
-                                {doctor?.profilePicture && (
-                                  <img src={formatMedia(doctor.profilePicture)} alt={`${doctor?.first_name || ''} ${doctor?.last_name || ''}`.trim() || 'Doctor'} />
+                                {(nestedDoctorData[index]?.hero?.doctor_image?.url || doctor?.profilePicture) && (
+                                  <img src={formatMedia(nestedDoctorData[index]?.hero?.doctor_image?.url || doctor?.profilePicture)} alt={`${doctor?.first_name || ''} ${doctor?.last_name || ''}`.trim() || 'Doctor'} />
                                 )}
                                 <TeamSpecialtiesCardOverlay className="card-overlay">
                                   <CardTitle>{[doctor?.first_name, doctor?.last_name].filter(Boolean).join(' ') || ''}</CardTitle>

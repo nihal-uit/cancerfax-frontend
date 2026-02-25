@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import DrugsGrid from './DrugsGrid';
 import ScrollAnimationComponent from '../ScrollAnimation/ScrollAnimationComponent';
 import { fetchDrugs } from '@/store/slices/drugSlice';
-import { fetchCountries, fetchTreatments } from '@/store/slices/quickFindsSlice';
+import { fetchCountries, fetchTreatments, fetchDiseases } from '@/store/slices/quickFindsSlice';
 import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 
 const DRUGS_PAGE_SIZE = 6;
@@ -12,9 +12,10 @@ const DRUGS_PAGE_SIZE = 6;
 const DrugKnowledgeChest = ({ data }) => {
   const dispatch = useDispatch();
   const { drugs, drugsLoading, drugsHasMore } = useSelector(state => state.drug);
-  const { countries, treatments } = useSelector((state) => state.quickFinds);
+  const { countries, treatments, diseases } = useSelector((state) => state.quickFinds);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedDisease, setSelectedDisease] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [selectedSorting, setSelectedSorting] = useState('');
   const prevSearchTermRef = useRef('');
@@ -22,8 +23,9 @@ const DrugKnowledgeChest = ({ data }) => {
   const trimmedQuery = (searchTerm || '').trim();
 
   useEffect(() => {
-    dispatch(fetchCountries());
+    // dispatch(fetchCountries());
     dispatch(fetchTreatments());
+    dispatch(fetchDiseases());
   }, [dispatch]);
 
   useEffect(() => {
@@ -35,7 +37,7 @@ const DrugKnowledgeChest = ({ data }) => {
       country: selectedCountry || '',
       treatment: selectedSpecialty || '',
     }));
-  }, [dispatch, selectedSorting, selectedCountry, selectedSpecialty]);
+  }, [dispatch, selectedSorting, selectedCountry, selectedSpecialty, selectedDisease]);
 
   useEffect(() => {
     if (prevSearchTermRef.current && !searchTerm) {
@@ -46,12 +48,14 @@ const DrugKnowledgeChest = ({ data }) => {
         sorting: selectedSorting || '',
         country: selectedCountry || '',
         treatment: selectedSpecialty || '',
+        disease: selectedDisease || '',
       }));
     }
     prevSearchTermRef.current = searchTerm;
-  }, [searchTerm, dispatch, selectedSorting, selectedCountry, selectedSpecialty]);
+  }, [searchTerm, dispatch, selectedSorting, selectedCountry, selectedSpecialty, selectedDisease]);
 
   const countryOptions = Array.isArray(countries) && countries.length > 0 ? countries : [];
+  const diseaseOptions = Array.isArray(diseases) && diseases.length > 0 ? diseases : [];
   const specialtyOptions = Array.isArray(treatments) && treatments.length > 0 ? treatments : [];
 
   const sortingOptions = [
@@ -69,6 +73,7 @@ const DrugKnowledgeChest = ({ data }) => {
       sorting: selectedSorting || '',
       country: selectedCountry || '',
       treatment: selectedSpecialty || '',
+      disease: selectedDisease || '',
     }));
   };
 
@@ -88,6 +93,7 @@ const DrugKnowledgeChest = ({ data }) => {
       sorting: newSorting || '',
       country: selectedCountry || '',
       treatment: selectedSpecialty || '',
+      disease: selectedDisease || '',
     }));
   };
 
@@ -142,6 +148,35 @@ const DrugKnowledgeChest = ({ data }) => {
                 : 'Filter'}
             </SelectDisplay>
             <DropdownIcon>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="12" viewBox="0 0 18 12" fill="none">
+              <path d="M7 12H11V10H7V12ZM0 0V2H18V0H0ZM3 7H15V5H3V7Z" fill="#36454F"/>
+              </svg>
+            </DropdownIcon>
+          </SelectWrapper>
+          )}
+
+          {diseaseOptions.length > 0 && (
+          <SelectWrapper>
+            <Select
+              value={selectedDisease}
+              onChange={(e) => setSelectedDisease(e.target.value)}
+            >
+              <option value="">Filter</option>
+              {diseaseOptions.map((disease) => (
+                <option key={disease?.id || disease?.documentId || disease?.slug} value={disease?.slug ?? ''}>
+                  {disease?.name || disease?.disease || ''}
+                </option>
+              ))}
+            </Select>
+            <SelectDisplay className={!selectedDisease ? 'placeholder' : ''}>
+              {selectedDisease
+                ? diseaseOptions.find(d => d?.slug === selectedDisease)?.name || 'Select disease'
+                : 'Select disease'}
+            </SelectDisplay>
+            <DropdownIcon>
+              {/* <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="6 9 12 15 18 9" />
+              </svg> */}
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="12" viewBox="0 0 18 12" fill="none">
               <path d="M7 12H11V10H7V12ZM0 0V2H18V0H0ZM3 7H15V5H3V7Z" fill="#36454F"/>
               </svg>
@@ -215,6 +250,7 @@ const DrugKnowledgeChest = ({ data }) => {
                   sorting: selectedSorting || '',
                   country: selectedCountry || '',
                   treatment: selectedSpecialty || '',
+                  disease: selectedDisease || '',
                 }))
               }
               disabled={drugsLoading}

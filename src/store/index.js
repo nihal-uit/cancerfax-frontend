@@ -34,6 +34,7 @@ import diseaseReducer from './slices/diseaseSlice';
 import resourceCategoryReducer from './slices/resourcesCategorySlice';
 import costCalculatorReducer from './slices/costCalculatorSlice';
 import pageComponentReducer from './slices/pageComponentSlice';
+import nestedDataReducer from './slices/nestedDataSlice';
 
 const store = configureStore({
   reducer: {
@@ -72,6 +73,7 @@ const store = configureStore({
     resourceCategory: resourceCategoryReducer,
     costCalculator: costCalculatorReducer,
     pageComponent: pageComponentReducer,
+    nestedData: nestedDataReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
