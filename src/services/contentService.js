@@ -155,19 +155,22 @@ export const clinicalTrialsAPI = {
 
   /**
    * Fetch clinical trials list with optional search and filters.
-   * @param {Object} params - { search, country, specialty, treatment, start, limit }
+   * @param {Object} params - { search, country, disease, treatment, start, limit }
    * @returns {Array} List of trial records (same shape as trialData.json).
    */
   getClinicalTrials: async ({
     search = '',
     country = '',
-    specialty = '',
+    disease = '',
     treatment = '',
     start = 0,
     limit = 12,
   } = {}) => {
     const params = new URLSearchParams();
-    params.append('populate', '*');
+    // params.append('populate', '*');
+    params.append('fields[0]', 'name');
+    params.append('fields[1]', 'slug');
+    params.append('fields[2]', 'trial_id');
     params.append('filters[isActive][$eq]', 'true');
     params.append('pagination[start]', String(start));
     params.append('pagination[limit]', String(limit));
@@ -176,10 +179,10 @@ export const clinicalTrialsAPI = {
       params.append('filters[name][$containsi]', search.trim());
     }
     if (country) {
-      params.append('filters[countries][slug][$eq]', country);
+      params.append('filters[countries][country][$eq]', country);
     }
-    if (specialty) {
-      params.append('filters[diseases][slug][$eq]', specialty);
+    if (disease) {
+      params.append('filters[diseases][slug][$eq]', disease);
     }
     if (treatment) {
       params.append('filters[therapies][slug][$eq]', treatment);

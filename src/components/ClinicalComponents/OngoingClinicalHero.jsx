@@ -56,7 +56,7 @@ const OngoingClinicalHero = ({ data }) => {
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className="commContent_wrap content-gap-40 h-100">
                 <p className="text-16 text_theme_dark">
-                  {data?.sebHeading || renderRichTextWithImages(data?.description_block)||data?.description_text}
+                  {data?.subHeading || renderRichTextWithImages(data?.description_block)||data?.description_text}
                 </p>
                 
               </div>

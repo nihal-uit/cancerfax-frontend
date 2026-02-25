@@ -40,14 +40,14 @@ export const fetchClinicalTrialsBySlug = createAsyncThunk(
 export const fetchClinicalTrialsList = createAsyncThunk(
   'clinicalTrials/fetchList',
   async (
-    { search = '', country = '', specialty = '', treatment = '', start = 0, limit = 12 } = {},
+    { search = '', country = '', disease = '', treatment = '', start = 0, limit = 12 } = {},
     { rejectWithValue }
   ) => {
     try {
       const data = await clinicalTrialsAPI.getClinicalTrials({
         search,
         country,
-        specialty,
+        disease,
         treatment,
         start,
         limit,

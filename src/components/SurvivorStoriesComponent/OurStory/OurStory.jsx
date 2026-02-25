@@ -13,12 +13,11 @@ import 'swiper/css';
 const OurStory = ({ componentData, data }) => {
   const sliderData = componentData || data;
   const dispatch = useDispatch();
-  const { data: nestedSurvivorStoryData = [], loading: nestedLoading, error: nestedError } = useSelector(selectNestedSurvivorStories);
+  const { data: nestedSurvivorStoryData = [] } = useSelector(selectNestedSurvivorStories);
 
   useEffect(() => {
     const storiesSource = sliderData?.stories || sliderData?.related_stories?.stories || [];
     const ids = (storiesSource || []).map((s) => s?.id ?? s?.documentId).filter(Boolean);
-    console.log('OurStory -> fetch ids:', ids);
     if (ids.length > 0) {
       dispatch(fetchSurvivorStoryMediaByIds(ids));
     }
@@ -48,6 +47,8 @@ const OurStory = ({ componentData, data }) => {
 
   const stories = sliderData?.stories || sliderData?.related_stories?.stories || [];
   const backgroundImageUrl = formatMedia(sliderData?.backgroundImage);
+
+  console.log('nestedSurvivorStoryData->', nestedSurvivorStoryData);
 
   return (
     <section
@@ -94,7 +95,8 @@ const OurStory = ({ componentData, data }) => {
             {stories.map((story,index) => {
               const storyImageUrl = formatMedia(nestedSurvivorStoryData[index]?.hero?.featuredImage || story?.hero?.featuredImage);
               const storyVideoUrl = formatMedia(nestedSurvivorStoryData[index]?.hero?.featuredVideo || story?.hero?.featuredVideo);
-              const hasMedia = storyImageUrl || storyVideoUrl;
+              const hasMedia = storyVideoUrl ? storyVideoUrl : storyImageUrl ? storyImageUrl : null;
+              console.log('storyVideoUrl->', storyVideoUrl);
 
               return (
                 <SwiperSlide key={story?.id || story?.slug}>

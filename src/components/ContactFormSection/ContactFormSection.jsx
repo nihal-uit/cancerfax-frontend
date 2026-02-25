@@ -170,8 +170,8 @@ const ContactFormSection = ({ data }) => {
   const defaultInquiryTypes = [
     { id: 1, attributes: { name: 'General Inquiry', value: 'general' } },
     { id: 2, attributes: { name: 'Treatment Information', value: 'treatment' } },
-    { id: 3, attributes: { name: 'Appointment Request', value: 'appointment' } },
-    { id: 4, attributes: { name: 'Support', value: 'support' } }
+    { id: 3, attributes: { name: 'Clinical Trial', value: 'clinical_trial' } },
+    // { id: 4, attributes: { name: 'Support', value: 'support' } }
   ];
 
   const defaultFormFields = {

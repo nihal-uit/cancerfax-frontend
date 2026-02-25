@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   fetchCountries,
-  fetchSpecialties,
+  fetchDiseases,
   fetchTreatments,
 } from '../../store/slices/quickFindsSlice';
 import { fetchClinicalTrialsList } from '../../store/slices/clinicalTrialsSlice';
@@ -14,7 +14,7 @@ import { renderRichTextWithImages } from '@/utils/strapiHelpers';
 const ClinicalFeature = ({ componentData, data }) => {
   const dispatch = useDispatch();
   const listingData = componentData || data;
-  const { countries, specialties, treatments } = useSelector(
+  const { countries, diseases, treatments } = useSelector(
     (state) => state.quickFinds
   );
   const { list: trialsList, listLoading: trialsLoading } = useSelector(
@@ -22,9 +22,8 @@ const ClinicalFeature = ({ componentData, data }) => {
   );
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
-  const [selectedSpecialty, setSelectedSpecialty] = useState('');
+  const [selectedDisease, setSelectedDisease] = useState('');
   const [selectedTreatment, setSelectedTreatment] = useState('');
   const prevSearchTermRef = useRef('');
 
@@ -32,7 +31,7 @@ const ClinicalFeature = ({ componentData, data }) => {
 
   useEffect(() => {
     dispatch(fetchCountries());
-    dispatch(fetchSpecialties());
+    dispatch(fetchDiseases());
     dispatch(fetchTreatments());
   }, [dispatch]);
 
@@ -41,13 +40,13 @@ const ClinicalFeature = ({ componentData, data }) => {
       fetchClinicalTrialsList({
         search: trimmedQuery,
         country: selectedCountry,
-        specialty: selectedSpecialty,
+        disease: selectedDisease,
         treatment: selectedTreatment,
         start: 0,
         limit: 24,
       })
     );
-  }, [dispatch, selectedCountry, selectedSpecialty, selectedTreatment]);
+  }, [dispatch, selectedCountry, selectedDisease, selectedTreatment]);
 
   useEffect(() => {
     if (prevSearchTermRef.current && !searchTerm) {
@@ -55,7 +54,7 @@ const ClinicalFeature = ({ componentData, data }) => {
         fetchClinicalTrialsList({
           search: '',
           country: selectedCountry,
-          specialty: selectedSpecialty,
+          disease: selectedDisease,
           treatment: selectedTreatment,
           start: 0,
           limit: 24,
@@ -67,14 +66,14 @@ const ClinicalFeature = ({ componentData, data }) => {
     searchTerm,
     dispatch,
     selectedCountry,
-    selectedSpecialty,
+    selectedDisease,
     selectedTreatment,
   ]);
 
   const countryOptions =
     Array.isArray(countries) && countries.length > 0 ? countries : [];
-  const specialtyOptions =
-    Array.isArray(specialties) && specialties.length > 0 ? specialties : [];
+  const diseaseOptions =
+    Array.isArray(diseases) && diseases.length > 0 ? diseases : [];
   const treatmentOptions =
     Array.isArray(treatments) && treatments.length > 0 ? treatments : [];
 
@@ -83,7 +82,7 @@ const ClinicalFeature = ({ componentData, data }) => {
       fetchClinicalTrialsList({
         search: trimmedQuery,
         country: selectedCountry,
-        specialty: selectedSpecialty,
+        disease: selectedDisease,
         treatment: selectedTreatment,
         start: 0,
         limit: 24,
@@ -193,29 +192,29 @@ const ClinicalFeature = ({ componentData, data }) => {
             {/* {specialtyOptions.length > 0 && ( */}
               <SelectWrapper>
                 <Select
-                  value={selectedSpecialty}
-                  onChange={(e) => setSelectedSpecialty(e.target.value)}
+                  value={selectedDisease}
+                  onChange={(e) => setSelectedDisease(e.target.value)}
                 >
-                  <option value=''>Select specialty</option>
-                  {specialtyOptions.map((specialty) => (
+                  <option value=''>Select disease</option>
+                  {diseaseOptions.map((disease) => (
                     <option
-                      key={specialty?.id ?? specialty?.slug}
-                      value={getOptionValue(specialty)}
+                      key={disease?.id ?? disease?.slug}
+                      value={getOptionValue(disease)}
                     >
-                      {getOptionName(specialty)}
+                      {getOptionName(disease)}
                     </option>
                   ))}
                 </Select>
                 <SelectDisplay
-                  className={!selectedSpecialty ? 'placeholder' : ''}
+                  className={!selectedDisease ? 'placeholder' : ''}
                 >
-                  {selectedSpecialty
+                  {selectedDisease
                     ? getOptionName(
-                      specialtyOptions.find(
-                        (s) => getOptionValue(s) === selectedSpecialty
+                      diseaseOptions.find(
+                        (d) => getOptionValue(d) === selectedDisease
                       )
-                    ) || 'Select specialty'
-                    : 'Select specialty'}
+                    ) || 'Select disease'
+                    : 'Select disease'}
                 </SelectDisplay>
                 <DropdownIcon>
                   <svg
@@ -236,7 +235,7 @@ const ClinicalFeature = ({ componentData, data }) => {
                   value={selectedTreatment}
                   onChange={(e) => setSelectedTreatment(e.target.value)}
                 >
-                  <option value=''>Select treatment</option>
+                  <option value=''>Select Therapy</option>
                   {treatmentOptions.map((treatment) => (
                     <option
                       key={treatment?.id ?? treatment?.slug}
@@ -280,11 +279,7 @@ const ClinicalFeature = ({ componentData, data }) => {
                   {trials.map((trial, index) => (
                     <Card key={trial?.id ?? trial?.documentId ?? index}>
                       <CardContent>
-                        {
-                          trial?.trial_id && (
-                            <CardSl>Trial No.:{trial?.trial_id}</CardSl>
-                          )
-                        }
+                        <CardSl>{trial?.trial_id ? `Trial No.: ${trial?.trial_id}` : ''}</CardSl>
                         {/* {trial?.current_status && (
                           <StatusBadge $status={trial.current_status}>
                             {trial.current_status}
@@ -445,7 +440,7 @@ const Select = styled.select`
   font-family: 'Be Vietnam Pro', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: rgba(54, 69, 79, 0.5);
+  color: transparent;
   background: transparent;
   cursor: pointer;
   appearance: none;
