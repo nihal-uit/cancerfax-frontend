@@ -145,7 +145,7 @@ const BlogDetailsInfo = ({ data }) => {
               if (section.id === 'author') {
                 const authorName = `${data.author?.firstName || ''} ${data.author?.lastName || ''
                   }`.trim();
-                const authorAvatar = getMediaUrl(data.author?.profilePicture);
+                const authorAvatar = getMediaUrl(data.author?.profilePicture) || '/images/default-avatar.jpg';
                 const firstInitial = authorName.charAt(0).toUpperCase();
                 const hasAvatar = !!authorAvatar;
 

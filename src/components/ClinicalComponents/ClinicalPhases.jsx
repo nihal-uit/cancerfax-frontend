@@ -1,112 +1,132 @@
-import React, { useEffect, useRef, useState } from "react";
+import { label } from "framer-motion/client";
+import React, { useEffect, useRef } from "react";
+import { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import ScrollAnimationComponent from "../ScrollAnimation/ScrollAnimationComponent";
-import { renderRichTextWithImages } from "@/utils/strapiHelpers";
 
+const defaultList = [
+  {
+    id: "phase-01",
+    labelPrefix: "Phase I",
+    label: "Establishing Safety and Defining the Right Dosage",
+  },
+  {
+    id: "phase-02",
+    labelPrefix: "Phase II",
+    label: "Measuring Efficacy and Understanding Patient Response",
+  },
+  {
+    id: "phase-03",
+    labelPrefix: "Phase III",
+    label: " Comparing New Treatments to Established Standards",
+  },
+  {
+    id: "phase-04",
+    labelPrefix: "Phase IV",
+    label: "Monitoring Long-Term Safety and Real-World Performance",
+  },
+];
 const fadeIn = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0 },
 };
-
-const ClinicalPhases = ({ componentData, data }) => {
-  const phasesData = componentData || data;
-  const phases = phasesData?.phases || [];
-  
-  // Hooks must be called before any early returns
-  const [activeId, setActiveId] = useState(() => {
-    if (phases.length > 0) {
-      return `phase-${phases[0]?.id || 0}`;
-    }
-    return 'phase-0';
-  });
+const ClinicalPhases = () => {
+  const [activeId, setActiveId] = useState("phase-01");
   const sectionRefs = useRef({});
 
   // Scroll spy – highlight active section
+  const isClickScrolling = useRef(false);
+  const scrollOffset = 100;
+
   useEffect(() => {
-    if (phases.length === 0) return;
-    const options = {
-      root: null,
-      rootMargin: "10% 0px -90% 0px",
-      threshold: 0.3,
+    const handleScroll = () => {
+      if (isClickScrolling.current) return;
+
+      const scrollPosition = window.scrollY + scrollOffset;
+      let currentId = defaultList[0].id;
+
+      for (const { id } of defaultList) {
+        const el = sectionRefs.current[id];
+        if (el) {
+          const elTop = el.getBoundingClientRect().top + window.scrollY;
+          if (scrollPosition >= elTop) {
+            currentId = id;
+          }
+        }
+      }
+
+      setActiveId(currentId);
     };
 
-    const observer = new IntersectionObserver((entries) => {
-      // Pick the section with the highest visibility as the active one
-      const visibleEntries = entries.filter((entry) => entry.isIntersecting);
-      if (visibleEntries.length === 0) return;
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
 
-      const mostVisible = visibleEntries.reduce((maxEntry, current) =>
-        current.intersectionRatio > maxEntry.intersectionRatio ? current : maxEntry
-      );
-
-      if (mostVisible?.target?.id) {
-        setActiveId(mostVisible.target.id);
-      }
-    }, options);
-
-    phases.forEach((phase) => {
-      const id = `phase-${phase.id}`;
-      const el = sectionRefs.current[id];
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [phases]);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleClick = (id) => {
     setActiveId(id);
     const el = sectionRefs.current[id];
     if (el) {
-      el.scrollIntoView({ behavior: "auto", block: "start" });
+      isClickScrolling.current = true;
+      setActiveId(id);
+
+      const elTop = el.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elTop - scrollOffset + 1,
+        behavior: "smooth",
+      });
+
+      setTimeout(() => {
+        isClickScrolling.current = false;
+      }, 800);
     }
   };
-
-  if (!phasesData) {
-    return null;
-  }
-
-  if (phases.length === 0) {
-    return null;
-  }
-
   return (
+    <>
       <section className="clinical__phase__sec py-120">
         <div className="containerWrapper z-2 ">
           <Row>
             <Col lg={6}>
               <div className="content__holder">
+                {/* <ScrollAnimationComponent
+                  animationVariants={fadeIn}
+                  style={{ height: "auto" }}
+                > */}
                 <div className="commContent_wrap commContent_new ">
-                <p className="contentLabel">{phasesData?.heading || ''}</p>
+                  <p className="contentLabel">Global Breakthroughs</p>
                   <h3 className="title-3">
-                  {phasesData?.subHeading || ''}
+                    Understanding the Four Phases of Clinical Trials
                   </h3>
                   <div className="content__des text_theme_dark">
-                  <p>{renderRichTextWithImages(phasesData?.description_block)||phasesData?.description_text || ''}</p>
+                    <p>
+                      Each clinical trial progresses through specific stages
+                      designed to ensure safety, efficacy, and long-term
+                      reliability.
+                    </p>
+                  </div>
                 </div>
-              </div>
+                {/* </ScrollAnimationComponent> */}
                 <div className="list__holder">
                   <div className="list">
                     <ul>
-                    {phases.map((phase, index) => {
-                      const id = `phase-${phase.id}`;
-                      return (
+                      {defaultList.map((item, index) => (
                         <li
-                          key={phase.id}
-                          className={id === activeId ? "active" : ""}
-                          onClick={() => handleClick(id)}
+                          key={item.id}
+                          className={item.id === activeId ? "active" : ""}
+                          onClick={() => handleClick(item.id)}
                         >
                           <span className="list__counter">
                             <span className="list__counter__dot"></span>
-                            {phases.length - 1 !== index && (
+                            {defaultList.length - 1 !== index && (
                               <span className="list__counter__line"></span>
                             )}
                           </span>
                           <span className="list__des">
-                            {phase?.title || ''}
+                            <span>{item.labelPrefix}</span> - {item.label}
                           </span>
                         </li>
-                      );
-                    })}
+                      ))}
                     </ul>
                   </div>
                 </div>
@@ -114,36 +134,40 @@ const ClinicalPhases = ({ componentData, data }) => {
             </Col>
             <Col lg={6}>
               <div className="card__list__holder">
-              {phases.map((phase) => {
-                const id = `phase-${phase.id}`;
-                return (
+                {defaultList.map((item) => (
                   <div
-                    key={phase.id}
+                    key={item.id}
                     className="card__list"
-                    id={id}
-                    ref={(el) => (sectionRefs.current[id] = el)}
+                    id={item.id}
+                    ref={(el) => (sectionRefs.current[item.id] = el)}
                   >
                     <div className="card">
                       <div className="card__header">
                         <h3 className="card__header__title">
-                          Phase {phases.indexOf(phase) + 1}
+                          {item.labelPrefix}
                         </h3>
                       </div>
                       <div className="card__content">
-                        <h4 className="card__title">{phase?.title || ''}</h4>
+                        <h4 className="card__title">{item.label}</h4>
                         <div className="card__description">
-                          <p>{renderRichTextWithImages(phase?.description_block) ||phase?.description_text || ''}</p>
+                          <p>
+                            Conducted after the treatment is approved and
+                            available to the public. Researchers monitor
+                            long-term benefits, rare side effects, and patient
+                            outcomes.This phase ensures ongoing safety,
+                            effectiveness, and optimization of real-world use.
+                          </p>
                         </div>
                       </div>
                     </div>
                   </div>
-                );
-              })}
+                ))}
               </div>
             </Col>
           </Row>
         </div>
       </section>
+    </>
   );
 };
 

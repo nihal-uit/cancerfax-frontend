@@ -18,7 +18,7 @@ const DoctorsSlider = ({ componentData, data }) => {
     .map((slide) => ({
       heading: `${slide?.first_name || ''} ${slide?.last_name || ''}`.trim() || '',
       description: slide?.about || '',
-      backgroundImage: formatMedia(slide?.profilePicture),
+      backgroundImage: formatMedia(slide?.profilePicture) || '/images/default-avatar.jpg',
       buttonLink: slide?.slug ? `/doctor/${slide.slug}` : '#',
     }))
     .filter(slide => slide.heading); // Filter out slides without a heading

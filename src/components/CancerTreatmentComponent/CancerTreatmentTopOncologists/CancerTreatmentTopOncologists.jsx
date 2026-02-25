@@ -56,7 +56,7 @@ const CancerTreatmentTopOncologists = ({ data }) => {
               const specialty =
                 doctor?.specialization || doctor?.hospital?.name || "";
               const doctorImage =
-                formatMedia(doctor?.profilePicture) ||
+                formatMedia(doctor?.profilePicture) || '/images/default-avatar.jpg' ||
                 formatMedia(doctor?.hospital?.hospitalImage);
 
               if (!name && !doctorImage) return null;

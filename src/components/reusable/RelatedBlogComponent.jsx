@@ -121,7 +121,7 @@ const RelatedBlogComponent = ({ data, resourceId }) => {
                   <AuthorInfo>
                     <AuthorAvatar>
                       <NameAvatar 
-                        src={getMediaUrl(blog?.author?.profilePicture)} 
+                        src={blog?.author?.profilePicture ? getMediaUrl(blog?.author?.profilePicture) : '/images/default-avatar.jpg'} 
                         name={blog?.author?.firstName}
                         size={30}
                       />

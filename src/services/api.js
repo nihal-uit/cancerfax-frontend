@@ -63,7 +63,8 @@ api.interceptors.response.use(
 
 // Helper to get media URL
 export const getMediaUrl = (pathOrObject) => {
-  if (!pathOrObject) return null;
+  const DEFAULT_IMAGE = '/images/default-image.jpg';
+  if (!pathOrObject) return DEFAULT_IMAGE;
   
   const API_BASE_URL = process.env.REACT_APP_STRAPI_URL || 'https://cancerfax.unifiedinfotechonline.com';
   
@@ -71,7 +72,7 @@ export const getMediaUrl = (pathOrObject) => {
   if (typeof pathOrObject === 'string') {
     // Check if it's empty or invalid
     const trimmed = pathOrObject.trim();
-    if (!trimmed || trimmed === 'null' || trimmed === 'undefined') return null;
+    if (!trimmed || trimmed === 'null' || trimmed === 'undefined') return DEFAULT_IMAGE;
     
     if (trimmed.startsWith('http')) return trimmed;
     // Ensure path starts with / if it's a relative path
@@ -82,7 +83,7 @@ export const getMediaUrl = (pathOrObject) => {
   // If it's a Strapi media object, extract the URL
   if (pathOrObject?.url) {
     const url = pathOrObject.url;
-    if (!url || url === 'null' || url === 'undefined') return null;
+    if (!url || url === 'null' || url === 'undefined') return DEFAULT_IMAGE;
     if (url.startsWith('http')) return url;
     const path = url.startsWith('/') ? url : `/${url}`;
     return `${API_BASE_URL}${path}`;
@@ -91,7 +92,7 @@ export const getMediaUrl = (pathOrObject) => {
   // If it's nested in data.attributes
   if (pathOrObject?.data?.attributes?.url) {
     const url = pathOrObject.data.attributes.url;
-    if (!url || url === 'null' || url === 'undefined') return null;
+    if (!url || url === 'null' || url === 'undefined') return DEFAULT_IMAGE;
     if (url.startsWith('http')) return url;
     const path = url.startsWith('/') ? url : `/${url}`;
     return `${API_BASE_URL}${path}`;
@@ -116,7 +117,7 @@ export const getMediaUrl = (pathOrObject) => {
     }
   }
   
-  return null;
+  return DEFAULT_IMAGE;
 };
 
 // Helper to format Strapi response

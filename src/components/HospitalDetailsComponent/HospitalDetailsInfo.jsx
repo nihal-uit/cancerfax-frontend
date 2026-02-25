@@ -435,7 +435,7 @@ const HospitalDetailsInfo = ({ data, loading }) => {
                             <Col key={doctor?.id || doctor?.documentId || index} xl={4} lg={6} md={6} sm={6}>
                               <TeamSpecialtiesCard>
                                 {(nestedDoctorData[index]?.hero?.doctor_image?.url || doctor?.profilePicture) && (
-                                  <img src={formatMedia(nestedDoctorData[index]?.hero?.doctor_image?.url || doctor?.profilePicture)} alt={`${doctor?.first_name || ''} ${doctor?.last_name || ''}`.trim() || 'Doctor'} />
+                                  <img src={formatMedia(nestedDoctorData[index]?.hero?.doctor_image?.url || doctor?.profilePicture) || '/images/default-avatar.jpg'} alt={`${doctor?.first_name || ''} ${doctor?.last_name || ''}`.trim() || 'Doctor'} />
                                 )}
                                 <TeamSpecialtiesCardOverlay className="card-overlay">
                                   <CardTitle>{[doctor?.first_name, doctor?.last_name].filter(Boolean).join(' ') || ''}</CardTitle>

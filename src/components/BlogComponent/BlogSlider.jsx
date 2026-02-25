@@ -25,7 +25,7 @@ const BlogSlider = ({ data, loading }) => {
     readTime: resource?.readTime || '',
     author: {
       name: `${resource?.author?.firstName.trim() ?? ''} ${resource?.author?.lastName ? resource?.author?.lastName : ''}` || '',
-      avatar: getMediaUrl(resource?.author?.profilePicture) || null,
+      avatar: getMediaUrl(resource?.author?.profilePicture) || '/images/default-avatar.jpg' || null,
     },
     image: getMediaUrl(resource?.featuredImage) ?? '',
     tags:  resource?.resource_category?.name || '',

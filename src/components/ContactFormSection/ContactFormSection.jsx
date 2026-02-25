@@ -414,7 +414,7 @@ const ContactFormSection = ({ data }) => {
                 />
                 <CheckboxLabel htmlFor="agreeToTerms">
                   {data?.consent_message || ''}
-                  <TermsLink to={formFields.termsLink || '#'}>
+                  <TermsLink to={formFields.termsLink || '#'} target='_blank'>
                     {formFields.termsLinkText || 'Terms & Condition'}
                   </TermsLink>
                 </CheckboxLabel>

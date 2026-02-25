@@ -23,7 +23,7 @@ const BlogSmallCard = ({ blog, getMediaUrl, onNavigate }) => {
         <SmallCardContent>
           <AuthorInfo>
             <AuthorAvatar>
-              <NameAvatar src={formatMedia(blog.author?.profilePicture)} name={blog?.author?.firstName} size={24} />
+              <NameAvatar src={blog.author?.profilePicture ? formatMedia(blog.author?.profilePicture) : '/images/default-avatar.jpg'} name={blog?.author?.firstName} size={24} />
               {/* <img src={formatMedia(blog.author?.profilePicture)} alt={blog?.author?.firstName} /> */}
             </AuthorAvatar>
             <AuthorName>{blog?.author?.firstName || ''} {blog?.author?.lastName || ''}</AuthorName>
@@ -59,7 +59,7 @@ const FeaturedBlogCard = ({ blog, getMediaUrl, onNavigate }) => {
       <FeaturedContentCard>
         <AuthorInfo>
           <AuthorAvatar>
-            <NameAvatar src={formatMedia(blog.author?.profilePicture)} name={blog?.author?.firstName} size={24} />
+            <NameAvatar src={blog.author?.profilePicture ? formatMedia(blog.author?.profilePicture) : '/images/default-avatar.jpg'} name={blog?.author?.firstName} size={24} />
             {/* <img src={formatMedia(blog.author?.profilePicture)} alt={blog?.author?.firstName} /> */}
           </AuthorAvatar>
           <AuthorName>{blog?.author?.firstName || ''} {blog?.author?.lastName || ''}</AuthorName>

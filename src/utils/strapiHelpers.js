@@ -148,7 +148,7 @@ export const getCollectionData = (globalData, collectionKey) => {
  * Helper function to format media/image from Strapi response
  */
 export const formatMedia = (media) => {
-  if (!media) return null;
+  if (!media) return '/images/default-image.jpg';
   return getMediaUrl(media);
 };
 

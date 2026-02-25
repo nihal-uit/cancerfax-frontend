@@ -82,7 +82,8 @@ const BlogGrid = ({ data, loading }) => {
               avatar:
                 getMediaUrl(
                   blogData?.author?.profilePicture ||
-                    blog?.author?.profilePicture
+                    blog?.author?.profilePicture ||
+                    '/images/default-avatar.jpg'
                 ) || null,
             },
             publishedDate: formatDate(

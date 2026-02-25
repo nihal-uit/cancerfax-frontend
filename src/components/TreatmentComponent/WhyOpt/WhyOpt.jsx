@@ -101,7 +101,6 @@ const WhyOpt = ({ sectionClass, data }) => {
                     )}
                     {activeCard === item?.id && (
                       <motion.div className='h-100'>
-                        {item?.image ? (
                           <div className='ratio__holder position-relative'>
                             <div className='ratio h-100'>
                               <img
@@ -112,13 +111,11 @@ const WhyOpt = ({ sectionClass, data }) => {
                               />
                             </div>
                           </div>
-                        ) : (
-                          <div className="ratio__holder position-relative">
+                          {/* <div className="ratio__holder position-relative">
                             <div className="ratio h-100">
                               <GradientPlaceholder aria-hidden="true" />
                             </div>
-                          </div>
-                        )}
+                          </div> */}
                         <div className='card__overlay'>
                           <div className='card__overlay__content'>
                             {item?.heading && (

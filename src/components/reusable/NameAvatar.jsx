@@ -1,7 +1,7 @@
 import React from "react";
 
 const NameAvatar = ({
-  src = "",
+  src = "/images/default-avatar.jpg",
   name = "",
   size = 45,
   className = "",
