@@ -63,7 +63,7 @@ const BlogDetailsHero = ({ data, loading }) => {
     const authorName =
       `${data.author?.firstName || ''} ${data.author?.lastName || ''}`.trim() ||
       '';
-    const authorAvatar = getMediaUrl(data.author?.profilePicture);
+    const authorAvatar = data.author?.profilePicture ? getMediaUrl(data.author?.profilePicture) : '/images/default-avatar.jpg';
     const firstInitial = authorName.charAt(0).toUpperCase();
 
     // Priority: externalVideo || featuredVideo || featuredImage

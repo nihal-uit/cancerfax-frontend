@@ -43,6 +43,7 @@ const OngoingClinicalHero = ({ data }) => {
                         type="button"
                         onClick={() => {
                           setSearchValue("");
+                          dispatch(setHeroSearchQuery(""));
                         }}
                       >
                         <svg

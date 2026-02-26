@@ -411,9 +411,12 @@ const HospitalName = styled.h3`
 const ActionButtonsGroup = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 12px;
-  min-width: 90px;
-  
+  // min-width: 90px;
+  margin-left: auto;
+  margin-right: 12px;
+
   @media (max-width: 768px) {
     min-width: 100%;
   }
