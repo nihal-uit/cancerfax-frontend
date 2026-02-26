@@ -64,8 +64,8 @@ const Hero = ({ sectionClass, data }) => {
 
     // Priority: externalVideo || featuredVideo || featuredImage
     const externalVideo = data.featuredVideoExternal || '';
-    const featuredVideo = formatMedia(data.featuredVideo);
-    const featuredImage = getMediaUrl(data.featuredImage);
+    const featuredVideo = data.featuredVideo ? formatMedia(data.featuredVideo) : null;
+    const featuredImage = data.featuredImage ? getMediaUrl(data.featuredImage) : null;
 
     // Determine media type and URL
     let mediaType = 'image';
@@ -159,11 +159,11 @@ const Hero = ({ sectionClass, data }) => {
                 preload='metadata'
                 muted
                 playsInline
-                poster={
-                  content.mediaUrl && content.mediaUrl !== content.videoUrl
-                    ? content.mediaUrl
-                    : undefined
-                }
+                // poster={
+                //   content.mediaUrl && content.mediaUrl !== content.videoUrl
+                //     ? content.mediaUrl
+                //     : undefined
+                // }
               >
                 <source src={content.videoUrl} type='video/mp4' />
               </BackgroundVideo>
@@ -219,7 +219,6 @@ const Hero = ({ sectionClass, data }) => {
           <div className='home-hero-banner hospital_details_hero'>
             <div className='ratio'>
               {renderMedia()}
-              <GradientOverlay />
             </div>
           </div>
         </section>

@@ -36,17 +36,37 @@ const OngoingClinicalHero = ({ data }) => {
                     onChange={(e) => setSearchValue(e.target.value)}
                     onKeyDown={handleKeyDown}
                   />
-                  <SearchIcon onClick={handleSubmitSearch} role="button" aria-label="Search">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <circle cx="11" cy="11" r="8" />
-                      <path d="m21 21-4.35-4.35" />
-                    </svg>
-                  </SearchIcon>
+
+                  {
+                    searchValue ?
+                      <IconButton
+                        type="button"
+                        onClick={() => {
+                          setSearchValue("");
+                        }}
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                      </IconButton>
+                      :
+                      <SearchIcon onClick={handleSubmitSearch} role="button" aria-label="Search">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <circle cx="11" cy="11" r="8" />
+                          <path d="m21 21-4.35-4.35" />
+                        </svg>
+                      </SearchIcon>
+                  }
                 </SearchInput>
               </FiltersContainer>
             </ScrollAnimationComponent>
@@ -56,9 +76,9 @@ const OngoingClinicalHero = ({ data }) => {
             <ScrollAnimationComponent animationVariants={slideRight}>
               <div className="commContent_wrap content-gap-40 h-100">
                 <p className="text-16 text_theme_dark">
-                  {data?.subHeading || renderRichTextWithImages(data?.description_block)||data?.description_text}
+                  {data?.subHeading || renderRichTextWithImages(data?.description_block) || data?.description_text}
                 </p>
-                
+
               </div>
             </ScrollAnimationComponent>
           </div>
@@ -146,6 +166,26 @@ const SearchIcon = styled.div`
   }
 `;
 
+const IconButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #36454f;
+  transition: opacity 0.2s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    opacity: 0.7;
+  }
+`;
 
 const FigureHolder = styled.div`
   @media (min-width: 992px) {

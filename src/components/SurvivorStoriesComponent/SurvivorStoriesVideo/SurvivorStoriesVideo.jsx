@@ -59,6 +59,7 @@ const SurvivorStoriesVideo = ({ story }) => {
             )
           ) : (
             <>
+            <BackgroundVideoWrapper>
               <BackgroundVideo
                 className="video"
                 preload="metadata"
@@ -67,12 +68,13 @@ const SurvivorStoriesVideo = ({ story }) => {
               >
                 <source src={content.videoUrl} type="video/mp4" />
               </BackgroundVideo>
+              </BackgroundVideoWrapper>
               {/* {content.mediaUrl && content.mediaUrl !== content.videoUrl && (
                 <PosterOverlay src={content.mediaUrl} alt={content.title} />
               )} */}
             </>
           )}
-          <PlayButtonWrap>
+          {/* <PlayButtonWrap>
             <PlayButton
               onClick={handlePlayVideo}
               aria-label="Play video"
@@ -82,7 +84,7 @@ const SurvivorStoriesVideo = ({ story }) => {
                 <path d="M8 5v14l11-7z" fill="#FF1493" />
               </PlayIcon>
             </PlayButton>
-          </PlayButtonWrap>
+          </PlayButtonWrap> */}
         </>
       );
     }
@@ -182,6 +184,73 @@ const BackgroundImage = styled.img`
   object-position: center;
   &.video-poster {
     z-index: 2;
+  }
+`;
+const BackgroundVideoWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  z-index: 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(
+      0deg,
+      rgba(54, 69, 79, 0.63) 0%,
+      rgba(54, 69, 79, 0) 100%
+    );
+    border-radius: 24px;
+    backdrop-filter: blur(53px);
+    -webkit-mask-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(50%, rgba(54, 69, 79, 0.7)),
+      to(rgba(54, 69, 79, 0))
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      rgba(54, 69, 79, 0.7) 50%,
+      rgba(54, 69, 79, 0) 100%
+    );
+    mask-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(50%, rgba(54, 69, 79, 0.7)),
+      to(rgba(54, 69, 79, 0))
+    );
+    mask-image: linear-gradient(
+      to right,
+      rgba(54, 69, 79, 0.7) 50%,
+      rgba(54, 69, 79, 0) 100%
+    );
+    z-index: 1;
+  }
+  
+  @media (max-width: 768px) {
+    border-radius: 20px;
+    
+    &::before {
+      border-radius: 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    border-radius: 16px;
+    
+    &::before {
+      border-radius: 16px;
+    }
   }
 `;
 

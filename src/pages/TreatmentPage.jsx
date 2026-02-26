@@ -82,7 +82,7 @@ const TreatmentPage = () => {
   }, [dispatch, slug]);
 
   const treatmentData = Array.isArray(treatment) ? treatment?.[0] : treatment;
-  
+
   const sections = useMemo(
     () => ({
       hero: treatmentData?.hero,

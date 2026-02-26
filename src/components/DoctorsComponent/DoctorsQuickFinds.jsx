@@ -13,7 +13,7 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
   const quickFindsData = componentData || data;
   const { countries, treatments } = useSelector((state) => state.quickFinds);
   const { doctors, doctorsLoading, doctorsHasMore } = useSelector(state => state.doctor);
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
@@ -70,9 +70,9 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
   ];
 
   const handleSearch = () => {
-    dispatch(fetchDoctors({ 
-      limit: DOCTORS_PAGE_SIZE, 
-      start: 0, 
+    dispatch(fetchDoctors({
+      limit: DOCTORS_PAGE_SIZE,
+      start: 0,
       query: trimmedQuery,
       sorting: selectedSorting || '',
       country: selectedCountry || '',
@@ -89,9 +89,9 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
   const handleSortingChange = (e) => {
     const newSorting = e.target.value;
     setSelectedSorting(newSorting);
-    dispatch(fetchDoctors({ 
-      limit: DOCTORS_PAGE_SIZE, 
-      start: 0, 
+    dispatch(fetchDoctors({
+      limit: DOCTORS_PAGE_SIZE,
+      start: 0,
       query: trimmedQuery,
       sorting: newSorting || '',
       country: selectedCountry || '',
@@ -111,7 +111,7 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
               {quickFindsData?.subHeading || ''}
             </Title>
           </LeftContent>
-          
+
           <RightContent className='commContent_wrap'>
             <Description className='text-16'>
               {renderRichTextWithImages(quickFindsData?.description_block) || ''}
@@ -127,65 +127,84 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleKeyPress}
-            />
-            <SearchIcon onClick={handleSearch}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-            </SearchIcon>
+            />{
+              searchTerm ?
+                <IconButton
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm("");
+                  }}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </IconButton>
+                :
+                <SearchIcon onClick={handleSearch}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                </SearchIcon>
+            }
+
           </SearchInput>
 
           {countryOptions.length > 0 && (
-          <SelectWrapper>
-            <Select
-              value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
-            >
-              <option value="">Select country</option>
-              {countryOptions.map((country) => (
-                <option key={country?.id || country?.documentId} value={country?.country ?? ''}>
-                  {country?.country || ''}
-                </option>
-              ))}
-            </Select>
-            <SelectDisplay className={!selectedCountry ? 'placeholder' : ''}>
-              {selectedCountry 
-                ? countryOptions.find(c => c?.country === selectedCountry)?.country || 'Select country'
-                : 'Select country'}
-            </SelectDisplay>
-            <DropdownIcon>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </DropdownIcon>
-          </SelectWrapper>
+            <SelectWrapper>
+              <Select
+                value={selectedCountry}
+                onChange={(e) => setSelectedCountry(e.target.value)}
+              >
+                <option value="">Select country</option>
+                {countryOptions.map((country) => (
+                  <option key={country?.id || country?.documentId} value={country?.country ?? ''}>
+                    {country?.country || ''}
+                  </option>
+                ))}
+              </Select>
+              <SelectDisplay className={!selectedCountry ? 'placeholder' : ''}>
+                {selectedCountry
+                  ? countryOptions.find(c => c?.country === selectedCountry)?.country || 'Select country'
+                  : 'Select country'}
+              </SelectDisplay>
+              <DropdownIcon>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </DropdownIcon>
+            </SelectWrapper>
           )}
 
           {specialtyOptions.length > 0 && (
-          <SelectWrapper>
-            <Select
-              value={selectedSpecialty}
-              onChange={(e) => setSelectedSpecialty(e.target.value)}
-            >
-              <option value="">Select Treatment</option>
-              {specialtyOptions.map((specialty) => (
-                <option key={specialty?.id || specialty?.documentId} value={specialty?.name ?? ''}>
-                  {specialty?.name || ''}
-                </option>
-              ))}
-            </Select>
-            <SelectDisplay className={!selectedSpecialty ? 'placeholder' : ''}>
-              {selectedSpecialty 
-                ? specialtyOptions.find(s => s?.name === selectedSpecialty)?.name || 'Select treatment'
-                : 'Select treatment'}
-            </SelectDisplay>
-            <DropdownIcon>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </DropdownIcon>
-          </SelectWrapper>
+            <SelectWrapper>
+              <Select
+                value={selectedSpecialty}
+                onChange={(e) => setSelectedSpecialty(e.target.value)}
+              >
+                <option value="">Select Treatment</option>
+                {specialtyOptions.map((specialty) => (
+                  <option key={specialty?.id || specialty?.documentId} value={specialty?.name ?? ''}>
+                    {specialty?.name || ''}
+                  </option>
+                ))}
+              </Select>
+              <SelectDisplay className={!selectedSpecialty ? 'placeholder' : ''}>
+                {selectedSpecialty
+                  ? specialtyOptions.find(s => s?.name === selectedSpecialty)?.name || 'Select treatment'
+                  : 'Select treatment'}
+              </SelectDisplay>
+              <DropdownIcon>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </DropdownIcon>
+            </SelectWrapper>
           )}
 
           <SortSelectWrapper>
@@ -221,8 +240,8 @@ const DoctorsQuickFinds = ({ componentData, data }) => {
               type='button'
               onClick={() =>
                 dispatch(
-                  fetchDoctors({ 
-                    limit: DOCTORS_PAGE_SIZE, 
+                  fetchDoctors({
+                    limit: DOCTORS_PAGE_SIZE,
                     start: doctors.length,
                     query: trimmedQuery,
                     sorting: selectedSorting || '',
@@ -334,6 +353,27 @@ const SearchInput = styled.div`
   
   @media (max-width: 768px) {
     padding: 14px 20px;
+  }
+`;
+
+const IconButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #36454f;
+  transition: opacity 0.2s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    opacity: 0.7;
   }
 `;
 

@@ -2,6 +2,7 @@ import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { formatMedia, renderRichTextWithImages } from '../../../utils/strapiHelpers';
+import { getMediaUrl } from '../../../services/api';
 
 // Helper function to convert YouTube URL to embed format
 const getYouTubeEmbedUrl = (url) => {
@@ -59,8 +60,8 @@ const DiseaseHero = ({ data }) => {
     if (!data) return {};
 
     const externalVideo = data.featuredVideoExternal || '';
-    const featuredVideo = data.featuredVideo ? formatMedia(data.featuredVideo) : '';
-    const featuredImage = data.featuredImage ? formatMedia(data.featuredImage) : '';
+    const featuredVideo = data.featuredVideo ? formatMedia(data.featuredVideo) : null;
+    const featuredImage = data.featuredImage ? getMediaUrl(data.featuredImage) : '/images/default-image.jpg';
 
     let mediaType = 'image';
     let mediaUrl = featuredImage;

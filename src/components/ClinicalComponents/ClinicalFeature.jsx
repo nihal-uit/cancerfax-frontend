@@ -65,7 +65,7 @@ const ClinicalFeature = ({ componentData, data }) => {
   }, [
     searchTerm,
     dispatch,
-    selectedCountry,  
+    selectedCountry,
     selectedDisease,
     selectedTherapy,
   ]);
@@ -136,137 +136,156 @@ const ClinicalFeature = ({ componentData, data }) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={handleKeyPress}
               />
-              <SearchIcon onClick={handleSearch}>
+              {
+                searchTerm ?
+                  <IconButton
+                    type="button"
+                    onClick={() => {
+                      setSearchTerm("");
+                    }}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </IconButton>
+                  :
+                  <SearchIcon onClick={handleSearch}>
+                    <svg
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      stroke='currentColor'
+                      strokeWidth='2'
+                    >
+                      <circle cx='11' cy='11' r='8' />
+                      <path d='m21 21-4.35-4.35' />
+                    </svg>
+                  </SearchIcon>
+              }
+            </SearchInput>
+
+            {/* {countryOptions.length > 0 && ( */}
+            <SelectWrapper>
+              <Select
+                value={selectedCountry}
+                onChange={(e) => setSelectedCountry(e.target.value)}
+              >
+                <option value=''>Select country</option>
+                {countryOptions.map((country) => (
+                  <option
+                    key={country?.id ?? country?.slug}
+                    value={getOptionValue(country)}
+                  >
+                    {getOptionName(country)}
+                  </option>
+                ))}
+              </Select>
+              <SelectDisplay
+                className={!selectedCountry ? 'placeholder' : ''}
+              >
+                {selectedCountry
+                  ? getOptionName(
+                    countryOptions.find(
+                      (c) => getOptionValue(c) === selectedCountry
+                    )
+                  ) || 'Select country'
+                  : 'Select country'}
+              </SelectDisplay>
+              <DropdownIcon>
                 <svg
                   viewBox='0 0 24 24'
                   fill='none'
                   stroke='currentColor'
                   strokeWidth='2'
                 >
-                  <circle cx='11' cy='11' r='8' />
-                  <path d='m21 21-4.35-4.35' />
+                  <polyline points='6 9 12 15 18 9' />
                 </svg>
-              </SearchIcon>
-            </SearchInput>
-
-            {/* {countryOptions.length > 0 && ( */}
-              <SelectWrapper>
-                <Select
-                  value={selectedCountry}
-                  onChange={(e) => setSelectedCountry(e.target.value)}
-                >
-                  <option value=''>Select country</option>
-                  {countryOptions.map((country) => (
-                    <option
-                      key={country?.id ?? country?.slug}
-                      value={getOptionValue(country)}
-                    >
-                      {getOptionName(country)}
-                    </option>
-                  ))}
-                </Select>
-                <SelectDisplay
-                  className={!selectedCountry ? 'placeholder' : ''}
-                >
-                  {selectedCountry
-                    ? getOptionName(
-                      countryOptions.find(
-                        (c) => getOptionValue(c) === selectedCountry
-                      )
-                    ) || 'Select country'
-                    : 'Select country'}
-                </SelectDisplay>
-                <DropdownIcon>
-                  <svg
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    stroke='currentColor'
-                    strokeWidth='2'
-                  >
-                    <polyline points='6 9 12 15 18 9' />
-                  </svg>
-                </DropdownIcon>
-              </SelectWrapper>
+              </DropdownIcon>
+            </SelectWrapper>
             {/* )} */}
 
             {/* {specialtyOptions.length > 0 && ( */}
-              <SelectWrapper>
-                <Select
-                  value={selectedDisease}
-                  onChange={(e) => setSelectedDisease(e.target.value)}
-                >
-                  <option value=''>Select disease</option>
-                  {diseaseOptions.map((disease) => (
-                    <option
-                      key={disease?.id ?? disease?.slug}
-                      value={getOptionValue(disease)}
-                    >
-                      {getOptionName(disease)}
-                    </option>
-                  ))}
-                </Select>
-                <SelectDisplay
-                  className={!selectedDisease ? 'placeholder' : ''}
-                >
-                  {selectedDisease
-                    ? getOptionName(
-                      diseaseOptions.find(
-                        (d) => getOptionValue(d) === selectedDisease
-                      )
-                    ) || 'Select disease'
-                    : 'Select disease'}
-                </SelectDisplay>
-                <DropdownIcon>
-                  <svg
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    stroke='currentColor'
-                    strokeWidth='2'
+            <SelectWrapper>
+              <Select
+                value={selectedDisease}
+                onChange={(e) => setSelectedDisease(e.target.value)}
+              >
+                <option value=''>Select disease</option>
+                {diseaseOptions.map((disease) => (
+                  <option
+                    key={disease?.id ?? disease?.slug}
+                    value={getOptionValue(disease)}
                   >
-                    <polyline points='6 9 12 15 18 9' />
-                  </svg>
-                </DropdownIcon>
-              </SelectWrapper>
+                    {getOptionName(disease)}
+                  </option>
+                ))}
+              </Select>
+              <SelectDisplay
+                className={!selectedDisease ? 'placeholder' : ''}
+              >
+                {selectedDisease
+                  ? getOptionName(
+                    diseaseOptions.find(
+                      (d) => getOptionValue(d) === selectedDisease
+                    )
+                  ) || 'Select disease'
+                  : 'Select disease'}
+              </SelectDisplay>
+              <DropdownIcon>
+                <svg
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='currentColor'
+                  strokeWidth='2'
+                >
+                  <polyline points='6 9 12 15 18 9' />
+                </svg>
+              </DropdownIcon>
+            </SelectWrapper>
             {/* )} */}
 
             {/* {treatmentOptions.length > 0 && ( */}
-              <SelectWrapper>
-                <Select
-                  value={selectedTherapy}
-                  onChange={(e) => setSelectedTherapy(e.target.value)}
-                >
-                  <option value=''>Select Therapy</option>
-                  {therapyOptions.map((therapy) => (
-                    <option
-                      key={therapy?.id ?? therapy?.slug}
-                      value={getOptionValue(therapy)}
-                    >
-                      {getOptionName(therapy)}
-                    </option>
-                  ))}
-                </Select>
-                <SelectDisplay
-                  className={!selectedTherapy ? 'placeholder' : ''}
-                >
-                  {selectedTherapy
-                    ? getOptionName(
-                      therapyOptions.find(
-                        (t) => getOptionValue(t) === selectedTherapy
-                      )
-                    ) || 'Select therapy'
-                    : 'Select therapy'}
-                </SelectDisplay>
-                <DropdownIcon>
-                  <svg
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    stroke='currentColor'
-                    strokeWidth='2'
+            <SelectWrapper>
+              <Select
+                value={selectedTherapy}
+                onChange={(e) => setSelectedTherapy(e.target.value)}
+              >
+                <option value=''>Select Therapy</option>
+                {therapyOptions.map((therapy) => (
+                  <option
+                    key={therapy?.id ?? therapy?.slug}
+                    value={getOptionValue(therapy)}
                   >
-                    <polyline points='6 9 12 15 18 9' />
-                  </svg>
-                </DropdownIcon>
-              </SelectWrapper>
+                    {getOptionName(therapy)}
+                  </option>
+                ))}
+              </Select>
+              <SelectDisplay
+                className={!selectedTherapy ? 'placeholder' : ''}
+              >
+                {selectedTherapy
+                  ? getOptionName(
+                    therapyOptions.find(
+                      (t) => getOptionValue(t) === selectedTherapy
+                    )
+                  ) || 'Select therapy'
+                  : 'Select therapy'}
+              </SelectDisplay>
+              <DropdownIcon>
+                <svg
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='currentColor'
+                  strokeWidth='2'
+                >
+                  <polyline points='6 9 12 15 18 9' />
+                </svg>
+              </DropdownIcon>
+            </SelectWrapper>
             {/* )} */}
           </FiltersContainer>
 
@@ -402,6 +421,27 @@ const SearchIcon = styled.div`
   svg {
     width: 20px;
     height: 20px;
+  }
+`;
+
+const IconButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #36454f;
+  transition: opacity 0.2s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    opacity: 0.7;
   }
 `;
 

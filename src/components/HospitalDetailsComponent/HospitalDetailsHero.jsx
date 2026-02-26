@@ -191,8 +191,8 @@ const HospitalDetailsHero = ({ data, loading, hospitalImage }) => {
 
     // Priority: externalVideo || featuredVideo || featuredImage
     const externalVideo = data.featuredVideoExternal || '';
-    const featuredVideo = formatMedia(data.featuredVideo);
-    const featuredImage = getMediaUrl(hospitalImage || data?.background_image || data?.featuredImage);
+    const featuredVideo = data.featuredVideo ? formatMedia(data.featuredVideo) : null;
+    const featuredImage = hospitalImage || data?.background_image || data?.featuredImage ? getMediaUrl(hospitalImage || data?.background_image || data?.featuredImage) : '/images/default-image.jpg';
 
     // Determine media type and URL
     let mediaType = 'image';

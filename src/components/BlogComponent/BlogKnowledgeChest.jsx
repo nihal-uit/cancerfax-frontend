@@ -258,11 +258,11 @@ const BlogKnowledgeChest = ({ data, loading }) => {
 
   const content = data
     ? {
-        label: data?.heading || '',
-        title: data?.subHeading ?? '',
-        description: renderRichTextWithImages(data?.description_block) || data?.description_text || '',
-        resources: data?.resources,
-      }
+      label: data?.heading || '',
+      title: data?.subHeading ?? '',
+      description: renderRichTextWithImages(data?.description_block) || data?.description_text || '',
+      resources: data?.resources,
+    }
     : {};
 
   if (loading) {
@@ -301,17 +301,37 @@ const BlogKnowledgeChest = ({ data, loading }) => {
                 }}
                 onKeyPress={handleKeyPress}
               />
-              <SearchIcon onClick={handleSearch}>
-                <svg
-                  viewBox='0 0 24 24'
-                  fill='none'
-                  stroke='currentColor'
-                  strokeWidth='2'
+              {searchTerm ?
+                <IconButton
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setAppliedQuery("");
+                  }}
                 >
-                  <circle cx='11' cy='11' r='8' />
-                  <path d='m21 21-4.35-4.35' />
-                </svg>
-              </SearchIcon>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </IconButton>
+                :
+                <SearchIcon onClick={handleSearch}>
+                  <svg
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                  >
+                    <circle cx='11' cy='11' r='8' />
+                    <path d='m21 21-4.35-4.35' />
+                  </svg>
+                </SearchIcon>
+              }
+
             </SearchInput>
 
             <SelectWrapper>
@@ -339,9 +359,8 @@ const BlogKnowledgeChest = ({ data, loading }) => {
                     </option>
                     {allSubcategories.map((subcategory) => (
                       <option
-                        key={`subcategory-${
-                          subcategory.id || subcategory.documentId
-                        }`}
+                        key={`subcategory-${subcategory.id || subcategory.documentId
+                          }`}
                         value={subcategory.slug}
                       >
                         {subcategory.name}
@@ -387,7 +406,7 @@ const BlogKnowledgeChest = ({ data, loading }) => {
               <SelectDisplay className={!selectedSorting ? 'placeholder' : ''}>
                 {selectedSorting
                   ? sortingOptions.find((s) => s.value === selectedSorting)
-                      ?.name || 'Sort by'
+                    ?.name || 'Sort by'
                   : 'Sort by'}
               </SelectDisplay>
               <DropdownIcon>
@@ -567,6 +586,27 @@ const SearchIcon = styled.div`
   svg {
     width: 20px;
     height: 20px;
+  }
+`;
+
+const IconButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #36454f;
+  transition: opacity 0.2s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    opacity: 0.7;
   }
 `;
 

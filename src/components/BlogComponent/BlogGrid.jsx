@@ -66,6 +66,7 @@ const BlogGrid = ({ data, loading }) => {
       ? data.map((blog) => {
           // Handle both Strapi v4 structure and flattened structure
           const blogData = blog?.attributes || blog;
+          const authorImg = blogData?.author?.profilePicture || blog?.author?.profilePicture;
 
           return {
             id: blog?.documentId || blog?.id,
@@ -79,12 +80,7 @@ const BlogGrid = ({ data, loading }) => {
               } ${
                 blogData?.author?.lastName || blog?.author?.lastName || ''
               }`.trim(),
-              avatar:
-                getMediaUrl(
-                  blogData?.author?.profilePicture ||
-                    blog?.author?.profilePicture ||
-                    '/images/default-avatar.jpg'
-                ) || null,
+              avatar: authorImg ? getMediaUrl(authorImg) : '/images/default-avatar.jpg',
             },
             publishedDate: formatDate(
               blogData?.publishedDate || blog?.publishedDate
@@ -158,19 +154,11 @@ const BlogGrid = ({ data, loading }) => {
                 </div>
                 <AuthorInfo>
                   <AuthorAvatar>
-                    {blog.author.avatar ? (
                       <img
-                        src={blog.author.avatar}
+                        src={blog.author.avatar || getMediaUrl(blog.author.profilePicture)}
                         alt={blog.author.name || 'Author'}
                         loading="lazy"
                       />
-                    ) : (
-                      <InitialDisplay>
-                        {blog.author.name && blog.author.name.trim().length > 0
-                          ? blog.author.name.trim().charAt(0).toUpperCase()
-                          : '?'}
-                      </InitialDisplay>
-                    )}
                   </AuthorAvatar>
                   <div>
                     <AuthorName>{blog.author.name}</AuthorName>

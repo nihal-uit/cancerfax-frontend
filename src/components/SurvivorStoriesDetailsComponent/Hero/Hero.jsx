@@ -69,8 +69,8 @@ const Hero = ({ data }) => {
 
     // Priority: externalVideo || featuredVideo || featuredImage
     const externalVideo = data.featuredVideoExternal || '';
-    const featuredVideo = formatMedia(data.featuredVideo);
-    const featuredImage = getMediaUrl(data.featuredImage);
+    const featuredVideo = data.featuredVideo ? formatMedia(data.featuredVideo) : null;
+    const featuredImage = data.featuredImage ? getMediaUrl(data.featuredImage) : '/images/default-image.jpg';
 
     // Determine media type and URL
     let mediaType = 'image';
@@ -182,7 +182,7 @@ const Hero = ({ data }) => {
               )} */}
             </BackgroundVideoWrapper>
           )}
-          <PlayButtonWrapper>
+          {/* <PlayButtonWrapper>
             <PlayButton
               onClick={handlePlayVideo}
               aria-label='Play video'
@@ -197,7 +197,7 @@ const Hero = ({ data }) => {
                 <path d='M8 5v14l11-7z' fill='#FF1493' />
               </PlayIcon>
             </PlayButton>
-          </PlayButtonWrapper>
+          </PlayButtonWrapper> */}
         </>
       );
     }

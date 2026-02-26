@@ -13,7 +13,7 @@ const HospitalQuickFinds = ({ componentData, data }) => {
   const quickFindsData = componentData || data;
   const { countries, treatments } = useSelector((state) => state.quickFinds);
   const { hospitals, hospitalsLoading, hospitalsHasMore } = useSelector(state => state.hospitalNetwork)
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
@@ -70,9 +70,9 @@ const HospitalQuickFinds = ({ componentData, data }) => {
   ];
 
   const handleSearch = () => {
-    dispatch(fetchHospitals({ 
-      limit: HOSPITALS_PAGE_SIZE, 
-      start: 0, 
+    dispatch(fetchHospitals({
+      limit: HOSPITALS_PAGE_SIZE,
+      start: 0,
       query: trimmedQuery,
       sorting: selectedSorting || '',
       country: selectedCountry || '',
@@ -89,9 +89,9 @@ const HospitalQuickFinds = ({ componentData, data }) => {
   const handleSortingChange = (e) => {
     const newSorting = e.target.value;
     setSelectedSorting(newSorting);
-    dispatch(fetchHospitals({ 
-      limit: HOSPITALS_PAGE_SIZE, 
-      start: 0, 
+    dispatch(fetchHospitals({
+      limit: HOSPITALS_PAGE_SIZE,
+      start: 0,
       query: trimmedQuery,
       sorting: newSorting || '',
       country: selectedCountry || '',
@@ -111,10 +111,10 @@ const HospitalQuickFinds = ({ componentData, data }) => {
               {quickFindsData?.subHeading || ''}
             </Title>
           </LeftContent>
-          
+
           <RightContent className='commContent_wrap'>
             <Description className='text-16'>
-              {renderRichTextWithImages(quickFindsData?.description_block)||quickFindsData?.description_text || ''}
+              {renderRichTextWithImages(quickFindsData?.description_block) || quickFindsData?.description_text || ''}
             </Description>
           </RightContent>
         </TopSection>
@@ -128,12 +128,33 @@ const HospitalQuickFinds = ({ componentData, data }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleKeyPress}
             />
-            <SearchIcon onClick={handleSearch}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-            </SearchIcon>
+            {
+              searchTerm ?
+                <IconButton
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm("");
+                  }}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </IconButton>
+
+                :
+                <SearchIcon onClick={handleSearch}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                </SearchIcon>
+            }
+
           </SearchInput>
 
           <SelectWrapper>
@@ -149,7 +170,7 @@ const HospitalQuickFinds = ({ componentData, data }) => {
               ))}
             </Select>
             <SelectDisplay className={!selectedCountry ? 'placeholder' : ''}>
-              {selectedCountry 
+              {selectedCountry
                 ? countryOptions.find(c => c?.country === selectedCountry)?.country || 'Select country'
                 : 'Select country'}
             </SelectDisplay>
@@ -173,7 +194,7 @@ const HospitalQuickFinds = ({ componentData, data }) => {
               ))}
             </Select>
             <SelectDisplay className={!selectedSpecialty ? 'placeholder' : ''}>
-              {selectedSpecialty 
+              {selectedSpecialty
                 ? specialtyOptions.find(s => s?.slug === selectedSpecialty)?.name || 'Select treatment'
                 : 'Select treatment'}
             </SelectDisplay>
@@ -216,8 +237,8 @@ const HospitalQuickFinds = ({ componentData, data }) => {
             <LoadMoreButton
               type='button'
               onClick={() =>
-                dispatch(fetchHospitals({ 
-                  limit: HOSPITALS_PAGE_SIZE, 
+                dispatch(fetchHospitals({
+                  limit: HOSPITALS_PAGE_SIZE,
                   start: hospitals.length,
                   query: trimmedQuery,
                   sorting: selectedSorting || '',
@@ -362,6 +383,27 @@ const SearchIcon = styled.div`
   svg {
     width: 20px;
     height: 20px;
+  }
+`;
+
+const IconButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #36454f;
+  transition: opacity 0.2s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    opacity: 0.7;
   }
 `;
 

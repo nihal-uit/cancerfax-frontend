@@ -1,19 +1,22 @@
 import React from 'react';
 import TestimonialsComponent from '../reusable/TestimonialComponent';
 import { formatMedia } from '../../utils/strapiHelpers';
+import { useEnrichSurvivorStory } from '@/hooks/useEnrichSurvivorStory';
 
 const Testimonials = ({ componentData, data, loading }) => {
-  const testimonialData = componentData || data;
-  
+  const rawData = componentData || data;
+  const [testimonialData, enrichLoading] = useEnrichSurvivorStory(rawData);
+
   if (!data || !data?.isActive || loading) {
     return null;
   }
 
-  const backgroundImage = testimonialData?.survivor_story?.hero?.featuredImage 
-    ? formatMedia(testimonialData?.survivor_story?.hero?.featuredImage)
-    : testimonialData?.survivor_story?.hero?.featuredVideo?.url
-    ? formatMedia(testimonialData?.survivor_story?.hero?.featuredVideo)
-    : null;
+  const backgroundImage =
+    testimonialData?.survivor_story?.hero?.featuredImage
+      ? formatMedia(testimonialData.survivor_story.hero.featuredImage)
+      : testimonialData?.survivor_story?.hero?.featuredVideo?.url
+        ? formatMedia(testimonialData.survivor_story.hero.featuredVideo)
+        : null;
 
   return (
     <section
@@ -23,7 +26,7 @@ const Testimonials = ({ componentData, data, loading }) => {
     >
       <div className='containerWrapper'>
         <div className='commContent_wrap z-2 position-relative'>
-          <TestimonialsComponent data={testimonialData} />
+          <TestimonialsComponent data={testimonialData} loading={enrichLoading} />
         </div>
       </div>
     </section>

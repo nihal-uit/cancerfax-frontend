@@ -63,8 +63,8 @@ const DrugsDetailsHero = ({ data }) => {
 
     // Priority: externalVideo || featuredVideo || featuredImage
     const externalVideo = data.featuredVideoExternal || '';
-    const featuredVideo = formatMedia(data.featuredVideo);
-    const featuredImage = getMediaUrl(data.featuredImage);
+    const featuredVideo = data.featuredVideo ? formatMedia(data.featuredVideo) : null;
+    const featuredImage = data.featuredImage ? getMediaUrl(data.featuredImage) : '/images/default-image.jpg';
 
     // Determine media type and URL
     let mediaType = 'image';
@@ -112,6 +112,17 @@ const DrugsDetailsHero = ({ data }) => {
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
+    }
+  };
+
+  const handleShareClick = (e, data) => {
+    e.stopPropagation();
+    if (navigator.share) {
+      navigator.share({
+        title: data.heading,
+        text: `Check out ${data.heading}`,
+        url: window.location.href,
+      });
     }
   };
 
@@ -239,14 +250,24 @@ const DrugsDetailsHero = ({ data }) => {
                   <Description className='text-18'>{data?.subHeading}</Description>
                 </div>
 
-                <Link to={data?.cta?.URL} target={data?.cta?.target}>
+                {/* <Link to={data?.cta?.URL} target={data?.cta?.target}>
                   <IconButton >
                     <Icon
                       src="../images/icon-share.svg"
                       alt=""
                     />
                   </IconButton>
-                </Link>
+                </Link> */}
+
+                <IconButtonsGroup>
+                  <ShareIconButton onClick={(e) => handleShareClick(e, data)}>
+                    <Icon
+                      src="../images/icon-share.svg"
+                      alt=""
+                    />
+                  </ShareIconButton>
+                </IconButtonsGroup>
+
               </TopRow>
 
             </HeroContentGrid>
@@ -587,7 +608,7 @@ const HospitalName = styled.h1`
   color: ${props => props.theme.colors.white};
 `;
 
-const IconButton = styled.button`
+const ShareIconButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -617,6 +638,35 @@ const Icon = styled.img`
 
 const Description = styled.p`
   color: ${props => props.theme.colors.white};
+`;
+
+const IconButtonsGroup = styled.div`
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+  
+  @media (max-width: 768px) {
+    gap: 8px;
+  }
+`;
+
+const IconButton = styled.button`
+  width: 60px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+   
+  &:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: white;
+  }
 `;
 
 export default DrugsDetailsHero;

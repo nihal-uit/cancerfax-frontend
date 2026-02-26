@@ -100,6 +100,16 @@ export const pageComponentAPI = {
     const response = await api.get(`/survivor-stories?${idFilters}&populate[hero][populate][featuredImage][fields][0]=url&populate[hero][populate][featuredVideo][fields][0]=url`);
     return response.data.data || [];
   },
+
+  /** Fetch a single survivor story with hero (featuredImage, featuredVideo, cta) for treatment testimonials. */
+  getSurvivorStoryWithHero: async (documentId) => {
+    if (!documentId) return null;
+    const response = await api.get(
+      `/survivor-stories?filters[documentId][$eq]=${encodeURIComponent(documentId)}&populate[hero][populate]=*`
+    );
+    const data = response.data?.data;
+    return Array.isArray(data) && data.length > 0 ? data[0] : data ?? null;
+  },
 };
 
 // Innovative Care API

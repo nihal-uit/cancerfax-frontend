@@ -68,8 +68,8 @@ const BlogDetailsHero = ({ data, loading }) => {
 
     // Priority: externalVideo || featuredVideo || featuredImage
     const externalVideo = data.featuredVideoExternal || '';
-    const featuredVideo = formatMedia(data.featuredVideo);
-    const featuredImage = getMediaUrl(data.featuredImage);
+    const featuredVideo = data.featuredVideo ? formatMedia(data.featuredVideo) : null;
+    const featuredImage = data.featuredImage ? getMediaUrl(data.featuredImage) : '/images/default-image.jpg';
 
     // Determine media type and URL
     let mediaType = 'image';

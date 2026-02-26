@@ -98,9 +98,9 @@ const OurStory = ({ componentData, data }) => {
                 nestedStory?.hero?.featuredImage || story?.hero?.featuredImage
               );
             
-              const storyVideoUrl = formatMedia(
+              const storyVideoUrl = (nestedStory?.hero?.featuredVideo || story?.hero?.featuredVideo) ? formatMedia(
                 nestedStory?.hero?.featuredVideo || story?.hero?.featuredVideo
-              );
+              ) : null;
 
               const hasMedia = storyVideoUrl || storyImageUrl;
 
@@ -132,6 +132,7 @@ const OurStory = ({ componentData, data }) => {
                         <div className='mission_right'>
                           <div className='ourstory_image_wrap'>
                             {storyVideoUrl ? (
+                              console.log('storyVideoUrl -> ', storyVideoUrl),
                               <video
                                 muted
                                 loop
@@ -142,6 +143,7 @@ const OurStory = ({ componentData, data }) => {
                                 <source src={storyVideoUrl} type='video/mp4' />
                               </video>
                             ) : storyImageUrl ? (
+                              console.log('storyImageUrl -> ', storyImageUrl),
                               <img
                                 src={storyImageUrl}
                                 alt={
