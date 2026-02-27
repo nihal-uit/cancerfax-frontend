@@ -13,7 +13,7 @@ const fetchSliderComponentsWithMedia = async (slug, timestamp) => {
       "populate[dynamic_zone][on][dynamic-zone.slider-section][populate][Slide][populate]",
       "*"
     );
-    params.append("_t", timestamp.toString());
+    // params.append("_t", timestamp.toString());
     const resp = await axios.get(`${API_URL}/api/pages?${params.toString()}`);
     const dz = resp.data?.data?.[0]?.dynamic_zone || [];
     return dz.filter((c) => c?.__component === "dynamic-zone.slider-section");
@@ -30,7 +30,7 @@ const fetchTestimonialComponentsWithMedia = async (slug, timestamp) => {
       "populate[dynamic_zone][on][dynamic-zone.testimonial-slider][populate][survivor_story][populate]",
       "*"
     );
-    params.append("_t", timestamp.toString());
+    // params.append("_t", timestamp.toString());
     const resp = await axios.get(`${API_URL}/api/pages?${params.toString()}`);
     const dz = resp.data?.data?.[0]?.dynamic_zone || [];
     return dz.filter((c) => c?.__component === "dynamic-zone.testimonial-slider");
@@ -45,7 +45,7 @@ const fetchTherapiesWithMedia = async (therapyIds, timestamp) => {
     const params = new URLSearchParams();
     therapyIds.forEach((id) => params.append("filters[id][$in]", id));
     params.append("populate", "*");
-    params.append("_t", timestamp.toString());
+    // params.append("_t", timestamp.toString());
     const resp = await axios.get(`${API_URL}/api/therapies?${params.toString()}`);
     const data = resp.data?.data || [];
     return data.reduce((acc, item) => {
@@ -73,7 +73,7 @@ export const fetchPageBySlug = createAsyncThunk(
         // pageParams.append("populate[dynamic_zone][populate]", "*");
         // pageParams.append("populate[seo][populate]", "*");
         pageParams.append("populate", "*");
-        pageParams.append("_t", timestamp.toString());
+        // pageParams.append("_t", timestamp.toString());
 
         const apiUrl = `${API_URL}/api/pages?${pageParams.toString()}`;
         const pagesRes = await axios.get(apiUrl);

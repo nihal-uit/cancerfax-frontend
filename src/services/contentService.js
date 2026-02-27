@@ -71,7 +71,7 @@ export const pagesAPI = {
     params.append('populate[dynamic_zone][populate]', '*');
     params.append('populate[seo][populate]', '*');
     
-    params.append('_t', Date.now().toString());
+    // params.append('_t', Date.now().toString());
     const response = await api.get(`/pages?${params.toString()}`);
     return response.data?.data?.[0] ?? null;
   },

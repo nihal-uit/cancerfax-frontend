@@ -405,9 +405,9 @@ const TopRow = styled.div`
   gap: 24px;
 `;
 
-const HospitalName = styled.h3`
+const HospitalName = styled.h1`
   color: ${(props) => props.theme.colors.white};
-  font-size: 24px !important;
+  font-size: 40px !important;
 `;
 
 const CategoryBadge = styled.div`

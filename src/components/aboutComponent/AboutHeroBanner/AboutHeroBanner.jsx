@@ -106,7 +106,7 @@ const Label = styled.p`
   color: ${(props) => props.theme.colors.white};
 `;
 
-const Title = styled.h3`
+const Title = styled.h1`
   color: ${(props) => props.theme.colors.white};
 `;
 

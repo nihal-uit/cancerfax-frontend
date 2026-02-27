@@ -49,7 +49,7 @@ export const fetchGlobalData = createAsyncThunk(
                 },
               },
             },
-            _t: timestamp,
+            // _t: timestamp,
           },
           { encodeValuesOnly: true }
         );

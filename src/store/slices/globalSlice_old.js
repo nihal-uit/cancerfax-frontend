@@ -69,7 +69,7 @@ const fetchSliderComponentsWithMedia = async (slug, timestamp) => {
       'populate[dynamic_zone][on][dynamic-zone.slider-section][populate][Slide][populate]',
       '*'
     );
-    sliderParams.append('_t', timestamp.toString());
+    // sliderParams.append('_t', timestamp.toString());
     const response = await axios.get(
       `${API_URL}/api/pages?${sliderParams.toString()}`
     );
@@ -96,7 +96,7 @@ const fetchTestimonialComponentsWithMedia = async (slug, timestamp) => {
       'populate[dynamic_zone][on][dynamic-zone.testimonial-slider][populate][survivor_story][populate]',
       '*'
     );
-    testimonialParams.append('_t', timestamp.toString());
+    // testimonialParams.append('_t', timestamp.toString());
     const response = await axios.get(
       `${API_URL}/api/pages?${testimonialParams.toString()}`
     );
@@ -129,7 +129,7 @@ const fetchTherapiesWithMedia = async (therapyIds, timestamp) => {
       }
     });
     therapyParams.append('populate', '*');
-    therapyParams.append('_t', timestamp.toString());
+    // therapyParams.append('_t', timestamp.toString());
 
     const response = await axios.get(
       `${API_URL}/api/therapies?${therapyParams.toString()}`
@@ -167,7 +167,7 @@ export const fetchGlobalData = createAsyncThunk(
       const pageParams = new URLSearchParams();
       pageParams.append('filters[slug][$eq]', 'home');
       pageParams.append('populate[dynamic_zone][populate]', '*');
-      pageParams.append('_t', timestamp.toString());
+      // pageParams.append('_t', timestamp.toString());
 
       // Prepare global API call in parallel
       const globalPopulateQuery = qs.stringify(
@@ -190,7 +190,7 @@ export const fetchGlobalData = createAsyncThunk(
               },
             },
           },
-          _t: timestamp,
+          // _t: timestamp,
         },
         { encodeValuesOnly: true }
       );
@@ -459,8 +459,11 @@ export const fetchGlobalData = createAsyncThunk(
       // If logo is just an ID (number), try to fetch the media object
       if (navbarLogoData && typeof navbarLogoData === 'number') {
         try {
+          // const mediaResponse = await axios.get(
+          //   `${API_URL}/api/upload/files/${navbarLogoData}?_t=${timestamp}`
+          // );
           const mediaResponse = await axios.get(
-            `${API_URL}/api/upload/files/${navbarLogoData}?_t=${timestamp}`
+            `${API_URL}/api/upload/files/${navbarLogoData}`
           );
           if (mediaResponse?.data) {
             navbarLogoData = mediaResponse.data;
@@ -478,8 +481,11 @@ export const fetchGlobalData = createAsyncThunk(
 
       if (footerLogoData && typeof footerLogoData === 'number') {
         try {
+          // const mediaResponse = await axios.get(
+          //   `${API_URL}/api/upload/files/${footerLogoData}?_t=${timestamp}`
+          // );
           const mediaResponse = await axios.get(
-            `${API_URL}/api/upload/files/${footerLogoData}?_t=${timestamp}`
+            `${API_URL}/api/upload/files/${footerLogoData}`
           );
           if (mediaResponse?.data) {
             footerLogoData = mediaResponse.data;
@@ -561,7 +567,7 @@ export const fetchPageBySlug = createAsyncThunk(
       pageParams.append('filters[slug][$eq]', normalizedSlug);
       pageParams.append('populate[dynamic_zone][populate]', '*');
       pageParams.append('populate[seo][populate]', '*');
-      pageParams.append('_t', timestamp.toString());
+      // pageParams.append('_t', timestamp.toString());
       const apiUrl = `${API_URL}/api/pages?${pageParams.toString()}`;
 
       const pagesResponse = await axios.get(apiUrl);

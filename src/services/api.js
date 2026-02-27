@@ -35,10 +35,10 @@ api.interceptors.request.use(
       
       // In development, cache-bust so edits in Strapi show immediately.
       // In production, omit _t so browser/CDN can cache and repeat visits are faster.
-      if (process.env.NODE_ENV === 'development') {
-        const separator = config.url.includes('?') ? '&' : '?';
-        config.url = `${config.url}${separator}_t=${Date.now()}`;
-      }
+      // if (process.env.NODE_ENV === 'development') {
+      //   const separator = config.url.includes('?') ? '&' : '?';
+      //   config.url = `${config.url}${separator}_t=${Date.now()}`;
+      // }
       // Note: Removed Cache-Control headers to avoid CORS preflight issues
     }
     
